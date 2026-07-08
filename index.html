@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Home Base app — version v1.1 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -41,6 +42,7 @@ body.dark{
   --shadow:0 1px 2px rgba(0,0,0,0.25), 0 4px 14px rgba(0,0,0,0.2);
 }
 *{box-sizing:border-box;}
+button,input,select,textarea,a,.day-cell,.mini-month,.tab-btn,.month-chip,.tag-swatch-btn,.swatch{touch-action:manipulation;}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s ease,color .2s ease;}
 .switch-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;}
 .switch{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;}
@@ -53,6 +55,7 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-sp
 #app{max-width:920px;margin:0 auto;padding:0 14px 116px;}
 .top{display:flex;align-items:baseline;justify-content:space-between;padding:14px 0 10px;}
 .top h1{font-size:22px;}
+.app-version{font-family:'IBM Plex Sans';font-size:11px;font-weight:500;color:var(--ink-soft);vertical-align:middle;}
 .top .date{color:var(--ink-soft);font-size:12.5px;}
 
 .tabs{
@@ -90,7 +93,7 @@ button{font-family:'IBM Plex Sans';cursor:pointer;-webkit-appearance:none;appear
 .btn.block{width:100%;}
 
 input[type=text],input[type=number],input[type=date],input[type=time],input[type=datetime-local],textarea,select{
-  font-family:'IBM Plex Sans';font-size:14px;padding:8px 10px;border:1px solid var(--line);
+  font-family:'IBM Plex Sans';font-size:16px;padding:8px 10px;border:1px solid var(--line);
   border-radius:8px;background:var(--surface-2);color:var(--ink);width:100%;
 }
 textarea{resize:vertical;min-height:46px;}
@@ -176,7 +179,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .tag-swatch-btn.add-swatch{background:var(--surface-2);border:2px dashed var(--line);color:var(--ink-soft);}
 .tag-swatch-btn.selected{box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--ink);}
 .repeat-control{display:flex;align-items:center;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0 6px 0 8px;flex-shrink:0;color:var(--ink-soft);}
-.repeat-control select{border:none;background:none;padding:6px 2px;width:auto;max-width:96px;font-size:11.5px;color:var(--ink);}
+.repeat-control select{border:none;background:none;padding:6px 2px;width:auto;max-width:112px;font-size:16px;color:var(--ink);}
 .new-tag-inline{display:none;gap:6px;margin-top:6px;align-items:center;background:var(--surface-2);border-radius:8px;padding:8px;}
 .new-tag-inline.show{display:flex;flex-wrap:wrap;}
 .new-tag-inline input{flex:1;min-width:110px;}
@@ -201,7 +204,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 
 .shift-name-row{display:flex;gap:6px;margin-bottom:8px;}
 .shift-compact{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
-.shift-compact input{padding:8px;font-size:13px;width:100%;}
+.shift-compact input{padding:8px;font-size:16px;width:100%;}
 .shift-total-mini{font-size:12px;color:var(--ink-soft);display:flex;align-items:center;padding-top:2px;}
 .shift-total-mini strong{color:var(--ink);font-family:'Fraunces',serif;font-size:15px;margin-left:5px;}
 .quick-break-mini{display:flex;gap:4px;margin-top:8px;}
@@ -240,7 +243,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base</h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v1.1</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
