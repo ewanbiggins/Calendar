@@ -50,7 +50,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',
 .switch input:checked + .switch-slider{background:var(--home);}
 .switch input:checked + .switch-slider::before{transform:translateX(18px);}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-spacing:-0.01em;}
-#app{max-width:920px;margin:0 auto;padding:0 14px 84px;}
+#app{max-width:920px;margin:0 auto;padding:0 14px 96px;}
 .top{display:flex;align-items:baseline;justify-content:space-between;padding:14px 0 10px;}
 .top h1{font-size:22px;}
 .top .date{color:var(--ink-soft);font-size:12.5px;}
@@ -59,8 +59,9 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-sp
   position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;background:var(--surface);
   border-top:1px solid var(--line);box-shadow:0 -2px 12px rgba(27,38,32,0.06);
 }
-.tab-btn{flex:1;border:none;background:none;padding:9px 2px 8px;font-family:'IBM Plex Sans';font-size:10.5px;color:var(--ink-soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;position:relative;}
+.tab-btn{flex:1;border:none;background:none;padding:13px 2px 12px;font-family:'IBM Plex Sans';font-size:11.5px;color:var(--ink-soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;}
 .tab-btn .ic{display:flex;align-items:center;justify-content:center;}
+.tab-btn .ic svg{width:21px;height:21px;}
 .tab-btn.active{color:var(--home);}
 .tab-badge{position:absolute;top:3px;right:calc(50% - 20px);background:var(--danger);color:#fff;font-size:9px;border-radius:8px;padding:1px 5px;font-weight:600;}
 
@@ -100,19 +101,19 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .cal-header-bar{
   position:sticky;top:0;z-index:46;background:var(--bg);
   display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:nowrap;
-  padding:10px 0;box-shadow:0 6px 8px -8px rgba(27,38,32,0.15);
+  padding:14px 0;box-shadow:0 6px 8px -8px rgba(27,38,32,0.15);
 }
-.cal-back-btn{display:flex;align-items:center;gap:3px;background:none;border:none;color:var(--ink);font-family:'Fraunces',serif;font-weight:600;font-size:16px;padding:4px 2px;flex-shrink:0;}
-.cal-back-btn svg{transition:transform .15s ease;}
+.cal-back-btn{display:flex;align-items:center;gap:4px;background:none;border:none;color:var(--ink);font-family:'Fraunces',serif;font-weight:600;font-size:19px;padding:4px 2px;flex-shrink:0;}
+.cal-back-btn svg{transition:transform .15s ease;width:19px;height:19px;}
 .cal-back-btn.expanded svg{transform:rotate(180deg);}
-.cal-header-right{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;justify-content:flex-end;flex-shrink:0;}
-.cal-header-right .btn.small{padding:6px 9px;font-size:12px;white-space:nowrap;flex-shrink:0;}
+.cal-header-right{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;justify-content:flex-end;flex-shrink:0;}
+.cal-header-right .btn.small{padding:8px 11px;font-size:13px;white-space:nowrap;flex-shrink:0;}
 .jump-date-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
-.round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:29px;height:29px;padding:0;font-size:17px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.month-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:10px;box-shadow:var(--shadow);scroll-margin-top:80px;}
+.round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:34px;height:34px;padding:0;font-size:18px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.month-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:10px;box-shadow:var(--shadow);scroll-margin-top:88px;}
 .month-card.is-current{border-color:var(--accent);}
 
-.year-block{min-height:calc(100vh - 150px);display:flex;flex-direction:column;margin-bottom:4px;scroll-margin-top:80px;}
+.year-block{min-height:calc(100vh - 160px);display:flex;flex-direction:column;margin-bottom:4px;scroll-margin-top:88px;}
 .year-block-title{font-family:'Fraunces',serif;font-size:22px;font-weight:700;text-align:center;margin-bottom:4px;}
 .mini-month-grid{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:12px;}
 .mini-month{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 8px 10px;cursor:pointer;display:flex;flex-direction:column;}
@@ -183,25 +184,27 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .swatch{width:19px;height:19px;border-radius:50%;border:2px solid transparent;cursor:pointer;}
 .swatch.sel{border-color:var(--ink);}
 .day-todo-list{max-height:220px;overflow-y:auto;margin-top:6px;}
+.whatson-list{max-height:220px;overflow-y:auto;margin-top:6px;}
+.whatson-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);}
+.whatson-item:last-child{border-bottom:none;}
 .todo-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);}
 .todo-item:last-child{border-bottom:none;}
-.todo-tag-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.todo-tag-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
 .todo-check{width:19px;height:19px;border-radius:6px;border:1.5px solid var(--ink-soft);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;margin-top:1px;background:var(--surface);}
 .todo-check.done{background:var(--home);border-color:var(--home);color:#fff;}
 .todo-text{flex:1;font-size:14px;}
 .todo-text.done{text-decoration:line-through;color:var(--ink-soft);}
-.todo-scope-pill{font-size:9.5px;color:var(--ink-soft);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:1px 6px;margin-top:2px;display:inline-block;}
+.todo-scope-pill{font-size:9.5px;color:var(--ink-soft);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:1px 6px;margin-left:6px;display:inline-block;}
 .todo-due{font-size:10.5px;color:var(--ink-soft);margin-top:2px;}
-.todo-del{background:none;border:none;color:var(--ink-soft);font-size:15px;padding:2px 4px;}
+.todo-del{background:none;border:none;color:var(--ink-soft);font-size:15px;padding:2px 4px;flex-shrink:0;}
 .empty{color:var(--ink-soft);font-size:13px;padding:6px 0;font-style:italic;}
 
-.shift-name-row{display:flex;gap:6px;margin-bottom:6px;}
-.shift-compact{display:flex;gap:6px;align-items:flex-end;}
-.shift-compact > div{flex:1;}
-.shift-compact input{padding:6px 7px;font-size:12.5px;}
-.shift-total-mini{font-size:11.5px;color:var(--ink-soft);white-space:nowrap;padding:0 0 7px 2px;min-width:52px;text-align:right;}
-.shift-total-mini strong{color:var(--ink);font-family:'Fraunces',serif;font-size:13.5px;}
-.quick-break-mini{display:flex;gap:4px;margin-top:5px;}
+.shift-name-row{display:flex;gap:6px;margin-bottom:8px;}
+.shift-compact{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
+.shift-compact input{padding:8px;font-size:13px;width:100%;}
+.shift-total-mini{font-size:12px;color:var(--ink-soft);display:flex;align-items:center;padding-top:2px;}
+.shift-total-mini strong{color:var(--ink);font-family:'Fraunces',serif;font-size:15px;margin-left:5px;}
+.quick-break-mini{display:flex;gap:4px;margin-top:8px;}
 .quick-break-mini button{flex:1;font-size:10px;padding:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;color:var(--ink-soft);}
 
 .seg{display:flex;gap:5px;}
@@ -399,7 +402,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <div class="dm-section day-todo-block">
       <h3>What's On</h3>
       <div class="todo-add-row">
-        <input type="text" id="dayTodoInput" placeholder="Add to What's On">
+        <input type="text" id="dayWhatsOnInput" placeholder="Add to What's On">
         <div class="repeat-control" title="Repeat">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
           <select id="dayTodoRepeatSelect">
@@ -409,7 +412,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
             <option value="yearly">Yearly</option>
           </select>
         </div>
-        <button class="btn small" id="dayTodoAddBtn">Add</button>
+        <button class="btn small" id="dayWhatsOnAddBtn">Add</button>
       </div>
       <div class="tag-swatch-row" id="dayTodoTagSwatchRow"></div>
       <div class="new-tag-inline" id="dayTodoNewTagRow">
@@ -417,7 +420,16 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <div class="swatches" id="dayTodoNewTagSwatches"></div>
         <button class="btn secondary tiny" id="dayTodoNewTagCreate">Create</button>
       </div>
-      <div class="day-todo-list" id="dayTodoList"></div>
+      <div class="whatson-list" id="dayWhatsOnList"></div>
+    </div>
+
+    <div class="dm-section day-todo-block">
+      <h3>To-Do</h3>
+      <div class="todo-add-row">
+        <input type="text" id="dayTaskInput" placeholder="Add a to-do">
+        <button class="btn small" id="dayTaskAddBtn">Add</button>
+      </div>
+      <div class="day-todo-list" id="dayTaskList"></div>
     </div>
 
     <div class="dm-section">
@@ -493,7 +505,8 @@ let rangeEndYM = null;
 
 // ---------- storage ----------
 function hasClaudeStorage(){ return typeof window.storage !== 'undefined' && window.storage && typeof window.storage.get === 'function'; }
-function isWorkTag(tag){ return !!tag && tag.label.trim().toLowerCase()==='work'; }
+const WORK_TAG_COLOR = '#C1443A';
+function isWorkTag(tag){ return !!tag && (tag.label.trim().toLowerCase()==='work' || tag.color.toUpperCase()===WORK_TAG_COLOR); }
 async function loadKey(key, fallback){
   try{
     if(hasClaudeStorage()){
@@ -566,14 +579,22 @@ async function init(){
   toilPayouts = await loadKey('toil-payouts', []);
   toilAdjustment = await loadKey('toil-adjustment', 0);
   events = await loadKey('events', []);
+  let needsResave = false;
   if(events.length){
     events.forEach(ev=>{
-      todos.push({id:ev.id, text:ev.title, tagId:null, urgent:false, done:false, doneAt:null, scope:'day', dueDate:ev.date, rangeStart:ev.date, rangeEnd:ev.date, repeat: ev.repeat||'yearly'});
+      todos.push({id:ev.id, text:ev.title, tagId:null, urgent:false, done:false, doneAt:null, kind:'whatson', scope:'day', dueDate:ev.date, rangeStart:ev.date, rangeEnd:ev.date, repeat: ev.repeat||'yearly'});
     });
     events = [];
-    await saveKey('todos', todos);
     await saveKey('events', events);
+    needsResave = true;
   }
+  todos.forEach(t=>{
+    if(!t.kind){
+      t.kind = (t.tagId || (t.repeat && t.repeat!=='none')) ? 'whatson' : 'task';
+      needsResave = true;
+    }
+  });
+  if(needsResave) await saveKey('todos', todos);
   darkModeOn = await loadKey('dark-mode', false);
   applyDarkMode(darkModeOn);
 
@@ -631,15 +652,21 @@ function openSheet(title){
 function closeSheet(){ document.getElementById('sheetOverlay').classList.add('hidden'); }
 
 // ---------- rent ----------
+const RENT_START_DATE = '2026-07-01';
 function daysForCurrentTally(){
   const today = todayStr();
+  let start = rentMeta.lastPaidThrough ? addDays(rentMeta.lastPaidThrough, 1) : RENT_START_DATE;
+  if(start < RENT_START_DATE) start = RENT_START_DATE;
   const out = [];
-  Object.keys(calendarData).sort().forEach(dateStr=>{
-    if(dateStr >= today) return;
-    if(rentMeta.lastPaidThrough && dateStr <= rentMeta.lastPaidThrough) return;
-    const entry = calendarData[dateStr];
-    if(entry.status==='home' || entry.status==='away') out.push({date:dateStr, status:entry.status});
-  });
+  let cursor = start;
+  let guard = 0;
+  while(cursor < today && guard < 5000){
+    const entry = calendarData[cursor];
+    const status = (entry && entry.status === 'away') ? 'away' : 'home';
+    out.push({date:cursor, status});
+    cursor = addDays(cursor, 1);
+    guard++;
+  }
   return out;
 }
 function computeOwed(){
@@ -1050,7 +1077,7 @@ function tagsForDate(dateStr){
   const ids = new Set();
   let hasUntagged = false;
   todos.forEach(t=>{
-    if(t.done && !isRepeating(t)) return;
+    if(t.kind!=='whatson') return;
     if(!todoOccursOn(t, dateStr)) return;
     if(t.tagId) ids.add(t.tagId); else hasUntagged = true;
   });
@@ -1157,6 +1184,12 @@ function buildMonthBlock(year, month){
   return card;
 }
 function renderCalendarAll(){
+  let anchorId = null;
+  document.querySelectorAll('.month-card').forEach(c=>{
+    if(anchorId) return;
+    const rect = c.getBoundingClientRect();
+    if(rect.bottom > 90) anchorId = c.id;
+  });
   const container = document.getElementById('monthsContainer');
   container.innerHTML = '';
   let y = rangeStartYM.y, m = rangeStartYM.m;
@@ -1166,6 +1199,10 @@ function renderCalendarAll(){
     if(m>11){ m=0; y++; }
   }
   document.getElementById('calLegend').innerHTML = '<span><i style="background:var(--home-tint);border:1px solid #c3ded7;"></i>Home</span><span><i style="background:var(--away-tint);border:1px solid #e6cd9d;"></i>Away</span><span><i style="background:#9AA39C;border-radius:50%;"></i>To-do</span><span>'+ICON_FLAG+' Event</span>';
+  if(anchorId){
+    const el = document.getElementById(anchorId);
+    if(el) el.scrollIntoView({behavior:'auto', block:'start'});
+  }
 }
 
 // ---------- day modal ----------
@@ -1207,8 +1244,10 @@ function setupDayModal(){
   });
 
   document.getElementById('dayTodoNewTagCreate').addEventListener('click', createNewTagInline);
-  document.getElementById('dayTodoAddBtn').addEventListener('click', addDayTodo);
-  document.getElementById('dayTodoInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') addDayTodo(); });
+  document.getElementById('dayWhatsOnAddBtn').addEventListener('click', addDayWhatsOn);
+  document.getElementById('dayWhatsOnInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') addDayWhatsOn(); });
+  document.getElementById('dayTaskAddBtn').addEventListener('click', addDayTask);
+  document.getElementById('dayTaskInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') addDayTask(); });
 
   const swWrap = document.getElementById('dayTodoNewTagSwatches');
   TAG_PALETTE.forEach((color,i)=>{
@@ -1281,7 +1320,7 @@ async function createNewTagInline(){
   renderTagSwatches(id);
 }
 
-// ---------- todos (day-specific + week/month spanning + archive) ----------
+// ---------- todos (What's On items + separate To-Do checklist + archive) ----------
 function todoScopeRange(t){
   if(t.scope==='week') return {start:t.rangeStart, end:t.rangeEnd};
   if(t.scope==='month') return {start:t.rangeStart, end:t.rangeEnd};
@@ -1315,47 +1354,68 @@ function bucketFor(t){
   if(diff <= 7) return 'weekly';
   return 'monthly';
 }
-async function addDayTodo(){
+async function addDayWhatsOn(){
   if(!selectedDate){ showToast('Pick a date above first.'); return; }
-  const input = document.getElementById('dayTodoInput');
+  const input = document.getElementById('dayWhatsOnInput');
   const text = input.value.trim();
   if(!text) return;
   const tagId = selectedTagId || null;
   const repeat = document.getElementById('dayTodoRepeatSelect').value || 'none';
-  todos.push({id:Date.now(), text, tagId, urgent:false, done:false, doneAt:null, scope:'day', dueDate:selectedDate, rangeStart:selectedDate, rangeEnd:selectedDate, repeat});
+  todos.push({id:Date.now(), text, tagId, urgent:false, done:false, doneAt:null, kind:'whatson', scope:'day', dueDate:selectedDate, rangeStart:selectedDate, rangeEnd:selectedDate, repeat});
   await saveKey('todos', todos);
   input.value = '';
   document.getElementById('dayTodoRepeatSelect').value = 'none';
   renderTagSwatches('');
-  renderDayTodoList(selectedDate);
-  renderTodosTab();
+  renderDayWhatsOnList(selectedDate);
   renderCalendarAll();
+}
+async function addDayTask(){
+  if(!selectedDate){ showToast('Pick a date above first.'); return; }
+  const input = document.getElementById('dayTaskInput');
+  const text = input.value.trim();
+  if(!text) return;
+  todos.push({id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'day', dueDate:selectedDate, rangeStart:selectedDate, rangeEnd:selectedDate, repeat:'none'});
+  await saveKey('todos', todos);
+  input.value = '';
+  renderDayTaskList(selectedDate);
+  renderTodosTab();
 }
 async function toggleTodoDone(t){
   t.done = !t.done;
   t.doneAt = t.done ? new Date().toISOString() : null;
   await saveKey('todos', todos);
 }
-function renderDayTodoList(dateStr){
-  const list = document.getElementById('dayTodoList');
-  const items = todos.filter(t=> (isRepeating(t) || !t.done) && todoOccursOn(t,dateStr));
+function renderDayWhatsOnList(dateStr){
+  const list = document.getElementById('dayWhatsOnList');
+  const items = todos.filter(t=> t.kind==='whatson' && todoOccursOn(t, dateStr));
   list.innerHTML = '';
   if(items.length===0){ list.innerHTML = '<div class="empty">Nothing for this day yet.</div>'; return; }
   items.forEach(t=>{
     const tag = t.tagId ? tagDefs.find(x=>x.id===t.tagId) : null;
-    const repeating = isRepeating(t);
-    const row = document.createElement('div'); row.className = 'todo-item';
+    const row = document.createElement('div'); row.className = 'whatson-item';
     row.innerHTML =
-      (tag ? '<div class="todo-tag-dot" style="background:'+tag.color+'"></div>' : '')+
-      (repeating ? '' : '<div class="todo-check"></div>')+
-      '<div style="flex:1;"><div class="todo-text">'+escapeHtml(t.text)+'</div>'+
-      (repeating ? '<span class="todo-scope-pill">'+ICON_REPEAT+' '+repeatLabel(t.repeat)+'</span>' : (t.scope!=='day'?'<span class="todo-scope-pill">'+(t.scope==='week'?'this week':'this month')+'</span>':''))+
+      '<div class="todo-tag-dot" style="background:'+(tag?tag.color:'var(--line)')+'"></div>'+
+      '<div style="flex:1;">'+escapeHtml(t.text)+
+      (isRepeating(t) ? '<span class="todo-scope-pill">'+ICON_REPEAT+' '+repeatLabel(t.repeat)+'</span>' : '')+
       '</div>'+
       '<button class="todo-del">&times;</button>';
-    if(!repeating){
-      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderDayTodoList(dateStr); renderTodosTab(); renderCalendarAll(); });
-    }
-    row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderDayTodoList(dateStr); renderTodosTab(); renderCalendarAll(); });
+    row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderDayWhatsOnList(dateStr); renderCalendarAll(); });
+    list.appendChild(row);
+  });
+}
+function renderDayTaskList(dateStr){
+  const list = document.getElementById('dayTaskList');
+  const items = todos.filter(t=> t.kind==='task' && !t.done && todoInRange(t, dateStr));
+  list.innerHTML = '';
+  if(items.length===0){ list.innerHTML = '<div class="empty">Nothing to do yet.</div>'; return; }
+  items.forEach(t=>{
+    const row = document.createElement('div'); row.className = 'todo-item';
+    row.innerHTML =
+      '<div class="todo-check"></div>'+
+      '<div class="todo-text" style="flex:1;">'+escapeHtml(t.text)+'</div>'+
+      '<button class="todo-del">&times;</button>';
+    row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderDayTaskList(dateStr); renderTodosTab(); });
+    row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderDayTaskList(dateStr); renderTodosTab(); });
     list.appendChild(row);
   });
 }
@@ -1393,8 +1453,10 @@ function loadDayIntoForm(dateStr){
   document.getElementById('dayModalBreak').value = shift.breakMins || '';
   updateShiftPreview();
 
-  document.getElementById('dayTodoInput').value = '';
-  renderDayTodoList(dateStr);
+  document.getElementById('dayWhatsOnInput').value = '';
+  document.getElementById('dayTaskInput').value = '';
+  renderDayWhatsOnList(dateStr);
+  renderDayTaskList(dateStr);
 }
 
 function openDayModal(dateStr){
@@ -1424,8 +1486,10 @@ function openDayModalEmpty(){
   document.getElementById('dayModalFinish').value = '';
   document.getElementById('dayModalBreak').value = '';
   updateShiftPreview();
-  document.getElementById('dayTodoInput').value = '';
-  document.getElementById('dayTodoList').innerHTML = '';
+  document.getElementById('dayWhatsOnInput').value = '';
+  document.getElementById('dayWhatsOnList').innerHTML = '';
+  document.getElementById('dayTaskInput').value = '';
+  document.getElementById('dayTaskList').innerHTML = '';
 
   document.getElementById('dayModalOverlay').classList.remove('hidden');
 }
@@ -1439,7 +1503,7 @@ async function saveDayModal(){
   const breakMins = parseInt(document.getElementById('dayModalBreak').value) || 0;
   let title = document.getElementById('dayModalShiftTitle').value.trim();
   if(!title && (start || finish)){
-    const dayItem = todos.find(t=> t.tagId && todoOccursOn(t, selectedDate) && isWorkTag(tagDefs.find(x=>x.id===t.tagId)));
+    const dayItem = todos.find(t=> t.kind==='whatson' && t.tagId && todoOccursOn(t, selectedDate) && isWorkTag(tagDefs.find(x=>x.id===t.tagId)));
     if(dayItem){ title = dayItem.text; }
   }
   const shift = {start, finish, breakMins, title};
@@ -1483,49 +1547,46 @@ async function addFromTasksTab(bucket){
   const today = todayStr();
   let t;
   if(bucket==='urgent'){
-    t = {id:Date.now(), text, tagId:null, urgent:true, done:false, doneAt:null, scope:'urgent', dueDate:null, rangeStart:null, rangeEnd:null};
+    t = {id:Date.now(), text, tagId:null, urgent:true, done:false, doneAt:null, kind:'task', scope:'urgent', dueDate:null, rangeStart:null, rangeEnd:null, repeat:'none'};
   }else if(bucket==='daily'){
-    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, scope:'day', dueDate:today, rangeStart:today, rangeEnd:today};
+    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'day', dueDate:today, rangeStart:today, rangeEnd:today, repeat:'none'};
   }else if(bucket==='weekly'){
     const ws = mondayOf(today), we = addDays(ws,6);
-    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, scope:'week', dueDate:today, rangeStart:ws, rangeEnd:we};
+    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'week', dueDate:today, rangeStart:ws, rangeEnd:we, repeat:'none'};
   }else{
     const ws = firstOfMonth(today), we = lastOfMonth(today);
-    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, scope:'month', dueDate:today, rangeStart:ws, rangeEnd:we};
+    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'month', dueDate:today, rangeStart:ws, rangeEnd:we, repeat:'none'};
   }
   todos.push(t);
   await saveKey('todos', todos);
   input.value = '';
   renderTodosTab();
-  if(selectedDate) renderDayTodoList(selectedDate);
-  renderCalendarAll();
+  if(selectedDate) renderDayTaskList(selectedDate);
 }
 function renderTodosTab(){
   ['urgent','daily','weekly','monthly'].forEach(bucket=>{
     const container = document.getElementById('list-'+bucket);
     container.innerHTML = '';
-    const items = todos.filter(t=>!t.done && !isRepeating(t) && bucketFor(t)===bucket).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));
+    const items = todos.filter(t=>t.kind==='task' && !t.done && bucketFor(t)===bucket).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));
     if(items.length===0){ container.innerHTML = '<div class="empty">Nothing here yet.</div>'; return; }
     items.forEach(t=>{
-      const tag = t.tagId ? tagDefs.find(x=>x.id===t.tagId) : null;
       const row = document.createElement('div');
       row.className = 'todo-item'+(bucket==='urgent'?' urgent-item':'');
       const dueLabel = t.dueDate ? shortDate(t.dueDate) : '';
       row.innerHTML =
-        (tag ? '<div class="todo-tag-dot" style="background:'+tag.color+'"></div>' : '')+
         '<div class="todo-check"></div>'+
         '<div style="flex:1;"><div class="todo-text">'+escapeHtml(t.text)+'</div>'+
         (dueLabel?'<div class="todo-due">'+dueLabel+'</div>':'')+'</div>'+
         '<button class="todo-del">&times;</button>';
-      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayTodoList(selectedDate); renderCalendarAll(); });
-      row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); if(selectedDate) renderDayTodoList(selectedDate); renderCalendarAll(); });
+      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayTaskList(selectedDate); });
+      row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); if(selectedDate) renderDayTaskList(selectedDate); });
       container.appendChild(row);
     });
   });
 
   const archiveContainer = document.getElementById('list-archive');
   archiveContainer.innerHTML = '';
-  const archived = todos.filter(t=>t.done).sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||''));
+  const archived = todos.filter(t=>t.kind==='task' && t.done).sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||''));
   if(archived.length===0){ archiveContainer.innerHTML = '<div class="empty">Nothing archived yet.</div>'; }
   else{
     archived.forEach(t=>{
@@ -1534,7 +1595,7 @@ function renderTodosTab(){
         '<div class="todo-check done">&#10003;</div>'+
         '<div class="todo-text done" style="flex:1;">'+escapeHtml(t.text)+'</div>'+
         '<button class="todo-del">&times;</button>';
-      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayTodoList(selectedDate); renderCalendarAll(); });
+      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayTaskList(selectedDate); });
       row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); });
       archiveContainer.appendChild(row);
     });
