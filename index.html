@@ -99,15 +99,16 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 /* Calendar (scrolling) */
 .cal-header-bar{
   position:sticky;top:0;z-index:46;background:var(--bg);
-  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:nowrap;
   padding:10px 0;box-shadow:0 6px 8px -8px rgba(27,38,32,0.15);
 }
 .cal-back-btn{display:flex;align-items:center;gap:3px;background:none;border:none;color:var(--ink);font-family:'Fraunces',serif;font-weight:600;font-size:16px;padding:4px 2px;flex-shrink:0;}
 .cal-back-btn svg{transition:transform .15s ease;}
 .cal-back-btn.expanded svg{transform:rotate(180deg);}
-.cal-header-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
-.jump-date-input{max-width:128px;}
-.round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:30px;height:30px;padding:0;font-size:17px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cal-header-right{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;justify-content:flex-end;flex-shrink:0;}
+.cal-header-right .btn.small{padding:6px 9px;font-size:12px;white-space:nowrap;flex-shrink:0;}
+.jump-date-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
+.round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:29px;height:29px;padding:0;font-size:17px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .month-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:10px;box-shadow:var(--shadow);scroll-margin-top:80px;}
 .month-card.is-current{border-color:var(--accent);}
 
@@ -257,7 +258,8 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       <div class="cal-header-right">
         <button class="round-btn" id="searchBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
         <button class="btn secondary small" id="jumpTodayBtn">Today</button>
-        <input type="date" id="jumpDateInput" class="jump-date-input">
+        <button class="round-btn" id="jumpDateBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></button>
+        <input type="date" id="jumpDateInput" class="jump-date-hidden">
         <button class="round-btn" id="addDayBtn">+</button>
       </div>
     </div>
@@ -808,6 +810,11 @@ function setupCalendarToolbar(){
     exitYearView();
     const now = new Date();
     scrollToMonth(now.getFullYear(), now.getMonth(), true);
+  });
+  document.getElementById('jumpDateBtn').addEventListener('click', ()=>{
+    const input = document.getElementById('jumpDateInput');
+    if(input.showPicker){ try{ input.showPicker(); return; }catch(e){} }
+    input.click();
   });
   document.getElementById('jumpDateInput').addEventListener('change', (e)=>{
     if(!e.target.value) return;
