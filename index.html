@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v1.1 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v1.4 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -22,6 +22,8 @@
   --accent:#3F6FA6;
   --danger:#B3453B;
   --gold:#C9A227;
+  --fill:#1B2620;
+  --fill-text:#FFFFFF;
   --radius:12px;
   --shadow:0 1px 2px rgba(27,38,32,0.06), 0 4px 14px rgba(27,38,32,0.05);
 }
@@ -39,6 +41,8 @@ body.dark{
   --accent:#7FB0E0;
   --danger:#E17868;
   --gold:#E3C468;
+  --fill:#E9EEE8;
+  --fill-text:#141F1A;
   --shadow:0 1px 2px rgba(0,0,0,0.25), 0 4px 14px rgba(0,0,0,0.2);
 }
 *{box-sizing:border-box;}
@@ -83,7 +87,7 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-sp
 .stat-sub{font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
 
 button{font-family:'IBM Plex Sans';cursor:pointer;-webkit-appearance:none;appearance:none;outline:none;margin:0;line-height:1;}
-.btn{background:var(--ink);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:500;}
+.btn{background:var(--home);color:#fff;border:none;border-radius:8px;padding:9px 14px;font-size:13px;font-weight:500;}
 .btn:hover{opacity:.9;}
 .btn.secondary{background:var(--surface-2);color:var(--ink);border:1px solid var(--line);}
 .btn.danger{background:var(--danger);}
@@ -113,6 +117,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .cal-header-right .btn.small{padding:8px 11px;font-size:13px;white-space:nowrap;flex-shrink:0;}
 .jump-date-hidden{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
 .round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:34px;height:34px;padding:0;font-size:18px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.round-btn.primary{background:var(--home);border-color:var(--home);color:#fff;font-weight:600;}
 .month-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:10px;box-shadow:var(--shadow);scroll-margin-top:88px;}
 .month-card.is-current{border-color:var(--accent);}
 
@@ -214,7 +219,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .seg button{flex:1;padding:9px 4px;border-radius:7px;border:1px solid var(--line);background:var(--surface-2);font-size:12.5px;font-weight:500;color:var(--ink-soft);}
 .seg button.sel-home{background:var(--home);color:#fff;border-color:var(--home);}
 .seg button.sel-away{background:var(--away);color:#fff;border-color:var(--away);}
-.seg button.sel-none{background:var(--ink);color:#fff;}
+.seg button.sel-none{background:var(--fill);color:var(--fill-text);}
 
 .divider{height:1px;background:var(--line);margin:12px 0;}
 .modal-actions{display:flex;gap:8px;margin-top:16px;}
@@ -236,14 +241,14 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 .week-row{cursor:pointer;}
 .week-detail-row td{background:var(--surface-2);font-size:11.5px;color:var(--ink-soft);padding:8px 8px;}
 
-.notif-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:200;box-shadow:var(--shadow);max-width:90%;}
+.notif-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1B2620;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:200;box-shadow:0 4px 14px rgba(0,0,0,0.3);max-width:90%;}
 </style>
 </head>
 <body>
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v1.1</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v1.4</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
@@ -266,7 +271,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <button class="btn secondary small" id="jumpTodayBtn">Today</button>
         <button class="round-btn" id="jumpDateBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></button>
         <input type="date" id="jumpDateInput" class="jump-date-hidden">
-        <button class="round-btn" id="addDayBtn">+</button>
+        <button class="round-btn primary" id="addDayBtn">+</button>
       </div>
     </div>
     <div class="legend" id="calLegend"></div>
@@ -508,8 +513,26 @@ let rangeEndYM = null;
 
 // ---------- storage ----------
 function hasClaudeStorage(){ return typeof window.storage !== 'undefined' && window.storage && typeof window.storage.get === 'function'; }
-const WORK_TAG_COLOR = '#C1443A';
-function isWorkTag(tag){ return !!tag && (tag.label.trim().toLowerCase()==='work' || tag.color.toUpperCase()===WORK_TAG_COLOR); }
+function isReddish(hex){
+  if(!hex) return false;
+  const h = hex.replace('#','');
+  if(h.length!==6) return false;
+  const r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+  if(isNaN(r)||isNaN(g)||isNaN(b)) return false;
+  const rf=r/255, gf=g/255, bf=b/255;
+  const max=Math.max(rf,gf,bf), min=Math.min(rf,gf,bf), d=max-min;
+  let hue=0;
+  if(d!==0){
+    if(max===rf) hue = ((gf-bf)/d) % 6;
+    else if(max===gf) hue = (bf-rf)/d + 2;
+    else hue = (rf-gf)/d + 4;
+    hue *= 60;
+    if(hue<0) hue += 360;
+  }
+  const sat = max===0 ? 0 : d/max;
+  return (hue<=15 || hue>=345) && sat>0.35 && max*255>90;
+}
+function isWorkTag(tag){ return !!tag && (tag.label.trim().toLowerCase()==='work' || isReddish(tag.color)); }
 async function loadKey(key, fallback){
   try{
     if(hasClaudeStorage()){
@@ -1249,6 +1272,7 @@ function setupDayModal(){
   document.getElementById('dayTodoNewTagCreate').addEventListener('click', createNewTagInline);
   document.getElementById('dayWhatsOnAddBtn').addEventListener('click', addDayWhatsOn);
   document.getElementById('dayWhatsOnInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') addDayWhatsOn(); });
+  document.getElementById('dayWhatsOnInput').addEventListener('blur', ()=>{ if(document.getElementById('dayWhatsOnInput').value.trim()) addDayWhatsOn(); });
   document.getElementById('dayTaskAddBtn').addEventListener('click', addDayTask);
   document.getElementById('dayTaskInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') addDayTask(); });
 
@@ -1325,10 +1349,8 @@ async function createNewTagInline(){
 
 // ---------- todos (What's On items + separate To-Do checklist + archive) ----------
 function todoScopeRange(t){
-  if(t.scope==='week') return {start:t.rangeStart, end:t.rangeEnd};
-  if(t.scope==='month') return {start:t.rangeStart, end:t.rangeEnd};
   if(t.scope==='urgent') return {start:null, end:null};
-  return {start:t.dueDate, end:t.dueDate};
+  return {start:t.rangeStart || t.dueDate, end:t.rangeEnd || t.dueDate};
 }
 function todoInRange(t, dateStr){
   const {start,end} = todoScopeRange(t);
@@ -1364,7 +1386,13 @@ async function addDayWhatsOn(){
   if(!text) return;
   const tagId = selectedTagId || null;
   const repeat = document.getElementById('dayTodoRepeatSelect').value || 'none';
-  todos.push({id:Date.now(), text, tagId, urgent:false, done:false, doneAt:null, kind:'whatson', scope:'day', dueDate:selectedDate, rangeStart:selectedDate, rangeEnd:selectedDate, repeat});
+  let rangeEnd = selectedDate;
+  if(repeat==='none'){
+    const rangeRow = document.getElementById('dayModalRangeRow');
+    const endVal = document.getElementById('dayModalEndDate').value;
+    if(rangeRow.classList.contains('show') && endVal && endVal > selectedDate) rangeEnd = endVal;
+  }
+  todos.push({id:Date.now(), text, tagId, urgent:false, done:false, doneAt:null, kind:'whatson', scope:'day', dueDate:selectedDate, rangeStart:selectedDate, rangeEnd, repeat});
   await saveKey('todos', todos);
   input.value = '';
   document.getElementById('dayTodoRepeatSelect').value = 'none';
