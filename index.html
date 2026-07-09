@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v1.4 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v2.3 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -49,6 +49,12 @@ body.dark{
 button,input,select,textarea,a,.day-cell,.mini-month,.tab-btn,.month-chip,.tag-swatch-btn,.swatch{touch-action:manipulation;}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s ease,color .2s ease;}
 .switch-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;}
+.tag-manage-item{margin-bottom:12px;}
+.tag-manage-row{display:flex;align-items:center;gap:8px;}
+.tag-manage-row .tag-swatch-btn{width:26px;height:26px;flex-shrink:0;}
+.tag-manage-name{flex:1;}
+.tag-manage-palette{display:none;margin-top:8px;margin-left:34px;}
+.tag-manage-palette.show{display:flex;}
 .switch{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;}
 .switch input{opacity:0;width:0;height:0;position:absolute;}
 .switch-slider{position:absolute;inset:0;background:var(--line);border-radius:24px;transition:background .15s ease;}
@@ -156,10 +162,9 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .legend i{width:9px;height:9px;border-radius:3px;display:inline-block;}
 
 /* overlay / sheet */
-.overlay{position:fixed;inset:0;background:rgba(27,38,32,0.4);display:flex;align-items:flex-end;justify-content:center;z-index:100;}
+.overlay{position:fixed;inset:0;background:rgba(27,38,32,0.4);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
 .overlay.hidden{display:none;}
-.sheet{background:var(--surface);width:100%;max-width:480px;border-radius:16px 16px 0 0;padding:18px;max-height:92vh;overflow-y:auto;}
-@media (min-width:600px){.overlay{align-items:center;}.sheet{border-radius:16px;}}
+.sheet{background:var(--surface);width:100%;max-width:480px;border-radius:16px;padding:18px;max-height:88vh;overflow-y:auto;}
 .sheet h3{font-size:17px;margin-bottom:2px;}
 .sheet-close{float:right;background:none;border:none;font-size:20px;color:var(--ink-soft);}
 
@@ -175,19 +180,18 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .dm-label{font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:5px;}
 
 .day-todo-block h3{font-size:14px;margin-bottom:6px;}
+#dayHappeningList{margin-bottom:8px;}
+.compose-form{display:none;}
+.compose-form.show{display:block;}
 .todo-add-row{display:flex;gap:6px;margin-top:6px;}
 .todo-add-row input[type=text]{flex:1;}
 .todo-add-row select{max-width:132px;flex-shrink:0;}
 .tag-swatch-row{display:flex;gap:9px;margin-top:8px;overflow-x:auto;padding:6px 6px 10px;-webkit-overflow-scrolling:touch;}
 .tag-swatch-btn{width:20px;height:20px;min-width:20px;min-height:20px;max-width:20px;max-height:20px;border-radius:50%;border:2px solid transparent;flex:0 0 auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:600;padding:0;box-shadow:none;}
 .tag-swatch-btn.none-swatch{background:var(--surface-2);border:2px solid var(--line);color:var(--ink-soft);}
-.tag-swatch-btn.add-swatch{background:var(--surface-2);border:2px dashed var(--line);color:var(--ink-soft);}
 .tag-swatch-btn.selected{box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--ink);}
 .repeat-control{display:flex;align-items:center;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0 6px 0 8px;flex-shrink:0;color:var(--ink-soft);}
 .repeat-control select{border:none;background:none;padding:6px 2px;width:auto;max-width:112px;font-size:16px;color:var(--ink);}
-.new-tag-inline{display:none;gap:6px;margin-top:6px;align-items:center;background:var(--surface-2);border-radius:8px;padding:8px;}
-.new-tag-inline.show{display:flex;flex-wrap:wrap;}
-.new-tag-inline input{flex:1;min-width:110px;}
 .swatches{display:flex;flex-wrap:wrap;gap:5px;}
 .swatch{width:19px;height:19px;border-radius:50%;border:2px solid transparent;cursor:pointer;}
 .swatch.sel{border-color:var(--ink);}
@@ -201,6 +205,8 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .todo-check{width:19px;height:19px;border-radius:6px;border:1.5px solid var(--ink-soft);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;margin-top:1px;background:var(--surface);}
 .todo-check.done{background:var(--home);border-color:var(--home);color:#fff;}
 .todo-text{flex:1;font-size:14px;}
+.editable-text{cursor:text;}
+.editable-text input{width:100%;padding:3px 5px;font-size:14px;border:1px solid var(--accent);border-radius:5px;background:var(--surface);}
 .todo-text.done{text-decoration:line-through;color:var(--ink-soft);}
 .todo-scope-pill{font-size:9.5px;color:var(--ink-soft);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:1px 6px;margin-left:6px;display:inline-block;}
 .todo-due{font-size:10.5px;color:var(--ink-soft);margin-top:2px;}
@@ -248,7 +254,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v1.4</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v2.3</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
@@ -342,7 +348,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       <h2 style="font-size:15px;">Set your balance</h2>
       <div class="stat-sub" style="margin-bottom:6px;">Already know what you're owed? Set it directly and future weeks will build on top of it.</div>
       <div style="display:flex;gap:6px;">
-        <input type="number" id="toilSetInput" step="0.5" min="0" placeholder="Hours">
+        <input type="number" id="toilSetInput" step="0.5" placeholder="Hours (can be negative)">
         <button class="btn small" id="toilSetBtn">Set</button>
       </div>
     </div>
@@ -378,6 +384,17 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       </label>
     </div>
     <div class="card">
+      <h2 style="font-size:15px;">Colours</h2>
+      <div class="stat-sub" style="margin-bottom:8px;">Every key you've got, and what colour it is.</div>
+      <button class="btn secondary small" id="toggleTagManageBtn">Edit keys</button>
+      <div id="tagManageSection" style="display:none;margin-top:12px;">
+        <div id="tagManageList"></div>
+        <div class="divider"></div>
+        <div class="dm-label">Make a new key</div>
+        <div class="tag-swatch-row" id="settingsNewColourRow"></div>
+      </div>
+    </div>
+    <div class="card">
       <h2 style="font-size:15px;">Backup your data</h2>
       <div class="stat-sub" style="margin-bottom:8px;">Everything lives in this browser only — export a copy so you've got it safe.</div>
       <button class="btn block" id="exportDataBtn">Export data</button>
@@ -395,49 +412,36 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <!-- DAY EDITOR -->
 <div class="overlay hidden" id="dayModalOverlay">
   <div class="sheet">
-    <div class="dm-header">
-      <div class="dm-title-row">
-        <input type="date" id="dayModalDateInput" class="dm-date-input">
-      </div>
-      <button class="btn secondary tiny" id="dayModalMultiToggle">Edit multi-day</button>
-    </div>
-    <div class="dm-range-row" id="dayModalRangeRow">
-      <span>&ndash;</span>
-      <input type="date" id="dayModalEndDate">
-    </div>
-    <div id="dayModalEventsInfo" style="font-size:12.5px;color:var(--ink-soft);margin-top:4px;"></div>
-
     <div class="dm-section day-todo-block">
-      <h3>What's On</h3>
-      <div class="todo-add-row">
-        <input type="text" id="dayWhatsOnInput" placeholder="Add to What's On">
-        <div class="repeat-control" title="Repeat">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
-          <select id="dayTodoRepeatSelect">
-            <option value="none">No repeat</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-          </select>
+      <h3>What's Happening</h3>
+      <div class="dm-header">
+        <div class="dm-title-row">
+          <input type="date" id="dayModalDateInput" class="dm-date-input">
         </div>
-        <button class="btn small" id="dayWhatsOnAddBtn">Add</button>
+        <button class="round-btn primary" id="dayEditToggleBtn">+</button>
       </div>
-      <div class="tag-swatch-row" id="dayTodoTagSwatchRow"></div>
-      <div class="new-tag-inline" id="dayTodoNewTagRow">
-        <input type="text" id="dayTodoNewTagName" placeholder="New colour's name">
-        <div class="swatches" id="dayTodoNewTagSwatches"></div>
-        <button class="btn secondary tiny" id="dayTodoNewTagCreate">Create</button>
+      <div class="dm-range-row" id="dayModalRangeRow">
+        <span>&ndash;</span>
+        <input type="date" id="dayModalEndDate">
       </div>
-      <div class="whatson-list" id="dayWhatsOnList"></div>
-    </div>
-
-    <div class="dm-section day-todo-block">
-      <h3>To-Do</h3>
-      <div class="todo-add-row">
-        <input type="text" id="dayTaskInput" placeholder="Add a to-do">
-        <button class="btn small" id="dayTaskAddBtn">Add</button>
+      <div class="compose-form" id="composeWhatsOn">
+        <div class="todo-add-row">
+          <input type="text" id="dayWhatsOnInput" placeholder="What's happening?">
+          <div class="repeat-control" title="Repeat">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+            <select id="dayTodoRepeatSelect">
+              <option value="none">No repeat</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+          <button class="btn small" id="dayWhatsOnAddBtn">Add</button>
+        </div>
+        <div class="tag-swatch-row" id="dayTodoTagSwatchRow"></div>
       </div>
-      <div class="day-todo-list" id="dayTaskList"></div>
+      <div id="dayModalEventsInfo" style="font-size:12.5px;color:var(--ink-soft);margin-top:4px;"></div>
+      <div id="dayHappeningList"></div>
     </div>
 
     <div class="dm-section">
@@ -491,6 +495,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 const RATE_HOME = 7.5;
 const RATE_AWAY = 3.75;
 const TAG_PALETTE = ['#3F6FA6','#B9782B','#9B5DE5','#4C9F70','#E56399','#6C6EA0','#2FA4A0','#C1443A','#7A8B99','#E8C547'];
+const TAG_PALETTE_NAMES = ['Blue','Orange','Purple','Green','Pink','Indigo','Teal','Red','Grey','Gold'];
 
 const ICON_REPEAT = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>';
 const ICON_FLAG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg>';
@@ -506,33 +511,13 @@ let events = [];        // {id,title,date,repeat:'none'|'weekly'|'monthly'|'year
 let darkModeOn = false;
 
 let selectedDate = null;
-let pickedNewTagColor = TAG_PALETTE[0];
 let selectedTagId = null;
 let rangeStartYM = null; // {y,m}
 let rangeEndYM = null;
 
 // ---------- storage ----------
 function hasClaudeStorage(){ return typeof window.storage !== 'undefined' && window.storage && typeof window.storage.get === 'function'; }
-function isReddish(hex){
-  if(!hex) return false;
-  const h = hex.replace('#','');
-  if(h.length!==6) return false;
-  const r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
-  if(isNaN(r)||isNaN(g)||isNaN(b)) return false;
-  const rf=r/255, gf=g/255, bf=b/255;
-  const max=Math.max(rf,gf,bf), min=Math.min(rf,gf,bf), d=max-min;
-  let hue=0;
-  if(d!==0){
-    if(max===rf) hue = ((gf-bf)/d) % 6;
-    else if(max===gf) hue = (bf-rf)/d + 2;
-    else hue = (rf-gf)/d + 4;
-    hue *= 60;
-    if(hue<0) hue += 360;
-  }
-  const sat = max===0 ? 0 : d/max;
-  return (hue<=15 || hue>=345) && sat>0.35 && max*255>90;
-}
-function isWorkTag(tag){ return !!tag && (tag.label.trim().toLowerCase()==='work' || isReddish(tag.color)); }
+function isWorkTag(tag){ return !!tag && tag.label.trim().toLowerCase().includes('work'); }
 async function loadKey(key, fallback){
   try{
     if(hasClaudeStorage()){
@@ -747,12 +732,13 @@ function setupRentActions(){
 }
 
 // ---------- TOIL ----------
+const TOIL_START_DATE = '2026-07-06';
 function computeToilWeeks(){
   const today = todayStr();
   const thisWeekStart = mondayOf(today);
   const shiftsByDate = {};
   Object.keys(calendarData).forEach(dateStr=>{
-    if(dateStr > today) return;
+    if(dateStr > today || dateStr < TOIL_START_DATE) return;
     const h = shiftHours(calendarData[dateStr].shift);
     if(h && h>0) shiftsByDate[dateStr] = h;
   });
@@ -768,11 +754,11 @@ function computeToilWeeks(){
     const weekEnd = addDays(wk, 6);
     const total = totals[wk];
     const delta = total - 40;
-    rawBalance = Math.max(0, rawBalance + delta);
+    rawBalance = rawBalance + delta;
     weeks.push({weekStart:wk, weekEnd, total, delta, balance:rawBalance, isCurrent: wk===thisWeekStart});
   });
   const totalPayouts = toilPayouts.reduce((s,p)=>s+p.amount, 0);
-  const balance = Math.max(0, toilAdjustment + rawBalance - totalPayouts);
+  const balance = toilAdjustment + rawBalance - totalPayouts;
   return {weeks, balance, shiftsByDate, rawBalance, totalPayouts};
 }
 function renderToilTab(){
@@ -780,7 +766,7 @@ function renderToilTab(){
   document.getElementById('toilBalanceBig').textContent = balance.toFixed(1)+'h';
   document.getElementById('toilCurrentWeekLabel').textContent = 'Updates as you log hours — includes this week so far.';
   document.getElementById('toilPayoutInput').value = balance>0 ? balance : '';
-  document.getElementById('toilSetInput').value = balance>0 ? balance : '';
+  document.getElementById('toilSetInput').value = balance;
 
   const body = document.getElementById('toilWeekBody');
   const empty = document.getElementById('toilEmpty');
@@ -843,7 +829,7 @@ function setupToilPayouts(){
   });
   document.getElementById('toilSetBtn').addEventListener('click', async ()=>{
     const val = parseFloat(document.getElementById('toilSetInput').value);
-    if(isNaN(val) || val<0){ showToast('Enter your current TOIL balance.'); return; }
+    if(isNaN(val)){ showToast('Enter your current TOIL balance.'); return; }
     const {rawBalance, totalPayouts} = computeToilWeeks();
     toilAdjustment = val - rawBalance + totalPayouts;
     await saveKey('toil-adjustment', toilAdjustment);
@@ -1210,12 +1196,6 @@ function buildMonthBlock(year, month){
   return card;
 }
 function renderCalendarAll(){
-  let anchorId = null;
-  document.querySelectorAll('.month-card').forEach(c=>{
-    if(anchorId) return;
-    const rect = c.getBoundingClientRect();
-    if(rect.bottom > 90) anchorId = c.id;
-  });
   const container = document.getElementById('monthsContainer');
   container.innerHTML = '';
   let y = rangeStartYM.y, m = rangeStartYM.m;
@@ -1225,10 +1205,9 @@ function renderCalendarAll(){
     if(m>11){ m=0; y++; }
   }
   document.getElementById('calLegend').innerHTML = '<span><i style="background:var(--home-tint);border:1px solid #c3ded7;"></i>Home</span><span><i style="background:var(--away-tint);border:1px solid #e6cd9d;"></i>Away</span><span><i style="background:#9AA39C;border-radius:50%;"></i>To-do</span><span>'+ICON_FLAG+' Event</span>';
-  if(anchorId){
-    const el = document.getElementById(anchorId);
-    if(el) el.scrollIntoView({behavior:'auto', block:'start'});
-  }
+  const now = new Date();
+  const el = document.getElementById('month-'+monthKey(now.getFullYear(), now.getMonth()));
+  if(el) el.scrollIntoView({behavior:'auto', block:'start'});
 }
 
 // ---------- day modal ----------
@@ -1241,11 +1220,7 @@ function setupDayModal(){
     if(val) loadDayIntoForm(val);
   });
 
-  document.getElementById('dayModalMultiToggle').addEventListener('click', ()=>{
-    const row = document.getElementById('dayModalRangeRow');
-    const showing = row.classList.toggle('show');
-    if(!showing){ document.getElementById('dayModalEndDate').value = ''; }
-  });
+  document.getElementById('dayEditToggleBtn').addEventListener('click', toggleDayEditPanel);
 
   document.getElementById('dayModalSeg').querySelectorAll('button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -1269,19 +1244,8 @@ function setupDayModal(){
     });
   });
 
-  document.getElementById('dayTodoNewTagCreate').addEventListener('click', createNewTagInline);
   document.getElementById('dayWhatsOnAddBtn').addEventListener('click', addDayWhatsOn);
   document.getElementById('dayWhatsOnInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') addDayWhatsOn(); });
-  document.getElementById('dayWhatsOnInput').addEventListener('blur', ()=>{ if(document.getElementById('dayWhatsOnInput').value.trim()) addDayWhatsOn(); });
-  document.getElementById('dayTaskAddBtn').addEventListener('click', addDayTask);
-  document.getElementById('dayTaskInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') addDayTask(); });
-
-  const swWrap = document.getElementById('dayTodoNewTagSwatches');
-  TAG_PALETTE.forEach((color,i)=>{
-    const sw = document.createElement('div'); sw.className = 'swatch'+(i===0?' sel':''); sw.style.background = color;
-    sw.addEventListener('click', ()=>{ pickedNewTagColor = color; swWrap.querySelectorAll('.swatch').forEach(s=>s.classList.remove('sel')); sw.classList.add('sel'); });
-    swWrap.appendChild(sw);
-  });
 
   document.getElementById('dayModalSave').addEventListener('click', saveDayModal);
 }
@@ -1304,29 +1268,42 @@ function renderTagSwatches(selectedId){
   noneBtn.type = 'button';
   noneBtn.title = 'No colour';
   noneBtn.textContent = '✕';
-  noneBtn.addEventListener('click', ()=>{ selectedTagId = null; document.getElementById('dayTodoNewTagRow').classList.remove('show'); refreshSwatchSelection(); });
+  noneBtn.addEventListener('click', ()=>{ selectedTagId = null; refreshSwatchSelection(); });
   row.appendChild(noneBtn);
 
+  TAG_PALETTE.forEach((color,i)=>{
+    const existing = tagDefs.find(t=>t.color.toUpperCase()===color.toUpperCase());
+    const btn = document.createElement('button');
+    btn.className = 'tag-swatch-btn'+(existing && selectedTagId===existing.id ? ' selected':'');
+    btn.type = 'button';
+    btn.title = existing ? existing.label : TAG_PALETTE_NAMES[i];
+    btn.style.background = color;
+    btn.addEventListener('click', async ()=>{
+      let tag = tagDefs.find(t=>t.color.toUpperCase()===color.toUpperCase());
+      if(!tag){
+        tag = {id:'tag_'+Date.now(), label:TAG_PALETTE_NAMES[i], color};
+        tagDefs.push(tag);
+        await saveKey('tag-defs', tagDefs);
+        renderTagManageList();
+        renderSettingsNewColourRow();
+      }
+      selectedTagId = tag.id;
+      refreshSwatchSelection();
+    });
+    row.appendChild(btn);
+  });
+
   tagDefs.forEach(tag=>{
+    if(TAG_PALETTE.some(c=>c.toUpperCase()===tag.color.toUpperCase())) return;
     const btn = document.createElement('button');
     btn.className = 'tag-swatch-btn'+(selectedTagId===tag.id?' selected':'');
     btn.type = 'button';
     btn.title = tag.label;
     btn.style.background = tag.color;
     btn.dataset.tagId = tag.id;
-    btn.addEventListener('click', ()=>{ selectedTagId = tag.id; document.getElementById('dayTodoNewTagRow').classList.remove('show'); refreshSwatchSelection(); });
+    btn.addEventListener('click', ()=>{ selectedTagId = tag.id; refreshSwatchSelection(); });
     row.appendChild(btn);
   });
-
-  const addBtn = document.createElement('button');
-  addBtn.className = 'tag-swatch-btn add-swatch';
-  addBtn.type = 'button';
-  addBtn.title = 'New colour';
-  addBtn.textContent = '+';
-  addBtn.addEventListener('click', ()=>{ document.getElementById('dayTodoNewTagRow').classList.toggle('show'); });
-  row.appendChild(addBtn);
-
-  document.getElementById('dayTodoNewTagRow').classList.remove('show');
 }
 function refreshSwatchSelection(){
   const row = document.getElementById('dayTodoTagSwatchRow');
@@ -1336,16 +1313,7 @@ function refreshSwatchSelection(){
     btn.classList.toggle('selected', !!match);
   });
 }
-async function createNewTagInline(){
-  const nameInput = document.getElementById('dayTodoNewTagName');
-  const label = nameInput.value.trim();
-  if(!label){ showToast('Name the colour first.'); return; }
-  const id = 'tag_'+Date.now();
-  tagDefs.push({id, label, color:pickedNewTagColor});
-  await saveKey('tag-defs', tagDefs);
-  nameInput.value = '';
-  renderTagSwatches(id);
-}
+
 
 // ---------- todos (What's On items + separate To-Do checklist + archive) ----------
 function todoScopeRange(t){
@@ -1397,60 +1365,92 @@ async function addDayWhatsOn(){
   input.value = '';
   document.getElementById('dayTodoRepeatSelect').value = 'none';
   renderTagSwatches('');
-  renderDayWhatsOnList(selectedDate);
+  renderDayHappeningList(selectedDate);
   renderCalendarAll();
-}
-async function addDayTask(){
-  if(!selectedDate){ showToast('Pick a date above first.'); return; }
-  const input = document.getElementById('dayTaskInput');
-  const text = input.value.trim();
-  if(!text) return;
-  todos.push({id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'day', dueDate:selectedDate, rangeStart:selectedDate, rangeEnd:selectedDate, repeat:'none'});
-  await saveKey('todos', todos);
-  input.value = '';
-  renderDayTaskList(selectedDate);
-  renderTodosTab();
+  input.focus();
 }
 async function toggleTodoDone(t){
   t.done = !t.done;
   t.doneAt = t.done ? new Date().toISOString() : null;
   await saveKey('todos', todos);
 }
-function renderDayWhatsOnList(dateStr){
-  const list = document.getElementById('dayWhatsOnList');
-  const items = todos.filter(t=> t.kind==='whatson' && todoOccursOn(t, dateStr));
+function toggleDayEditPanel(){
+  const rangeRow = document.getElementById('dayModalRangeRow');
+  const isOpen = rangeRow.classList.contains('show');
+  if(isOpen){
+    resetDayEditPanel();
+  }else{
+    rangeRow.classList.add('show');
+    document.getElementById('composeWhatsOn').classList.add('show');
+    setTimeout(()=>{ const el=document.getElementById('dayWhatsOnInput'); if(el) el.focus(); }, 50);
+  }
+}
+function resetDayEditPanel(){
+  document.getElementById('dayModalRangeRow').classList.remove('show');
+  document.getElementById('dayModalEndDate').value = '';
+  document.getElementById('composeWhatsOn').classList.remove('show');
+}
+function makeTextEditable(el, item, onSaved){
+  el.classList.add('editable-text');
+  el.addEventListener('click', ()=>{
+    if(el.querySelector('input')) return;
+    const current = item.text;
+    el.innerHTML = '';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.value = current;
+    el.appendChild(input);
+    input.focus();
+    input.select();
+    let done = false;
+    const commit = async ()=>{
+      if(done) return;
+      done = true;
+      const val = input.value.trim();
+      if(val) item.text = val;
+      await saveKey('todos', todos);
+      onSaved();
+    };
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); input.blur(); } });
+  });
+}
+function renderDayHappeningList(dateStr){
+  const list = document.getElementById('dayHappeningList');
   list.innerHTML = '';
-  if(items.length===0){ list.innerHTML = '<div class="empty">Nothing for this day yet.</div>'; return; }
-  items.forEach(t=>{
+  const whatsonItems = todos.filter(t=> t.kind==='whatson' && todoOccursOn(t, dateStr));
+  const taskItems = todos.filter(t=> t.kind==='task' && !t.done && todoInRange(t, dateStr));
+  if(whatsonItems.length===0 && taskItems.length===0){
+    list.innerHTML = '<div class="empty">Nothing for this day yet.</div>';
+    return;
+  }
+  whatsonItems.forEach(t=>{
     const tag = t.tagId ? tagDefs.find(x=>x.id===t.tagId) : null;
     const row = document.createElement('div'); row.className = 'whatson-item';
     row.innerHTML =
       '<div class="todo-tag-dot" style="background:'+(tag?tag.color:'var(--line)')+'"></div>'+
-      '<div style="flex:1;">'+escapeHtml(t.text)+
+      '<div class="editable-text" style="flex:1;">'+escapeHtml(t.text)+
       (isRepeating(t) ? '<span class="todo-scope-pill">'+ICON_REPEAT+' '+repeatLabel(t.repeat)+'</span>' : '')+
       '</div>'+
       '<button class="todo-del">&times;</button>';
-    row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderDayWhatsOnList(dateStr); renderCalendarAll(); });
+    const textEl = row.querySelector('.editable-text');
+    makeTextEditable(textEl, t, ()=>{ renderDayHappeningList(dateStr); renderCalendarAll(); });
+    row.querySelector('.todo-del').addEventListener('click', async (e)=>{ e.stopPropagation(); todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderDayHappeningList(dateStr); renderCalendarAll(); });
     list.appendChild(row);
   });
-}
-function renderDayTaskList(dateStr){
-  const list = document.getElementById('dayTaskList');
-  const items = todos.filter(t=> t.kind==='task' && !t.done && todoInRange(t, dateStr));
-  list.innerHTML = '';
-  if(items.length===0){ list.innerHTML = '<div class="empty">Nothing to do yet.</div>'; return; }
-  items.forEach(t=>{
+  taskItems.forEach(t=>{
     const row = document.createElement('div'); row.className = 'todo-item';
     row.innerHTML =
       '<div class="todo-check"></div>'+
-      '<div class="todo-text" style="flex:1;">'+escapeHtml(t.text)+'</div>'+
+      '<div class="todo-text editable-text" style="flex:1;">'+escapeHtml(t.text)+'</div>'+
       '<button class="todo-del">&times;</button>';
-    row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderDayTaskList(dateStr); renderTodosTab(); });
-    row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderDayTaskList(dateStr); renderTodosTab(); });
+    const textEl = row.querySelector('.editable-text');
+    makeTextEditable(textEl, t, ()=>{ renderDayHappeningList(dateStr); renderTodosTab(); });
+    row.querySelector('.todo-check').addEventListener('click', async (e)=>{ e.stopPropagation(); await toggleTodoDone(t); renderDayHappeningList(dateStr); renderTodosTab(); });
+    row.querySelector('.todo-del').addEventListener('click', async (e)=>{ e.stopPropagation(); todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderDayHappeningList(dateStr); renderTodosTab(); });
     list.appendChild(row);
   });
 }
-
 function loadDayIntoForm(dateStr){
   selectedDate = dateStr;
   const hasEntry = !!calendarData[dateStr];
@@ -1460,8 +1460,6 @@ function loadDayIntoForm(dateStr){
   const dayEvents = allEventsForDate(dateStr);
   document.getElementById('dayModalEventsInfo').innerHTML = dayEvents.length ? ICON_FLAG+' '+escapeHtml(dayEvents.map(e=>e.title).join(', ')) : '';
 
-  document.getElementById('dayModalRangeRow').classList.remove('show');
-  document.getElementById('dayModalEndDate').value = '';
   document.getElementById('dayModalEndDate').min = dateStr;
 
   const seg = document.getElementById('dayModalSeg');
@@ -1485,9 +1483,8 @@ function loadDayIntoForm(dateStr){
   updateShiftPreview();
 
   document.getElementById('dayWhatsOnInput').value = '';
-  document.getElementById('dayTaskInput').value = '';
-  renderDayWhatsOnList(dateStr);
-  renderDayTaskList(dateStr);
+  resetDayEditPanel();
+  renderDayHappeningList(dateStr);
 }
 
 function openDayModal(dateStr){
@@ -1499,8 +1496,6 @@ function openDayModal(dateStr){
 function openDayModalEmpty(){
   selectedDate = null;
   document.getElementById('dayModalDateInput').value = '';
-  document.getElementById('dayModalRangeRow').classList.remove('show');
-  document.getElementById('dayModalEndDate').value = '';
   document.getElementById('dayModalEndDate').min = '';
   document.getElementById('dayModalEventsInfo').textContent = '';
 
@@ -1518,9 +1513,8 @@ function openDayModalEmpty(){
   document.getElementById('dayModalBreak').value = '';
   updateShiftPreview();
   document.getElementById('dayWhatsOnInput').value = '';
-  document.getElementById('dayWhatsOnList').innerHTML = '';
-  document.getElementById('dayTaskInput').value = '';
-  document.getElementById('dayTaskList').innerHTML = '';
+  document.getElementById('dayHappeningList').innerHTML = '';
+  resetDayEditPanel();
 
   document.getElementById('dayModalOverlay').classList.remove('hidden');
 }
@@ -1538,6 +1532,7 @@ async function saveDayModal(){
     if(dayItem){ title = dayItem.text; }
   }
   const shift = {start, finish, breakMins, title};
+  const shiftHasData = !!(start || finish || breakMins || title);
   let endDate = document.getElementById('dayModalEndDate').value || selectedDate;
   if(endDate < selectedDate) endDate = selectedDate;
 
@@ -1547,7 +1542,7 @@ async function saveDayModal(){
   for(let i=0; i<maxSteps; i++){
     const existing = calendarData[cursor] || {status:'', shift:{start:null,finish:null,breakMins:0,title:''}};
     existing.status = status;
-    if(cursor === selectedDate) existing.shift = shift;
+    if(shiftHasData || cursor === selectedDate) existing.shift = shift;
     const s = existing.shift || {};
     const hasShift = s.start || s.finish || s.breakMins || s.title;
     if(!existing.status && !hasShift){ delete calendarData[cursor]; }
@@ -1592,7 +1587,7 @@ async function addFromTasksTab(bucket){
   await saveKey('todos', todos);
   input.value = '';
   renderTodosTab();
-  if(selectedDate) renderDayTaskList(selectedDate);
+  if(selectedDate) renderDayHappeningList(selectedDate);
 }
 function renderTodosTab(){
   ['urgent','daily','weekly','monthly'].forEach(bucket=>{
@@ -1609,8 +1604,8 @@ function renderTodosTab(){
         '<div style="flex:1;"><div class="todo-text">'+escapeHtml(t.text)+'</div>'+
         (dueLabel?'<div class="todo-due">'+dueLabel+'</div>':'')+'</div>'+
         '<button class="todo-del">&times;</button>';
-      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayTaskList(selectedDate); });
-      row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); if(selectedDate) renderDayTaskList(selectedDate); });
+      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayHappeningList(selectedDate); });
+      row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); if(selectedDate) renderDayHappeningList(selectedDate); });
       container.appendChild(row);
     });
   });
@@ -1626,7 +1621,7 @@ function renderTodosTab(){
         '<div class="todo-check done">&#10003;</div>'+
         '<div class="todo-text done" style="flex:1;">'+escapeHtml(t.text)+'</div>'+
         '<button class="todo-del">&times;</button>';
-      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayTaskList(selectedDate); });
+      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayHappeningList(selectedDate); });
       row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); });
       archiveContainer.appendChild(row);
     });
@@ -1789,6 +1784,90 @@ function setupSettings(){
   });
   document.getElementById('exportDataBtn').addEventListener('click', exportData);
   document.getElementById('importDataBtn').addEventListener('click', handleImportClick);
+  document.getElementById('toggleTagManageBtn').addEventListener('click', ()=>{
+    const section = document.getElementById('tagManageSection');
+    const showing = section.style.display !== 'none';
+    section.style.display = showing ? 'none' : 'block';
+    document.getElementById('toggleTagManageBtn').textContent = showing ? 'Edit keys' : 'Hide keys';
+  });
+  renderTagManageList();
+  renderSettingsNewColourRow();
+}
+function renderTagManageList(){
+  const container = document.getElementById('tagManageList');
+  container.innerHTML = '';
+  if(tagDefs.length===0){ container.innerHTML = '<div class="empty">No colours yet — tap one below to make your first.</div>'; return; }
+  tagDefs.forEach(tag=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'tag-manage-item';
+    wrap.innerHTML =
+      '<div class="tag-manage-row">'+
+        '<button type="button" class="tag-swatch-btn tag-manage-swatch" style="background:'+tag.color+';"></button>'+
+        '<input type="text" class="tag-manage-name" value="'+escapeHtml(tag.label)+'">'+
+        '<button type="button" class="todo-del">&times;</button>'+
+      '</div>'+
+      '<div class="swatches tag-manage-palette"></div>';
+    const swatchBtn = wrap.querySelector('.tag-manage-swatch');
+    const nameInput = wrap.querySelector('.tag-manage-name');
+    const delBtn = wrap.querySelector('.todo-del');
+    const palette = wrap.querySelector('.tag-manage-palette');
+    TAG_PALETTE.forEach(color=>{
+      const sw = document.createElement('div');
+      sw.className = 'swatch'+(tag.color.toUpperCase()===color.toUpperCase()?' sel':'');
+      sw.style.background = color;
+      sw.addEventListener('click', async ()=>{
+        tag.color = color;
+        await saveKey('tag-defs', tagDefs);
+        swatchBtn.style.background = color;
+        palette.classList.remove('show');
+        renderCalendarAll();
+        showToast('Colour updated.');
+      });
+      palette.appendChild(sw);
+    });
+    swatchBtn.addEventListener('click', ()=> palette.classList.toggle('show'));
+    nameInput.addEventListener('change', async ()=>{
+      const val = nameInput.value.trim();
+      if(!val){ nameInput.value = tag.label; return; }
+      tag.label = val;
+      await saveKey('tag-defs', tagDefs);
+      showToast('Renamed.');
+    });
+    delBtn.addEventListener('click', async ()=>{
+      tagDefs = tagDefs.filter(t=>t.id!==tag.id);
+      todos.forEach(t=>{ if(t.tagId===tag.id) t.tagId = null; });
+      await saveKey('tag-defs', tagDefs);
+      await saveKey('todos', todos);
+      renderTagManageList();
+      renderSettingsNewColourRow();
+      renderCalendarAll();
+      showToast('Colour removed.');
+    });
+    container.appendChild(wrap);
+  });
+}
+function renderSettingsNewColourRow(){
+  const row = document.getElementById('settingsNewColourRow');
+  row.innerHTML = '';
+  TAG_PALETTE.forEach((color,i)=>{
+    const existing = tagDefs.find(t=>t.color.toUpperCase()===color.toUpperCase());
+    const btn = document.createElement('button');
+    btn.className = 'tag-swatch-btn';
+    btn.type = 'button';
+    btn.style.background = color;
+    btn.title = existing ? existing.label+' (already added)' : 'Add '+TAG_PALETTE_NAMES[i];
+    btn.addEventListener('click', async ()=>{
+      const already = tagDefs.find(t=>t.color.toUpperCase()===color.toUpperCase());
+      if(already){ showToast(already.label+' already uses this colour — edit it in the list above.'); return; }
+      const tag = {id:'tag_'+Date.now(), label:TAG_PALETTE_NAMES[i], color};
+      tagDefs.push(tag);
+      await saveKey('tag-defs', tagDefs);
+      renderTagManageList();
+      renderSettingsNewColourRow();
+      showToast('Added "'+tag.label+'" — rename it above if you like.');
+    });
+    row.appendChild(btn);
+  });
 }
 function exportData(){
   const payload = {
