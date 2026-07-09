@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v3.8 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v3.9 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -153,8 +153,8 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .day-num{font-size:12.5px;font-weight:500;}
 .day-hours{font-size:9.5px;color:var(--ink-soft);font-weight:600;}
 .day-inprogress{font-size:9px;color:var(--accent);font-weight:600;}
-.day-info-rows{flex:1;overflow:hidden;max-height:40px;display:flex;flex-direction:column;gap:1px;justify-content:flex-start;min-width:0;width:100%;}
-.day-info-row{font-size:9px;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;width:100%;min-width:0;}
+.day-info-rows{flex:1;overflow:hidden;max-height:35px;display:flex;flex-direction:column;gap:0;justify-content:flex-start;min-width:0;width:100%;}
+.day-info-row{font-size:6px;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;width:100%;min-width:0;}
 .day-tags{display:flex;gap:2px;flex-wrap:wrap;margin-top:auto;}
 .tag-dot{width:5px;height:5px;border-radius:50%;}
 
@@ -261,7 +261,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v3.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v3.9</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
@@ -351,14 +351,6 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       </div>
     </div>
     <div class="card">
-      <h2 style="font-size:15px;">Set your balance</h2>
-      <div class="stat-sub" style="margin-bottom:6px;">Already know what you're owed? Set it directly and future weeks will build on top of it.</div>
-      <div style="display:flex;gap:6px;">
-        <input type="number" id="toilSetInput" step="0.5" placeholder="Hours (can be negative)">
-        <button class="btn small" id="toilSetBtn">Set</button>
-      </div>
-    </div>
-    <div class="card">
       <h2 style="font-size:15px;">Record a payout</h2>
       <div class="stat-sub" style="margin-bottom:6px;">Say TOIL's been paid out and it comes off your balance.</div>
       <div style="display:flex;gap:6px;">
@@ -388,6 +380,14 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <span>Dark mode</span>
         <span class="switch"><input type="checkbox" id="darkModeToggle"><span class="switch-slider"></span></span>
       </label>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;">Set your TOIL balance</h2>
+      <div class="stat-sub" style="margin-bottom:6px;">Already know what you're owed? Set it directly and future weeks will build on top of it.</div>
+      <div style="display:flex;gap:6px;">
+        <input type="number" id="toilSetInput" step="0.5" placeholder="Hours (can be negative)">
+        <button class="btn small" id="toilSetBtn">Set</button>
+      </div>
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Colours</h2>
@@ -875,15 +875,6 @@ function setupToilPayouts(){
     renderToilTab();
     showToast('Recorded '+val.toFixed(1)+'h TOIL payout.');
   });
-  document.getElementById('toilSetBtn').addEventListener('click', async ()=>{
-    const val = parseFloat(document.getElementById('toilSetInput').value);
-    if(isNaN(val)){ showToast('Enter your current TOIL balance.'); return; }
-    const {rawBalance, totalPayouts} = computeToilWeeks();
-    toilAdjustment = val - rawBalance + totalPayouts;
-    await saveKey('toil-adjustment', toilAdjustment);
-    renderToilTab();
-    showToast('TOIL balance set to '+val.toFixed(1)+'h.');
-  });
 }
 
 
@@ -1254,7 +1245,15 @@ function buildMonthBlock(year, month){
   card.appendChild(grid);
   return card;
 }
-function renderCalendarAll(){
+function renderCalendarAll(forceToday){
+  let anchorId = null;
+  if(!forceToday){
+    document.querySelectorAll('.month-card').forEach(c=>{
+      if(anchorId) return;
+      const rect = c.getBoundingClientRect();
+      if(rect.bottom > 90) anchorId = c.id;
+    });
+  }
   const container = document.getElementById('monthsContainer');
   container.innerHTML = '';
   let y = rangeStartYM.y, m = rangeStartYM.m;
@@ -1264,9 +1263,14 @@ function renderCalendarAll(){
     if(m>11){ m=0; y++; }
   }
   document.getElementById('calLegend').innerHTML = '<span><i style="background:var(--away-tint);border:1px solid #e6cd9d;"></i>Away</span><span><i style="background:#9AA39C;border-radius:50%;"></i>To-do</span><span>'+ICON_FLAG+' Event</span>';
-  const now = new Date();
-  const el = document.getElementById('month-'+monthKey(now.getFullYear(), now.getMonth()));
-  if(el) el.scrollIntoView({behavior:'auto', block:'start'});
+  if(forceToday){
+    const now = new Date();
+    const el = document.getElementById('month-'+monthKey(now.getFullYear(), now.getMonth()));
+    if(el) el.scrollIntoView({behavior:'auto', block:'start'});
+  }else if(anchorId){
+    const el = document.getElementById(anchorId);
+    if(el) el.scrollIntoView({behavior:'auto', block:'start'});
+  }
 }
 
 // ---------- day modal ----------
@@ -1483,7 +1487,7 @@ async function addDayWhatsOn(){
   }
   renderTagSwatches('');
   renderDayHappeningList(selectedDate);
-  renderCalendarAll();
+  renderCalendarAll(true);
   input.focus();
 }
 async function toggleTodoDone(t){
@@ -1559,8 +1563,8 @@ function renderDayHappeningList(dateStr){
       '</div>'+
       '<button class="todo-del">&times;</button>';
     const textEl = row.querySelector('.editable-text');
-    makeTextEditable(textEl, t, ()=>{ renderDayHappeningList(dateStr); renderCalendarAll(); });
-    row.querySelector('.todo-del').addEventListener('click', async (e)=>{ e.stopPropagation(); todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderDayHappeningList(dateStr); renderCalendarAll(); });
+    makeTextEditable(textEl, t, ()=>{ renderDayHappeningList(dateStr); renderCalendarAll(true); });
+    row.querySelector('.todo-del').addEventListener('click', async (e)=>{ e.stopPropagation(); todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderDayHappeningList(dateStr); renderCalendarAll(true); });
     list.appendChild(row);
   });
   taskItems.forEach(t=>{
@@ -1708,7 +1712,7 @@ async function saveDayModal(){
 
   await saveKey('calendar-data', calendarData);
   closeDayModal();
-  renderCalendarAll(); renderRentTab(); renderToilTab();
+  renderCalendarAll(true); renderRentTab(); renderToilTab();
 }
 async function clearThisDay(){
   if(!selectedDate) return;
@@ -1716,7 +1720,7 @@ async function clearThisDay(){
   delete calendarData[dateStr];
   await saveKey('calendar-data', calendarData);
   closeDayModal();
-  renderCalendarAll(); renderRentTab(); renderToilTab();
+  renderCalendarAll(true); renderRentTab(); renderToilTab();
   showToast('Cleared '+niceDate(dateStr)+'.');
 }
 
@@ -1812,7 +1816,12 @@ function searchCalendar(query){
     if(t.done && !isRepeating(t)) return;
     if(t.text.toLowerCase().includes(query)){
       const r = todoScopeRange(t);
-      if(r.start) results.push({date:r.start, label:t.text, type: isRepeating(t) ? "What's On ("+repeatLabel(t.repeat)+")" : 'To-do'});
+      if(r.start){
+        const label = t.kind==='whatson'
+          ? (isRepeating(t) ? "What's On ("+repeatLabel(t.repeat)+")" : "What's On")
+          : 'To-do';
+        results.push({date:r.start, label:t.text, type:label});
+      }
     }
   });
   const matchingTags = tagDefs.filter(tg=>tg.label.toLowerCase().includes(query));
@@ -1945,6 +1954,16 @@ function setupSettings(){
     darkModeOn = e.target.checked;
     applyDarkMode(darkModeOn);
     await saveKey('dark-mode', darkModeOn);
+  });
+  document.getElementById('toilSetInput').value = computeToilWeeks().balance;
+  document.getElementById('toilSetBtn').addEventListener('click', async ()=>{
+    const val = parseFloat(document.getElementById('toilSetInput').value);
+    if(isNaN(val)){ showToast('Enter your current TOIL balance.'); return; }
+    const {rawBalance, totalPayouts} = computeToilWeeks();
+    toilAdjustment = val - rawBalance + totalPayouts;
+    await saveKey('toil-adjustment', toilAdjustment);
+    renderToilTab();
+    showToast('TOIL balance set to '+val.toFixed(1)+'h.');
   });
   document.getElementById('exportDataBtn').addEventListener('click', exportData);
   document.getElementById('importDataBtn').addEventListener('click', handleImportClick);
