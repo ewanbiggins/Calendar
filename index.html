@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v2.7 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v3.6 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -144,7 +144,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .weekday-row{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;}
 .weekday-row div{text-align:center;font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
 .day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
-.day-cell{aspect-ratio:0.82/1;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);position:relative;padding:4px 3px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;min-height:52px;}
+.day-cell{aspect-ratio:0.78/1;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);position:relative;padding:4px 3px;cursor:pointer;display:flex;flex-direction:column;min-height:58px;}
 .day-cell.pad{visibility:hidden;}
 .day-cell.away{background:var(--away-tint);border-color:#e6cd9d;}
 .day-cell.has-shift{background:var(--home-tint);border-color:#c3ded7;}
@@ -153,8 +153,9 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .day-num{font-size:11.5px;font-weight:500;}
 .day-hours{font-size:9.5px;color:var(--ink-soft);font-weight:600;}
 .day-inprogress{font-size:9px;color:var(--accent);font-weight:600;}
-.day-whatson-label{font-size:7.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;}
-.day-tags{display:flex;gap:2px;flex-wrap:wrap;}
+.day-info-rows{flex:1;overflow:hidden;max-height:34px;display:flex;flex-direction:column;gap:1px;justify-content:flex-start;}
+.day-info-row{font-size:9px;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15;}
+.day-tags{display:flex;gap:2px;flex-wrap:wrap;margin-top:auto;}
 .tag-dot{width:5px;height:5px;border-radius:50%;}
 
 .legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:2px;margin-bottom:10px;font-size:11.5px;color:var(--ink-soft);align-items:center;}
@@ -170,14 +171,17 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 
 /* Day sheet */
 .dm-header{display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.dm-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.dm-date-input{font-family:'Fraunces',serif;font-size:16px;font-weight:600;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:6px 9px;max-width:170px;}
-.dm-range-row{display:none;align-items:center;gap:6px;margin-top:8px;}
-.dm-range-row.show{display:flex;}
-.dm-range-row span{color:var(--ink-soft);font-size:15px;}
-.dm-range-row input{max-width:150px;}
+.dm-title-row{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;min-width:0;}
+.dm-date-input{font-family:'Fraunces',serif;font-size:16px;font-weight:600;border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:6px 4px;width:118px;min-width:0;flex-shrink:1;}
+.dm-range-inline{display:none;align-items:center;gap:6px;}
+.dm-range-inline.show{display:inline-flex;}
+.dm-range-dash{color:var(--ink-soft);font-size:15px;}
 .dm-section{margin-top:12px;}
 .dm-label{font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin-bottom:5px;}
+.dm-section-header{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;padding:6px 0;cursor:pointer;}
+.dm-section-header .chevron-icon{color:var(--ink-soft);transition:transform .15s ease;flex-shrink:0;}
+.dm-section-header.expanded .chevron-icon{transform:rotate(180deg);}
+#shiftSummary{text-transform:none;letter-spacing:normal;color:var(--ink-soft);font-weight:400;}
 
 .day-todo-block h3{font-size:14px;margin-bottom:6px;}
 #dayHappeningList{margin-bottom:8px;}
@@ -187,11 +191,14 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .todo-add-row input[type=text]{flex:1;}
 .todo-add-row select{max-width:132px;flex-shrink:0;}
 .tag-swatch-row{display:flex;gap:9px;margin-top:8px;overflow-x:auto;padding:6px 6px 10px;-webkit-overflow-scrolling:touch;}
+.repeat-options-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.repeat-options-row button.active{background:var(--home);color:#fff;border-color:var(--home);}
 .tag-swatch-btn{width:20px;height:20px;min-width:20px;min-height:20px;max-width:20px;max-height:20px;border-radius:50%;border:2px solid transparent;flex:0 0 auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:600;padding:0;box-shadow:none;}
 .tag-swatch-btn.none-swatch{background:var(--surface-2);border:2px solid var(--line);color:var(--ink-soft);}
 .tag-swatch-btn.selected{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--accent);}
-.repeat-control{display:flex;align-items:center;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0 6px 0 8px;flex-shrink:0;color:var(--ink-soft);}
-.repeat-control select{border:none;background:none;padding:6px 2px;width:auto;max-width:112px;font-size:16px;color:var(--ink);}
+.round-btn.active{background:var(--home);border-color:var(--home);color:#fff;}
+.compose-icon-btn{width:37px;height:37px;min-width:37px;flex-shrink:0;border-radius:50%;background:var(--surface-2);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--ink-soft);padding:0;font-size:15px;}
+.compose-icon-btn.active{background:var(--home);border-color:var(--home);color:#fff;}
 .swatches{display:flex;flex-wrap:wrap;gap:5px;}
 .swatch{width:19px;height:19px;border-radius:50%;border:2px solid transparent;cursor:pointer;}
 .swatch.sel{border-color:var(--ink);}
@@ -254,7 +261,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v2.7</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v3.6</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
@@ -416,49 +423,61 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       <div class="dm-header">
         <div class="dm-title-row">
           <input type="date" id="dayModalDateInput" class="dm-date-input">
+          <span class="dm-range-inline" id="dayModalRangeRow">
+            <span class="dm-range-dash">&ndash;</span>
+            <input type="date" id="dayModalEndDate" class="dm-date-input">
+          </span>
         </div>
         <button class="round-btn primary" id="dayEditToggleBtn">+</button>
-      </div>
-      <div class="dm-range-row" id="dayModalRangeRow">
-        <span>&ndash;</span>
-        <input type="date" id="dayModalEndDate">
       </div>
       <div class="compose-form" id="composeWhatsOn">
         <div class="todo-add-row">
           <input type="text" id="dayWhatsOnInput" placeholder="What's happening?">
-          <div class="repeat-control" title="Repeat">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
-            <select id="dayTodoRepeatSelect">
-              <option value="none">No repeat</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="yearly">Yearly</option>
-            </select>
-          </div>
+          <button type="button" class="compose-icon-btn" id="repeatToggleBtn" title="Repeat">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+          </button>
+          <button type="button" class="compose-icon-btn" id="colourToggleBtn" title="Colour">&#9711;</button>
+          <select id="dayTodoRepeatSelect" style="display:none;">
+            <option value="none">No repeat</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
           <button class="btn small" id="dayWhatsOnAddBtn">Add</button>
         </div>
-        <div class="tag-swatch-row" id="dayTodoTagSwatchRow"></div>
+        <div class="repeat-options-row" id="repeatOptionsRow" style="display:none;">
+          <button type="button" class="btn secondary tiny" data-repeat="none">No repeat</button>
+          <button type="button" class="btn secondary tiny" data-repeat="weekly">Weekly</button>
+          <button type="button" class="btn secondary tiny" data-repeat="monthly">Monthly</button>
+          <button type="button" class="btn secondary tiny" data-repeat="yearly">Yearly</button>
+        </div>
+        <div class="tag-swatch-row" id="dayTodoTagSwatchRow" style="display:none;"></div>
       </div>
       <div id="dayModalEventsInfo" style="font-size:12.5px;color:var(--ink-soft);margin-top:4px;"></div>
       <div id="dayHappeningList"></div>
     </div>
 
     <div class="dm-section">
-      <div class="dm-label">Shift</div>
-      <div class="shift-name-row">
-        <input type="text" id="dayModalShiftTitle" placeholder="Shift name">
-      </div>
-      <div class="shift-compact">
-        <div><label class="mini-label">Start</label><input type="time" id="dayModalStart"></div>
-        <div><label class="mini-label">Finish</label><input type="time" id="dayModalFinish"></div>
-        <div><label class="mini-label">Break (m)</label><input type="number" id="dayModalBreak" min="0" step="5" placeholder="0"></div>
-        <div class="shift-total-mini">= <strong id="dayModalHoursOut">—</strong></div>
-      </div>
-      <div class="quick-break-mini">
-        <button data-mins="15">+15m</button>
-        <button data-mins="30">+30m</button>
-        <button data-mins="45">+45m</button>
-        <button data-mins="60">+60m</button>
+      <button type="button" class="dm-section-header" id="shiftToggleBtn">
+        <span class="dm-label" style="margin:0;">Shift<span id="shiftSummary"></span></span>
+        <svg class="chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="shiftDetailsSection" style="display:none;">
+        <div class="shift-name-row">
+          <input type="text" id="dayModalShiftTitle" placeholder="Shift name">
+        </div>
+        <div class="shift-compact">
+          <div><label class="mini-label">Start</label><input type="time" id="dayModalStart"></div>
+          <div><label class="mini-label">Finish</label><input type="time" id="dayModalFinish"></div>
+          <div><label class="mini-label">Break (m)</label><input type="number" id="dayModalBreak" min="0" step="5" placeholder="0"></div>
+          <div class="shift-total-mini">= <strong id="dayModalHoursOut">—</strong></div>
+        </div>
+        <div class="quick-break-mini">
+          <button data-mins="15">+15m</button>
+          <button data-mins="30">+30m</button>
+          <button data-mins="45">+45m</button>
+          <button data-mins="60">+60m</button>
+        </div>
       </div>
     </div>
 
@@ -1202,14 +1221,23 @@ function buildMonthBlock(year, month){
     cell.appendChild(top);
 
     const h = entry ? shiftHours(entry.shift) : null;
-    if(h){ const el=document.createElement('div'); el.className='day-hours'; el.textContent=h+'h'; cell.appendChild(el); }
-    else if(entry && entry.shift && entry.shift.start && !entry.shift.finish){ const el=document.createElement('div'); el.className='day-inprogress'; el.textContent='on shift'; cell.appendChild(el); }
-    else{
-      const whatson = todos.find(t=>t.kind==='whatson' && todoOccursOn(t, dateStr));
-      if(whatson && whatson.text.length<=12){
-        const label = document.createElement('div'); label.className='day-whatson-label'; label.textContent = whatson.text;
-        cell.appendChild(label);
-      }
+    const infoParts = [];
+    if(h) infoParts.push(h+'h');
+    else if(entry && entry.shift && entry.shift.start && !entry.shift.finish) infoParts.push('on shift');
+    todos.filter(t=>t.kind==='whatson' && todoOccursOn(t, dateStr)).forEach(t=> infoParts.push(t.text));
+    const taskCount = todos.filter(t=>t.kind==='task' && !t.done && todoInRange(t, dateStr)).length;
+    if(taskCount>0) infoParts.push('To-do \u00d7'+taskCount);
+    const infoPartsCapped = infoParts.slice(0,5);
+    if(infoPartsCapped.length){
+      const wrap = document.createElement('div');
+      wrap.className = 'day-info-rows';
+      infoPartsCapped.forEach(part=>{
+        const row = document.createElement('div');
+        row.className = 'day-info-row';
+        row.textContent = part;
+        wrap.appendChild(row);
+      });
+      cell.appendChild(wrap);
     }
 
     const tagsRow = document.createElement('div'); tagsRow.className='day-tags';
@@ -1276,9 +1304,47 @@ function setupDayModal(){
 
   document.getElementById('dayWhatsOnAddBtn').addEventListener('click', addDayWhatsOn);
   document.getElementById('dayWhatsOnInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.keyCode===13){ e.preventDefault(); addDayWhatsOn(); } });
+  document.getElementById('repeatToggleBtn').addEventListener('click', toggleRepeatOptions);
+  document.querySelectorAll('#repeatOptionsRow [data-repeat]').forEach(btn=>{
+    btn.addEventListener('click', ()=> setRepeatValue(btn.dataset.repeat));
+  });
+  document.getElementById('colourToggleBtn').addEventListener('click', ()=>{
+    document.getElementById('dayTodoTagSwatchRow').style.display = document.getElementById('dayTodoTagSwatchRow').style.display==='none' ? 'flex' : 'none';
+  });
+
+  document.getElementById('shiftToggleBtn').addEventListener('click', ()=>{
+    const section = document.getElementById('shiftDetailsSection');
+    const header = document.getElementById('shiftToggleBtn');
+    const opening = section.style.display === 'none';
+    section.style.display = opening ? 'block' : 'none';
+    header.classList.toggle('expanded', opening);
+  });
 
   document.getElementById('dayModalSave').addEventListener('click', saveDayModal);
   document.getElementById('dayModalClearBtn').addEventListener('click', clearThisDay);
+}
+function toggleRepeatOptions(){
+  const row = document.getElementById('repeatOptionsRow');
+  row.style.display = row.style.display==='none' ? 'flex' : 'none';
+  if(row.style.display==='flex') updateRepeatOptionsHighlight();
+}
+function setRepeatValue(val){
+  document.getElementById('dayTodoRepeatSelect').value = val;
+  updateRepeatButton();
+  document.getElementById('repeatOptionsRow').style.display = 'none';
+}
+function updateRepeatOptionsHighlight(){
+  const val = document.getElementById('dayTodoRepeatSelect').value;
+  document.querySelectorAll('#repeatOptionsRow [data-repeat]').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.repeat===val);
+  });
+}
+function updateRepeatButton(){
+  const val = document.getElementById('dayTodoRepeatSelect').value;
+  const btn = document.getElementById('repeatToggleBtn');
+  btn.classList.toggle('active', val!=='none');
+  btn.title = val==='none' ? 'No repeat — tap to set' : 'Repeats '+val+' — tap to change';
+  updateRepeatOptionsHighlight();
 }
 
 function updateShiftPreview(){
@@ -1287,6 +1353,8 @@ function updateShiftPreview(){
   const breakMins = parseInt(document.getElementById('dayModalBreak').value) || 0;
   const h = shiftHours({start, finish, breakMins});
   document.getElementById('dayModalHoursOut').textContent = h!==null ? h+'h' : (start && !finish ? '…' : '—');
+  const summary = document.getElementById('shiftSummary');
+  summary.textContent = h ? ' \u00b7 '+h+'h' : (start && !finish ? ' \u00b7 in progress' : '');
 }
 
 function renderTagSwatches(selectedId){
@@ -1333,6 +1401,25 @@ function renderTagSwatches(selectedId){
     btn.addEventListener('click', ()=> renderTagSwatches(tag.id));
     row.appendChild(btn);
   });
+
+  updateColourToggleBtn();
+  document.getElementById('dayTodoTagSwatchRow').style.display = 'none';
+}
+function updateColourToggleBtn(){
+  const btn = document.getElementById('colourToggleBtn');
+  if(!btn) return;
+  const tag = selectedTagId ? tagDefs.find(t=>t.id===selectedTagId) : null;
+  if(tag){
+    btn.style.background = tag.color;
+    btn.style.borderColor = tag.color;
+    btn.textContent = '';
+    btn.title = tag.label;
+  }else{
+    btn.style.background = '';
+    btn.style.borderColor = '';
+    btn.textContent = '\u25EF';
+    btn.title = 'Colour';
+  }
 }
 
 // ---------- todos (What's On items + separate To-Do checklist + archive) ----------
@@ -1384,6 +1471,7 @@ async function addDayWhatsOn(){
   await saveKey('todos', todos);
   input.value = '';
   document.getElementById('dayTodoRepeatSelect').value = 'none';
+  updateRepeatButton();
   const tag = tagId ? tagDefs.find(x=>x.id===tagId) : null;
   if(tag && isWorkTag(tag)){
     const titleInput = document.getElementById('dayModalShiftTitle');
@@ -1405,12 +1493,14 @@ async function toggleTodoDone(t){
 function toggleDayEditPanel(){
   const rangeRow = document.getElementById('dayModalRangeRow');
   const isOpen = rangeRow.classList.contains('show');
+  const editBtn = document.getElementById('dayEditToggleBtn');
   if(isOpen){
     resetDayEditPanel();
   }else{
     rangeRow.classList.add('show');
     if(selectedDate) document.getElementById('dayModalEndDate').value = selectedDate;
     document.getElementById('composeWhatsOn').classList.add('show');
+    editBtn.textContent = '\u2212';
     setTimeout(()=>{ const el=document.getElementById('dayWhatsOnInput'); if(el) el.focus(); }, 50);
   }
 }
@@ -1418,6 +1508,11 @@ function resetDayEditPanel(){
   document.getElementById('dayModalRangeRow').classList.remove('show');
   document.getElementById('dayModalEndDate').value = '';
   document.getElementById('composeWhatsOn').classList.remove('show');
+  document.getElementById('dayTodoRepeatSelect').value = 'none';
+  updateRepeatButton();
+  document.getElementById('dayTodoTagSwatchRow').style.display = 'none';
+  document.getElementById('repeatOptionsRow').style.display = 'none';
+  document.getElementById('dayEditToggleBtn').textContent = '+';
 }
 function makeTextEditable(el, item, onSaved){
   el.classList.add('editable-text');
@@ -1510,6 +1605,9 @@ function loadDayIntoForm(dateStr){
   document.getElementById('dayModalFinish').value = shift.finish || '';
   document.getElementById('dayModalBreak').value = shift.breakMins || '';
   updateShiftPreview();
+  const hasShiftData = !!(shift.start || shift.finish || shift.breakMins || shift.title);
+  document.getElementById('shiftDetailsSection').style.display = hasShiftData ? 'block' : 'none';
+  document.getElementById('shiftToggleBtn').classList.toggle('expanded', hasShiftData);
 
   document.getElementById('dayWhatsOnInput').value = '';
   resetDayEditPanel();
@@ -1557,6 +1655,8 @@ function openDayModalEmpty(){
   document.getElementById('dayModalFinish').value = '';
   document.getElementById('dayModalBreak').value = '';
   updateShiftPreview();
+  document.getElementById('shiftDetailsSection').style.display = 'none';
+  document.getElementById('shiftToggleBtn').classList.remove('expanded');
   document.getElementById('dayWhatsOnInput').value = '';
   document.getElementById('dayHappeningList').innerHTML = '';
   resetDayEditPanel();
