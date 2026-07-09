@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v2.3 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v2.6 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 <title>Home Base</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
@@ -134,7 +134,6 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .mini-month-title{font-size:12px;font-weight:700;text-align:center;margin-bottom:6px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
 .mini-days{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:1px;align-content:center;}
 .mini-day{position:relative;font-size:9px;text-align:center;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;border-radius:50%;}
-.mini-day.mini-home{background:var(--home-tint);}
 .mini-day.mini-away{background:var(--away-tint);}
 .mini-dot{position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:3px;height:3px;border-radius:50%;}
 .mini-day.today{background:var(--accent);color:#fff;border-radius:50%;}
@@ -147,8 +146,8 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .day-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
 .day-cell{aspect-ratio:0.82/1;border-radius:8px;border:1px solid var(--line);background:var(--surface-2);position:relative;padding:4px 3px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;min-height:52px;}
 .day-cell.pad{visibility:hidden;}
-.day-cell.home{background:var(--home-tint);border-color:#c3ded7;}
 .day-cell.away{background:var(--away-tint);border-color:#e6cd9d;}
+.day-cell.has-shift{background:var(--home-tint);border-color:#c3ded7;}
 .day-cell.today{outline:2px solid var(--accent);outline-offset:-2px;}
 .day-top{display:flex;align-items:center;justify-content:space-between;}
 .day-num{font-size:11.5px;font-weight:500;}
@@ -189,7 +188,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .tag-swatch-row{display:flex;gap:9px;margin-top:8px;overflow-x:auto;padding:6px 6px 10px;-webkit-overflow-scrolling:touch;}
 .tag-swatch-btn{width:20px;height:20px;min-width:20px;min-height:20px;max-width:20px;max-height:20px;border-radius:50%;border:2px solid transparent;flex:0 0 auto;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;font-weight:600;padding:0;box-shadow:none;}
 .tag-swatch-btn.none-swatch{background:var(--surface-2);border:2px solid var(--line);color:var(--ink-soft);}
-.tag-swatch-btn.selected{box-shadow:0 0 0 2px var(--surface),0 0 0 3px var(--ink);}
+.tag-swatch-btn.selected{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--accent);}
 .repeat-control{display:flex;align-items:center;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:0 6px 0 8px;flex-shrink:0;color:var(--ink-soft);}
 .repeat-control select{border:none;background:none;padding:6px 2px;width:auto;max-width:112px;font-size:16px;color:var(--ink);}
 .swatches{display:flex;flex-wrap:wrap;gap:5px;}
@@ -254,7 +253,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v2.3</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v2.6</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
@@ -477,6 +476,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       <button class="btn secondary" id="dayModalCancel">Close</button>
       <button class="btn" id="dayModalSave">Save</button>
     </div>
+    <button class="btn secondary block" id="dayModalClearBtn" style="margin-top:8px;">Clear this day</button>
   </div>
 </div>
 
@@ -641,13 +641,19 @@ function normalizeRange(){
   while(rangeEndYM.m > 11){ rangeEndYM.m -= 12; rangeEndYM.y++; }
 }
 
+let savedCalendarScrollY = 0;
 function setupTabs(){
   document.querySelectorAll('.tab-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
+      const wasCalendar = document.getElementById('view-calendar').classList.contains('active');
+      if(wasCalendar) savedCalendarScrollY = window.scrollY;
       document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
       document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById('view-'+btn.dataset.view).classList.add('active');
+      if(btn.dataset.view==='calendar'){
+        requestAnimationFrame(()=> window.scrollTo(0, savedCalendarScrollY));
+      }
     });
   });
 }
@@ -1204,7 +1210,7 @@ function renderCalendarAll(){
     m++;
     if(m>11){ m=0; y++; }
   }
-  document.getElementById('calLegend').innerHTML = '<span><i style="background:var(--home-tint);border:1px solid #c3ded7;"></i>Home</span><span><i style="background:var(--away-tint);border:1px solid #e6cd9d;"></i>Away</span><span><i style="background:#9AA39C;border-radius:50%;"></i>To-do</span><span>'+ICON_FLAG+' Event</span>';
+  document.getElementById('calLegend').innerHTML = '<span><i style="background:var(--away-tint);border:1px solid #e6cd9d;"></i>Away</span><span><i style="background:#9AA39C;border-radius:50%;"></i>To-do</span><span>'+ICON_FLAG+' Event</span>';
   const now = new Date();
   const el = document.getElementById('month-'+monthKey(now.getFullYear(), now.getMonth()));
   if(el) el.scrollIntoView({behavior:'auto', block:'start'});
@@ -1245,9 +1251,10 @@ function setupDayModal(){
   });
 
   document.getElementById('dayWhatsOnAddBtn').addEventListener('click', addDayWhatsOn);
-  document.getElementById('dayWhatsOnInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') addDayWhatsOn(); });
+  document.getElementById('dayWhatsOnInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.keyCode===13){ e.preventDefault(); addDayWhatsOn(); } });
 
   document.getElementById('dayModalSave').addEventListener('click', saveDayModal);
+  document.getElementById('dayModalClearBtn').addEventListener('click', clearThisDay);
 }
 
 function updateShiftPreview(){
@@ -1268,7 +1275,7 @@ function renderTagSwatches(selectedId){
   noneBtn.type = 'button';
   noneBtn.title = 'No colour';
   noneBtn.textContent = '✕';
-  noneBtn.addEventListener('click', ()=>{ selectedTagId = null; refreshSwatchSelection(); });
+  noneBtn.addEventListener('click', ()=> renderTagSwatches(null));
   row.appendChild(noneBtn);
 
   TAG_PALETTE.forEach((color,i)=>{
@@ -1287,8 +1294,7 @@ function renderTagSwatches(selectedId){
         renderTagManageList();
         renderSettingsNewColourRow();
       }
-      selectedTagId = tag.id;
-      refreshSwatchSelection();
+      renderTagSwatches(tag.id);
     });
     row.appendChild(btn);
   });
@@ -1300,20 +1306,10 @@ function renderTagSwatches(selectedId){
     btn.type = 'button';
     btn.title = tag.label;
     btn.style.background = tag.color;
-    btn.dataset.tagId = tag.id;
-    btn.addEventListener('click', ()=>{ selectedTagId = tag.id; refreshSwatchSelection(); });
+    btn.addEventListener('click', ()=> renderTagSwatches(tag.id));
     row.appendChild(btn);
   });
 }
-function refreshSwatchSelection(){
-  const row = document.getElementById('dayTodoTagSwatchRow');
-  row.querySelectorAll('.tag-swatch-btn').forEach(btn=>{
-    const isNone = btn.classList.contains('none-swatch');
-    const match = isNone ? !selectedTagId : btn.dataset.tagId===selectedTagId;
-    btn.classList.toggle('selected', !!match);
-  });
-}
-
 
 // ---------- todos (What's On items + separate To-Do checklist + archive) ----------
 function todoScopeRange(t){
@@ -1364,6 +1360,14 @@ async function addDayWhatsOn(){
   await saveKey('todos', todos);
   input.value = '';
   document.getElementById('dayTodoRepeatSelect').value = 'none';
+  const tag = tagId ? tagDefs.find(x=>x.id===tagId) : null;
+  if(tag && isWorkTag(tag)){
+    const titleInput = document.getElementById('dayModalShiftTitle');
+    if(!titleInput.value.trim()){
+      titleInput.value = text;
+      showToast('Shift name filled in from "'+text+'".');
+    }
+  }
   renderTagSwatches('');
   renderDayHappeningList(selectedDate);
   renderCalendarAll();
@@ -1487,9 +1491,25 @@ function loadDayIntoForm(dateStr){
   renderDayHappeningList(dateStr);
 }
 
+let modalScrollY = 0;
+function lockBodyScroll(){
+  modalScrollY = window.scrollY;
+  document.body.style.position = 'fixed';
+  document.body.style.top = '-'+modalScrollY+'px';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+}
+function unlockBodyScroll(){
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  window.scrollTo(0, modalScrollY);
+}
 function openDayModal(dateStr){
   document.getElementById('dayModalDateInput').value = dateStr;
   loadDayIntoForm(dateStr);
+  lockBodyScroll();
   document.getElementById('dayModalOverlay').classList.remove('hidden');
 }
 
@@ -1516,9 +1536,14 @@ function openDayModalEmpty(){
   document.getElementById('dayHappeningList').innerHTML = '';
   resetDayEditPanel();
 
+  lockBodyScroll();
   document.getElementById('dayModalOverlay').classList.remove('hidden');
 }
-function closeDayModal(){ document.getElementById('dayModalOverlay').classList.add('hidden'); selectedDate = null; }
+function closeDayModal(){
+  document.getElementById('dayModalOverlay').classList.add('hidden');
+  selectedDate = null;
+  unlockBodyScroll();
+}
 
 async function saveDayModal(){
   if(!selectedDate){ showToast('Pick a date first.'); return; }
@@ -1555,6 +1580,15 @@ async function saveDayModal(){
   closeDayModal();
   renderCalendarAll(); renderRentTab(); renderToilTab();
 }
+async function clearThisDay(){
+  if(!selectedDate) return;
+  const dateStr = selectedDate;
+  delete calendarData[dateStr];
+  await saveKey('calendar-data', calendarData);
+  closeDayModal();
+  renderCalendarAll(); renderRentTab(); renderToilTab();
+  showToast('Cleared '+niceDate(dateStr)+'.');
+}
 
 // ---------- Tasks tab ----------
 function setupTasksTab(){
@@ -1563,7 +1597,7 @@ function setupTasksTab(){
   });
   ['urgent','daily','weekly','monthly'].forEach(bucket=>{
     const input = document.getElementById('input-'+bucket);
-    if(input) input.addEventListener('keydown', (e)=>{ if(e.key==='Enter') addFromTasksTab(bucket); });
+    if(input) input.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.keyCode===13){ e.preventDefault(); addFromTasksTab(bucket); } });
   });
 }
 async function addFromTasksTab(bucket){
@@ -1729,7 +1763,7 @@ function buildShiftHistoryMonthBlock(year, month){
     const h = entry ? shiftHours(entry.shift) : null;
     const cell = document.createElement('div');
     cell.className = 'day-cell';
-    if(h) cell.classList.add('home');
+    if(h) cell.classList.add('has-shift');
     if(dateStr === today) cell.classList.add('today');
     const top = document.createElement('div'); top.className='day-top';
     const num = document.createElement('div'); num.className='day-num'; num.textContent = day;
