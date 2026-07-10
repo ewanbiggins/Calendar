@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v4.1 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v4.3 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -261,7 +261,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v4.1</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v4.3</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
@@ -1133,12 +1133,13 @@ function tagsForDate(dateStr){
 function computeMonthStats(year, month){
   let home=0, away=0, hours=0;
   const daysInMonth = new Date(year, month+1, 0).getDate();
+  const today = todayStr();
   for(let day=1; day<=daysInMonth; day++){
-    const entry = calendarData[fmt(new Date(year, month, day))];
-    if(!entry) continue;
-    if(entry.status==='home') home++;
-    else if(entry.status==='away') away++;
-    const h = shiftHours(entry.shift);
+    const dateStr = fmt(new Date(year, month, day));
+    if(dateStr >= today || dateStr < RENT_START_DATE) continue;
+    const entry = calendarData[dateStr];
+    if(entry && entry.status==='away') away++; else home++;
+    const h = entry ? shiftHours(entry.shift) : null;
     if(h) hours += h;
   }
   return {home, away, hours};
@@ -1503,6 +1504,7 @@ function bucketFor(t){
   if(t.scope==='month') return 'monthly';
   if(!t.dueDate) return 'daily';
   const diff = daysBetween(todayStr(), t.dueDate);
+  if(diff < 0) return 'urgent';
   if(diff <= 1) return 'daily';
   if(diff <= 7) return 'weekly';
   return 'monthly';
@@ -1791,7 +1793,8 @@ async function addFromTasksTab(bucket){
   if(bucket==='urgent'){
     t = {id:Date.now(), text, tagId:null, urgent:true, done:false, doneAt:null, kind:'task', scope:'urgent', dueDate:null, rangeStart:null, rangeEnd:null, repeat:'none'};
   }else if(bucket==='daily'){
-    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'day', dueDate:today, rangeStart:today, rangeEnd:today, repeat:'none'};
+    const tomorrow = addDays(today, 1);
+    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'day', dueDate:tomorrow, rangeStart:tomorrow, rangeEnd:tomorrow, repeat:'none'};
   }else if(bucket==='weekly'){
     const ws = mondayOf(today), we = addDays(ws,6);
     t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'week', dueDate:today, rangeStart:ws, rangeEnd:we, repeat:'none'};
@@ -1803,6 +1806,7 @@ async function addFromTasksTab(bucket){
   await saveKey('todos', todos);
   input.value = '';
   renderTodosTab();
+  renderCalendarAll();
   if(selectedDate) renderDayHappeningList(selectedDate);
 }
 function renderTodosTab(){
@@ -1814,14 +1818,19 @@ function renderTodosTab(){
     items.forEach(t=>{
       const row = document.createElement('div');
       row.className = 'todo-item'+(bucket==='urgent'?' urgent-item':'');
-      const dueLabel = t.dueDate ? shortDate(t.dueDate) : '';
+      let dueLabel = '';
+      if(bucket==='urgent') dueLabel = 'Today';
+      else if(t.dueDate){
+        const diff = daysBetween(todayStr(), t.dueDate);
+        dueLabel = diff===0 ? 'Today' : diff===1 ? 'Tomorrow' : shortDate(t.dueDate);
+      }
       row.innerHTML =
         '<div class="todo-check"></div>'+
         '<div style="flex:1;"><div class="todo-text">'+escapeHtml(t.text)+'</div>'+
         (dueLabel?'<div class="todo-due">'+dueLabel+'</div>':'')+'</div>'+
         '<button class="todo-del">&times;</button>';
-      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayHappeningList(selectedDate); });
-      row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); if(selectedDate) renderDayHappeningList(selectedDate); });
+      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); renderCalendarAll(); if(selectedDate) renderDayHappeningList(selectedDate); });
+      row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); renderCalendarAll(); if(selectedDate) renderDayHappeningList(selectedDate); });
       container.appendChild(row);
     });
   });
@@ -1837,8 +1846,8 @@ function renderTodosTab(){
         '<div class="todo-check done">&#10003;</div>'+
         '<div class="todo-text done" style="flex:1;">'+escapeHtml(t.text)+'</div>'+
         '<button class="todo-del">&times;</button>';
-      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); if(selectedDate) renderDayHappeningList(selectedDate); });
-      row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); });
+      row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); renderCalendarAll(); if(selectedDate) renderDayHappeningList(selectedDate); });
+      row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); renderCalendarAll(); });
       archiveContainer.appendChild(row);
     });
   }
