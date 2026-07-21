@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v4.3 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v4.5 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -243,8 +243,10 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .todo-section h3{font-size:13.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
 .hicon{flex-shrink:0;}
 .urgent-item .todo-text{font-weight:600;}
-.add-row{display:flex;gap:6px;margin-top:8px;}
-.add-row input[type=text]{flex:1;}
+.add-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.tiny-date-input{width:98px;min-width:0;flex-shrink:1;}
+.add-row input[type=text]{flex:1;min-width:0;}
+.add-row button{flex-shrink:0;}
 
 table.hist{width:100%;border-collapse:collapse;font-size:12.5px;}
 table.hist th{text-align:left;color:var(--ink-soft);font-weight:500;font-size:10.5px;text-transform:uppercase;padding:6px 4px;border-bottom:1px solid var(--line);}
@@ -261,7 +263,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v4.3</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v4.5</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
@@ -300,7 +302,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <div class="card todo-section">
       <h3><svg class="hicon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/></svg>Daily</h3>
       <div id="list-daily"></div>
-      <div class="add-row"><input type="text" id="input-daily" placeholder="Add for today…"><button class="btn small" data-add="daily">Add</button></div>
+      <div class="add-row"><input type="text" id="input-daily" placeholder="Add for tomorrow…"><input type="date" id="input-daily-date" class="tiny-date-input" title="Or pick a specific date"><button class="btn small" data-add="daily">Add</button></div>
     </div>
     <div class="card todo-section">
       <h3><svg class="hicon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>Weekly <span style="font-weight:400;color:var(--ink-soft);font-size:11px;">(shows every day this week)</span></h3>
@@ -1478,7 +1480,7 @@ function updateColourToggleBtn(){
 
 // ---------- todos (What's On items + separate To-Do checklist + archive) ----------
 function todoScopeRange(t){
-  if(t.scope==='urgent') return {start:null, end:null};
+  if(t.scope==='urgent') return {start:todayStr(), end:'9999-12-31'};
   return {start:t.rangeStart || t.dueDate, end:t.rangeEnd || t.dueDate};
 }
 function todoInRange(t, dateStr){
@@ -1500,14 +1502,11 @@ function todoOccursOn(t, dateStr){
 }
 function bucketFor(t){
   if(t.scope==='urgent') return 'urgent';
+  const range = todoScopeRange(t);
+  if(range.end && range.end < todayStr()) return 'urgent';
   if(t.scope==='week') return 'weekly';
   if(t.scope==='month') return 'monthly';
-  if(!t.dueDate) return 'daily';
-  const diff = daysBetween(todayStr(), t.dueDate);
-  if(diff < 0) return 'urgent';
-  if(diff <= 1) return 'daily';
-  if(diff <= 7) return 'weekly';
-  return 'monthly';
+  return 'daily';
 }
 async function addDayWhatsOn(){
   if(!selectedDate){ showToast('Pick a date above first.'); return; }
@@ -1793,8 +1792,10 @@ async function addFromTasksTab(bucket){
   if(bucket==='urgent'){
     t = {id:Date.now(), text, tagId:null, urgent:true, done:false, doneAt:null, kind:'task', scope:'urgent', dueDate:null, rangeStart:null, rangeEnd:null, repeat:'none'};
   }else if(bucket==='daily'){
-    const tomorrow = addDays(today, 1);
-    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'day', dueDate:tomorrow, rangeStart:tomorrow, rangeEnd:tomorrow, repeat:'none'};
+    const dateInput = document.getElementById('input-daily-date');
+    const chosen = dateInput && dateInput.value ? dateInput.value : addDays(today, 1);
+    t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'day', dueDate:chosen, rangeStart:chosen, rangeEnd:chosen, repeat:'none'};
+    if(dateInput) dateInput.value = '';
   }else if(bucket==='weekly'){
     const ws = mondayOf(today), we = addDays(ws,6);
     t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope:'week', dueDate:today, rangeStart:ws, rangeEnd:we, repeat:'none'};
@@ -1852,7 +1853,7 @@ function renderTodosTab(){
     });
   }
 
-  const urgentCount = todos.filter(t=>t.urgent && !t.done).length;
+  const urgentCount = todos.filter(t=>t.kind==='task' && !t.done && bucketFor(t)==='urgent').length;
   const badge = document.getElementById('urgentBadge');
   if(urgentCount>0){ badge.style.display='block'; badge.textContent = urgentCount; } else badge.style.display='none';
 }
