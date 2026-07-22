@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v4.5 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v4.9 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -62,7 +62,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',
 .switch input:checked + .switch-slider{background:var(--home);}
 .switch input:checked + .switch-slider::before{transform:translateX(18px);}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-spacing:-0.01em;}
-#app{max-width:480px;margin:0 auto;padding:0 14px 116px;}
+#app{max-width:480px;margin:0 auto;padding:0 14px 100px;}
 .top{display:flex;align-items:baseline;justify-content:space-between;padding:14px 0 10px;}
 .top h1{font-size:22px;}
 .app-version{font-family:'IBM Plex Sans';font-size:11px;font-weight:500;color:var(--ink-soft);vertical-align:middle;}
@@ -72,9 +72,9 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-sp
   position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;background:var(--surface);
   border-top:1px solid var(--line);box-shadow:0 -2px 12px rgba(27,38,32,0.06);
 }
-.tab-btn{flex:1;border:none;background:none;padding:17px 2px 15px;font-family:'IBM Plex Sans';font-size:13px;color:var(--ink-soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;}
+.tab-btn{flex:1;border:none;background:none;padding:14px 1px 12px;font-family:'IBM Plex Sans';font-size:10.5px;color:var(--ink-soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;}
 .tab-btn .ic{display:flex;align-items:center;justify-content:center;}
-.tab-btn .ic svg{width:25px;height:25px;}
+.tab-btn .ic svg{width:20px;height:20px;}
 .tab-btn.active{color:var(--home);}
 .tab-badge{position:absolute;top:3px;right:calc(50% - 20px);background:var(--danger);color:#fff;font-size:9px;border-radius:8px;padding:1px 5px;font-weight:600;}
 
@@ -85,6 +85,7 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-sp
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);}
 .card h2{font-size:15px;}
 
+.stat-grid{display:flex;gap:20px;}
 .stat-block{text-align:left;}
 .stat-block .label{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
 .stat-block .big{font-family:'Fraunces',serif;font-size:34px;font-weight:600;margin-top:2px;}
@@ -109,6 +110,12 @@ input[type=text],input[type=number],input[type=date],input[type=time],input[type
 textarea{resize:vertical;min-height:46px;}
 label.field-label{font-size:11.5px;color:var(--ink-soft);display:block;margin:8px 0 4px;text-transform:uppercase;letter-spacing:.03em;}
 label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bottom:2px;text-transform:uppercase;letter-spacing:.03em;}
+.autocomplete-wrap{position:relative;}
+.autocomplete-list{display:none;position:absolute;left:0;right:0;top:100%;z-index:20;background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-top:2px;max-height:180px;overflow-y:auto;box-shadow:var(--shadow);}
+.autocomplete-list.show{display:block;}
+.autocomplete-item{padding:8px 10px;font-size:12.5px;color:var(--ink);border-bottom:1px solid var(--line);cursor:pointer;}
+.autocomplete-item:last-child{border-bottom:none;}
+.autocomplete-item:active{background:var(--surface-2);}
 
 /* Calendar (scrolling) */
 .cal-header-bar{
@@ -263,7 +270,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v4.5</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v4.9</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
@@ -271,6 +278,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <button class="tab-btn" data-view="todo"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg></span>To-Do<span class="tab-badge" id="urgentBadge" style="display:none;"></span></button>
     <button class="tab-btn" data-view="rent"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg></span>Rent</button>
     <button class="tab-btn" data-view="toil"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>TOIL</button>
+    <button class="tab-btn" data-view="mileage"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg></span>Mileage</button>
     <button class="tab-btn" data-view="settings"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>Settings</button>
   </div>
 
@@ -374,6 +382,57 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     </div>
   </div>
 
+  <!-- MILEAGE -->
+  <div class="view" id="view-mileage">
+    <div class="card">
+      <h2 style="font-size:15px;">Log a trip</h2>
+      <div class="stat-sub" style="margin-bottom:8px;">Enter two places (and any stops in between) and the app works out the driving distance across the whole route.</div>
+      <label class="mini-label">From</label>
+      <div class="autocomplete-wrap">
+        <input type="text" id="mileageFromInput" placeholder="Start address or place" autocomplete="off">
+        <div class="autocomplete-list" id="mileageFromSuggestions"></div>
+      </div>
+      <label class="mini-label" style="margin-top:8px;display:block;">To</label>
+      <div class="autocomplete-wrap">
+        <input type="text" id="mileageToInput" placeholder="Destination address or place" autocomplete="off">
+        <div class="autocomplete-list" id="mileageToSuggestions"></div>
+      </div>
+      <div id="mileageStopsContainer"></div>
+      <button type="button" class="btn secondary tiny" id="mileageAddStopBtn" style="margin-top:8px;">+ Add stop</button>
+      <div class="seg" id="mileageCategorySeg" data-selected="business" style="margin-top:10px;">
+        <button data-cat="business" class="sel-home">Business</button>
+        <button data-cat="personal">Personal</button>
+      </div>
+      <button class="btn block" id="mileageCalcBtn" style="margin-top:10px;">Calculate &amp; add trip</button>
+      <div class="stat-sub" id="mileageStatus" style="margin-top:8px;"></div>
+      <div id="mileageManualFallback" style="display:none;margin-top:8px;">
+        <div class="stat-sub" style="margin-bottom:6px;">Couldn't work that out automatically — enter the miles yourself.</div>
+        <div style="display:flex;gap:6px;">
+          <input type="number" id="mileageManualInput" step="0.1" min="0" placeholder="Miles">
+          <button class="btn small" id="mileageManualAddBtn">Add trip</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;">Totals</h2>
+      <div class="stat-grid">
+        <div class="stat-block">
+          <div class="stat-sub">Business</div>
+          <div class="big" id="mileageBusinessTotal">0.0 mi</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-sub">Personal</div>
+          <div class="big" id="mileagePersonalTotal">0.0 mi</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;">Trip history</h2>
+      <div id="mileageTripList"></div>
+      <div class="empty" id="mileageEmpty" style="display:none;">No trips logged yet.</div>
+    </div>
+  </div>
+
   <!-- SETTINGS -->
   <div class="view" id="view-settings">
     <div class="card">
@@ -382,6 +441,15 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <span>Dark mode</span>
         <span class="switch"><input type="checkbox" id="darkModeToggle"><span class="switch-slider"></span></span>
       </label>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;">Rent rates</h2>
+      <div class="stat-sub" style="margin-bottom:6px;">What each night costs, per night, Home or Away.</div>
+      <div class="shift-compact" style="grid-template-columns:1fr 1fr;">
+        <div><label class="mini-label">Home (£/night)</label><input type="number" id="rateHomeInput" step="0.05" min="0"></div>
+        <div><label class="mini-label">Away (£/night)</label><input type="number" id="rateAwayInput" step="0.05" min="0"></div>
+      </div>
+      <button class="btn small" id="rateSaveBtn" style="margin-top:8px;">Save rates</button>
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Set your TOIL balance</h2>
@@ -513,8 +581,8 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <script>
 (function(){
 
-const RATE_HOME = 7.5;
-const RATE_AWAY = 3.75;
+let RATE_HOME = 7.5;
+let RATE_AWAY = 3.75;
 const TAG_PALETTE = ['#3F6FA6','#B9782B','#9B5DE5','#4C9F70','#E56399','#6C6EA0','#2FA4A0','#C1443A','#7A8B99','#E8C547'];
 const TAG_PALETTE_NAMES = ['Blue','Orange','Purple','Green','Pink','Indigo','Teal','Red','Grey','Gold'];
 
@@ -527,6 +595,7 @@ let rentMeta = {lastPaidThrough:null};
 let rentHistory = [];
 let todos = [];         // {id,text,tagId,urgent,done,doneAt,scope:'day'|'week'|'month'|'urgent',dueDate,rangeStart,rangeEnd}
 let toilPayouts = [];   // {id,date,amount}
+let mileageTrips = [];  // {id,date,from,to,category,miles}
 let toilAdjustment = 0; // manual correction so the balance can be set directly
 let events = [];        // {id,title,date,repeat:'none'|'weekly'|'monthly'|'yearly'}
 let darkModeOn = false;
@@ -606,9 +675,12 @@ async function init(){
     await saveKey('tag-defs', tagDefs);
   }
   rentMeta = await loadKey('rent-meta', {lastPaidThrough:null});
+  RATE_HOME = await loadKey('rent-rate-home', 7.5);
+  RATE_AWAY = await loadKey('rent-rate-away', 3.75);
   rentHistory = await loadKey('rent-history', []);
   todos = await loadKey('todos', []);
   toilPayouts = await loadKey('toil-payouts', []);
+  mileageTrips = await loadKey('mileage-trips', []);
   toilAdjustment = await loadKey('toil-adjustment', 0);
   events = await loadKey('events', []);
   let needsResave = false;
@@ -647,11 +719,13 @@ async function init(){
   setupShiftHistory();
   setupSearch();
   setupSettings();
+  setupMileage();
 
   renderCalendarAll();
   renderRentTab();
   renderToilTab();
   renderTodosTab();
+  renderMileageTab();
   scrollToMonth(now.getFullYear(), now.getMonth(), false);
 }
 
@@ -744,6 +818,200 @@ function renderRentTab(){
     let rows = rentHistory.slice().reverse().map(r=> '<tr><td>'+shortDate(r.paidDate)+'</td><td>'+shortDate(r.through)+'</td><td>'+money(r.amount)+'</td></tr>').join('');
     histBody.innerHTML = '<table class="hist"><thead><tr><th>Paid</th><th>Covers up to</th><th>Amount</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
+}
+// ---------- Mileage ----------
+function photonLabel(p){
+  const parts = [];
+  const line1 = [p.housenumber, p.street].filter(Boolean).join(' ') || p.name;
+  if(line1) parts.push(line1);
+  if(p.city && p.city !== line1) parts.push(p.city);
+  if(p.state) parts.push(p.state);
+  if(p.country) parts.push(p.country);
+  return parts.filter((v,i)=>parts.indexOf(v)===i).join(', ');
+}
+async function geocodePlace(address){
+  const url = 'https://photon.komoot.io/api/?limit=1&q='+encodeURIComponent(address);
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('geocode failed');
+  const data = await res.json();
+  if(!data || !data.features || !data.features.length) return null;
+  const f = data.features[0];
+  return {lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0], label:photonLabel(f.properties)};
+}
+async function routeMiles(coords){
+  const path = coords.map(c=> c.lon+','+c.lat).join(';');
+  const url = 'https://router.project-osrm.org/route/v1/driving/'+path+'?overview=false';
+  const res = await fetch(url);
+  if(!res.ok) throw new Error('route failed');
+  const data = await res.json();
+  if(!data.routes || !data.routes.length) return null;
+  return Math.round((data.routes[0].distance/1609.344)*10)/10;
+}
+function setupMileage(){
+  document.getElementById('mileageCategorySeg').querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.getElementById('mileageCategorySeg').querySelectorAll('button').forEach(b=>b.classList.remove('sel-home','sel-away'));
+      btn.classList.add(btn.dataset.cat==='business' ? 'sel-home' : 'sel-away');
+      document.getElementById('mileageCategorySeg').dataset.selected = btn.dataset.cat;
+    });
+  });
+  document.getElementById('mileageCalcBtn').addEventListener('click', calculateAndAddTrip);
+  document.getElementById('mileageManualAddBtn').addEventListener('click', addManualTrip);
+  document.getElementById('mileageAddStopBtn').addEventListener('click', addMileageStopRow);
+  setupAddressAutocomplete('mileageFromInput', 'mileageFromSuggestions', c=> mileageFromCoord = c);
+  setupAddressAutocomplete('mileageToInput', 'mileageToSuggestions', c=> mileageToCoord = c);
+}
+let mileageFromCoord = null;
+let mileageToCoord = null;
+let mileageStops = []; // {id, coord}
+function addMileageStopRow(){
+  const id = 'stop_'+Date.now();
+  mileageStops.push({id, coord:null});
+  const wrap = document.createElement('div');
+  wrap.className = 'autocomplete-wrap';
+  wrap.style.marginTop = '8px';
+  wrap.dataset.stopId = id;
+  wrap.innerHTML =
+    '<div style="display:flex;gap:6px;">'+
+      '<input type="text" id="input-'+id+'" placeholder="Stop address or place" autocomplete="off" style="flex:1;">'+
+      '<button type="button" class="todo-del" data-remove-stop="'+id+'">&times;</button>'+
+    '</div>'+
+    '<div class="autocomplete-list" id="list-'+id+'"></div>';
+  document.getElementById('mileageStopsContainer').appendChild(wrap);
+  setupAddressAutocomplete('input-'+id, 'list-'+id, c=>{
+    const stop = mileageStops.find(s=>s.id===id);
+    if(stop) stop.coord = c;
+  });
+  wrap.querySelector('[data-remove-stop]').addEventListener('click', ()=>{
+    mileageStops = mileageStops.filter(s=>s.id!==id);
+    wrap.remove();
+  });
+}
+function setupAddressAutocomplete(inputId, listId, onPick){
+  const input = document.getElementById(inputId);
+  const list = document.getElementById(listId);
+  let debounceTimer = null;
+  let requestSeq = 0;
+  input.addEventListener('input', ()=>{
+    onPick(null);
+    const query = input.value.trim();
+    clearTimeout(debounceTimer);
+    if(query.length < 3){ list.classList.remove('show'); list.innerHTML=''; return; }
+    debounceTimer = setTimeout(async ()=>{
+      const seq = ++requestSeq;
+      try{
+        const url = 'https://photon.komoot.io/api/?limit=5&q='+encodeURIComponent(query);
+        const res = await fetch(url);
+        if(!res.ok) return;
+        const data = await res.json();
+        if(seq !== requestSeq) return; // a newer keystroke has since fired, ignore this stale result
+        list.innerHTML = '';
+        if(!data || !data.features || !data.features.length){ list.classList.remove('show'); return; }
+        data.features.forEach(f=>{
+          const label = photonLabel(f.properties);
+          if(!label) return;
+          const item = document.createElement('div');
+          item.className = 'autocomplete-item';
+          item.textContent = label;
+          item.addEventListener('click', ()=>{
+            input.value = label;
+            onPick({lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]});
+            list.classList.remove('show');
+            list.innerHTML = '';
+          });
+          list.appendChild(item);
+        });
+        list.classList.add('show');
+      }catch(e){ /* silent — autocomplete is a convenience, calculate-time fallback still works */ }
+    }, 400);
+  });
+  document.addEventListener('click', (e)=>{
+    if(!input.contains(e.target) && !list.contains(e.target)) list.classList.remove('show');
+  });
+}
+async function calculateAndAddTrip(){
+  const from = document.getElementById('mileageFromInput').value.trim();
+  const to = document.getElementById('mileageToInput').value.trim();
+  const status = document.getElementById('mileageStatus');
+  const fallback = document.getElementById('mileageManualFallback');
+  fallback.style.display = 'none';
+  if(!from || !to){ status.textContent = 'Enter both a from and to address.'; return; }
+  const stopEls = Array.from(document.querySelectorAll('#mileageStopsContainer [data-stop-id]'));
+  const stopTexts = stopEls.map(el=> document.getElementById('input-'+el.dataset.stopId).value.trim()).filter(Boolean);
+  const btn = document.getElementById('mileageCalcBtn');
+  btn.disabled = true;
+  status.textContent = 'Working out the distance…';
+  try{
+    const a = mileageFromCoord || await geocodePlace(from);
+    const b = mileageToCoord || await geocodePlace(to);
+    const stopCoords = [];
+    for(const stop of mileageStops){
+      const input = document.getElementById('input-'+stop.id);
+      if(!input || !input.value.trim()) continue;
+      const c = stop.coord || await geocodePlace(input.value.trim());
+      if(!c) throw new Error('Could not find one of the stops.');
+      stopCoords.push(c);
+    }
+    if(!a || !b) throw new Error('Could not find one of those places.');
+    const miles = await routeMiles([a, ...stopCoords, b]);
+    if(miles==null) throw new Error('Could not work out a route.');
+    const fullFrom = stopTexts.length ? from+' (via '+stopTexts.join(', ')+')' : from;
+    await addTrip(fullFrom, to, miles);
+    status.textContent = 'Added: '+miles+' miles.';
+  }catch(e){
+    status.textContent = "Couldn't calculate that automatically — enter the miles below instead.";
+    fallback.style.display = 'block';
+  }
+  btn.disabled = false;
+}
+async function addManualTrip(){
+  const from = document.getElementById('mileageFromInput').value.trim();
+  const to = document.getElementById('mileageToInput').value.trim();
+  const miles = parseFloat(document.getElementById('mileageManualInput').value);
+  if(!from || !to){ showToast('Enter both a from and to address.'); return; }
+  if(isNaN(miles) || miles<=0){ showToast('Enter the miles for this trip.'); return; }
+  await addTrip(from, to, miles);
+  document.getElementById('mileageManualInput').value = '';
+  document.getElementById('mileageManualFallback').style.display = 'none';
+  document.getElementById('mileageStatus').textContent = 'Added: '+miles+' miles.';
+}
+async function addTrip(from, to, miles){
+  const category = document.getElementById('mileageCategorySeg').dataset.selected || 'business';
+  mileageTrips.push({id:Date.now(), date:todayStr(), from, to, category, miles});
+  await saveKey('mileage-trips', mileageTrips);
+  document.getElementById('mileageFromInput').value = '';
+  document.getElementById('mileageToInput').value = '';
+  mileageFromCoord = null;
+  mileageToCoord = null;
+  mileageStops = [];
+  document.getElementById('mileageStopsContainer').innerHTML = '';
+  renderMileageTab();
+}
+function renderMileageTab(){
+  const business = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
+  const personal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
+  document.getElementById('mileageBusinessTotal').textContent = business.toFixed(1)+' mi';
+  document.getElementById('mileagePersonalTotal').textContent = personal.toFixed(1)+' mi';
+
+  const list = document.getElementById('mileageTripList');
+  const empty = document.getElementById('mileageEmpty');
+  list.innerHTML = '';
+  if(mileageTrips.length===0){ empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  mileageTrips.slice().reverse().forEach(t=>{
+    const row = document.createElement('div');
+    row.className = 'todo-item';
+    row.innerHTML =
+      '<div style="flex:1;"><div class="todo-text">'+escapeHtml(t.from)+' &rarr; '+escapeHtml(t.to)+'</div>'+
+      '<div class="todo-due">'+shortDate(t.date)+' \u00b7 '+(t.category==='business'?'Business':'Personal')+' \u00b7 '+t.miles.toFixed(1)+' mi</div></div>'+
+      '<button class="todo-del">&times;</button>';
+    row.querySelector('.todo-del').addEventListener('click', async ()=>{
+      mileageTrips = mileageTrips.filter(x=>x.id!==t.id);
+      await saveKey('mileage-trips', mileageTrips);
+      renderMileageTab();
+    });
+    list.appendChild(row);
+  });
 }
 function setupRentActions(){
   document.getElementById('markPaidBtn').addEventListener('click', async ()=>{
@@ -2013,6 +2281,18 @@ function setupSettings(){
     applyDarkMode(darkModeOn);
     await saveKey('dark-mode', darkModeOn);
   });
+  document.getElementById('rateHomeInput').value = RATE_HOME;
+  document.getElementById('rateAwayInput').value = RATE_AWAY;
+  document.getElementById('rateSaveBtn').addEventListener('click', async ()=>{
+    const home = parseFloat(document.getElementById('rateHomeInput').value);
+    const away = parseFloat(document.getElementById('rateAwayInput').value);
+    if(isNaN(home) || isNaN(away) || home<0 || away<0){ showToast('Enter valid rates for both.'); return; }
+    RATE_HOME = home; RATE_AWAY = away;
+    await saveKey('rent-rate-home', RATE_HOME);
+    await saveKey('rent-rate-away', RATE_AWAY);
+    renderRentTab();
+    showToast('Rent rates updated.');
+  });
   document.getElementById('toilSetInput').value = computeToilWeeks().balance;
   document.getElementById('toilSetBtn').addEventListener('click', async ()=>{
     const val = parseFloat(document.getElementById('toilSetInput').value);
@@ -2113,7 +2393,8 @@ function renderSettingsNewColourRow(){
 function exportData(){
   const payload = {
     exportedAt: new Date().toISOString(),
-    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment
+    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips,
+    rentRateHome: RATE_HOME, rentRateAway: RATE_AWAY
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
@@ -2153,6 +2434,9 @@ function handleImportClick(){
       todos = data.todos || [];
       toilPayouts = data.toilPayouts || [];
       toilAdjustment = data.toilAdjustment || 0;
+      mileageTrips = data.mileageTrips || [];
+      RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 7.5;
+      RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 3.75;
       await saveKey('calendar-data', calendarData);
       await saveKey('tag-defs', tagDefs);
       await saveKey('rent-meta', rentMeta);
@@ -2160,7 +2444,12 @@ function handleImportClick(){
       await saveKey('todos', todos);
       await saveKey('toil-payouts', toilPayouts);
       await saveKey('toil-adjustment', toilAdjustment);
-      renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab();
+      await saveKey('mileage-trips', mileageTrips);
+      await saveKey('rent-rate-home', RATE_HOME);
+      await saveKey('rent-rate-away', RATE_AWAY);
+      renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab();
+      document.getElementById('rateHomeInput').value = RATE_HOME;
+      document.getElementById('rateAwayInput').value = RATE_AWAY;
       warn.textContent = '';
       fileInput.value = '';
       showToast('Data restored from backup.');
