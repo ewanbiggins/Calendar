@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v4.9 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v5.0 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content, viewport-fit=cover">
 <title>Home Base</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
@@ -62,7 +62,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',
 .switch input:checked + .switch-slider{background:var(--home);}
 .switch input:checked + .switch-slider::before{transform:translateX(18px);}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-spacing:-0.01em;}
-#app{max-width:480px;margin:0 auto;padding:0 14px 100px;}
+#app{max-width:480px;margin:0 auto;padding:0 14px calc(100px + env(safe-area-inset-bottom, 0px));}
 .top{display:flex;align-items:baseline;justify-content:space-between;padding:14px 0 10px;}
 .top h1{font-size:22px;}
 .app-version{font-family:'IBM Plex Sans';font-size:11px;font-weight:500;color:var(--ink-soft);vertical-align:middle;}
@@ -71,8 +71,9 @@ h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-sp
 .tabs{
   position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;background:var(--surface);
   border-top:1px solid var(--line);box-shadow:0 -2px 12px rgba(27,38,32,0.06);
+  padding-bottom:env(safe-area-inset-bottom, 0px);
 }
-.tab-btn{flex:1;border:none;background:none;padding:14px 1px 12px;font-family:'IBM Plex Sans';font-size:10.5px;color:var(--ink-soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;}
+.tab-btn{flex:1;border:none;background:none;padding:12px 1px 10px;font-family:'IBM Plex Sans';font-size:10.5px;color:var(--ink-soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;}
 .tab-btn .ic{display:flex;align-items:center;justify-content:center;}
 .tab-btn .ic svg{width:20px;height:20px;}
 .tab-btn.active{color:var(--home);}
@@ -270,7 +271,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v4.9</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v5.0</span></h1><div class="date" id="todayLabel"></div></div>
   </div>
 
   <div class="tabs">
@@ -398,7 +399,14 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <div class="autocomplete-list" id="mileageToSuggestions"></div>
       </div>
       <div id="mileageStopsContainer"></div>
-      <button type="button" class="btn secondary tiny" id="mileageAddStopBtn" style="margin-top:8px;">+ Add stop</button>
+      <div style="display:flex;gap:6px;margin-top:8px;">
+        <button type="button" class="btn secondary tiny" id="mileageAddStopBtn">+ Add stop</button>
+        <button type="button" class="btn secondary tiny" id="mileageReturnStartBtn">&#8635; Return to start</button>
+      </div>
+      <div id="mileageRecentsWrap" style="margin-top:10px;">
+        <label class="mini-label">Recent &amp; favourite places</label>
+        <div class="tag-swatch-row" id="mileageRecentsRow" style="overflow-x:auto;flex-wrap:wrap;padding:2px 0;"></div>
+      </div>
       <div class="seg" id="mileageCategorySeg" data-selected="business" style="margin-top:10px;">
         <button data-cat="business" class="sel-home">Business</button>
         <button data-cat="personal">Personal</button>
@@ -581,8 +589,8 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <script>
 (function(){
 
-let RATE_HOME = 7.5;
-let RATE_AWAY = 3.75;
+let RATE_HOME = 0;
+let RATE_AWAY = 0;
 const TAG_PALETTE = ['#3F6FA6','#B9782B','#9B5DE5','#4C9F70','#E56399','#6C6EA0','#2FA4A0','#C1443A','#7A8B99','#E8C547'];
 const TAG_PALETTE_NAMES = ['Blue','Orange','Purple','Green','Pink','Indigo','Teal','Red','Grey','Gold'];
 
@@ -675,12 +683,13 @@ async function init(){
     await saveKey('tag-defs', tagDefs);
   }
   rentMeta = await loadKey('rent-meta', {lastPaidThrough:null});
-  RATE_HOME = await loadKey('rent-rate-home', 7.5);
-  RATE_AWAY = await loadKey('rent-rate-away', 3.75);
+  RATE_HOME = await loadKey('rent-rate-home', 0);
+  RATE_AWAY = await loadKey('rent-rate-away', 0);
   rentHistory = await loadKey('rent-history', []);
   todos = await loadKey('todos', []);
   toilPayouts = await loadKey('toil-payouts', []);
   mileageTrips = await loadKey('mileage-trips', []);
+  mileageFavorites = await loadKey('mileage-favorites', []);
   toilAdjustment = await loadKey('toil-adjustment', 0);
   events = await loadKey('events', []);
   let needsResave = false;
@@ -858,12 +867,24 @@ function setupMileage(){
   document.getElementById('mileageCalcBtn').addEventListener('click', calculateAndAddTrip);
   document.getElementById('mileageManualAddBtn').addEventListener('click', addManualTrip);
   document.getElementById('mileageAddStopBtn').addEventListener('click', addMileageStopRow);
+  document.getElementById('mileageReturnStartBtn').addEventListener('click', ()=>{
+    const fromVal = document.getElementById('mileageFromInput').value.trim();
+    if(!fromVal){ showToast('Enter a starting place first.'); return; }
+    document.getElementById('mileageToInput').value = fromVal;
+    mileageToCoord = mileageFromCoord;
+    showToast('Set destination back to your start.');
+  });
   setupAddressAutocomplete('mileageFromInput', 'mileageFromSuggestions', c=> mileageFromCoord = c);
   setupAddressAutocomplete('mileageToInput', 'mileageToSuggestions', c=> mileageToCoord = c);
+  document.getElementById('mileageFromInput').addEventListener('focus', ()=> mileageLastFocused='mileageFromInput');
+  document.getElementById('mileageToInput').addEventListener('focus', ()=> mileageLastFocused='mileageToInput');
+  renderMileageRecents();
 }
 let mileageFromCoord = null;
 let mileageToCoord = null;
 let mileageStops = []; // {id, coord}
+let mileageFavorites = []; // array of address strings
+let mileageLastFocused = 'mileageFromInput';
 function addMileageStopRow(){
   const id = 'stop_'+Date.now();
   mileageStops.push({id, coord:null});
@@ -975,6 +996,46 @@ async function addManualTrip(){
   document.getElementById('mileageManualFallback').style.display = 'none';
   document.getElementById('mileageStatus').textContent = 'Added: '+miles+' miles.';
 }
+function renderMileageRecents(){
+  const row = document.getElementById('mileageRecentsRow');
+  if(!row) return;
+  row.innerHTML = '';
+  const recents = [];
+  mileageTrips.slice().reverse().forEach(t=>{
+    [t.from, t.to].forEach(addr=>{
+      if(addr && !recents.includes(addr) && !mileageFavorites.includes(addr)) recents.push(addr);
+    });
+  });
+  const all = [...mileageFavorites.map(a=>({addr:a, fav:true})), ...recents.slice(0,8).map(a=>({addr:a, fav:false}))];
+  if(all.length===0){ row.innerHTML = '<div class="empty">Trips you log will show up here for quick reuse.</div>'; return; }
+  all.forEach(entry=>{
+    const chip = document.createElement('div');
+    chip.style.cssText = 'display:flex;align-items:center;gap:4px;background:var(--surface-2);border:1px solid var(--line);border-radius:20px;padding:5px 10px;font-size:12px;white-space:nowrap;flex-shrink:0;';
+    const label = document.createElement('span');
+    label.textContent = entry.addr.length>28 ? entry.addr.slice(0,27)+'…' : entry.addr;
+    label.style.cursor = 'pointer';
+    label.title = entry.addr;
+    label.addEventListener('click', ()=>{
+      const input = document.getElementById(mileageLastFocused);
+      input.value = entry.addr;
+      if(mileageLastFocused==='mileageFromInput') mileageFromCoord = null; else mileageToCoord = null;
+    });
+    const star = document.createElement('span');
+    star.textContent = entry.fav ? '\u2605' : '\u2606';
+    star.style.cssText = 'cursor:pointer;color:'+(entry.fav?'var(--gold, #E8C547)':'var(--ink-soft)')+';';
+    star.title = entry.fav ? 'Remove from favourites' : 'Add to favourites';
+    star.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      if(entry.fav) mileageFavorites = mileageFavorites.filter(a=>a!==entry.addr);
+      else mileageFavorites.push(entry.addr);
+      await saveKey('mileage-favorites', mileageFavorites);
+      renderMileageRecents();
+    });
+    chip.appendChild(star);
+    chip.appendChild(label);
+    row.appendChild(chip);
+  });
+}
 async function addTrip(from, to, miles){
   const category = document.getElementById('mileageCategorySeg').dataset.selected || 'business';
   mileageTrips.push({id:Date.now(), date:todayStr(), from, to, category, miles});
@@ -988,6 +1049,7 @@ async function addTrip(from, to, miles){
   renderMileageTab();
 }
 function renderMileageTab(){
+  renderMileageRecents();
   const business = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
   const personal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
   document.getElementById('mileageBusinessTotal').textContent = business.toFixed(1)+' mi';
@@ -2393,7 +2455,7 @@ function renderSettingsNewColourRow(){
 function exportData(){
   const payload = {
     exportedAt: new Date().toISOString(),
-    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips,
+    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites,
     rentRateHome: RATE_HOME, rentRateAway: RATE_AWAY
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -2435,8 +2497,9 @@ function handleImportClick(){
       toilPayouts = data.toilPayouts || [];
       toilAdjustment = data.toilAdjustment || 0;
       mileageTrips = data.mileageTrips || [];
-      RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 7.5;
-      RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 3.75;
+      mileageFavorites = data.mileageFavorites || [];
+      RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 0;
+      RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 0;
       await saveKey('calendar-data', calendarData);
       await saveKey('tag-defs', tagDefs);
       await saveKey('rent-meta', rentMeta);
@@ -2445,6 +2508,7 @@ function handleImportClick(){
       await saveKey('toil-payouts', toilPayouts);
       await saveKey('toil-adjustment', toilAdjustment);
       await saveKey('mileage-trips', mileageTrips);
+      await saveKey('mileage-favorites', mileageFavorites);
       await saveKey('rent-rate-home', RATE_HOME);
       await saveKey('rent-rate-away', RATE_AWAY);
       renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab();
