@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v5.9 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v6.1 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -277,7 +277,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v5.9</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v6.1</span></h1><div class="date" id="todayLabel"></div></div>
     <button class="round-btn" id="settingsTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
   </div>
 
@@ -1102,8 +1102,7 @@ async function calculateAndAddTrip(){
     if(!a || !b) throw new Error('Could not find one of those places.');
     const miles = await routeMiles([a, ...stopCoords, b]);
     if(miles==null) throw new Error('Could not work out a route.');
-    const fullFrom = stopTexts.length ? from+' (via '+stopTexts.join(', ')+')' : from;
-    await addTrip(fullFrom, to, miles);
+    await addTrip(from, to, miles, stopTexts);
     status.textContent = 'Added: '+miles+' miles.';
   }catch(e){
     status.textContent = "Couldn't calculate that automatically — enter the miles below instead.";
@@ -1122,9 +1121,9 @@ async function addManualTrip(){
   document.getElementById('mileageManualFallback').style.display = 'none';
   document.getElementById('mileageStatus').textContent = 'Added: '+miles+' miles.';
 }
-async function addTrip(from, to, miles){
+async function addTrip(from, to, miles, stops){
   const category = document.getElementById('mileageCategorySeg').dataset.selected || 'business';
-  mileageTrips.push({id:Date.now(), date:todayStr(), from, to, category, miles});
+  mileageTrips.push({id:Date.now(), date:todayStr(), from, to, category, miles, stops: stops||[]});
   await saveKey('mileage-trips', mileageTrips);
   document.getElementById('mileageFromInput').value = '';
   document.getElementById('mileageToInput').value = '';
@@ -1133,6 +1132,14 @@ async function addTrip(from, to, miles){
   mileageStops = [];
   document.getElementById('mileageStopsContainer').innerHTML = '';
   renderMileageTab();
+}
+function mileageDisplayName(address){
+  const fav = mileageFavorites.find(f=>f.address===address);
+  return fav && fav.nickname ? fav.nickname : address;
+}
+function mileageRouteLabel(t){
+  const points = [t.from, ...(t.stops||[]), t.to];
+  return points.map(mileageDisplayName).map(escapeHtml).join(' &rarr; ');
 }
 function renderMileageTab(){
   const business = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
@@ -1149,7 +1156,7 @@ function renderMileageTab(){
     const row = document.createElement('div');
     row.className = 'todo-item';
     row.innerHTML =
-      '<div style="flex:1;"><div class="todo-text">'+escapeHtml(t.from)+' &rarr; '+escapeHtml(t.to)+'</div>'+
+      '<div style="flex:1;"><div class="todo-text">'+mileageRouteLabel(t)+'</div>'+
       '<div class="todo-due">'+shortDate(t.date)+' \u00b7 '+(t.category==='business'?'Business':'Personal')+' \u00b7 '+t.miles.toFixed(1)+' mi</div></div>'+
       '<button class="todo-del">&times;</button>';
     row.querySelector('.todo-del').addEventListener('click', async ()=>{
@@ -2544,16 +2551,16 @@ function csvEscape(val){
 }
 function exportMileageCSV(){
   if(mileageTrips.length===0){ showToast('No trips logged yet.'); return; }
-  const rows = [['Date','From','To','Category','Miles']];
+  const rows = [['Date','From','Via','To','Category','Miles']];
   mileageTrips.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{
-    rows.push([t.date, t.from, t.to, t.category==='business'?'Business':'Personal', t.miles.toFixed(1)]);
+    rows.push([t.date, mileageDisplayName(t.from), (t.stops||[]).map(mileageDisplayName).join(' > '), mileageDisplayName(t.to), t.category==='business'?'Business':'Personal', t.miles.toFixed(1)]);
   });
   const businessTotal = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
   const personalTotal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
   rows.push([]);
-  rows.push(['', '', '', 'Business total', businessTotal.toFixed(1)]);
-  rows.push(['', '', '', 'Personal total', personalTotal.toFixed(1)]);
-  rows.push(['', '', '', 'Grand total', (businessTotal+personalTotal).toFixed(1)]);
+  rows.push(['', '', '', '', 'Business total', businessTotal.toFixed(1)]);
+  rows.push(['', '', '', '', 'Personal total', personalTotal.toFixed(1)]);
+  rows.push(['', '', '', '', 'Grand total', (businessTotal+personalTotal).toFixed(1)]);
   const csv = rows.map(r=> r.map(csvEscape).join(',')).join('\r\n');
   const blob = new Blob([csv], {type:'text/csv'});
   const url = URL.createObjectURL(blob);
