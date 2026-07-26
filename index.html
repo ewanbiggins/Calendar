@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v6.1 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v6.2 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -277,7 +277,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v6.1</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v6.2</span></h1><div class="date" id="todayLabel"></div></div>
     <button class="round-btn" id="settingsTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
   </div>
 
@@ -409,6 +409,8 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <button data-cat="business" class="sel-home">Business</button>
         <button data-cat="personal">Personal</button>
       </div>
+      <label class="mini-label" style="margin-top:8px;display:block;">Date</label>
+      <input type="date" id="mileageDateInput">
       <button class="btn block" id="mileageCalcBtn" style="margin-top:10px;">Calculate &amp; add trip</button>
       <div class="stat-sub" id="mileageStatus" style="margin-top:8px;"></div>
       <div id="mileageManualFallback" style="display:none;margin-top:8px;">
@@ -875,6 +877,7 @@ async function routeMiles(coords){
   return Math.round((data.routes[0].distance/1609.344)*10)/10;
 }
 function setupMileage(){
+  document.getElementById('mileageDateInput').value = todayStr();
   document.getElementById('mileageCategorySeg').querySelectorAll('button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.getElementById('mileageCategorySeg').querySelectorAll('button').forEach(b=>b.classList.remove('sel-home','sel-away'));
@@ -1123,10 +1126,13 @@ async function addManualTrip(){
 }
 async function addTrip(from, to, miles, stops){
   const category = document.getElementById('mileageCategorySeg').dataset.selected || 'business';
-  mileageTrips.push({id:Date.now(), date:todayStr(), from, to, category, miles, stops: stops||[]});
+  const dateInput = document.getElementById('mileageDateInput');
+  const date = dateInput.value || todayStr();
+  mileageTrips.push({id:Date.now(), date, from, to, category, miles, stops: stops||[]});
   await saveKey('mileage-trips', mileageTrips);
   document.getElementById('mileageFromInput').value = '';
   document.getElementById('mileageToInput').value = '';
+  dateInput.value = todayStr();
   mileageFromCoord = null;
   mileageToCoord = null;
   mileageStops = [];
@@ -1152,7 +1158,7 @@ function renderMileageTab(){
   list.innerHTML = '';
   if(mileageTrips.length===0){ empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  mileageTrips.slice().reverse().forEach(t=>{
+  mileageTrips.slice().sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id).forEach(t=>{
     const row = document.createElement('div');
     row.className = 'todo-item';
     row.innerHTML =
