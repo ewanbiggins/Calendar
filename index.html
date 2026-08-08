@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v6.3 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v6.4 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -48,7 +48,7 @@ body.dark{
   --shadow:0 1px 2px rgba(0,0,0,0.25), 0 4px 14px rgba(0,0,0,0.2);
 }
 *{box-sizing:border-box;}
-button,input,select,textarea,a,.day-cell,.mini-month,.tab-btn,.month-chip,.tag-swatch-btn,.swatch{touch-action:manipulation;}
+button,input,select,textarea,a,.day-cell,.mini-month,.month-chip,.tag-swatch-btn,.swatch{touch-action:manipulation;}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s ease,color .2s ease;}
 .switch-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;}
 .tag-manage-item{margin-bottom:12px;}
@@ -64,21 +64,12 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',
 .switch input:checked + .switch-slider{background:var(--home);}
 .switch input:checked + .switch-slider::before{transform:translateX(18px);}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-spacing:-0.01em;}
-#app{max-width:480px;margin:0 auto;padding:0 14px calc(100px + env(safe-area-inset-bottom, 0px));}
+#app{max-width:480px;margin:0 auto;padding:0 14px calc(24px + env(safe-area-inset-bottom, 0px));}
 .top{display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px;}
 .top h1{font-size:22px;}
 .app-version{font-family:'IBM Plex Sans';font-size:11px;font-weight:500;color:var(--ink-soft);vertical-align:middle;}
 .top .date{color:var(--ink-soft);font-size:12.5px;}
 
-.tabs{
-  position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;background:var(--surface);
-  border-top:1px solid var(--line);box-shadow:0 -2px 12px rgba(27,38,32,0.06);
-  padding-bottom:env(safe-area-inset-bottom, 0px);
-}
-.tab-btn{flex:1;border:none;background:none;padding:12px 1px 10px;font-family:'IBM Plex Sans';font-size:10.5px;color:var(--ink-soft);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;}
-.tab-btn .ic{display:flex;align-items:center;justify-content:center;}
-.tab-btn .ic svg{width:20px;height:20px;}
-.tab-btn.active{color:var(--home);}
 .tab-badge{position:absolute;top:3px;right:calc(50% - 20px);background:var(--danger);color:#fff;font-size:9px;border-radius:8px;padding:1px 5px;font-weight:600;}
 
 .view{display:none;}
@@ -119,6 +110,13 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .autocomplete-list{display:none;position:absolute;left:0;right:0;top:100%;z-index:20;background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-top:2px;max-height:180px;overflow-y:auto;box-shadow:var(--shadow);}
 .autocomplete-list.show{display:block;}
 .autocomplete-item{padding:8px 10px;font-size:12.5px;color:var(--ink);border-bottom:1px solid var(--line);cursor:pointer;}
+.menu-item{display:flex;align-items:center;gap:12px;padding:12px 8px;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;border-radius:10px;}
+.menu-item svg{color:var(--home);flex-shrink:0;}
+.menu-item:active{background:var(--surface-2);}
+.drawer-overlay{position:fixed;inset:0;background:rgba(20,31,26,0.45);z-index:90;opacity:0;pointer-events:none;transition:opacity .2s ease;}
+.drawer-overlay.show{opacity:1;pointer-events:auto;}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:78%;max-width:300px;background:var(--surface);z-index:91;transform:translateX(-100%);transition:transform .25s ease;box-shadow:2px 0 24px rgba(0,0,0,0.18);overflow-y:auto;padding:20px 18px;padding-top:calc(20px + env(safe-area-inset-top,0px));}
+.drawer.show{transform:translateX(0);}
 .autocomplete-heading{padding:6px 10px 3px;font-size:9.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
 .autocomplete-item:last-child{border-bottom:none;}
 .autocomplete-item:active{background:var(--surface-2);}
@@ -126,13 +124,13 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 /* Calendar (scrolling) */
 .cal-header-bar{
   position:sticky;top:0;z-index:46;background:var(--bg);
-  display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:nowrap;
+  display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:nowrap;
   padding:14px 0;box-shadow:0 6px 8px -8px rgba(27,38,32,0.15);
 }
 .cal-back-btn{display:flex;align-items:center;gap:4px;background:none;border:none;color:var(--ink);font-family:'Fraunces',serif;font-weight:600;font-size:19px;padding:4px 2px;flex-shrink:0;}
 .cal-back-btn svg{transition:transform .15s ease;width:19px;height:19px;}
 .cal-back-btn.expanded svg{transform:rotate(180deg);}
-.cal-header-right{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;justify-content:flex-end;flex-shrink:0;}
+.cal-header-right{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;justify-content:flex-end;flex-shrink:0;margin-left:auto;}
 .cal-header-right .btn.small{padding:8px 11px;font-size:13px;white-space:nowrap;flex-shrink:0;}
 .round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:34px;height:34px;padding:0;font-size:18px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .round-btn.primary{background:var(--home);border-color:var(--home);color:#fff;font-weight:600;}
@@ -249,6 +247,18 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .seg button.sel-none{background:var(--fill);color:var(--fill-text);}
 
 .divider{height:1px;background:var(--line);margin:12px 0;}
+.trend-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px;}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:130px;margin-top:8px;}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0;}
+.chart-bar{width:100%;background:var(--home);border-radius:4px 4px 0 0;min-height:2px;}
+.chart-bar-value{font-size:8.5px;color:var(--ink-soft);margin-bottom:3px;white-space:nowrap;}
+.chart-bar-label{font-size:9px;color:var(--ink-soft);margin-top:5px;white-space:nowrap;}
+.chip-row{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;}
+.chip-btn{flex-shrink:0;background:var(--surface-2);border:1px solid var(--line);color:var(--ink-soft);border-radius:20px;padding:6px 12px;font-size:12px;font-weight:500;white-space:nowrap;}
+.chip-btn.active{background:var(--home);border-color:var(--home);color:#fff;}
+.trend-row:last-child{border-bottom:none;}
+.trend-row span{color:var(--ink-soft);}
+.trend-row strong{font-family:'Fraunces',serif;font-weight:600;}
 .modal-actions{display:flex;gap:8px;margin-top:16px;}
 .modal-actions .btn{flex:1;}
 
@@ -271,33 +281,44 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 .week-detail-row td{background:var(--surface-2);font-size:11.5px;color:var(--ink-soft);padding:8px 8px;}
 
 .notif-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1B2620;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:200;box-shadow:0 4px 14px rgba(0,0,0,0.3);max-width:90%;}
+.mileage-print-area{display:none;}
+@media print{
+  #app, .tabs, .overlay{display:none !important;}
+  .mileage-print-area{display:block !important;font-family:'IBM Plex Sans',sans-serif;color:#111;padding:20px;}
+  .mileage-print-area h1{font-family:'Fraunces',serif;font-size:22px;margin-bottom:4px;}
+  .mileage-print-area .print-meta{font-size:12px;color:#555;margin-bottom:16px;}
+  .mileage-print-area table{width:100%;border-collapse:collapse;font-size:12px;}
+  .mileage-print-area th,.mileage-print-area td{border:1px solid #ccc;padding:6px 8px;text-align:left;}
+  .mileage-print-area th{background:#f0f0f0;}
+  .mileage-print-area .print-totals{margin-top:16px;font-size:13px;}
+  .mileage-print-area .print-totals div{padding:2px 0;}
+}
 </style>
 </head>
 <body>
 
 <div id="app">
   <div class="top">
-    <div><h1>Home Base <span class="app-version">v6.3</span></h1><div class="date" id="todayLabel"></div></div>
-    <button class="round-btn" id="settingsTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
+    <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    <div><h1>Home Base <span class="app-version">v6.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <button class="round-btn" id="quickAddTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
 
-  <div class="tabs">
-    <button class="tab-btn active" data-view="calendar"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></span>Calendar</button>
-    <button class="tab-btn" data-view="todo"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg></span>To-Do<span class="tab-badge" id="urgentBadge" style="display:none;"></span></button>
-    <button class="tab-btn" data-view="rent"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/></svg></span>Rent</button>
-    <button class="tab-btn" data-view="toil"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>TOIL</button>
-    <button class="tab-btn" data-view="mileage"><span class="ic"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg></span>Mileage</button>
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer" id="drawerPanel">
+    <h2 style="font-size:16px;margin-bottom:14px;">Menu</h2>
+    <div id="drawerBody"></div>
   </div>
 
   <!-- CALENDAR -->
   <div class="view active" id="view-calendar">
     <div class="cal-header-bar">
+      <button class="round-btn" id="menuCalBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
       <button class="cal-back-btn" id="yearToggleBtn">
         <svg id="yearToggleIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         <span id="yearToggleLabel">2026</span>
       </button>
       <div class="cal-header-right">
-        <button class="round-btn" id="settingsCalBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></button>
         <button class="round-btn" id="searchBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
         <button class="btn secondary small" id="jumpTodayBtn">Today</button>
         <button class="round-btn primary" id="addDayBtn">+</button>
@@ -436,10 +457,51 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Trip history</h2>
-      <button class="btn secondary block" id="mileageExportBtn">Export mileage log (CSV)</button>
+      <div style="display:flex;gap:6px;">
+        <button class="btn secondary block" id="mileageExportBtn">Export CSV</button>
+        <button class="btn secondary block" id="mileagePdfBtn">Export PDF</button>
+      </div>
       <div class="divider"></div>
       <div id="mileageTripList"></div>
       <div class="empty" id="mileageEmpty" style="display:none;">No trips logged yet.</div>
+    </div>
+  </div>
+
+  <div class="mileage-print-area" id="mileagePrintArea"></div>
+
+  <!-- EXPENSES -->
+  <div class="view" id="view-expenses">
+    <div class="card">
+      <h2 style="font-size:15px;">Log an expense</h2>
+      <div class="stat-sub" style="margin-bottom:8px;">Jot it down now, sort it out later — nothing gets forgotten until you tick it off.</div>
+      <div class="add-row">
+        <input type="number" id="expenseAmountInput" step="0.01" min="0" placeholder="£" style="max-width:90px;">
+        <input type="text" id="expenseNoteInput" placeholder="What was it for?">
+        <button class="btn small" id="addExpenseBtn">Add</button>
+      </div>
+    </div>
+    <div class="card todo-section">
+      <h3><svg class="hicon" viewBox="0 0 24 24" width="14" height="14"><circle cx="12" cy="12" r="9" fill="var(--danger)"/></svg>Pending</h3>
+      <div id="list-expenses-pending"></div>
+    </div>
+    <div class="card todo-section">
+      <h3><svg class="hicon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11a1 1 0 001 1h12a1 1 0 001-1V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>Done</h3>
+      <div id="list-expenses-done"></div>
+    </div>
+  </div>
+
+  <!-- TRENDS -->
+  <div class="view" id="view-trends">
+    <div class="card">
+      <h2 style="font-size:15px;">Trends</h2>
+      <div class="stat-sub" style="margin-bottom:4px;">Everything since 1 July 2026.</div>
+      <div id="trendsSection"></div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;" id="trendsChartTitle">Hours by month</h2>
+      <div class="chip-row" id="trendsChartPicker" style="margin-bottom:10px;"></div>
+      <div id="trendsClockInfo"></div>
+      <div id="trendsChartArea"></div>
     </div>
   </div>
 
@@ -699,6 +761,7 @@ async function init(){
     await saveKey('mileage-favorites', mileageFavorites);
   }
   toilAdjustment = await loadKey('toil-adjustment', 0);
+  expenses = await loadKey('expenses', []);
   events = await loadKey('events', []);
   let needsResave = false;
   if(events.length){
@@ -737,12 +800,14 @@ async function init(){
   setupSearch();
   setupSettings();
   setupMileage();
+  setupExpenses();
 
   renderCalendarAll();
   renderRentTab();
   renderToilTab();
   renderTodosTab();
   renderMileageTab();
+  renderExpensesTab();
   scrollToMonth(now.getFullYear(), now.getMonth(), false);
 }
 
@@ -755,50 +820,84 @@ function normalizeRange(){
 
 let savedCalendarScrollY = 0;
 function goToCalendarDate(dateStr){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelector('.tab-btn[data-view="calendar"]').classList.add('active');
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-calendar').classList.add('active');
-  document.getElementById('settingsTopBtn').classList.remove('active');
-  document.getElementById('settingsCalBtn').classList.remove('active');
+  goToView('calendar');
   exitYearView();
   const d = parseYMD(dateStr);
   scrollToMonth(d.getFullYear(), d.getMonth(), true);
   openDayModal(dateStr);
 }
-function setupTabs(){
-  document.querySelectorAll('.tab-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const wasCalendar = document.getElementById('view-calendar').classList.contains('active');
-      if(wasCalendar) savedCalendarScrollY = window.scrollY;
-      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-      document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-      document.getElementById('settingsTopBtn').classList.remove('active');
-      document.getElementById('settingsCalBtn').classList.remove('active');
-      btn.classList.add('active');
-      document.getElementById('view-'+btn.dataset.view).classList.add('active');
-      if(btn.dataset.view==='calendar'){
-        requestAnimationFrame(()=> window.scrollTo(0, savedCalendarScrollY));
-      }
-    });
-  });
-  document.getElementById('settingsTopBtn').addEventListener('click', toggleSettingsView);
-  document.getElementById('settingsCalBtn').addEventListener('click', toggleSettingsView);
-}
-function toggleSettingsView(){
-  const isOpen = document.getElementById('view-settings').classList.contains('active');
-  if(isOpen){
-    document.getElementById('settingsTopBtn').classList.remove('active');
-    document.getElementById('settingsCalBtn').classList.remove('active');
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    const lastTab = document.querySelector('.tab-btn.active') || document.querySelector('.tab-btn[data-view="calendar"]');
-    document.getElementById('view-'+lastTab.dataset.view).classList.add('active');
-  }else{
-    document.getElementById('settingsTopBtn').classList.add('active');
-    document.getElementById('settingsCalBtn').classList.add('active');
-    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-    document.getElementById('view-settings').classList.add('active');
+function goToView(viewName){
+  const wasCalendar = document.getElementById('view-calendar').classList.contains('active');
+  if(wasCalendar) savedCalendarScrollY = window.scrollY;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+viewName).classList.add('active');
+  if(viewName==='calendar'){
+    requestAnimationFrame(()=> window.scrollTo(0, savedCalendarScrollY));
   }
+  if(viewName==='trends') renderTrends();
+}
+function setupTabs(){
+  document.getElementById('menuTopBtn').addEventListener('click', openMenuSheet);
+  document.getElementById('menuCalBtn').addEventListener('click', openMenuSheet);
+  document.getElementById('quickAddTopBtn').addEventListener('click', openQuickAddSheet);
+  document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
+}
+function openMenuSheet(){
+  const body = document.getElementById('drawerBody');
+  const urgentCount = todos.filter(t=>t.kind==='task' && !t.done && bucketFor(t)==='urgent').length;
+  const pendingExpenses = expenses.filter(e=>!e.done).length;
+  const icons = {
+    calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>',
+    todo:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l2.5 2.5L16 9"/>',
+    rent:'<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/>',
+    toil:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
+    mileage:'<path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/>',
+    expenses:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/>',
+    trends:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-7"/>',
+    settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>'
+  };
+  const items = [
+    ['calendar','Calendar',0],
+    ['todo','To-Do',urgentCount],
+    ['rent','Rent',0],
+    ['toil','TOIL',0],
+    ['mileage','Mileage',0],
+    ['expenses','Expenses',pendingExpenses],
+    ['trends','Trends',0]
+  ];
+  const itemHtml = (view,label,count)=>
+    '<div class="menu-item" data-goto="'+view+'">'+
+      '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+icons[view]+'</svg>'+
+      '<span>'+label+'</span>'+
+      (count>0?'<span class="tab-badge" style="position:static;display:inline-block;margin-left:auto;">'+count+'</span>':'')+
+    '</div>';
+  body.innerHTML = items.map(it=>itemHtml(it[0],it[1],it[2])).join('') + '<div class="divider"></div>' + itemHtml('settings','Settings',0);
+  body.querySelectorAll('[data-goto]').forEach(el=>{
+    el.addEventListener('click', ()=>{ closeDrawer(); goToView(el.dataset.goto); });
+  });
+  document.getElementById('drawerOverlay').classList.add('show');
+  document.getElementById('drawerPanel').classList.add('show');
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('show');
+  document.getElementById('drawerPanel').classList.remove('show');
+}
+function openQuickAddSheet(){
+  openSheet('Quick add');
+  const body = document.getElementById('sheetBody');
+  body.innerHTML =
+    '<div class="menu-item" id="quickAddMileage">Log mileage</div>'+
+    '<div class="menu-item" id="quickAddExpense">Log an expense</div>';
+  document.getElementById('quickAddMileage').addEventListener('click', ()=>{
+    closeSheet();
+    goToView('mileage');
+    setTimeout(()=>{ const el=document.getElementById('mileageFromInput'); if(el) el.focus(); }, 100);
+  });
+  document.getElementById('quickAddExpense').addEventListener('click', ()=>{
+    closeSheet();
+    goToView('expenses');
+    setTimeout(()=>{ const el=document.getElementById('expenseAmountInput'); if(el) el.focus(); }, 100);
+  });
 }
 
 function setupSheet(){
@@ -895,6 +994,66 @@ async function routeMiles(coords){
   if(!data.routes || !data.routes.length) return null;
   return Math.round((data.routes[0].distance/1609.344)*10)/10;
 }
+// ---------- Expenses ----------
+function setupExpenses(){
+  document.getElementById('addExpenseBtn').addEventListener('click', addExpense);
+  document.getElementById('expenseNoteInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.keyCode===13){ e.preventDefault(); addExpense(); } });
+  document.getElementById('expenseAmountInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.keyCode===13){ e.preventDefault(); addExpense(); } });
+}
+async function addExpense(){
+  const amountInput = document.getElementById('expenseAmountInput');
+  const noteInput = document.getElementById('expenseNoteInput');
+  const amount = parseFloat(amountInput.value);
+  const note = noteInput.value.trim();
+  if(isNaN(amount) || amount<=0){ showToast('Enter an amount.'); return; }
+  expenses.push({id:Date.now(), date:todayStr(), amount, note, done:false});
+  await saveKey('expenses', expenses);
+  amountInput.value = '';
+  noteInput.value = '';
+  amountInput.focus();
+  renderExpensesTab();
+}
+async function toggleExpenseDone(e){
+  e.done = !e.done;
+  await saveKey('expenses', expenses);
+  renderExpensesTab();
+}
+function renderExpensesTab(){
+  const pendingList = document.getElementById('list-expenses-pending');
+  const doneList = document.getElementById('list-expenses-done');
+  pendingList.innerHTML = '';
+  doneList.innerHTML = '';
+  const pending = expenses.filter(e=>!e.done).sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id);
+  const done = expenses.filter(e=>e.done).sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id);
+
+  if(pending.length===0){ pendingList.innerHTML = '<div class="empty">Nothing pending — you\'re all caught up.</div>'; }
+  pending.forEach(e=>{
+    const row = document.createElement('div');
+    row.className = 'todo-item';
+    row.innerHTML =
+      '<div class="todo-check"></div>'+
+      '<div style="flex:1;"><div class="todo-text">'+money(e.amount)+(e.note?' &middot; '+escapeHtml(e.note):'')+'</div>'+
+      '<div class="todo-due">'+shortDate(e.date)+'</div></div>'+
+      '<button class="todo-del">&times;</button>';
+    row.querySelector('.todo-check').addEventListener('click', ()=> toggleExpenseDone(e));
+    row.querySelector('.todo-del').addEventListener('click', async ()=>{ expenses = expenses.filter(x=>x.id!==e.id); await saveKey('expenses', expenses); renderExpensesTab(); });
+    pendingList.appendChild(row);
+  });
+
+  if(done.length===0){ doneList.innerHTML = '<div class="empty">Nothing here yet.</div>'; }
+  done.forEach(e=>{
+    const row = document.createElement('div');
+    row.className = 'todo-item';
+    row.innerHTML =
+      '<div class="todo-check done">&#10003;</div>'+
+      '<div style="flex:1;"><div class="todo-text done">'+money(e.amount)+(e.note?' &middot; '+escapeHtml(e.note):'')+'</div>'+
+      '<div class="todo-due">'+shortDate(e.date)+'</div></div>'+
+      '<button class="todo-del">&times;</button>';
+    row.querySelector('.todo-check').addEventListener('click', ()=> toggleExpenseDone(e));
+    row.querySelector('.todo-del').addEventListener('click', async ()=>{ expenses = expenses.filter(x=>x.id!==e.id); await saveKey('expenses', expenses); renderExpensesTab(); });
+    doneList.appendChild(row);
+  });
+}
 function setupMileage(){
   document.getElementById('mileageDateInput').value = todayStr();
   document.getElementById('mileageCategorySeg').querySelectorAll('button').forEach(btn=>{
@@ -917,6 +1076,7 @@ function setupMileage(){
     showToast('Added a return leg back to your start.');
   });
   document.getElementById('mileageExportBtn').addEventListener('click', exportMileageCSV);
+  document.getElementById('mileagePdfBtn').addEventListener('click', exportMileagePDF);
   setupAddressAutocomplete('mileageFromInput', 'mileageFromSuggestions', c=> mileageFromCoord = c);
   setupAddressAutocomplete('mileageToInput', 'mileageToSuggestions', c=> mileageToCoord = c);
 }
@@ -924,6 +1084,7 @@ let mileageFromCoord = null;
 let mileageToCoord = null;
 let mileageStops = []; // {id, coord}
 let mileageFavorites = []; // {id, address, nickname}
+let expenses = []; // {id, date, amount, note, done}
 function addMileageStopRow(prefillText, prefillCoord){
   const id = 'stop_'+Date.now();
   mileageStops.push({id, coord:prefillCoord||null});
@@ -1049,6 +1210,37 @@ function buildFavouriteRow(fav, input, onPick, list){
   item.appendChild(label); item.appendChild(actions);
   return item;
 }
+function promptForAddressLabel(address){
+  return new Promise(resolve=>{
+    openSheet('Name this address');
+    const body = document.getElementById('sheetBody');
+    body.innerHTML =
+      '<div class="stat-sub" style="margin-bottom:10px;">'+escapeHtml(address)+'</div>'+
+      '<input type="text" id="labelPromptInput" placeholder="e.g. Home, Site A, Office">'+
+      '<button class="btn block" id="labelPromptSaveBtn" style="margin-top:10px;">Save label</button>'+
+      '<button class="btn secondary block" id="labelPromptSkipBtn" style="margin-top:8px;">Skip</button>';
+    const input = document.getElementById('labelPromptInput');
+    let settled = false;
+    const finish = (val)=>{
+      if(settled) return;
+      settled = true;
+      closeSheet();
+      resolve(val);
+    };
+    document.getElementById('labelPromptSaveBtn').addEventListener('click', ()=> finish(input.value.trim() || null));
+    document.getElementById('labelPromptSkipBtn').addEventListener('click', ()=> finish(null));
+    input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); finish(input.value.trim() || null); } });
+    setTimeout(()=> input.focus(), 50);
+  });
+}
+async function ensureAddressLabelled(address){
+  if(!address) return;
+  if(mileageFavorites.some(f=>f.address===address)) return;
+  const label = await promptForAddressLabel(address);
+  const nickname = label || address;
+  mileageFavorites.push({id:'fav_'+Date.now()+Math.random(), address, nickname});
+  await saveKey('mileage-favorites', mileageFavorites);
+}
 function setupAddressAutocomplete(inputId, listId, onPick){
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
@@ -1082,11 +1274,12 @@ function setupAddressAutocomplete(inputId, listId, onPick){
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
           item.textContent = label;
-          item.addEventListener('click', ()=>{
+          item.addEventListener('click', async ()=>{
             input.value = label;
             onPick({lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]});
             list.classList.remove('show');
             list.innerHTML = '';
+            await ensureAddressLabelled(label);
           });
           list.appendChild(item);
         });
@@ -1158,6 +1351,10 @@ async function addTrip(from, to, miles, stops){
   mileageToCoord = null;
   mileageStops = [];
   document.getElementById('mileageStopsContainer').innerHTML = '';
+  renderMileageTab();
+  for(const addr of [from, ...(stops||[]), to]){
+    await ensureAddressLabelled(addr);
+  }
   renderMileageTab();
 }
 function mileageDisplayName(address){
@@ -2289,10 +2486,6 @@ function renderTodosTab(){
       archiveContainer.appendChild(row);
     });
   }
-
-  const urgentCount = todos.filter(t=>t.kind==='task' && !t.done && bucketFor(t)==='urgent').length;
-  const badge = document.getElementById('urgentBadge');
-  if(urgentCount>0){ badge.style.display='block'; badge.textContent = urgentCount; } else badge.style.display='none';
 }
 
 function repeatLabel(r){
@@ -2570,11 +2763,43 @@ function csvEscape(val){
   if(/[",\n]/.test(s)) return '"'+s.replace(/"/g,'""')+'"';
   return s;
 }
+function mileageExportFields(t){
+  if(t.category==='personal'){
+    return {from:'Personal', via:'', to:'Personal'};
+  }
+  return {
+    from: mileageDisplayName(t.from),
+    via: (t.stops||[]).map(mileageDisplayName).join(' > '),
+    to: mileageDisplayName(t.to)
+  };
+}
+function exportMileagePDF(){
+  if(mileageTrips.length===0){ showToast('No trips logged yet.'); return; }
+  const area = document.getElementById('mileagePrintArea');
+  const sorted = mileageTrips.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const businessTotal = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
+  const personalTotal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
+  const rowsHtml = sorted.map(t=>{
+    const f = mileageExportFields(t);
+    return '<tr><td>'+shortDate(t.date)+'</td><td>'+escapeHtml(f.from)+'</td><td>'+escapeHtml(f.via)+'</td><td>'+escapeHtml(f.to)+'</td><td>'+(t.category==='business'?'Business':'Personal')+'</td><td>'+t.miles.toFixed(1)+'</td></tr>';
+  }).join('');
+  area.innerHTML =
+    '<h1>Mileage Log</h1>'+
+    '<div class="print-meta">Exported '+shortDate(todayStr())+'</div>'+
+    '<table><thead><tr><th>Date</th><th>From</th><th>Via</th><th>To</th><th>Category</th><th>Miles</th></tr></thead><tbody>'+rowsHtml+'</tbody></table>'+
+    '<div class="print-totals">'+
+      '<div><strong>Business total:</strong> '+businessTotal.toFixed(1)+' mi</div>'+
+      '<div><strong>Personal total:</strong> '+personalTotal.toFixed(1)+' mi</div>'+
+      '<div><strong>Grand total:</strong> '+(businessTotal+personalTotal).toFixed(1)+' mi</div>'+
+    '</div>';
+  window.print();
+}
 function exportMileageCSV(){
   if(mileageTrips.length===0){ showToast('No trips logged yet.'); return; }
   const rows = [['Date','From','Via','To','Category','Miles']];
   mileageTrips.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{
-    rows.push([t.date, mileageDisplayName(t.from), (t.stops||[]).map(mileageDisplayName).join(' > '), mileageDisplayName(t.to), t.category==='business'?'Business':'Personal', t.miles.toFixed(1)]);
+    const f = mileageExportFields(t);
+    rows.push([t.date, f.from, f.via, f.to, t.category==='business'?'Business':'Personal', t.miles.toFixed(1)]);
   });
   const businessTotal = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
   const personalTotal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
@@ -2594,10 +2819,206 @@ function exportMileageCSV(){
   URL.revokeObjectURL(url);
   showToast('Mileage log downloaded.');
 }
+function timeToMinutes(t){
+  if(!t) return null;
+  const parts = t.split(':').map(Number);
+  if(parts.length<2 || isNaN(parts[0]) || isNaN(parts[1])) return null;
+  return parts[0]*60+parts[1];
+}
+function minutesToClock(m){
+  let h = Math.floor(m/60), mi = Math.round(m%60);
+  if(mi===60){ mi=0; h+=1; }
+  const ampm = h<12 ? 'am' : 'pm';
+  let h12 = h%12; if(h12===0) h12=12;
+  return h12+(mi>0?':'+String(mi).padStart(2,'0'):'')+ampm;
+}
+function renderBarChart(containerId, bars){
+  const container = document.getElementById(containerId);
+  if(!bars.length){ container.innerHTML = '<div class="empty">Not enough data yet.</div>'; return; }
+  const max = Math.max(...bars.map(b=>b.value), 0.001);
+  container.innerHTML = '<div class="chart-bars">'+bars.map(b=>
+    '<div class="chart-bar-col">'+
+      '<div class="chart-bar-value">'+(b.value?b.value.toFixed(1):'')+'</div>'+
+      '<div class="chart-bar" style="height:'+Math.max(2,(b.value/max)*100)+'%"></div>'+
+      '<div class="chart-bar-label">'+b.label+'</div>'+
+    '</div>'
+  ).join('')+'</div>';
+}
+function renderStackedBarChart(containerId, bars, seriesColors, seriesLabels){
+  const container = document.getElementById(containerId);
+  if(!bars.length){ container.innerHTML = '<div class="empty">Not enough data yet.</div>'; return; }
+  const totals = bars.map(b=> b.values.reduce((a,c)=>a+c,0));
+  const max = Math.max(...totals, 0.001);
+  const barsHtml = bars.map(b=>{
+    const total = b.values.reduce((a,c)=>a+c,0);
+    const barHeightPct = total>0 ? Math.max(2,(total/max)*100) : 0;
+    let segs = '';
+    b.values.forEach((v,i)=>{
+      if(v<=0) return;
+      const segPct = total>0 ? (v/total)*100 : 0;
+      segs += '<div style="height:'+segPct+'%;background:'+seriesColors[i]+';width:100%;"></div>';
+    });
+    return '<div class="chart-bar-col">'+
+      '<div class="chart-bar-value">'+(total?total.toFixed(0):'')+'</div>'+
+      '<div class="chart-bar" style="height:'+barHeightPct+'%;display:flex;flex-direction:column-reverse;overflow:hidden;">'+segs+'</div>'+
+      '<div class="chart-bar-label">'+b.label+'</div>'+
+    '</div>';
+  }).join('');
+  const legend = '<div style="display:flex;gap:14px;margin-top:10px;font-size:10.5px;color:var(--ink-soft);">'+
+    seriesLabels.map((l,i)=>'<span style="display:flex;align-items:center;gap:4px;"><span style="width:8px;height:8px;border-radius:50%;background:'+seriesColors[i]+';display:inline-block;"></span>'+l+'</span>').join('')+
+  '</div>';
+  container.innerHTML = '<div class="chart-bars">'+barsHtml+'</div>'+legend;
+}
+let trendsData = null;
+let trendsChartType = 'hours';
+const MONTH_NAMES_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function computeTrendsData(){
+  const today = todayStr();
+  const totalDays = Math.max(0, daysBetween(RENT_START_DATE, today));
+  let homeDaysTotal=0, awayDaysTotal=0, hoursTotal=0;
+  const monthlyHours = {}, monthlyHome = {}, monthlyAway = {};
+  const startMins = [], finishMins = [];
+  let cursor = RENT_START_DATE;
+  while(cursor < today){
+    const mKey = cursor.slice(0,7);
+    const entry = calendarData[cursor];
+    if(entry && entry.status==='away'){ awayDaysTotal++; monthlyAway[mKey] = (monthlyAway[mKey]||0)+1; }
+    else{ homeDaysTotal++; monthlyHome[mKey] = (monthlyHome[mKey]||0)+1; }
+    const h = entry ? shiftHours(entry.shift) : null;
+    if(h){
+      hoursTotal += h;
+      monthlyHours[mKey] = (monthlyHours[mKey]||0) + h;
+    }
+    if(entry && entry.shift){
+      const s = timeToMinutes(entry.shift.start), f = timeToMinutes(entry.shift.finish);
+      if(s!=null) startMins.push(s);
+      if(f!=null) finishMins.push(f);
+    }
+    cursor = addDays(cursor, 1);
+  }
+  const monthlyBizMiles = {}, monthlyPersMiles = {};
+  mileageTrips.forEach(t=>{
+    const mKey = t.date.slice(0,7);
+    if(t.category==='business') monthlyBizMiles[mKey] = (monthlyBizMiles[mKey]||0)+t.miles;
+    else monthlyPersMiles[mKey] = (monthlyPersMiles[mKey]||0)+t.miles;
+  });
+  const monthlyTodos = {};
+  todos.filter(t=>t.kind==='task' && t.done && t.doneAt).forEach(t=>{
+    const mKey = t.doneAt.slice(0,7);
+    monthlyTodos[mKey] = (monthlyTodos[mKey]||0)+1;
+  });
+  const monthlyExpenses = {};
+  expenses.forEach(e=>{
+    const mKey = e.date.slice(0,7);
+    monthlyExpenses[mKey] = (monthlyExpenses[mKey]||0)+e.amount;
+  });
+  const toilWeeks = computeToilWeeks().weeks.slice(-12);
+
+  return {
+    totalDays, homeDaysTotal, awayDaysTotal, hoursTotal, monthlyHours, monthlyHome, monthlyAway,
+    startMins, finishMins, monthlyBizMiles, monthlyPersMiles, monthlyTodos, monthlyExpenses, toilWeeks
+  };
+}
+function monthLabel(key){ const [y,m] = key.split('-').map(Number); return MONTH_NAMES_SHORT[m-1]; }
+function allMonthKeys(...objs){
+  const set = new Set();
+  objs.forEach(o=> Object.keys(o).forEach(k=>set.add(k)));
+  return Array.from(set).sort().slice(-12);
+}
+function renderSelectedChart(){
+  const d = trendsData;
+  document.getElementById('trendsClockInfo').innerHTML = '';
+  const titleEl = document.getElementById('trendsChartTitle');
+  if(trendsChartType==='hours'){
+    titleEl.textContent = 'Hours worked by month';
+    const keys = allMonthKeys(d.monthlyHours);
+    renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyHours[k]||0})));
+  }else if(trendsChartType==='clock'){
+    titleEl.textContent = 'Clock in / clock out';
+    const clockInfo = document.getElementById('trendsClockInfo');
+    if(d.startMins.length===0 && d.finishMins.length===0){
+      clockInfo.innerHTML = '<div class="empty">Log some shifts to see this.</div>';
+      document.getElementById('trendsChartArea').innerHTML = '';
+    }else{
+      const avgStart = d.startMins.length ? d.startMins.reduce((a,b)=>a+b,0)/d.startMins.length : null;
+      const avgFinish = d.finishMins.length ? d.finishMins.reduce((a,b)=>a+b,0)/d.finishMins.length : null;
+      clockInfo.innerHTML =
+        '<div class="trend-row"><span>Average clock in</span><strong>'+(avgStart!=null?minutesToClock(avgStart):'—')+'</strong></div>'+
+        '<div class="trend-row"><span>Average clock out</span><strong>'+(avgFinish!=null?minutesToClock(avgFinish):'—')+'</strong></div>';
+      const buckets = {};
+      d.startMins.forEach(m=>{ const hr = Math.floor(m/60); buckets[hr] = (buckets[hr]||0)+1; });
+      const hrs = Object.keys(buckets).map(Number).sort((a,b)=>a-b);
+      renderBarChart('trendsChartArea', hrs.map(hr=>({label:minutesToClock(hr*60).replace(':00',''), value:buckets[hr]})));
+    }
+  }else if(trendsChartType==='homeaway'){
+    titleEl.textContent = 'Home vs Away nights by month';
+    const keys = allMonthKeys(d.monthlyHome, d.monthlyAway);
+    renderStackedBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), values:[d.monthlyHome[k]||0, d.monthlyAway[k]||0]})), [getComputedStyle(document.documentElement).getPropertyValue('--home').trim(), getComputedStyle(document.documentElement).getPropertyValue('--away').trim()], ['Home','Away']);
+  }else if(trendsChartType==='miles'){
+    titleEl.textContent = 'Miles by month';
+    const keys = allMonthKeys(d.monthlyBizMiles, d.monthlyPersMiles);
+    renderStackedBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), values:[d.monthlyBizMiles[k]||0, d.monthlyPersMiles[k]||0]})), [getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(), getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()], ['Business','Personal']);
+  }else if(trendsChartType==='toil'){
+    titleEl.textContent = 'Hours worked by week';
+    renderBarChart('trendsChartArea', d.toilWeeks.map(w=>({label:shortDate(w.weekStart), value:w.total})));
+  }else if(trendsChartType==='todos'){
+    titleEl.textContent = 'To-dos completed by month';
+    const keys = allMonthKeys(d.monthlyTodos);
+    renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyTodos[k]||0})));
+  }else if(trendsChartType==='expenses'){
+    titleEl.textContent = 'Expenses logged by month (£)';
+    const keys = allMonthKeys(d.monthlyExpenses);
+    renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyExpenses[k]||0})));
+  }
+}
+function renderTrends(){
+  trendsData = computeTrendsData();
+  const d = trendsData;
+  const section = document.getElementById('trendsSection');
+  const weeksTracked = Math.max(1, d.totalDays/7);
+  const avgHoursPerWeek = d.hoursTotal/weeksTracked;
+  const toilBalance = computeToilWeeks().balance;
+  const rentPaid = rentHistory.reduce((s,r)=>s+r.amount,0);
+  const rentOwed = computeOwed().total;
+  const bizMilesTotal = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
+  const persMilesTotal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
+  const todosCompleted = todos.filter(t=>t.kind==='task' && t.done).length;
+
+  const rows = [
+    ['Days tracked', d.totalDays],
+    ['Home / Away nights', d.homeDaysTotal+' / '+d.awayDaysTotal],
+    ['Hours worked', d.hoursTotal.toFixed(1)+'h'],
+    ['Average hours / week', avgHoursPerWeek.toFixed(1)+'h'],
+    ['Current TOIL balance', toilBalance.toFixed(1)+'h'],
+    ['Rent paid to date', money(rentPaid)],
+    ['Rent owed now', money(rentOwed)],
+    ['Business miles', bizMilesTotal.toFixed(1)+' mi'],
+    ['Personal miles', persMilesTotal.toFixed(1)+' mi'],
+    ['Trips logged', mileageTrips.length],
+    ['To-dos completed', todosCompleted]
+  ];
+  section.innerHTML = rows.map(r=>'<div class="trend-row"><span>'+r[0]+'</span><strong>'+r[1]+'</strong></div>').join('');
+
+  const chartTypes = [
+    ['hours','Hours/month'], ['clock','Clock in/out'], ['homeaway','Home vs Away'],
+    ['miles','Miles/month'], ['toil','Hours/week'], ['todos','To-dos done'], ['expenses','Expenses']
+  ];
+  const picker = document.getElementById('trendsChartPicker');
+  picker.innerHTML = chartTypes.map(ct=>'<button type="button" class="chip-btn'+(ct[0]===trendsChartType?' active':'')+'" data-chart="'+ct[0]+'">'+ct[1]+'</button>').join('');
+  picker.querySelectorAll('[data-chart]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      trendsChartType = btn.dataset.chart;
+      picker.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      renderSelectedChart();
+    });
+  });
+  renderSelectedChart();
+}
 function exportData(){
   const payload = {
     exportedAt: new Date().toISOString(),
-    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites,
+    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses,
     rentRateHome: RATE_HOME, rentRateAway: RATE_AWAY
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -2640,6 +3061,7 @@ function handleImportClick(){
       toilAdjustment = data.toilAdjustment || 0;
       mileageTrips = data.mileageTrips || [];
       mileageFavorites = data.mileageFavorites || [];
+      expenses = data.expenses || [];
       RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 0;
       RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 0;
       await saveKey('calendar-data', calendarData);
@@ -2651,9 +3073,10 @@ function handleImportClick(){
       await saveKey('toil-adjustment', toilAdjustment);
       await saveKey('mileage-trips', mileageTrips);
       await saveKey('mileage-favorites', mileageFavorites);
+      await saveKey('expenses', expenses);
       await saveKey('rent-rate-home', RATE_HOME);
       await saveKey('rent-rate-away', RATE_AWAY);
-      renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab();
+      renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab(); renderExpensesTab();
       document.getElementById('rateHomeInput').value = RATE_HOME;
       document.getElementById('rateAwayInput').value = RATE_AWAY;
       warn.textContent = '';
