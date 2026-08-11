@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v7.8 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v7.9 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -69,7 +69,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',
 .switch input:checked + .switch-slider{background:var(--home);}
 .switch input:checked + .switch-slider::before{transform:translateX(18px);}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-spacing:-0.01em;}
-#app{max-width:480px;margin:0 auto;padding:0 14px calc(24px + env(safe-area-inset-bottom, 0px));}
+#app{max-width:480px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top, 0px)) 14px calc(24px + env(safe-area-inset-bottom, 0px));}
 .top{display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px;}
 .top h1{font-size:22px;}
 .app-version{font-family:'IBM Plex Sans';font-size:11px;font-weight:500;color:var(--ink-soft);vertical-align:middle;}
@@ -130,7 +130,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 
 /* Calendar (scrolling) */
 .cal-header-bar{
-  position:sticky;top:0;z-index:46;background:var(--bg);
+  position:sticky;top:env(safe-area-inset-top, 0px);z-index:46;background:var(--bg);
   display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:nowrap;
   padding:14px 0;box-shadow:0 6px 8px -8px rgba(27,38,32,0.15);
 }
@@ -325,7 +325,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v7.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v7.9</span></h1><div class="date" id="todayLabel"></div></div>
     <button class="round-btn" id="quickAddTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
 
@@ -544,13 +544,6 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
   <!-- SETTINGS -->
   <div class="view" id="view-settings">
     <div class="card">
-      <h2 style="font-size:15px;">Sync across devices</h2>
-      <div class="stat-sub" style="margin-bottom:8px;">Connect both phones to the same Firebase project and they'll stay in sync automatically. <span id="syncStatus">Not connected</span>.</div>
-      <textarea id="syncConfigInput" placeholder="Paste your firebaseConfig object here" style="min-height:90px;font-family:monospace;font-size:11px;"></textarea>
-      <button class="btn block" id="syncConnectBtn" style="margin-top:8px;">Connect</button>
-      <button class="btn secondary block" id="syncDisconnectBtn" style="margin-top:8px;display:none;">Disconnect</button>
-    </div>
-    <div class="card">
       <h2 style="font-size:15px;">Appearance</h2>
       <label class="switch-row">
         <span>Dark mode</span>
@@ -751,178 +744,15 @@ async function saveKey(key, value, attempt){
         if(attempt < 4){ await new Promise(r=>setTimeout(r, 350*attempt)); return saveKey(key, value, attempt+1); }
         showToast('Could not save "'+key+'" — check your connection and try again.');
       }
-      pushToCloud(key, value);
       return;
     }
     localStorage.setItem('homebase:'+key, JSON.stringify(value));
-    pushToCloud(key, value);
   }catch(e){
     if(attempt < 4){ await new Promise(r=>setTimeout(r, 350*attempt)); return saveKey(key, value, attempt+1); }
     console.error('storage save failed', key, e);
     showToast('Save error on "'+key+'" after retrying — try that action again in a moment.');
   }
 }
-
-// ---------- cloud sync ----------
-const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','dark-mode','rent-rate-home','rent-rate-away'];
-let firebaseApp = null, firestoreDb = null, firestoreDoc = null, syncUnsub = null;
-let syncEnabled = false;
-let suppressNextRerender = false;
-async function pushToCloud(key, value){
-  if(!syncEnabled || !firestoreDb || SYNC_KEYS.indexOf(key)===-1) return;
-  try{
-    await firestoreDoc.set({[key]: JSON.stringify(value)}, {merge:true});
-    setSyncStatus('Synced just now');
-  }catch(e){
-    console.error('cloud push failed', key, e);
-    setSyncStatus('Sync error — will retry on next change');
-  }
-}
-function setSyncStatus(text){
-  const el = document.getElementById('syncStatus');
-  if(el) el.textContent = text;
-}
-async function applyRemoteValue(key, value){
-  switch(key){
-    case 'calendar-data': calendarData = value; break;
-    case 'tag-defs': tagDefs = value; break;
-    case 'rent-meta': rentMeta = value; break;
-    case 'rent-history': rentHistory = value; break;
-    case 'todos': todos = value; break;
-    case 'toil-payouts': toilPayouts = value; break;
-    case 'toil-adjustment': toilAdjustment = value; break;
-    case 'mileage-trips': mileageTrips = value; break;
-    case 'mileage-favorites': mileageFavorites = value; break;
-    case 'expenses': expenses = value; break;
-    case 'travel-places': travelPlaces = value; break;
-    case 'dark-mode': darkModeOn = value; applyDarkMode(darkModeOn); break;
-    case 'rent-rate-home': RATE_HOME = value; break;
-    case 'rent-rate-away': RATE_AWAY = value; break;
-  }
-  if(!hasClaudeStorage()) localStorage.setItem('homebase:'+key, JSON.stringify(value));
-}
-function refreshAllViews(){
-  renderCalendarAll();
-  renderRentTab();
-  renderToilTab();
-  renderTodosTab();
-  renderMileageTab();
-  renderExpensesTab();
-  renderTravelTab();
-  if(document.getElementById('view-settings').classList.contains('active')){
-    renderTagManageList();
-    document.getElementById('rateHomeInput').value = RATE_HOME;
-    document.getElementById('rateAwayInput').value = RATE_AWAY;
-  }
-  if(document.getElementById('view-trends').classList.contains('active')) renderTrends();
-}
-function parseFirebaseConfig(text){
-  try{
-    const match = text.match(/(?:firebaseConfig|config)\s*=\s*(\{[\s\S]*?\n\s*\})/);
-    const cleaned = match ? match[1] : text.trim().replace(/^const\s+\w+\s*=\s*/,'').replace(/;\s*$/,'');
-    const obj = new Function('return ('+cleaned+')')();
-    if(obj && obj.apiKey && obj.projectId) return obj;
-  }catch(e){}
-  return null;
-}
-function loadFirebaseSDK(){
-  return new Promise((resolve, reject)=>{
-    if(window.firebase && window.firebase.firestore){ resolve(); return; }
-    const s1 = document.createElement('script');
-    s1.src = 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js';
-    s1.onload = ()=>{
-      const s2 = document.createElement('script');
-      s2.src = 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js';
-      s2.onload = resolve;
-      s2.onerror = reject;
-      document.head.appendChild(s2);
-    };
-    s1.onerror = reject;
-    document.head.appendChild(s1);
-  });
-}
-async function connectSync(config, isInitialSetup){
-  setSyncStatus('Connecting…');
-  try{
-    await loadFirebaseSDK();
-    firebaseApp = firebase.initializeApp(config, 'homebase-'+Date.now());
-    firestoreDb = firebase.firestore(firebaseApp);
-    firestoreDoc = firestoreDb.collection('homebase').doc('shared');
-    await saveKey('firebase-config', config);
-    syncEnabled = true;
-
-    const snap = await firestoreDoc.get();
-    if(snap.exists){
-      const data = snap.data();
-      for(const key of SYNC_KEYS){
-        if(data[key]===undefined) continue;
-        await applyRemoteValue(key, JSON.parse(data[key]));
-      }
-      refreshAllViews();
-      showToast('Pulled in data from your other device.');
-    }else{
-      const initial = {};
-      const currentValues = {
-        'calendar-data':calendarData,'tag-defs':tagDefs,'rent-meta':rentMeta,'rent-history':rentHistory,
-        'todos':todos,'toil-payouts':toilPayouts,'toil-adjustment':toilAdjustment,'mileage-trips':mileageTrips,
-        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,
-        'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY
-      };
-      SYNC_KEYS.forEach(key=>{ initial[key] = JSON.stringify(currentValues[key]); });
-      await firestoreDoc.set(initial, {merge:true});
-      showToast('This device is now the starting point — connect your other device next.');
-    }
-
-    if(syncUnsub) syncUnsub();
-    syncUnsub = firestoreDoc.onSnapshot({includeMetadataChanges:true}, async (docSnap)=>{
-      if(docSnap.metadata.hasPendingWrites) return;
-      if(!docSnap.exists) return;
-      const data = docSnap.data();
-      for(const key of SYNC_KEYS){
-        if(data[key]===undefined) continue;
-        await applyRemoteValue(key, JSON.parse(data[key]));
-      }
-      refreshAllViews();
-      setSyncStatus('Synced just now');
-    });
-
-    setSyncStatus('Connected');
-    document.getElementById('syncConnectBtn').style.display = 'none';
-    document.getElementById('syncDisconnectBtn').style.display = 'block';
-    document.getElementById('syncConfigInput').style.display = 'none';
-  }catch(e){
-    console.error('sync connect failed', e);
-    setSyncStatus('Could not connect — check the config and try again');
-    syncEnabled = false;
-  }
-}
-async function disconnectSync(){
-  if(syncUnsub){ syncUnsub(); syncUnsub = null; }
-  syncEnabled = false;
-  firestoreDb = null; firestoreDoc = null;
-  await saveKey('firebase-config', null);
-  setSyncStatus('Not connected');
-  document.getElementById('syncConnectBtn').style.display = 'block';
-  document.getElementById('syncDisconnectBtn').style.display = 'none';
-  document.getElementById('syncConfigInput').style.display = 'block';
-  showToast('Disconnected. This device keeps its own local data from here.');
-}
-function setupSync(){
-  document.getElementById('syncConnectBtn').addEventListener('click', ()=>{
-    const config = parseFirebaseConfig(document.getElementById('syncConfigInput').value);
-    if(!config){ showToast("Couldn't read that — paste the whole firebaseConfig block."); return; }
-    connectSync(config);
-  });
-  document.getElementById('syncDisconnectBtn').addEventListener('click', disconnectSync);
-}
-async function initSyncFromSaved(){
-  const saved = await loadKey('firebase-config', null);
-  if(saved){
-    document.getElementById('syncConfigInput').value = JSON.stringify(saved, null, 2);
-    await connectSync(saved, false);
-  }
-}
-
 
 // ---------- helpers ----------
 function pad(n){return n<10?'0'+n:''+n;}
@@ -1024,7 +854,6 @@ async function init(){
   setupMileage();
   setupExpenses();
   setupTravel();
-  setupSync();
 
   renderCalendarAll();
   renderRentTab();
@@ -1034,7 +863,6 @@ async function init(){
   renderExpensesTab();
   renderTravelTab();
   scrollToMonth(now.getFullYear(), now.getMonth(), false);
-  initSyncFromSaved();
 }
 
 function normalizeRange(){
