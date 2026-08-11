@@ -134,12 +134,12 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .cal-header-right{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;justify-content:flex-end;flex-shrink:0;margin-left:auto;}
 .cal-header-right .btn.small{padding:8px 11px;font-size:13px;white-space:nowrap;flex-shrink:0;}
 .round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:34px;height:34px;padding:0;font-size:18px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.round-btn.lg{width:52px;height:52px;font-size:24px;}
+.round-btn.lg{width:58px;height:58px;font-size:26px;}
 .cal-fade{position:fixed;left:0;right:0;height:56px;pointer-events:none;z-index:45;}
-.cal-fade-top{top:0;background:linear-gradient(to bottom, var(--bg) 15%, transparent);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);mask-image:linear-gradient(to bottom, black, transparent);-webkit-mask-image:linear-gradient(to bottom, black, transparent);}
-.cal-fade-bottom{bottom:0;height:88px;background:linear-gradient(to top, var(--bg) 25%, transparent);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);mask-image:linear-gradient(to top, black, transparent);-webkit-mask-image:linear-gradient(to top, black, transparent);}
-.cal-bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));}
-.cal-bottom-bar .btn.secondary{display:flex;align-items:center;gap:6px;box-shadow:var(--shadow);}
+.cal-fade-top{top:0;background:linear-gradient(to bottom, var(--bg) 15%, transparent);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);mask-image:linear-gradient(to bottom, black 0%, black 20%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 0%, black 20%, transparent 100%);}
+.cal-fade-bottom{bottom:0;height:130px;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);}
+.cal-bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));}
+.cal-bottom-bar .round-btn{box-shadow:var(--shadow);}
 .cal-bottom-bar .round-btn.primary{box-shadow:0 4px 14px rgba(43,110,99,0.35);}
 .round-btn.primary{background:var(--home);border-color:var(--home);color:#fff;font-weight:600;}
 .month-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:10px;box-shadow:var(--shadow);scroll-margin-top:88px;}
@@ -291,15 +291,22 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 .notif-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1B2620;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:200;box-shadow:0 4px 14px rgba(0,0,0,0.3);max-width:90%;}
 .mileage-print-area{display:none;}
 @media print{
-  #app, .tabs, .overlay{display:none !important;}
-  .mileage-print-area{display:block !important;font-family:'IBM Plex Sans',sans-serif;color:#111;padding:20px;}
-  .mileage-print-area h1{font-family:'Fraunces',serif;font-size:22px;margin-bottom:4px;}
-  .mileage-print-area .print-meta{font-size:12px;color:#555;margin-bottom:16px;}
-  .mileage-print-area table{width:100%;border-collapse:collapse;font-size:12px;}
-  .mileage-print-area th,.mileage-print-area td{border:1px solid #ccc;padding:6px 8px;text-align:left;}
-  .mileage-print-area th{background:#f0f0f0;}
-  .mileage-print-area .print-totals{margin-top:16px;font-size:13px;}
-  .mileage-print-area .print-totals div{padding:2px 0;}
+  #app, .drawer, .drawer-overlay, .overlay{display:none !important;}
+  .mileage-print-area{display:block !important;font-family:'IBM Plex Sans',sans-serif;color:#111;padding:24px;}
+  .mileage-print-area .print-brand{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:6px;}
+  .mileage-print-area h1{font-family:'Fraunces',serif;font-size:24px;margin-bottom:4px;}
+  .mileage-print-area .print-meta{font-size:12px;color:#555;margin-bottom:18px;}
+  .mileage-print-area table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  .mileage-print-area th,.mileage-print-area td{border-bottom:1px solid #ddd;padding:8px;text-align:left;vertical-align:top;}
+  .mileage-print-area th{background:#f3f3f0;font-weight:600;border-bottom:2px solid #333;}
+  .mileage-print-area tbody tr:nth-child(even){background:#fafaf8;}
+  .mileage-print-area .num{text-align:right;}
+  .mileage-print-area .cat-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;}
+  .mileage-print-area .cat-biz{background:#dce7f2;color:#3F6FA6;}
+  .mileage-print-area .cat-pers{background:#f2ead7;color:#8a6a1e;}
+  .mileage-print-area .print-totals{margin-top:18px;max-width:280px;margin-left:auto;font-size:13px;}
+  .mileage-print-area .print-totals div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee;}
+  .mileage-print-area .print-totals .grand{border-top:2px solid #333;border-bottom:none;margin-top:4px;padding-top:8px;font-weight:600;}
 }
 </style>
 </head>
@@ -308,7 +315,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v6.9</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v7.3</span></h1><div class="date" id="todayLabel"></div></div>
     <button class="round-btn" id="quickAddTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
 
@@ -336,8 +343,8 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <div id="yearGridContainer" style="display:none;"></div>
     <div class="cal-fade cal-fade-bottom"></div>
     <div class="cal-bottom-bar" id="calBottomBar">
-      <button class="btn secondary" id="menuCalBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg> Menu</button>
       <button class="round-btn primary lg" id="addDayBtn">+</button>
+      <button class="round-btn lg" id="menuCalBtn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
     </div>
   </div>
 
@@ -469,17 +476,12 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Trip history</h2>
-      <div style="display:flex;gap:6px;">
-        <button class="btn secondary block" id="mileageExportBtn">Export CSV</button>
-        <button class="btn secondary block" id="mileagePdfBtn">Export PDF</button>
-      </div>
+      <button class="btn secondary block" id="mileagePdfBtn">Export PDF</button>
       <div class="divider"></div>
       <div id="mileageTripList"></div>
       <div class="empty" id="mileageEmpty" style="display:none;">No trips logged yet.</div>
     </div>
   </div>
-
-  <div class="mileage-print-area" id="mileagePrintArea"></div>
 
   <!-- EXPENSES -->
   <div class="view" id="view-expenses">
@@ -592,6 +594,8 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     </div>
   </div>
 </div>
+
+<div class="mileage-print-area" id="mileagePrintArea"></div>
 
 <!-- DAY EDITOR -->
 <div class="overlay hidden" id="dayModalOverlay">
@@ -1225,14 +1229,10 @@ function setupMileage(){
   document.getElementById('mileageAddStopBtn').addEventListener('click', ()=> addMileageStopRow());
   document.getElementById('mileageReturnStartBtn').addEventListener('click', ()=>{
     const fromVal = document.getElementById('mileageFromInput').value.trim();
-    const toVal = document.getElementById('mileageToInput').value.trim();
-    if(!fromVal || !toVal){ showToast('Fill in From and To first.'); return; }
-    addMileageStopRow(toVal, mileageToCoord);
-    document.getElementById('mileageToInput').value = fromVal;
-    mileageToCoord = mileageFromCoord;
-    showToast('Added a return leg back to your start.');
+    if(!fromVal){ showToast('Fill in the start address first.'); return; }
+    addMileageStopRow(fromVal, mileageFromCoord);
+    showToast('Added a stop back at your start.');
   });
-  document.getElementById('mileageExportBtn').addEventListener('click', exportMileageCSV);
   document.getElementById('mileagePdfBtn').addEventListener('click', exportMileagePDF);
   setupAddressAutocomplete('mileageFromInput', 'mileageFromSuggestions', c=> mileageFromCoord = c);
   setupAddressAutocomplete('mileageToInput', 'mileageToSuggestions', c=> mileageToCoord = c);
@@ -1523,6 +1523,10 @@ function mileageRouteLabel(t){
   const points = [t.from, ...(t.stops||[]), t.to];
   return points.map(mileageDisplayName).map(escapeHtml).join(' &rarr; ');
 }
+function mileageRawRouteLabel(t){
+  const points = [t.from, ...(t.stops||[]), t.to];
+  return points.map(escapeHtml).join(' &rarr; ');
+}
 function renderMileageTab(){
   const business = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
   const personal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
@@ -1537,8 +1541,11 @@ function renderMileageTab(){
   mileageTrips.slice().sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id).forEach(t=>{
     const row = document.createElement('div');
     row.className = 'todo-item';
+    const labelled = mileageRouteLabel(t);
+    const raw = mileageRawRouteLabel(t);
     row.innerHTML =
-      '<div style="flex:1;"><div class="todo-text">'+mileageRouteLabel(t)+'</div>'+
+      '<div style="flex:1;"><div class="todo-text">'+labelled+'</div>'+
+      (labelled!==raw ? '<div class="todo-due" style="font-size:10.5px;">'+raw+'</div>' : '')+
       '<div class="todo-due">'+shortDate(t.date)+' \u00b7 '+(t.category==='business'?'Business':'Personal')+' \u00b7 '+t.miles.toFixed(1)+' mi</div></div>'+
       '<button class="todo-del">&times;</button>';
     row.querySelector('.todo-del').addEventListener('click', async ()=>{
@@ -2130,7 +2137,7 @@ function renderCalendarAll(targetDate){
 
 // ---------- day modal ----------
 function setupDayModal(){
-  document.getElementById('dayModalCancel').addEventListener('click', closeDayModal);
+  document.getElementById('dayModalCancel').addEventListener('click', ()=> closeDayModal());
   document.getElementById('dayModalOverlay').addEventListener('click', (e)=>{ if(e.target.id==='dayModalOverlay') closeDayModal(); });
 
   document.getElementById('dayModalDateInput').addEventListener('change', (e)=>{
@@ -2483,12 +2490,37 @@ function lockBodyScroll(){
   document.body.style.left = '0';
   document.body.style.right = '0';
 }
-function unlockBodyScroll(){
+let modalAnchorMonthId = null;
+function lockBodyScroll(){
+  modalScrollY = window.scrollY;
+  modalAnchorMonthId = null;
+  if(document.getElementById('view-calendar').classList.contains('active')){
+    document.querySelectorAll('.month-card').forEach(c=>{
+      if(modalAnchorMonthId) return;
+      const rect = c.getBoundingClientRect();
+      if(rect.bottom > 90) modalAnchorMonthId = c.id;
+    });
+  }
+  document.body.style.position = 'fixed';
+  document.body.style.top = '-'+modalScrollY+'px';
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+}
+function unlockBodyScroll(skipRestore){
   document.body.style.position = '';
   document.body.style.top = '';
   document.body.style.left = '';
   document.body.style.right = '';
-  window.scrollTo(0, modalScrollY);
+  if(skipRestore) return;
+  const anchorId = modalAnchorMonthId;
+  const fallbackY = modalScrollY;
+  requestAnimationFrame(()=>{
+    if(anchorId){
+      const el = document.getElementById(anchorId);
+      if(el){ el.scrollIntoView({behavior:'auto', block:'start'}); return; }
+    }
+    window.scrollTo(0, fallbackY);
+  });
 }
 function openDayModal(dateStr){
   document.getElementById('dayModalDateInput').value = dateStr;
@@ -2525,10 +2557,10 @@ function openDayModalEmpty(){
   lockBodyScroll();
   document.getElementById('dayModalOverlay').classList.remove('hidden');
 }
-function closeDayModal(){
+function closeDayModal(skipScrollRestore){
   document.getElementById('dayModalOverlay').classList.add('hidden');
   selectedDate = null;
-  unlockBodyScroll();
+  unlockBodyScroll(skipScrollRestore);
 }
 
 async function saveDayModal(){
@@ -2568,7 +2600,7 @@ async function saveDayModal(){
   }
 
   await saveKey('calendar-data', calendarData);
-  closeDayModal();
+  closeDayModal(true);
   renderCalendarAll(savedDate); renderRentTab(); renderToilTab();
 }
 async function clearThisDay(){
@@ -2576,7 +2608,7 @@ async function clearThisDay(){
   const dateStr = selectedDate;
   delete calendarData[dateStr];
   await saveKey('calendar-data', calendarData);
-  closeDayModal();
+  closeDayModal(true);
   renderCalendarAll(dateStr); renderRentTab(); renderToilTab();
   showToast('Cleared '+niceDate(dateStr)+'.');
 }
@@ -2916,14 +2948,9 @@ function renderSettingsNewColourRow(){
     row.appendChild(btn);
   });
 }
-function csvEscape(val){
-  const s = String(val==null?'':val);
-  if(/[",\n]/.test(s)) return '"'+s.replace(/"/g,'""')+'"';
-  return s;
-}
 function mileageExportFields(t){
   if(t.category==='personal'){
-    return {from:'Personal', via:'', to:'Personal'};
+    return {from:'*****', via:'', to:'*****'};
   }
   return {
     from: mileageDisplayName(t.from),
@@ -2939,43 +2966,27 @@ function exportMileagePDF(){
   const personalTotal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
   const rowsHtml = sorted.map(t=>{
     const f = mileageExportFields(t);
-    return '<tr><td>'+shortDate(t.date)+'</td><td>'+escapeHtml(f.from)+'</td><td>'+escapeHtml(f.via)+'</td><td>'+escapeHtml(f.to)+'</td><td>'+(t.category==='business'?'Business':'Personal')+'</td><td>'+t.miles.toFixed(1)+'</td></tr>';
+    const isBiz = t.category==='business';
+    return '<tr>'+
+      '<td>'+shortDate(t.date)+'</td>'+
+      '<td>'+escapeHtml(f.from)+'</td>'+
+      '<td>'+escapeHtml(f.via)+'</td>'+
+      '<td>'+escapeHtml(f.to)+'</td>'+
+      '<td><span class="cat-badge '+(isBiz?'cat-biz':'cat-pers')+'">'+(isBiz?'Business':'Personal')+'</span></td>'+
+      '<td class="num">'+t.miles.toFixed(1)+'</td>'+
+    '</tr>';
   }).join('');
   area.innerHTML =
+    '<div class="print-brand">Home Base</div>'+
     '<h1>Mileage Log</h1>'+
-    '<div class="print-meta">Exported '+shortDate(todayStr())+'</div>'+
-    '<table><thead><tr><th>Date</th><th>From</th><th>Via</th><th>To</th><th>Category</th><th>Miles</th></tr></thead><tbody>'+rowsHtml+'</tbody></table>'+
+    '<div class="print-meta">Exported '+shortDate(todayStr())+' &middot; '+sorted.length+' trip'+(sorted.length===1?'':'s')+'</div>'+
+    '<table><thead><tr><th>Date</th><th>From</th><th>Via</th><th>To</th><th>Category</th><th class="num">Miles</th></tr></thead><tbody>'+rowsHtml+'</tbody></table>'+
     '<div class="print-totals">'+
-      '<div><strong>Business total:</strong> '+businessTotal.toFixed(1)+' mi</div>'+
-      '<div><strong>Personal total:</strong> '+personalTotal.toFixed(1)+' mi</div>'+
-      '<div><strong>Grand total:</strong> '+(businessTotal+personalTotal).toFixed(1)+' mi</div>'+
+      '<div><span>Business total</span><strong>'+businessTotal.toFixed(1)+' mi</strong></div>'+
+      '<div><span>Personal total</span><strong>'+personalTotal.toFixed(1)+' mi</strong></div>'+
+      '<div class="grand"><span>Grand total</span><strong>'+(businessTotal+personalTotal).toFixed(1)+' mi</strong></div>'+
     '</div>';
-  window.print();
-}
-function exportMileageCSV(){
-  if(mileageTrips.length===0){ showToast('No trips logged yet.'); return; }
-  const rows = [['Date','From','Via','To','Category','Miles']];
-  mileageTrips.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{
-    const f = mileageExportFields(t);
-    rows.push([t.date, f.from, f.via, f.to, t.category==='business'?'Business':'Personal', t.miles.toFixed(1)]);
-  });
-  const businessTotal = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
-  const personalTotal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
-  rows.push([]);
-  rows.push(['', '', '', '', 'Business total', businessTotal.toFixed(1)]);
-  rows.push(['', '', '', '', 'Personal total', personalTotal.toFixed(1)]);
-  rows.push(['', '', '', '', 'Grand total', (businessTotal+personalTotal).toFixed(1)]);
-  const csv = rows.map(r=> r.map(csvEscape).join(',')).join('\r\n');
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'mileage-log-'+todayStr()+'.csv';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-  showToast('Mileage log downloaded.');
+  requestAnimationFrame(()=> setTimeout(()=> window.print(), 60));
 }
 function timeToMinutes(t){
   if(!t) return null;
