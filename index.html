@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v7.9 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v8.2 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -54,6 +54,7 @@ body.dark{
 }
 *{box-sizing:border-box;}
 button,input,select,textarea,a,.day-cell,.mini-month,.month-chip,.tag-swatch-btn,.swatch{touch-action:manipulation;}
+html{background:var(--bg);}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s ease,color .2s ease;}
 .switch-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;}
 .tag-manage-item{margin-bottom:12px;}
@@ -142,7 +143,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:34px;height:34px;padding:0;font-size:18px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .round-btn.lg{width:58px;height:58px;font-size:26px;}
 .cal-fade{position:fixed;left:0;right:0;height:56px;pointer-events:none;z-index:45;}
-.cal-fade-top{top:0;background:linear-gradient(to bottom, var(--bg) 15%, transparent);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);mask-image:linear-gradient(to bottom, black 0%, black 20%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 0%, black 20%, transparent 100%);}
+.cal-fade-top{top:0;height:calc(env(safe-area-inset-top, 47px) + 46px);background:linear-gradient(to bottom, var(--bg) 0%, var(--bg) 60%, transparent 100%);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);}
 .cal-fade-bottom{bottom:0;height:130px;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);}
 .cal-bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));}
 .return-cal-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top, var(--bg) 55%, transparent);}
@@ -287,6 +288,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .urgent-item .todo-text{font-weight:600;}
 .add-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
 .tiny-date-input{width:98px;min-width:0;flex-shrink:1;}
+.solo-date-input{width:150px;}
 .add-row input[type=text]{flex:1;min-width:0;}
 .add-row button{flex-shrink:0;}
 
@@ -325,7 +327,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v7.9</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v8.2</span></h1><div class="date" id="todayLabel"></div></div>
     <button class="round-btn" id="quickAddTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
 
@@ -452,7 +454,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <button data-cat="personal">Personal</button>
       </div>
       <label class="mini-label" style="margin-top:8px;display:block;">Date</label>
-      <input type="date" id="mileageDateInput">
+      <input type="date" id="mileageDateInput" class="solo-date-input">
       <button class="btn block" id="mileageCalcBtn" style="margin-top:10px;">Calculate &amp; add trip</button>
       <div class="stat-sub" id="mileageStatus" style="margin-top:8px;"></div>
       <div id="mileageManualFallback" style="display:none;margin-top:8px;">
@@ -543,6 +545,13 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 
   <!-- SETTINGS -->
   <div class="view" id="view-settings">
+    <div class="card">
+      <h2 style="font-size:15px;">Sync across devices</h2>
+      <div class="stat-sub" style="margin-bottom:8px;">Connect both phones to the same Firebase project and they'll stay in sync automatically. <span id="syncStatus">Not connected</span>.</div>
+      <textarea id="syncConfigInput" placeholder="Paste your firebaseConfig object here" style="min-height:90px;font-family:monospace;font-size:11px;"></textarea>
+      <button class="btn block" id="syncConnectBtn" style="margin-top:8px;">Connect</button>
+      <button class="btn secondary block" id="syncDisconnectBtn" style="margin-top:8px;display:none;">Disconnect</button>
+    </div>
     <div class="card">
       <h2 style="font-size:15px;">Appearance</h2>
       <label class="switch-row">
@@ -744,13 +753,174 @@ async function saveKey(key, value, attempt){
         if(attempt < 4){ await new Promise(r=>setTimeout(r, 350*attempt)); return saveKey(key, value, attempt+1); }
         showToast('Could not save "'+key+'" — check your connection and try again.');
       }
+      pushToCloud(key, value);
       return;
     }
     localStorage.setItem('homebase:'+key, JSON.stringify(value));
+    pushToCloud(key, value);
   }catch(e){
     if(attempt < 4){ await new Promise(r=>setTimeout(r, 350*attempt)); return saveKey(key, value, attempt+1); }
     console.error('storage save failed', key, e);
     showToast('Save error on "'+key+'" after retrying — try that action again in a moment.');
+  }
+}
+
+// ---------- cloud sync ----------
+const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','dark-mode','rent-rate-home','rent-rate-away'];
+let firebaseApp = null, firestoreDb = null, firestoreDoc = null, syncUnsub = null;
+let syncEnabled = false;
+async function pushToCloud(key, value){
+  if(!syncEnabled || !firestoreDb || SYNC_KEYS.indexOf(key)===-1) return;
+  try{
+    await firestoreDoc.set({[key]: JSON.stringify(value)}, {merge:true});
+    setSyncStatus('Synced just now');
+  }catch(e){
+    console.error('cloud push failed', key, e);
+    setSyncStatus('Sync error — will retry on next change');
+  }
+}
+function setSyncStatus(text){
+  const el = document.getElementById('syncStatus');
+  if(el) el.textContent = text;
+}
+async function applyRemoteValue(key, value){
+  switch(key){
+    case 'calendar-data': calendarData = value; break;
+    case 'tag-defs': tagDefs = value; break;
+    case 'rent-meta': rentMeta = value; break;
+    case 'rent-history': rentHistory = value; break;
+    case 'todos': todos = value; break;
+    case 'toil-payouts': toilPayouts = value; break;
+    case 'toil-adjustment': toilAdjustment = value; break;
+    case 'mileage-trips': mileageTrips = value; break;
+    case 'mileage-favorites': mileageFavorites = value; break;
+    case 'expenses': expenses = value; break;
+    case 'travel-places': travelPlaces = value; break;
+    case 'dark-mode': darkModeOn = value; applyDarkMode(darkModeOn); break;
+    case 'rent-rate-home': RATE_HOME = value; break;
+    case 'rent-rate-away': RATE_AWAY = value; break;
+  }
+  if(!hasClaudeStorage()) localStorage.setItem('homebase:'+key, JSON.stringify(value));
+}
+function refreshAllViews(){
+  renderCalendarAll();
+  renderRentTab();
+  renderToilTab();
+  renderTodosTab();
+  renderMileageTab();
+  renderExpensesTab();
+  renderTravelTab();
+  if(document.getElementById('view-settings').classList.contains('active')){
+    renderTagManageList();
+    document.getElementById('rateHomeInput').value = RATE_HOME;
+    document.getElementById('rateAwayInput').value = RATE_AWAY;
+  }
+  if(document.getElementById('view-trends').classList.contains('active')) renderTrends();
+}
+function parseFirebaseConfig(text){
+  try{
+    const match = text.match(/(?:firebaseConfig|config)\s*=\s*(\{[\s\S]*?\n\s*\})/);
+    const cleaned = match ? match[1] : text.trim().replace(/^const\s+\w+\s*=\s*/,'').replace(/;\s*$/,'');
+    const obj = new Function('return ('+cleaned+')')();
+    if(obj && obj.apiKey && obj.projectId) return obj;
+  }catch(e){}
+  return null;
+}
+function loadFirebaseSDK(){
+  return new Promise((resolve, reject)=>{
+    if(window.firebase && window.firebase.firestore){ resolve(); return; }
+    const s1 = document.createElement('script');
+    s1.src = 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js';
+    s1.onload = ()=>{
+      const s2 = document.createElement('script');
+      s2.src = 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js';
+      s2.onload = resolve;
+      s2.onerror = reject;
+      document.head.appendChild(s2);
+    };
+    s1.onerror = reject;
+    document.head.appendChild(s1);
+  });
+}
+async function connectSync(config, isInitialSetup){
+  setSyncStatus('Connecting…');
+  try{
+    await loadFirebaseSDK();
+    firebaseApp = firebase.initializeApp(config, 'homebase-'+Date.now());
+    firestoreDb = firebase.firestore(firebaseApp);
+    firestoreDoc = firestoreDb.collection('homebase').doc('shared');
+    await saveKey('firebase-config', config);
+    syncEnabled = true;
+
+    const snap = await firestoreDoc.get();
+    if(snap.exists){
+      const data = snap.data();
+      for(const key of SYNC_KEYS){
+        if(data[key]===undefined) continue;
+        await applyRemoteValue(key, JSON.parse(data[key]));
+      }
+      refreshAllViews();
+      showToast('Pulled in data from your other device.');
+    }else{
+      const initial = {};
+      const currentValues = {
+        'calendar-data':calendarData,'tag-defs':tagDefs,'rent-meta':rentMeta,'rent-history':rentHistory,
+        'todos':todos,'toil-payouts':toilPayouts,'toil-adjustment':toilAdjustment,'mileage-trips':mileageTrips,
+        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,
+        'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY
+      };
+      SYNC_KEYS.forEach(key=>{ initial[key] = JSON.stringify(currentValues[key]); });
+      await firestoreDoc.set(initial, {merge:true});
+      showToast('This device is now the starting point — connect your other device next.');
+    }
+
+    if(syncUnsub) syncUnsub();
+    syncUnsub = firestoreDoc.onSnapshot({includeMetadataChanges:true}, async (docSnap)=>{
+      if(docSnap.metadata.hasPendingWrites) return;
+      if(!docSnap.exists) return;
+      const data = docSnap.data();
+      for(const key of SYNC_KEYS){
+        if(data[key]===undefined) continue;
+        await applyRemoteValue(key, JSON.parse(data[key]));
+      }
+      refreshAllViews();
+      setSyncStatus('Synced just now');
+    });
+
+    setSyncStatus('Connected');
+    document.getElementById('syncConnectBtn').style.display = 'none';
+    document.getElementById('syncDisconnectBtn').style.display = 'block';
+    document.getElementById('syncConfigInput').style.display = 'none';
+  }catch(e){
+    console.error('sync connect failed', e);
+    setSyncStatus('Could not connect — check the config and try again');
+    syncEnabled = false;
+  }
+}
+async function disconnectSync(){
+  if(syncUnsub){ syncUnsub(); syncUnsub = null; }
+  syncEnabled = false;
+  firestoreDb = null; firestoreDoc = null;
+  await saveKey('firebase-config', null);
+  setSyncStatus('Not connected');
+  document.getElementById('syncConnectBtn').style.display = 'block';
+  document.getElementById('syncDisconnectBtn').style.display = 'none';
+  document.getElementById('syncConfigInput').style.display = 'block';
+  showToast('Disconnected. This device keeps its own local data from here.');
+}
+function setupSync(){
+  document.getElementById('syncConnectBtn').addEventListener('click', ()=>{
+    const config = parseFirebaseConfig(document.getElementById('syncConfigInput').value);
+    if(!config){ showToast("Couldn't read that — paste the whole firebaseConfig block."); return; }
+    connectSync(config);
+  });
+  document.getElementById('syncDisconnectBtn').addEventListener('click', disconnectSync);
+}
+async function initSyncFromSaved(){
+  const saved = await loadKey('firebase-config', null);
+  if(saved){
+    document.getElementById('syncConfigInput').value = JSON.stringify(saved, null, 2);
+    await connectSync(saved, false);
   }
 }
 
@@ -854,6 +1024,7 @@ async function init(){
   setupMileage();
   setupExpenses();
   setupTravel();
+  setupSync();
 
   renderCalendarAll();
   renderRentTab();
@@ -863,6 +1034,7 @@ async function init(){
   renderExpensesTab();
   renderTravelTab();
   scrollToMonth(now.getFullYear(), now.getMonth(), false);
+  initSyncFromSaved();
 }
 
 function normalizeRange(){
@@ -970,7 +1142,7 @@ function openQuickAddTodoForm(){
   body.innerHTML =
     '<input type="text" id="quickTodoText" placeholder="What needs doing?">'+
     '<label class="mini-label" style="margin-top:8px;display:block;">Date (optional)</label>'+
-    '<input type="date" id="quickTodoDate">'+
+    '<input type="date" id="quickTodoDate" class="solo-date-input">'+
     '<button class="btn block" id="quickTodoAddBtn" style="margin-top:10px;">Add</button>';
   const submit = async ()=>{
     const text = document.getElementById('quickTodoText').value.trim();
