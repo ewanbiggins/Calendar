@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v8.2 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v8.8 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -70,7 +70,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',
 .switch input:checked + .switch-slider{background:var(--home);}
 .switch input:checked + .switch-slider::before{transform:translateX(18px);}
 h1,h2,h3{font-family:'Fraunces',serif;font-weight:600;margin:0 0 4px 0;letter-spacing:-0.01em;}
-#app{max-width:480px;margin:0 auto;padding:calc(10px + env(safe-area-inset-top, 0px)) 14px calc(24px + env(safe-area-inset-bottom, 0px));}
+#app{max-width:480px;margin:0 auto;padding:calc(20px + env(safe-area-inset-top, 0px)) 14px calc(24px + env(safe-area-inset-bottom, 0px));}
 .top{display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px;}
 .top h1{font-size:22px;}
 .app-version{font-family:'IBM Plex Sans';font-size:11px;font-weight:500;color:var(--ink-soft);vertical-align:middle;}
@@ -146,8 +146,9 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .cal-fade-top{top:0;height:calc(env(safe-area-inset-top, 47px) + 46px);background:linear-gradient(to bottom, var(--bg) 0%, var(--bg) 60%, transparent 100%);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);}
 .cal-fade-bottom{bottom:0;height:130px;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);}
 .cal-bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));}
-.return-cal-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top, var(--bg) 55%, transparent);}
-.return-cal-bar .btn{max-width:480px;margin:0 auto;display:block;box-shadow:var(--shadow);}
+.return-cal-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:center;gap:18px;}
+.return-cal-fade{position:fixed;left:0;right:0;bottom:0;height:130px;pointer-events:none;z-index:46;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);}
+.return-cal-bar .round-btn{box-shadow:var(--shadow);}
 .cal-bottom-bar .round-btn{box-shadow:var(--shadow);}
 .cal-bottom-bar .round-btn.primary{box-shadow:0 4px 14px rgba(43,110,99,0.35);}
 .round-btn.primary{background:var(--home);border-color:var(--home);color:#fff;font-weight:600;}
@@ -192,9 +193,10 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .legend i{width:9px;height:9px;border-radius:3px;display:inline-block;}
 
 /* overlay / sheet */
-.overlay{position:fixed;inset:0;background:rgba(27,38,32,0.4);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;}
-.overlay.hidden{display:none;}
-.sheet{background:var(--surface);width:100%;max-width:480px;border-radius:16px;padding:18px;max-height:88vh;overflow-y:auto;}
+.overlay{position:fixed;inset:0;background:rgba(27,38,32,0.4);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px;opacity:0;visibility:hidden;transition:opacity .22s ease, visibility 0s linear .22s;}
+.overlay:not(.hidden){opacity:1;visibility:visible;transition:opacity .22s ease, visibility 0s linear 0s;}
+.sheet{background:var(--surface);width:100%;max-width:480px;border-radius:16px;padding:18px;max-height:88vh;overflow-y:auto;transform:translateY(14px) scale(0.97);opacity:0;transition:transform .28s cubic-bezier(.22,.9,.28,1.1), opacity .2s ease;}
+.overlay:not(.hidden) .sheet{transform:translateY(0) scale(1);opacity:1;}
 .sheet .card{background:none;border:none;box-shadow:none;padding:0;margin:0;}
 .sheet .card h2{display:none;}
 .sheet h3{font-size:17px;margin-bottom:2px;}
@@ -327,7 +329,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v8.2</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v8.8</span></h1><div class="date" id="todayLabel"></div></div>
     <button class="round-btn" id="quickAddTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
 
@@ -604,8 +606,10 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
   </div>
 </div>
 
+<div class="return-cal-fade" id="returnCalFade" style="display:none;"></div>
 <div class="return-cal-bar" id="returnCalBar" style="display:none;">
-  <button class="btn block" id="returnCalBtn"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;margin-right:6px;"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>Return to Calendar</button>
+  <button class="round-btn lg" id="returnCalBtn" title="Return to Calendar"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg></button>
+  <button class="round-btn lg" id="returnBarMenuBtn" title="Menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
 </div>
 
 <div class="mileage-print-area" id="mileagePrintArea"></div>
@@ -1057,9 +1061,12 @@ function goToView(viewName){
   if(wasCalendar) savedCalendarScrollY = window.scrollY;
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+viewName).classList.add('active');
-  document.getElementById('returnCalBar').style.display = viewName==='calendar' ? 'none' : 'block';
+  document.getElementById('returnCalBar').style.display = viewName==='calendar' ? 'none' : 'flex';
+  document.getElementById('returnCalFade').style.display = viewName==='calendar' ? 'none' : 'block';
   if(viewName==='calendar'){
     requestAnimationFrame(()=> window.scrollTo(0, savedCalendarScrollY));
+  }else{
+    requestAnimationFrame(()=> window.scrollTo(0, 0));
   }
   if(viewName==='trends') renderTrends();
 }
@@ -1067,6 +1074,7 @@ function setupTabs(){
   document.getElementById('menuTopBtn').addEventListener('click', openMenuSheet);
   document.getElementById('menuCalBtn').addEventListener('click', openMenuSheet);
   document.getElementById('returnCalBtn').addEventListener('click', ()=> goToView('calendar'));
+  document.getElementById('returnBarMenuBtn').addEventListener('click', openMenuSheet);
   document.getElementById('quickAddTopBtn').addEventListener('click', openQuickAddSheet);
   document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
 }
@@ -1453,9 +1461,12 @@ function setupMileage(){
   document.getElementById('mileageAddStopBtn').addEventListener('click', ()=> addMileageStopRow());
   document.getElementById('mileageReturnStartBtn').addEventListener('click', ()=>{
     const fromVal = document.getElementById('mileageFromInput').value.trim();
-    if(!fromVal){ showToast('Fill in the start address first.'); return; }
-    addMileageStopRow(fromVal, mileageFromCoord);
-    showToast('Added a stop back at your start.');
+    const toVal = document.getElementById('mileageToInput').value.trim();
+    if(!fromVal || !toVal){ showToast('Fill in From and To first.'); return; }
+    addMileageStopRow(toVal, mileageToCoord);
+    document.getElementById('mileageToInput').value = fromVal;
+    mileageToCoord = mileageFromCoord;
+    showToast('Added a return leg back to your start.');
   });
   document.getElementById('mileagePdfBtn').addEventListener('click', exportMileagePDF);
   setupAddressAutocomplete('mileageFromInput', 'mileageFromSuggestions', c=> mileageFromCoord = c);
@@ -2079,6 +2090,7 @@ function appendYearBlock(){
 }
 function setupInfiniteScroll(){
   window.addEventListener('scroll', ()=>{
+    if(document.body.style.position==='fixed') return;
     if(!document.getElementById('view-calendar').classList.contains('active')) return;
     if(yearViewActive){
       if(window.scrollY < 500) prependYearBlock();
@@ -2691,13 +2703,6 @@ function loadDayIntoForm(dateStr){
 }
 
 let modalScrollY = 0;
-function lockBodyScroll(){
-  modalScrollY = window.scrollY;
-  document.body.style.position = 'fixed';
-  document.body.style.top = '-'+modalScrollY+'px';
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-}
 let modalAnchorMonthId = null;
 function lockBodyScroll(){
   modalScrollY = window.scrollY;
