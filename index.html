@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v8.9 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v9.0 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -57,12 +57,6 @@ button,input,select,textarea,a,.day-cell,.mini-month,.month-chip,.tag-swatch-btn
 html{background:var(--bg);}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;transition:background .2s ease,color .2s ease;}
 .switch-row{display:flex;align-items:center;justify-content:space-between;font-size:14px;}
-.tag-manage-item{margin-bottom:12px;}
-.tag-manage-row{display:flex;align-items:center;gap:8px;}
-.tag-manage-row .tag-swatch-btn{width:26px;height:26px;flex-shrink:0;}
-.tag-manage-name{flex:1;}
-.tag-manage-palette{display:none;margin-top:8px;margin-left:34px;}
-.tag-manage-palette.show{display:flex;}
 .switch{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;}
 .switch input{opacity:0;width:0;height:0;position:absolute;}
 .switch-slider{position:absolute;inset:0;background:var(--line);border-radius:24px;transition:background .15s ease;}
@@ -302,7 +296,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 .week-row{cursor:pointer;}
 .week-detail-row td{background:var(--surface-2);font-size:11.5px;color:var(--ink-soft);padding:8px 8px;}
 
-.notif-toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#1B2620;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:200;box-shadow:0 4px 14px rgba(0,0,0,0.3);max-width:90%;}
+.notif-toast{position:fixed;top:calc(14px + env(safe-area-inset-top, 0px));left:50%;transform:translateX(-50%);background:#1B2620;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:200;box-shadow:0 4px 14px rgba(0,0,0,0.3);max-width:90%;}
 .mileage-print-area{display:none;}
 @media print{
   #app, .drawer, .drawer-overlay, .overlay{display:none !important;}
@@ -329,7 +323,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v8.9</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v9.0</span></h1><div class="date" id="todayLabel"></div></div>
     <button class="round-btn" id="quickAddTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
 
@@ -585,13 +579,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Colours</h2>
-      <button class="btn secondary small" id="toggleTagManageBtn">Edit keys</button>
-      <div id="tagManageSection" style="display:none;margin-top:12px;">
-        <div id="tagManageList"></div>
-        <div class="divider"></div>
-        <div class="dm-label">Make a new key</div>
-        <div class="tag-swatch-row" id="settingsNewColourRow"></div>
-      </div>
+      <div id="colourKeysDisplay"></div>
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Backup your data</h2>
@@ -707,6 +695,13 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
   </div>
 </div>
 
+<div class="overlay hidden" id="labelPromptOverlay" style="z-index:110;">
+  <div class="sheet">
+    <h3>Name this address</h3>
+    <div id="labelPromptBody"></div>
+  </div>
+</div>
+
 <script>
 (function(){
 
@@ -737,6 +732,29 @@ let rangeEndYM = null;
 // ---------- storage ----------
 function hasClaudeStorage(){ return typeof window.storage !== 'undefined' && window.storage && typeof window.storage.get === 'function'; }
 function isWorkTag(tag){ return !!tag && tag.label.trim().toLowerCase().includes('work'); }
+const REQUIRED_TAGS = [
+  {label:'Work', color:'#B3453B'},
+  {label:'Personal Leisure', color:'#3F6FA6'},
+  {label:'Personal Work', color:'#C9A227'}
+];
+async function enforceTagScheme(){
+  const requiredLabelsLower = REQUIRED_TAGS.map(t=>t.label.toLowerCase());
+  let changed = false;
+  REQUIRED_TAGS.forEach(rt=>{
+    if(!tagDefs.some(t=>t.label.toLowerCase()===rt.label.toLowerCase())){
+      tagDefs.push({id:'tag_'+rt.label.toLowerCase().replace(/\s+/g,'_')+'_'+Date.now()+Math.floor(Math.random()*1000), label:rt.label, color:rt.color});
+      changed = true;
+    }
+  });
+  const extraTagIds = tagDefs.filter(t=> !requiredLabelsLower.includes(t.label.toLowerCase())).map(t=>t.id);
+  if(extraTagIds.length){
+    tagDefs = tagDefs.filter(t=> requiredLabelsLower.includes(t.label.toLowerCase()));
+    todos.forEach(t=>{ if(extraTagIds.includes(t.tagId)) t.tagId = null; });
+    await saveKey('todos', todos);
+    changed = true;
+  }
+  if(changed) await saveKey('tag-defs', tagDefs);
+}
 async function loadKey(key, fallback){
   try{
     if(hasClaudeStorage()){
@@ -815,7 +833,7 @@ function refreshAllViews(){
   renderExpensesTab();
   renderTravelTab();
   if(document.getElementById('view-settings').classList.contains('active')){
-    renderTagManageList();
+    renderColourKeysDisplay();
     document.getElementById('rateHomeInput').value = RATE_HOME;
     document.getElementById('rateAwayInput').value = RATE_AWAY;
   }
@@ -863,6 +881,7 @@ async function connectSync(config, isInitialSetup){
         if(data[key]===undefined) continue;
         await applyRemoteValue(key, JSON.parse(data[key]));
       }
+      await enforceTagScheme();
       refreshAllViews();
       showToast('Pulled in data from your other device.');
     }else{
@@ -887,6 +906,7 @@ async function connectSync(config, isInitialSetup){
         if(data[key]===undefined) continue;
         await applyRemoteValue(key, JSON.parse(data[key]));
       }
+      await enforceTagScheme();
       refreshAllViews();
       setSyncStatus('Synced just now');
     });
@@ -960,32 +980,12 @@ async function init(){
 
   calendarData = await loadKey('calendar-data', {});
   tagDefs = await loadKey('tag-defs', []);
-  const requiredTags = [
-    {label:'Work', color:'#B3453B'},
-    {label:'Personal Leisure', color:'#3F6FA6'},
-    {label:'Personal Work', color:'#C9A227'}
-  ];
-  let tagsChanged = false;
-  requiredTags.forEach(rt=>{
-    if(!tagDefs.some(t=>t.label.toLowerCase()===rt.label.toLowerCase())){
-      tagDefs.push({id:'tag_'+rt.label.toLowerCase().replace(/\s+/g,'_')+'_'+Date.now()+Math.floor(Math.random()*1000), label:rt.label, color:rt.color});
-      tagsChanged = true;
-    }
-  });
-  if(tagsChanged) await saveKey('tag-defs', tagDefs);
   rentMeta = await loadKey('rent-meta', {lastPaidThrough:null});
   RATE_HOME = await loadKey('rent-rate-home', 0);
   RATE_AWAY = await loadKey('rent-rate-away', 0);
   rentHistory = await loadKey('rent-history', []);
   todos = await loadKey('todos', []);
-  const requiredLabelsLower = requiredTags.map(t=>t.label.toLowerCase());
-  const extraTagIds = tagDefs.filter(t=> !requiredLabelsLower.includes(t.label.toLowerCase())).map(t=>t.id);
-  if(extraTagIds.length){
-    tagDefs = tagDefs.filter(t=> requiredLabelsLower.includes(t.label.toLowerCase()));
-    todos.forEach(t=>{ if(extraTagIds.includes(t.tagId)) t.tagId = null; });
-    await saveKey('tag-defs', tagDefs);
-    await saveKey('todos', todos);
-  }
+  await enforceTagScheme();
   toilPayouts = await loadKey('toil-payouts', []);
   mileageTrips = await loadKey('mileage-trips', []);
   mileageFavorites = await loadKey('mileage-favorites', []);
@@ -1626,8 +1626,9 @@ function buildFavouriteRow(fav, input, onPick, list){
 }
 function promptForAddressLabel(address){
   return new Promise(resolve=>{
-    openSheet('Name this address');
-    const body = document.getElementById('sheetBody');
+    const overlay = document.getElementById('labelPromptOverlay');
+    const body = document.getElementById('labelPromptBody');
+    overlay.classList.remove('hidden');
     body.innerHTML =
       '<div class="stat-sub" style="margin-bottom:10px;">'+escapeHtml(address)+'</div>'+
       '<input type="text" id="labelPromptInput" placeholder="e.g. Home, Site A, Office">'+
@@ -1638,7 +1639,7 @@ function promptForAddressLabel(address){
     const finish = (val)=>{
       if(settled) return;
       settled = true;
-      closeSheet();
+      overlay.classList.add('hidden');
       resolve(val);
     };
     document.getElementById('labelPromptSaveBtn').addEventListener('click', ()=> finish(input.value.trim() || null));
@@ -2509,29 +2510,7 @@ function renderTagSwatches(selectedId){
   noneBtn.addEventListener('click', ()=> renderTagSwatches(null));
   row.appendChild(noneBtn);
 
-  TAG_PALETTE.forEach((color,i)=>{
-    const existing = tagDefs.find(t=>t.color.toUpperCase()===color.toUpperCase());
-    const btn = document.createElement('button');
-    btn.className = 'tag-swatch-btn'+(existing && selectedTagId===existing.id ? ' selected':'');
-    btn.type = 'button';
-    btn.title = existing ? existing.label : TAG_PALETTE_NAMES[i];
-    btn.style.background = color;
-    btn.addEventListener('click', async ()=>{
-      let tag = tagDefs.find(t=>t.color.toUpperCase()===color.toUpperCase());
-      if(!tag){
-        tag = {id:'tag_'+Date.now(), label:TAG_PALETTE_NAMES[i], color};
-        tagDefs.push(tag);
-        await saveKey('tag-defs', tagDefs);
-        renderTagManageList();
-        renderSettingsNewColourRow();
-      }
-      renderTagSwatches(tag.id);
-    });
-    row.appendChild(btn);
-  });
-
   tagDefs.forEach(tag=>{
-    if(TAG_PALETTE.some(c=>c.toUpperCase()===tag.color.toUpperCase())) return;
     const btn = document.createElement('button');
     btn.className = 'tag-swatch-btn'+(selectedTagId===tag.id?' selected':'');
     btn.type = 'button';
@@ -3103,95 +3082,22 @@ function setupSettings(){
   });
   document.getElementById('exportDataBtn').addEventListener('click', exportData);
   document.getElementById('importDataBtn').addEventListener('click', handleImportClick);
-  document.getElementById('toggleTagManageBtn').addEventListener('click', ()=>{
-    const section = document.getElementById('tagManageSection');
-    const showing = section.style.display !== 'none';
-    section.style.display = showing ? 'none' : 'block';
-    document.getElementById('toggleTagManageBtn').textContent = showing ? 'Edit keys' : 'Hide keys';
-  });
   document.getElementById('toggleArchiveBtn').addEventListener('click', ()=>{
     const section = document.getElementById('archiveSection');
     const showing = section.style.display !== 'none';
     section.style.display = showing ? 'none' : 'block';
     document.getElementById('toggleArchiveBtn').textContent = showing ? 'View archive' : 'Hide archive';
   });
-  renderTagManageList();
-  renderSettingsNewColourRow();
+  renderColourKeysDisplay();
 }
-function renderTagManageList(){
-  const container = document.getElementById('tagManageList');
+function renderColourKeysDisplay(){
+  const container = document.getElementById('colourKeysDisplay');
   container.innerHTML = '';
-  if(tagDefs.length===0){ container.innerHTML = '<div class="empty">No colours yet — tap one below to make your first.</div>'; return; }
   tagDefs.forEach(tag=>{
-    const wrap = document.createElement('div');
-    wrap.className = 'tag-manage-item';
-    wrap.innerHTML =
-      '<div class="tag-manage-row">'+
-        '<button type="button" class="tag-swatch-btn tag-manage-swatch" style="background:'+tag.color+';"></button>'+
-        '<input type="text" class="tag-manage-name" value="'+escapeHtml(tag.label)+'">'+
-        '<button type="button" class="todo-del">&times;</button>'+
-      '</div>'+
-      '<div class="swatches tag-manage-palette"></div>';
-    const swatchBtn = wrap.querySelector('.tag-manage-swatch');
-    const nameInput = wrap.querySelector('.tag-manage-name');
-    const delBtn = wrap.querySelector('.todo-del');
-    const palette = wrap.querySelector('.tag-manage-palette');
-    TAG_PALETTE.forEach(color=>{
-      const sw = document.createElement('div');
-      sw.className = 'swatch'+(tag.color.toUpperCase()===color.toUpperCase()?' sel':'');
-      sw.style.background = color;
-      sw.addEventListener('click', async ()=>{
-        tag.color = color;
-        await saveKey('tag-defs', tagDefs);
-        swatchBtn.style.background = color;
-        palette.classList.remove('show');
-        renderCalendarAll();
-        showToast('Colour updated.');
-      });
-      palette.appendChild(sw);
-    });
-    swatchBtn.addEventListener('click', ()=> palette.classList.toggle('show'));
-    nameInput.addEventListener('change', async ()=>{
-      const val = nameInput.value.trim();
-      if(!val){ nameInput.value = tag.label; return; }
-      tag.label = val;
-      await saveKey('tag-defs', tagDefs);
-      showToast('Renamed.');
-    });
-    delBtn.addEventListener('click', async ()=>{
-      tagDefs = tagDefs.filter(t=>t.id!==tag.id);
-      todos.forEach(t=>{ if(t.tagId===tag.id) t.tagId = null; });
-      await saveKey('tag-defs', tagDefs);
-      await saveKey('todos', todos);
-      renderTagManageList();
-      renderSettingsNewColourRow();
-      renderCalendarAll();
-      showToast('Colour removed.');
-    });
-    container.appendChild(wrap);
-  });
-}
-function renderSettingsNewColourRow(){
-  const row = document.getElementById('settingsNewColourRow');
-  row.innerHTML = '';
-  TAG_PALETTE.forEach((color,i)=>{
-    const existing = tagDefs.find(t=>t.color.toUpperCase()===color.toUpperCase());
-    const btn = document.createElement('button');
-    btn.className = 'tag-swatch-btn';
-    btn.type = 'button';
-    btn.style.background = color;
-    btn.title = existing ? existing.label+' (already added)' : 'Add '+TAG_PALETTE_NAMES[i];
-    btn.addEventListener('click', async ()=>{
-      const already = tagDefs.find(t=>t.color.toUpperCase()===color.toUpperCase());
-      if(already){ showToast(already.label+' already uses this colour — edit it in the list above.'); return; }
-      const tag = {id:'tag_'+Date.now(), label:TAG_PALETTE_NAMES[i], color};
-      tagDefs.push(tag);
-      await saveKey('tag-defs', tagDefs);
-      renderTagManageList();
-      renderSettingsNewColourRow();
-      showToast('Added "'+tag.label+'" — rename it above if you like.');
-    });
-    row.appendChild(btn);
+    const row = document.createElement('div');
+    row.className = 'trend-row';
+    row.innerHTML = '<span style="display:flex;align-items:center;gap:8px;"><span style="width:12px;height:12px;border-radius:50%;background:'+tag.color+';display:inline-block;"></span>'+escapeHtml(tag.label)+'</span>';
+    container.appendChild(row);
   });
 }
 function mileageExportFields(t){
