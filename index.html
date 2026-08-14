@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v8.8 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v8.9 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -290,7 +290,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .urgent-item .todo-text{font-weight:600;}
 .add-row{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
 .tiny-date-input{width:98px;min-width:0;flex-shrink:1;}
-.solo-date-input{width:150px;}
+.solo-date-input{width:100%;max-width:150px;}
 .add-row input[type=text]{flex:1;min-width:0;}
 .add-row button{flex-shrink:0;}
 
@@ -329,7 +329,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v8.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v8.9</span></h1><div class="date" id="todayLabel"></div></div>
     <button class="round-btn" id="quickAddTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
 
@@ -978,6 +978,14 @@ async function init(){
   RATE_AWAY = await loadKey('rent-rate-away', 0);
   rentHistory = await loadKey('rent-history', []);
   todos = await loadKey('todos', []);
+  const requiredLabelsLower = requiredTags.map(t=>t.label.toLowerCase());
+  const extraTagIds = tagDefs.filter(t=> !requiredLabelsLower.includes(t.label.toLowerCase())).map(t=>t.id);
+  if(extraTagIds.length){
+    tagDefs = tagDefs.filter(t=> requiredLabelsLower.includes(t.label.toLowerCase()));
+    todos.forEach(t=>{ if(extraTagIds.includes(t.tagId)) t.tagId = null; });
+    await saveKey('tag-defs', tagDefs);
+    await saveKey('todos', todos);
+  }
   toilPayouts = await loadKey('toil-payouts', []);
   mileageTrips = await loadKey('mileage-trips', []);
   mileageFavorites = await loadKey('mileage-favorites', []);
@@ -1137,13 +1145,18 @@ function openQuickAddSheet(){
     openSheet('Log mileage');
     body.innerHTML = '';
     relocateIntoSheet(document.getElementById('mileageLogFormCard'));
+    quickAddActive = 'mileage';
+    setTimeout(()=>{ const el=document.getElementById('mileageFromInput'); if(el) el.focus(); }, 100);
   });
   document.getElementById('quickAddExpense').addEventListener('click', ()=>{
     openSheet('Log an expense');
     body.innerHTML = '';
     relocateIntoSheet(document.getElementById('expenseLogFormCard'));
+    quickAddActive = 'expense';
+    setTimeout(()=>{ const el=document.getElementById('expenseAmountInput'); if(el) el.focus(); }, 100);
   });
 }
+let quickAddActive = null;
 function openQuickAddTodoForm(){
   openSheet('Add a to-do');
   const body = document.getElementById('sheetBody');
@@ -1163,6 +1176,7 @@ function openQuickAddTodoForm(){
     renderCalendarAll();
     if(selectedDate) renderDayHappeningList(selectedDate);
     closeSheet();
+    goToView('calendar');
     showToast('Added to your to-do list.');
   };
   document.getElementById('quickTodoAddBtn').addEventListener('click', submit);
@@ -1193,6 +1207,7 @@ function openSheet(title){
 }
 function closeSheet(){
   restoreRelocatedElement();
+  quickAddActive = null;
   document.getElementById('sheetOverlay').classList.add('hidden');
 }
 
@@ -1403,8 +1418,14 @@ async function addExpense(){
   await saveKey('expenses', expenses);
   amountInput.value = '';
   noteInput.value = '';
-  amountInput.focus();
   renderExpensesTab();
+  if(quickAddActive==='expense'){
+    closeSheet();
+    goToView('calendar');
+    showToast('Expense logged.');
+  }else{
+    amountInput.focus();
+  }
 }
 async function toggleExpenseDone(e){
   e.done = !e.done;
@@ -1651,6 +1672,16 @@ function setupAddressAutocomplete(inputId, listId, onPick){
       else{ list.classList.remove('show'); list.innerHTML=''; }
       return;
     }
+    const labelMatches = mileageFavorites.filter(f=> (f.nickname||'').toLowerCase().includes(query.toLowerCase()));
+    list.innerHTML = '';
+    if(labelMatches.length){
+      const heading = document.createElement('div');
+      heading.className = 'autocomplete-heading';
+      heading.textContent = 'Saved';
+      list.appendChild(heading);
+      labelMatches.forEach(fav=> list.appendChild(buildFavouriteRow(fav, input, onPick, list)));
+      list.classList.add('show');
+    }
     debounceTimer = setTimeout(async ()=>{
       const seq = ++requestSeq;
       try{
@@ -1659,8 +1690,13 @@ function setupAddressAutocomplete(inputId, listId, onPick){
         if(!res.ok) return;
         const data = await res.json();
         if(seq !== requestSeq) return; // a newer keystroke has since fired, ignore this stale result
-        list.innerHTML = '';
-        if(!data || !data.features || !data.features.length){ list.classList.remove('show'); return; }
+        if(!data || !data.features || !data.features.length){ if(!labelMatches.length) list.classList.remove('show'); return; }
+        if(labelMatches.length){
+          const heading2 = document.createElement('div');
+          heading2.className = 'autocomplete-heading';
+          heading2.textContent = 'Results';
+          list.appendChild(heading2);
+        }
         data.features.forEach(f=>{
           const label = photonLabel(f.properties);
           if(!label) return;
@@ -1749,6 +1785,11 @@ async function addTrip(from, to, miles, stops){
     await ensureAddressLabelled(addr);
   }
   renderMileageTab();
+  if(quickAddActive==='mileage'){
+    closeSheet();
+    goToView('calendar');
+    showToast('Trip logged.');
+  }
 }
 function mileageDisplayName(address){
   const fav = mileageFavorites.find(f=>f.address===address);
@@ -2090,7 +2131,7 @@ function appendYearBlock(){
 }
 function setupInfiniteScroll(){
   window.addEventListener('scroll', ()=>{
-    if(document.body.style.position==='fixed') return;
+    if(document.body.style.overflow==='hidden') return;
     if(!document.getElementById('view-calendar').classList.contains('active')) return;
     if(yearViewActive){
       if(window.scrollY < 500) prependYearBlock();
@@ -2705,35 +2746,12 @@ function loadDayIntoForm(dateStr){
 let modalScrollY = 0;
 let modalAnchorMonthId = null;
 function lockBodyScroll(){
-  modalScrollY = window.scrollY;
-  modalAnchorMonthId = null;
-  if(document.getElementById('view-calendar').classList.contains('active')){
-    document.querySelectorAll('.month-card').forEach(c=>{
-      if(modalAnchorMonthId) return;
-      const rect = c.getBoundingClientRect();
-      if(rect.bottom > 90) modalAnchorMonthId = c.id;
-    });
-  }
-  document.body.style.position = 'fixed';
-  document.body.style.top = '-'+modalScrollY+'px';
-  document.body.style.left = '0';
-  document.body.style.right = '0';
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
 }
-function unlockBodyScroll(skipRestore){
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  if(skipRestore) return;
-  const anchorId = modalAnchorMonthId;
-  const fallbackY = modalScrollY;
-  requestAnimationFrame(()=>{
-    if(anchorId){
-      const el = document.getElementById(anchorId);
-      if(el){ el.scrollIntoView({behavior:'auto', block:'start'}); return; }
-    }
-    window.scrollTo(0, fallbackY);
-  });
+function unlockBodyScroll(){
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
 }
 function openDayModal(dateStr){
   document.getElementById('dayModalDateInput').value = dateStr;
