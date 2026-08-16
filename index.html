@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app — version v9.0 (bump by +0.1 in the h1 badge on every future update) -->
+<!-- Home Base app — version v9.2 (bump by +0.1 in the h1 badge on every future update) -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -299,7 +299,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 .notif-toast{position:fixed;top:calc(14px + env(safe-area-inset-top, 0px));left:50%;transform:translateX(-50%);background:#1B2620;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:200;box-shadow:0 4px 14px rgba(0,0,0,0.3);max-width:90%;}
 .mileage-print-area{display:none;}
 @media print{
-  #app, .drawer, .drawer-overlay, .overlay{display:none !important;}
+  #app, .drawer, .drawer-overlay, .overlay, .return-cal-bar, .return-cal-fade{display:none !important;}
   .mileage-print-area{display:block !important;font-family:'IBM Plex Sans',sans-serif;color:#111;padding:24px;}
   .mileage-print-area .print-brand{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#888;margin-bottom:6px;}
   .mileage-print-area h1{font-family:'Fraunces',serif;font-size:24px;margin-bottom:4px;}
@@ -323,7 +323,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v9.0</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v9.2</span></h1><div class="date" id="todayLabel"></div></div>
     <button class="round-btn" id="quickAddTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
 
@@ -1487,7 +1487,7 @@ function setupMileage(){
     addMileageStopRow(toVal, mileageToCoord);
     document.getElementById('mileageToInput').value = fromVal;
     mileageToCoord = mileageFromCoord;
-    showToast('Added a return leg back to your start.');
+    showToast('Route set: '+fromVal+' \u2192 '+toVal+' \u2192 '+fromVal+'.');
   });
   document.getElementById('mileagePdfBtn').addEventListener('click', exportMileagePDF);
   setupAddressAutocomplete('mileageFromInput', 'mileageFromSuggestions', c=> mileageFromCoord = c);
@@ -3138,7 +3138,7 @@ function exportMileagePDF(){
       '<div><span>Personal total</span><strong>'+personalTotal.toFixed(1)+' mi</strong></div>'+
       '<div class="grand"><span>Grand total</span><strong>'+(businessTotal+personalTotal).toFixed(1)+' mi</strong></div>'+
     '</div>';
-  requestAnimationFrame(()=> setTimeout(()=> window.print(), 60));
+  window.print();
 }
 function timeToMinutes(t){
   if(!t) return null;
