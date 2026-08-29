@@ -324,7 +324,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v10.1</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v10.2</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -2049,9 +2049,10 @@ function scrollToMonth(y,m,smooth){
   updateYearToggleLabel(y);
   const el = document.getElementById('month-'+monthKey(y,m));
   if(!el) return;
-  const todayCell = el.querySelector('.day-cell.today');
-  if(todayCell){
-    todayCell.scrollIntoView({behavior: smooth?'smooth':'auto', block:'center'});
+  const target14 = fmt(new Date(y, m, 14));
+  const cell14 = el.querySelector('[data-date="'+target14+'"]');
+  if(cell14){
+    cell14.scrollIntoView({behavior: smooth?'smooth':'auto', block:'center'});
   }else{
     el.scrollIntoView({behavior: smooth?'smooth':'auto', block:'start'});
   }
@@ -2371,6 +2372,7 @@ function buildMonthBlock(year, month){
     const entry = calendarData[dateStr];
     const cell = document.createElement('div');
     cell.className = 'day-cell';
+    cell.dataset.date = dateStr;
     if(entry && entry.status) cell.classList.add(entry.status);
     if(dateStr === today) cell.classList.add('today');
 
