@@ -324,7 +324,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v10.3</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v10.4</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -348,7 +348,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       </div>
     </div>
     <div class="legend" id="calLegend"></div>
-    <div id="monthsContainer"></div>
+    <div id="monthsContainer" style="visibility:hidden;"></div>
     <div id="yearGridContainer" style="display:none;"></div>
     <div class="cal-fade cal-fade-bottom"></div>
     <div class="cal-bottom-bar" id="calBottomBar">
@@ -1046,9 +1046,23 @@ async function init(){
   renderMileageTab();
   renderExpensesTab();
   renderTravelTab();
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=> scrollToMonth(now.getFullYear(), now.getMonth(), false));
-  });
+  let settled = false;
+  const settleAndReveal = ()=>{
+    if(settled) return;
+    settled = true;
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        scrollToMonth(now.getFullYear(), now.getMonth(), false);
+        document.getElementById('monthsContainer').style.visibility = 'visible';
+      });
+    });
+  };
+  if(document.fonts && document.fonts.ready){
+    document.fonts.ready.then(settleAndReveal).catch(settleAndReveal);
+    setTimeout(settleAndReveal, 600);
+  }else{
+    settleAndReveal();
+  }
   initSyncFromSaved();
 }
 
@@ -2058,7 +2072,9 @@ function scrollToMonth(y,m,smooth){
   const targetScroll = cell14
     ? elementTop - (window.innerHeight/2) + (rect.height/2)
     : elementTop - 90;
-  window.scrollTo({top: Math.max(0, targetScroll), behavior: smooth?'smooth':'auto'});
+  const finalTop = Math.round(Math.max(0, targetScroll));
+  if(smooth) window.scrollTo({top: finalTop, behavior:'smooth'});
+  else window.scrollTo(0, finalTop);
 }
 
 let _loadingMonth = false;
