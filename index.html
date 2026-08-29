@@ -130,6 +130,8 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
   padding:14px 0;box-shadow:0 6px 8px -8px rgba(27,38,32,0.15);
 }
 .cal-back-btn{display:flex;align-items:center;gap:4px;background:none;border:none;color:var(--ink);font-family:'Fraunces',serif;font-weight:600;font-size:19px;padding:4px 2px;flex-shrink:0;}
+.cal-header-alert{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;color:var(--danger);text-align:center;padding:0 6px;cursor:pointer;}
+.cal-header-alert.today-tone{color:var(--ink-soft);}
 .cal-back-btn svg{transition:transform .15s ease;width:19px;height:19px;}
 .cal-back-btn.expanded svg{transform:rotate(180deg);}
 .cal-header-right{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;justify-content:flex-end;flex-shrink:0;margin-left:auto;}
@@ -140,13 +142,14 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .cal-fade{position:fixed;left:0;right:0;height:56px;pointer-events:none;z-index:45;}
 .cal-fade-top{top:0;height:calc(env(safe-area-inset-top, 47px) + 46px);background:linear-gradient(to bottom, var(--bg) 0%, var(--bg) 60%, transparent 100%);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px);mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);will-change:transform;transform:translateZ(0);}
 .cal-fade-bottom{bottom:0;height:130px;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);will-change:transform;transform:translateZ(0);}
-.cal-bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));}
+.cal-bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 10px calc(14px + env(safe-area-inset-bottom,0px));}
 .return-cal-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:center;gap:18px;}
 .return-cal-fade{position:fixed;left:0;right:0;bottom:0;height:130px;pointer-events:none;z-index:46;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);will-change:transform;transform:translateZ(0);}
 .return-cal-bar .round-btn{box-shadow:var(--shadow);}
 .cal-bottom-bar .round-btn{box-shadow:var(--shadow);}
 .cal-bottom-bar .round-btn.primary{box-shadow:0 4px 14px rgba(43,110,99,0.35);}
 .round-btn.primary{background:var(--home);border-color:var(--home);color:#fff;font-weight:600;}
+.round-btn.clocked-in{background:var(--accent);border-color:var(--accent);color:#fff;}
 .month-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px;margin-bottom:10px;box-shadow:var(--shadow);scroll-margin-top:88px;}
 .month-card.is-current{border-color:var(--accent);}
 
@@ -156,7 +159,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .mini-month{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 8px 10px;cursor:pointer;display:flex;flex-direction:column;}
 .mini-month-title{font-size:12px;font-weight:700;text-align:center;margin-bottom:6px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
 .mini-days{flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:1px;align-content:center;}
-.mini-day{position:relative;font-size:9px;text-align:center;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;border-radius:50%;}
+.mini-day{position:relative;font-size:9px;text-align:center;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;border-radius:50%;aspect-ratio:1/1;}
 .mini-day.mini-away{background:var(--away-tint);}
 .mini-dots-wrap{position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);display:flex;gap:1px;}
 .mini-dot{width:3px;height:3px;border-radius:50%;flex-shrink:0;}
@@ -248,9 +251,13 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .todo-del{background:none;border:none;color:var(--ink-soft);font-size:15px;padding:2px 4px;flex-shrink:0;}
 .empty{color:var(--ink-soft);font-size:13px;padding:6px 0;font-style:italic;}
 
-.shift-name-row{display:flex;gap:6px;margin-bottom:8px;}
+.shift-name-row{display:flex;gap:6px;margin-bottom:8px;align-items:center;}
+.shift-name-row input{flex:1;min-width:0;}
+.al-btn{flex-shrink:0;display:flex;align-items:center;gap:5px;background:var(--surface-2);border:1.5px solid var(--gold);color:var(--gold);border-radius:9px;padding:8px 12px;font-family:'IBM Plex Sans';font-size:12.5px;font-weight:600;}
+.al-btn.active{background:var(--gold);color:#fff;}
 .shift-compact{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;}
-.shift-compact input{padding:8px;font-size:16px;width:100%;}
+.shift-compact > div{min-width:0;}
+.shift-compact input{padding:8px;font-size:16px;width:100%;min-width:0;}
 .shift-total-mini{font-size:12px;color:var(--ink-soft);display:flex;align-items:center;padding-top:2px;}
 .shift-total-mini strong{color:var(--ink);font-family:'Fraunces',serif;font-size:15px;margin-left:5px;}
 .quick-break-mini{display:flex;gap:4px;margin-top:8px;}
@@ -324,7 +331,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v10.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v11.3</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -342,6 +349,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <svg id="yearToggleIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         <span id="yearToggleLabel">2026</span>
       </button>
+      <div class="cal-header-alert" id="calHeaderAlert"></div>
       <div class="cal-header-right">
         <button class="round-btn" id="searchBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
         <button class="btn secondary small" id="jumpTodayBtn">Today</button>
@@ -354,8 +362,9 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <div class="cal-bottom-bar" id="calBottomBar">
       <button class="round-btn lg" id="calTodoBtn" title="Add a to-do"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg></button>
       <button class="round-btn lg" id="calMileageBtn" title="Log mileage"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg></button>
-      <button class="round-btn lg" id="calExpenseBtn" title="Log an expense"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg></button>
       <button class="round-btn lg primary" id="menuCalBtn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+      <button class="round-btn lg" id="calExpenseBtn" title="Log an expense"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg></button>
+      <button class="round-btn lg" id="calClockBtn" title="Clock in"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></button>
     </div>
   </div>
 
@@ -652,6 +661,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       <div id="shiftDetailsSection" style="display:none;">
         <div class="shift-name-row">
           <input type="text" id="dayModalShiftTitle" placeholder="Shift name">
+          <button type="button" class="al-btn" id="dayModalALBtn" title="Annual Leave"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><span>AL</span></button>
         </div>
         <div class="shift-compact">
           <div><label class="mini-label">Start</label><input type="time" id="dayModalStart"></div>
@@ -713,6 +723,7 @@ const TAG_PALETTE_NAMES = ['Blue','Orange','Purple','Green','Pink','Indigo','Tea
 
 const ICON_REPEAT = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>';
 const ICON_FLAG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg>';
+const ICON_AL = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
 
 let calendarData = {}; // { date: {status, shift:{start,finish,breakMins,title}} }
 let tagDefs = [];
@@ -998,6 +1009,13 @@ async function init(){
   expenses = await loadKey('expenses', []);
   travelPlaces = await loadKey('travel-places', []);
   travelCountries = await loadKey('travel-countries', []);
+  const cleanedTravelPlaces = travelPlaces.filter(p=> p.name.trim().toLowerCase() !== (p.country||'').trim().toLowerCase());
+  if(cleanedTravelPlaces.length !== travelPlaces.length){
+    travelPlaces = cleanedTravelPlaces;
+    await saveKey('travel-places', travelPlaces);
+  }
+  clockInState = await loadKey('clock-in-state', null);
+  if(clockInState && clockInState.date !== todayStr()){ clockInState = null; await saveKey('clock-in-state', null); }
   events = await loadKey('events', []);
   let needsResave = false;
   if(events.length){
@@ -1047,6 +1065,7 @@ async function init(){
   renderMileageTab();
   renderExpensesTab();
   renderTravelTab();
+  updateClockInBtn();
   setTimeout(()=>{
     scrollToMonth(now.getFullYear(), now.getMonth(), false);
     document.getElementById('monthsContainer').style.visibility = 'visible';
@@ -1091,6 +1110,7 @@ function setupTabs(){
   document.getElementById('calTodoBtn').addEventListener('click', openQuickAddTodoForm);
   document.getElementById('calExpenseBtn').addEventListener('click', openQuickAddExpenseForm);
   document.getElementById('calMileageBtn').addEventListener('click', openQuickAddMileageForm);
+  document.getElementById('calClockBtn').addEventListener('click', toggleClockIn);
   document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
 }
 function openMenuSheet(){
@@ -1142,7 +1162,10 @@ function openQuickAddMileageForm(){
   relocateIntoSheet(document.getElementById('mileageLogFormCard'));
   quickAddActive = 'mileage';
   const el = document.getElementById('mileageFromInput');
-  if(el) el.focus();
+  if(el){
+    el.focus();
+    el.dispatchEvent(new Event('focus'));
+  }
 }
 function openQuickAddExpenseForm(){
   openSheet('Log an expense');
@@ -1357,6 +1380,10 @@ async function addTravelCountry(){
 }
 async function addTravelPlaceToCountry(countryName, text){
   if(!text) return;
+  if(text.trim().toLowerCase() === countryName.trim().toLowerCase()){
+    showToast("That's the country itself — add a city or specific place instead.");
+    return;
+  }
   travelPlaces.push({id:Date.now(), date:todayStr(), name:text, country:countryName});
   await saveKey('travel-places', travelPlaces);
   renderTravelTab();
@@ -2375,10 +2402,19 @@ function buildMonthBlock(year, month){
     const num = document.createElement('div'); num.className='day-num'; num.textContent = day;
     top.appendChild(num);
     const dayIdx = monthIndex[dateStr];
+    const iconGroup = document.createElement('div');
+    iconGroup.style.cssText = 'display:flex;align-items:center;gap:3px;';
     if(dayIdx.hasEvent || autoEventsForDate(dateStr).length>0){
       const flag = document.createElement('div'); flag.style.color='var(--accent)'; flag.innerHTML=ICON_FLAG;
-      top.appendChild(flag);
+      iconGroup.appendChild(flag);
     }
+    if(entry && entry.isAL){
+      const al = document.createElement('div');
+      al.style.cssText = 'color:#fff;background:var(--gold);border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+      al.innerHTML = ICON_AL;
+      iconGroup.appendChild(al);
+    }
+    if(iconGroup.children.length) top.appendChild(iconGroup);
     cell.appendChild(top);
 
     const h = entry ? shiftHours(entry.shift) : null;
@@ -2417,6 +2453,7 @@ function buildMonthBlock(year, month){
   return card;
 }
 function renderCalendarAll(targetDate){
+  renderCalHeaderAlert();
   let anchorId = null;
   if(!targetDate){
     document.querySelectorAll('.month-card').forEach(c=>{
@@ -2433,7 +2470,7 @@ function renderCalendarAll(targetDate){
     m++;
     if(m>11){ m=0; y++; }
   }
-  document.getElementById('calLegend').innerHTML = '<span><i style="background:var(--away-tint);border:1px solid #e6cd9d;"></i>Away</span><span><i style="background:#9AA39C;border-radius:50%;"></i>To-do</span><span>'+ICON_FLAG+' Event</span>';
+  document.getElementById('calLegend').innerHTML = '<span><i style="background:var(--away-tint);border:1px solid #e6cd9d;"></i>Away</span><span><i style="background:#9AA39C;border-radius:50%;"></i>To-do</span><span>'+ICON_FLAG+' Event</span><span>'+ICON_AL+' Annual Leave</span>';
   if(targetDate){
     const d = parseYMD(targetDate);
     const el = document.getElementById('month-'+monthKey(d.getFullYear(), d.getMonth()));
@@ -2494,6 +2531,37 @@ function setupDayModal(){
     const opening = section.style.display === 'none';
     section.style.display = opening ? 'block' : 'none';
     header.classList.toggle('expanded', opening);
+  });
+  document.getElementById('dayModalALBtn').addEventListener('click', ()=>{
+    if(!selectedDate){ showToast('Pick a date first.'); return; }
+    const btn = document.getElementById('dayModalALBtn');
+    const d = parseYMD(selectedDate);
+    const isWeekend = d.getDay()===0 || d.getDay()===6;
+    if(btn.classList.contains('active')){
+      btn.classList.remove('active');
+      if(document.getElementById('dayModalShiftTitle').value === 'Annual Leave'){
+        document.getElementById('dayModalShiftTitle').value = '';
+        document.getElementById('dayModalStart').value = '';
+        document.getElementById('dayModalFinish').value = '';
+        document.getElementById('dayModalBreak').value = '';
+        updateShiftPreview();
+      }
+      showToast('Annual Leave removed.');
+      return;
+    }
+    btn.classList.add('active');
+    if(isWeekend){
+      showToast('Marked as Annual Leave — no hours added since it\'s a weekend.');
+    }else{
+      document.getElementById('dayModalShiftTitle').value = 'Annual Leave';
+      document.getElementById('dayModalStart').value = '09:00';
+      document.getElementById('dayModalFinish').value = '17:00';
+      document.getElementById('dayModalBreak').value = '0';
+      document.getElementById('shiftDetailsSection').style.display = 'block';
+      document.getElementById('shiftToggleBtn').classList.add('expanded');
+      updateShiftPreview();
+      showToast('Added 8 hours of Annual Leave.');
+    }
   });
 
   document.getElementById('dayModalSave').addEventListener('click', saveDayModal);
@@ -2750,8 +2818,10 @@ function loadDayIntoForm(dateStr){
   document.getElementById('dayModalBreak').value = shift.breakMins || '';
   updateShiftPreview();
   const hasShiftData = !!(shift.start || shift.finish || shift.breakMins || shift.title);
-  document.getElementById('shiftDetailsSection').style.display = hasShiftData ? 'block' : 'none';
-  document.getElementById('shiftToggleBtn').classList.toggle('expanded', hasShiftData);
+  const isAL = !!(hasEntry && entry.isAL);
+  document.getElementById('dayModalALBtn').classList.toggle('active', isAL);
+  document.getElementById('shiftDetailsSection').style.display = (hasShiftData || isAL) ? 'block' : 'none';
+  document.getElementById('shiftToggleBtn').classList.toggle('expanded', hasShiftData || isAL);
 
   document.getElementById('dayWhatsOnInput').value = '';
   resetDayEditPanel();
@@ -2775,6 +2845,47 @@ function openDayModal(dateStr){
   document.getElementById('dayModalOverlay').classList.remove('hidden');
 }
 
+let clockInState = null; // {date, start} or null
+function updateClockInBtn(){
+  const btn = document.getElementById('calClockBtn');
+  if(!btn) return;
+  const today = todayStr();
+  if(clockInState && clockInState.date === today){
+    btn.classList.add('clocked-in');
+    btn.title = 'Clock out';
+  }else{
+    btn.classList.remove('clocked-in');
+    btn.title = 'Clock in';
+  }
+}
+async function toggleClockIn(){
+  const today = todayStr();
+  const now = new Date();
+  const timeStr = pad(now.getHours())+':'+pad(now.getMinutes());
+  if(clockInState && clockInState.date === today){
+    if(!calendarData[today]) calendarData[today] = {};
+    if(!calendarData[today].shift) calendarData[today].shift = {};
+    calendarData[today].shift.start = clockInState.start;
+    calendarData[today].shift.finish = timeStr;
+    await saveKey('calendar-data', calendarData);
+    clockInState = null;
+    await saveKey('clock-in-state', null);
+    updateClockInBtn();
+    renderCalendarAll(); renderRentTab(); renderToilTab();
+    showToast('Clocked out at '+timeStr+'.');
+    goToCalendarDate(today);
+  }else{
+    if(!calendarData[today]) calendarData[today] = {};
+    if(!calendarData[today].shift) calendarData[today].shift = {};
+    calendarData[today].shift.start = timeStr;
+    await saveKey('calendar-data', calendarData);
+    clockInState = {date:today, start:timeStr};
+    await saveKey('clock-in-state', clockInState);
+    updateClockInBtn();
+    renderCalendarAll();
+    showToast('Clocked in at '+timeStr+'.');
+  }
+}
 function openDayModalEmpty(){
   selectedDate = null;
   document.getElementById('dayModalDateInput').value = '';
@@ -2793,6 +2904,7 @@ function openDayModalEmpty(){
   document.getElementById('dayModalStart').value = '';
   document.getElementById('dayModalFinish').value = '';
   document.getElementById('dayModalBreak').value = '';
+  document.getElementById('dayModalALBtn').classList.remove('active');
   updateShiftPreview();
   document.getElementById('shiftDetailsSection').style.display = 'none';
   document.getElementById('shiftToggleBtn').classList.remove('expanded');
@@ -2827,6 +2939,7 @@ async function saveDayModal(){
   }
   const shift = {start, finish, breakMins, title};
   const shiftHasData = !!(start || finish || breakMins || title);
+  const isAL = document.getElementById('dayModalALBtn').classList.contains('active');
   let endDate = document.getElementById('dayModalEndDate').value || selectedDate;
   if(endDate < selectedDate) endDate = selectedDate;
 
@@ -2837,9 +2950,10 @@ async function saveDayModal(){
     const existing = calendarData[cursor] || {status:'', shift:{start:null,finish:null,breakMins:0,title:''}};
     existing.status = status;
     if(shiftHasData || cursor === selectedDate) existing.shift = shift;
+    existing.isAL = isAL;
     const s = existing.shift || {};
     const hasShift = s.start || s.finish || s.breakMins || s.title;
-    if(!existing.status && !hasShift){ delete calendarData[cursor]; }
+    if(!existing.status && !hasShift && !existing.isAL){ delete calendarData[cursor]; }
     else{ calendarData[cursor] = existing; }
     if(cursor === endDate) break;
     cursor = addDays(cursor, 1);
@@ -2879,6 +2993,26 @@ async function addNewTodo(){
   renderTodosTab();
   renderCalendarAll();
   if(selectedDate) renderDayHappeningList(selectedDate);
+}
+function renderCalHeaderAlert(){
+  const el = document.getElementById('calHeaderAlert');
+  if(!el) return;
+  const today = todayStr();
+  const pending = todos.filter(t=>t.kind==='task' && !t.done && t.dueDate);
+  const overdue = pending.filter(t=>t.dueDate < today).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+  const dueToday = pending.filter(t=>t.dueDate === today);
+  el.classList.remove('today-tone');
+  if(overdue.length){
+    el.textContent = 'Overdue: '+overdue[0].text;
+    el.onclick = ()=> goToCalendarDate(overdue[0].dueDate);
+  }else if(dueToday.length){
+    el.classList.add('today-tone');
+    el.textContent = 'Today: '+dueToday[0].text;
+    el.onclick = ()=> goToCalendarDate(today);
+  }else{
+    el.textContent = '';
+    el.onclick = null;
+  }
 }
 function renderTodosTab(){
   const datedContainer = document.getElementById('list-dated');
@@ -2988,18 +3122,19 @@ function openSearchSheet(){
   const input = document.getElementById('searchInput');
   const resultsEl = document.getElementById('searchResults');
   input.addEventListener('input', ()=>{
-    const results = searchCalendar(input.value);
+    const query = input.value.trim();
     resultsEl.innerHTML = '';
-    if(!input.value.trim()){ return; }
+    if(query.length < 2){ return; }
+    const results = searchCalendar(query);
     if(results.length===0){ resultsEl.innerHTML = '<div class="empty">No matches.</div>'; return; }
-    results.forEach(r=>{
+    results.slice(0,20).forEach(r=>{
       const row = document.createElement('div');
       row.className = 'todo-item';
       row.style.cursor = 'pointer';
       row.innerHTML = '<div style="flex:1;"><div class="todo-text">'+escapeHtml(r.label)+'</div><div class="todo-due">'+r.type+(r.date?' · '+shortDate(r.date):'')+'</div></div>';
       row.addEventListener('click', ()=>{
         closeSheet();
-        if(r.date){ exitYearView(); const d=parseYMD(r.date); scrollToMonth(d.getFullYear(), d.getMonth(), true); openDayModal(r.date); }
+        if(r.date){ exitYearView(); const d=parseYMD(r.date); scrollToMonth(d.getFullYear(), d.getMonth(), true); }
       });
       resultsEl.appendChild(row);
     });
