@@ -324,7 +324,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v10.2</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v10.3</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -2051,11 +2051,14 @@ function scrollToMonth(y,m,smooth){
   if(!el) return;
   const target14 = fmt(new Date(y, m, 14));
   const cell14 = el.querySelector('[data-date="'+target14+'"]');
-  if(cell14){
-    cell14.scrollIntoView({behavior: smooth?'smooth':'auto', block:'center'});
-  }else{
-    el.scrollIntoView({behavior: smooth?'smooth':'auto', block:'start'});
-  }
+  const targetEl = cell14 || el;
+  const rect = targetEl.getBoundingClientRect();
+  const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
+  const elementTop = rect.top + currentScroll;
+  const targetScroll = cell14
+    ? elementTop - (window.innerHeight/2) + (rect.height/2)
+    : elementTop - 90;
+  window.scrollTo({top: Math.max(0, targetScroll), behavior: smooth?'smooth':'auto'});
 }
 
 let _loadingMonth = false;
