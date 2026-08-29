@@ -331,7 +331,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v11.3</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v11.4</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -723,7 +723,7 @@ const TAG_PALETTE_NAMES = ['Blue','Orange','Purple','Green','Pink','Indigo','Tea
 
 const ICON_REPEAT = '<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>';
 const ICON_FLAG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><path d="M5 3v18"/><path d="M5 4h11l-3 4 3 4H5"/></svg>';
-const ICON_AL = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+const ICON_AL = '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
 
 let calendarData = {}; // { date: {status, shift:{start,finish,breakMins,title}} }
 let tagDefs = [];
@@ -2409,9 +2409,7 @@ function buildMonthBlock(year, month){
       iconGroup.appendChild(flag);
     }
     if(entry && entry.isAL){
-      const al = document.createElement('div');
-      al.style.cssText = 'color:#fff;background:var(--gold);border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
-      al.innerHTML = ICON_AL;
+      const al = document.createElement('div'); al.style.color='var(--gold)'; al.style.display='flex'; al.innerHTML=ICON_AL;
       iconGroup.appendChild(al);
     }
     if(iconGroup.children.length) top.appendChild(iconGroup);
@@ -2949,7 +2947,13 @@ async function saveDayModal(){
   for(let i=0; i<maxSteps; i++){
     const existing = calendarData[cursor] || {status:'', shift:{start:null,finish:null,breakMins:0,title:''}};
     existing.status = status;
-    if(shiftHasData || cursor === selectedDate) existing.shift = shift;
+    if(isAL){
+      const cursorDay = parseYMD(cursor).getDay();
+      const cursorIsWeekend = (cursorDay===0 || cursorDay===6);
+      existing.shift = cursorIsWeekend ? {start:null, finish:null, breakMins:0, title:''} : shift;
+    }else if(shiftHasData || cursor === selectedDate){
+      existing.shift = shift;
+    }
     existing.isAL = isAL;
     const s = existing.shift || {};
     const hasShift = s.start || s.finish || s.breakMins || s.title;
