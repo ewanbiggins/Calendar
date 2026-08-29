@@ -324,7 +324,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v10.4</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v10.5</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -1046,23 +1046,8 @@ async function init(){
   renderMileageTab();
   renderExpensesTab();
   renderTravelTab();
-  let settled = false;
-  const settleAndReveal = ()=>{
-    if(settled) return;
-    settled = true;
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        scrollToMonth(now.getFullYear(), now.getMonth(), false);
-        document.getElementById('monthsContainer').style.visibility = 'visible';
-      });
-    });
-  };
-  if(document.fonts && document.fonts.ready){
-    document.fonts.ready.then(settleAndReveal).catch(settleAndReveal);
-    setTimeout(settleAndReveal, 600);
-  }else{
-    settleAndReveal();
-  }
+  scrollToMonth(now.getFullYear(), now.getMonth(), false);
+  setTimeout(()=>{ document.getElementById('monthsContainer').style.visibility = 'visible'; }, 750);
   initSyncFromSaved();
 }
 
@@ -2058,7 +2043,8 @@ function ensureRangeCovers(y,m){
   while(target > rangeEndYM.y*12+rangeEndYM.m){ rangeEndYM.m++; normalizeRange(); changed = true; }
   if(changed) renderCalendarAll();
 }
-function scrollToMonth(y,m,smooth){
+function scrollToMonth(y,m,smooth,attempt){
+  attempt = attempt || 0;
   ensureRangeCovers(y,m);
   updateYearToggleLabel(y);
   const el = document.getElementById('month-'+monthKey(y,m));
@@ -2066,15 +2052,23 @@ function scrollToMonth(y,m,smooth){
   const target14 = fmt(new Date(y, m, 14));
   const cell14 = el.querySelector('[data-date="'+target14+'"]');
   const targetEl = cell14 || el;
+  const bodyRect = document.body.getBoundingClientRect();
   const rect = targetEl.getBoundingClientRect();
-  const currentScroll = window.pageYOffset || document.documentElement.scrollTop || 0;
-  const elementTop = rect.top + currentScroll;
+  const elementTop = rect.top - bodyRect.top;
   const targetScroll = cell14
     ? elementTop - (window.innerHeight/2) + (rect.height/2)
     : elementTop - 90;
   const finalTop = Math.round(Math.max(0, targetScroll));
   if(smooth) window.scrollTo({top: finalTop, behavior:'smooth'});
   else window.scrollTo(0, finalTop);
+  if(!smooth && attempt < 5){
+    setTimeout(()=>{
+      const checkRect = targetEl.getBoundingClientRect();
+      const expectedCenter = cell14 ? window.innerHeight/2 : (90 + rect.height/2);
+      const actualCenter = checkRect.top + checkRect.height/2;
+      if(Math.abs(actualCenter - expectedCenter) > 40) scrollToMonth(y, m, false, attempt+1);
+    }, 120);
+  }
 }
 
 let _loadingMonth = false;
