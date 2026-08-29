@@ -324,7 +324,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v10.7</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v10.8</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -1047,9 +1047,10 @@ async function init(){
   renderMileageTab();
   renderExpensesTab();
   renderTravelTab();
-  scrollToMonth(now.getFullYear(), now.getMonth(), false, 0, ()=>{
+  setTimeout(()=>{
+    scrollToMonth(now.getFullYear(), now.getMonth(), false);
     document.getElementById('monthsContainer').style.visibility = 'visible';
-  });
+  }, 400);
   initSyncFromSaved();
 }
 
@@ -2045,28 +2046,11 @@ function ensureRangeCovers(y,m){
   while(target > rangeEndYM.y*12+rangeEndYM.m){ rangeEndYM.m++; normalizeRange(); changed = true; }
   if(changed) renderCalendarAll();
 }
-function scrollToMonth(y,m,smooth,attempt,onSettled){
-  attempt = attempt || 0;
+function scrollToMonth(y,m,smooth){
   ensureRangeCovers(y,m);
   updateYearToggleLabel(y);
   const el = document.getElementById('month-'+monthKey(y,m));
-  if(!el){ if(onSettled) onSettled(); return; }
-  const target14 = fmt(new Date(y, m, 14));
-  const cell14 = el.querySelector('[data-date="'+target14+'"]');
-  const targetEl = cell14 || el;
-  targetEl.scrollIntoView({behavior: smooth?'smooth':'auto', block: cell14?'center':'start'});
-  if(!smooth && attempt < 8){
-    setTimeout(()=>{
-      const checkRect = targetEl.getBoundingClientRect();
-      const ok = cell14
-        ? Math.abs((checkRect.top+checkRect.height/2) - window.innerHeight/2) < 60
-        : Math.abs(checkRect.top - 90) < 60;
-      if(!ok) scrollToMonth(y, m, false, attempt+1, onSettled);
-      else if(onSettled) onSettled();
-    }, 150);
-  }else if(onSettled){
-    onSettled();
-  }
+  if(el) el.scrollIntoView({behavior: smooth?'smooth':'auto', block:'start'});
 }
 
 let _loadingMonth = false;
