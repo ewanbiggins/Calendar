@@ -138,11 +138,11 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .round-btn.lg{width:58px;height:58px;font-size:26px;}
 .round-btn.sm{width:30px;height:30px;}
 .cal-fade{position:fixed;left:0;right:0;height:56px;pointer-events:none;z-index:45;}
-.cal-fade-top{top:0;height:calc(env(safe-area-inset-top, 47px) + 46px);background:linear-gradient(to bottom, var(--bg) 0%, var(--bg) 60%, transparent 100%);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);}
-.cal-fade-bottom{bottom:0;height:130px;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);}
+.cal-fade-top{top:0;height:calc(env(safe-area-inset-top, 47px) + 46px);background:linear-gradient(to bottom, var(--bg) 0%, var(--bg) 60%, transparent 100%);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px);mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);will-change:transform;transform:translateZ(0);}
+.cal-fade-bottom{bottom:0;height:130px;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);will-change:transform;transform:translateZ(0);}
 .cal-bottom-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;display:flex;align-items:center;justify-content:center;gap:18px;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));}
 .return-cal-bar{position:fixed;left:0;right:0;bottom:0;z-index:47;padding:14px 0 calc(14px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;justify-content:center;gap:18px;}
-.return-cal-fade{position:fixed;left:0;right:0;bottom:0;height:130px;pointer-events:none;z-index:46;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);}
+.return-cal-fade{position:fixed;left:0;right:0;bottom:0;height:130px;pointer-events:none;z-index:46;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);will-change:transform;transform:translateZ(0);}
 .return-cal-bar .round-btn{box-shadow:var(--shadow);}
 .cal-bottom-bar .round-btn{box-shadow:var(--shadow);}
 .cal-bottom-bar .round-btn.primary{box-shadow:0 4px 14px rgba(43,110,99,0.35);}
@@ -324,7 +324,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v9.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v10.0</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -1019,7 +1019,7 @@ async function init(){
   applyDarkMode(darkModeOn);
 
   const now = new Date();
-  rangeStartYM = {y:now.getFullYear(), m:now.getMonth()-2};
+  rangeStartYM = {y:now.getFullYear(), m:now.getMonth()-3};
   rangeEndYM = {y:now.getFullYear(), m:now.getMonth()+3};
   normalizeRange();
   updateYearToggleLabel(now.getFullYear());
@@ -1047,7 +1047,9 @@ async function init(){
   renderMileageTab();
   renderExpensesTab();
   renderTravelTab();
-  scrollToMonth(now.getFullYear(), now.getMonth(), false);
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=> scrollToMonth(now.getFullYear(), now.getMonth(), false));
+  });
   initSyncFromSaved();
 }
 
@@ -1320,6 +1322,7 @@ function setupTravel(){
           item.textContent = name;
           item.addEventListener('click', ()=>{
             input.value = name;
+            travelPickedCountry = name;
             list.classList.remove('show');
             list.innerHTML = '';
           });
@@ -1337,6 +1340,10 @@ async function addTravelCountry(){
   const input = document.getElementById('travelCountryInput');
   const name = input.value.trim();
   if(!name) return;
+  if(!travelPickedCountry || travelPickedCountry.toLowerCase() !== name.toLowerCase()){
+    showToast('Pick a country from the suggestions list to add it.');
+    return;
+  }
   if(travelCountries.some(c=>c.name.toLowerCase()===name.toLowerCase())){
     showToast(name+' is already on your list.');
     return;
@@ -1344,6 +1351,7 @@ async function addTravelCountry(){
   travelCountries.push({id:Date.now(), name});
   await saveKey('travel-countries', travelCountries);
   input.value = '';
+  travelPickedCountry = null;
   renderTravelTab();
 }
 async function addTravelPlaceToCountry(countryName, text){
