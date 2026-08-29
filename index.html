@@ -136,6 +136,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .cal-header-right .btn.small{padding:8px 11px;font-size:13px;white-space:nowrap;flex-shrink:0;}
 .round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:34px;height:34px;padding:0;font-size:18px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .round-btn.lg{width:58px;height:58px;font-size:26px;}
+.round-btn.sm{width:30px;height:30px;}
 .cal-fade{position:fixed;left:0;right:0;height:56px;pointer-events:none;z-index:45;}
 .cal-fade-top{top:0;height:calc(env(safe-area-inset-top, 47px) + 46px);background:linear-gradient(to bottom, var(--bg) 0%, var(--bg) 60%, transparent 100%);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);-webkit-mask-image:linear-gradient(to bottom, black 0%, black 60%, transparent 100%);}
 .cal-fade-bottom{bottom:0;height:130px;background:linear-gradient(to top, var(--bg) 20%, transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);-webkit-mask-image:linear-gradient(to top, black 0%, black 32%, transparent 100%);}
@@ -323,8 +324,8 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v9.2</span></h1><div class="date" id="todayLabel"></div></div>
-    <button class="round-btn" id="quickAddTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+    <div><h1>Home Base <span class="app-version">v9.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <div style="width:34px;"></div>
   </div>
 
   <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -351,8 +352,10 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <div id="yearGridContainer" style="display:none;"></div>
     <div class="cal-fade cal-fade-bottom"></div>
     <div class="cal-bottom-bar" id="calBottomBar">
-      <button class="round-btn primary lg" id="addDayBtn">+</button>
-      <button class="round-btn lg" id="menuCalBtn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+      <button class="round-btn lg" id="calTodoBtn" title="Add a to-do"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg></button>
+      <button class="round-btn lg" id="calMileageBtn" title="Log mileage"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg></button>
+      <button class="round-btn lg" id="calExpenseBtn" title="Log an expense"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg></button>
+      <button class="round-btn lg primary" id="menuCalBtn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
     </div>
   </div>
 
@@ -488,7 +491,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <div class="card" id="expenseLogFormCard">
       <h2 style="font-size:15px;">Log an expense</h2>
       <div class="add-row">
-        <input type="number" id="expenseAmountInput" step="0.01" min="0" placeholder="£" style="max-width:90px;">
+        <input type="number" id="expenseAmountInput" step="1" min="0" inputmode="decimal" placeholder="£" style="max-width:90px;">
         <input type="text" id="expenseNoteInput" placeholder="What was it for?">
         <button class="btn small" id="addExpenseBtn">Add</button>
       </div>
@@ -506,22 +509,19 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
   <!-- TRAVEL -->
   <div class="view" id="view-travel">
     <div class="card">
-      <h2 style="font-size:15px;">Log a place</h2>
+      <h2 style="font-size:15px;">Add a country</h2>
       <div class="autocomplete-wrap">
-        <input type="text" id="travelPlaceInput" placeholder="e.g. Lisbon, Japan, Cape Town" autocomplete="off">
-        <div class="autocomplete-list" id="travelPlaceSuggestions"></div>
+        <input type="text" id="travelCountryInput" placeholder="e.g. Japan, Portugal, Kenya" autocomplete="off">
+        <div class="autocomplete-list" id="travelCountrySuggestions"></div>
       </div>
-      <button class="btn block" id="travelAddBtn" style="margin-top:10px;">Add place</button>
+      <button class="btn block" id="travelAddCountryBtn" style="margin-top:10px;">Add country</button>
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Stats</h2>
       <div id="travelStats"></div>
     </div>
-    <div class="card">
-      <h2 style="font-size:15px;">Places visited</h2>
-      <div id="travelList"></div>
-      <div class="empty" id="travelEmpty" style="display:none;">Nothing logged yet — add your first place above.</div>
-    </div>
+    <div id="travelCountryList"></div>
+    <div class="empty" id="travelEmpty" style="display:none;">Nothing logged yet — add your first country above.</div>
   </div>
 
   <!-- TRENDS -->
@@ -788,7 +788,7 @@ async function saveKey(key, value, attempt){
 }
 
 // ---------- cloud sync ----------
-const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','dark-mode','rent-rate-home','rent-rate-away'];
+const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','dark-mode','rent-rate-home','rent-rate-away'];
 let firebaseApp = null, firestoreDb = null, firestoreDoc = null, syncUnsub = null;
 let syncEnabled = false;
 async function pushToCloud(key, value){
@@ -818,6 +818,7 @@ async function applyRemoteValue(key, value){
     case 'mileage-favorites': mileageFavorites = value; break;
     case 'expenses': expenses = value; break;
     case 'travel-places': travelPlaces = value; break;
+    case 'travel-countries': travelCountries = value; break;
     case 'dark-mode': darkModeOn = value; applyDarkMode(darkModeOn); break;
     case 'rent-rate-home': RATE_HOME = value; break;
     case 'rent-rate-away': RATE_AWAY = value; break;
@@ -889,7 +890,7 @@ async function connectSync(config, isInitialSetup){
       const currentValues = {
         'calendar-data':calendarData,'tag-defs':tagDefs,'rent-meta':rentMeta,'rent-history':rentHistory,
         'todos':todos,'toil-payouts':toilPayouts,'toil-adjustment':toilAdjustment,'mileage-trips':mileageTrips,
-        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,
+        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,
         'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY
       };
       SYNC_KEYS.forEach(key=>{ initial[key] = JSON.stringify(currentValues[key]); });
@@ -996,6 +997,7 @@ async function init(){
   toilAdjustment = await loadKey('toil-adjustment', 0);
   expenses = await loadKey('expenses', []);
   travelPlaces = await loadKey('travel-places', []);
+  travelCountries = await loadKey('travel-countries', []);
   events = await loadKey('events', []);
   let needsResave = false;
   if(events.length){
@@ -1083,7 +1085,9 @@ function setupTabs(){
   document.getElementById('menuCalBtn').addEventListener('click', openMenuSheet);
   document.getElementById('returnCalBtn').addEventListener('click', ()=> goToView('calendar'));
   document.getElementById('returnBarMenuBtn').addEventListener('click', openMenuSheet);
-  document.getElementById('quickAddTopBtn').addEventListener('click', openQuickAddSheet);
+  document.getElementById('calTodoBtn').addEventListener('click', openQuickAddTodoForm);
+  document.getElementById('calExpenseBtn').addEventListener('click', openQuickAddExpenseForm);
+  document.getElementById('calMileageBtn').addEventListener('click', openQuickAddMileageForm);
   document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
 }
 function openMenuSheet(){
@@ -1128,35 +1132,23 @@ function closeDrawer(){
   document.getElementById('drawerOverlay').classList.remove('show');
   document.getElementById('drawerPanel').classList.remove('show');
 }
-function openQuickAddSheet(){
-  openSheet('Quick add');
-  const body = document.getElementById('sheetBody');
-  body.innerHTML =
-    '<div class="menu-item" id="quickAddActivity">Add to calendar</div>'+
-    '<div class="menu-item" id="quickAddTodo">Add a to-do</div>'+
-    '<div class="menu-item" id="quickAddMileage">Log mileage</div>'+
-    '<div class="menu-item" id="quickAddExpense">Log an expense</div>';
-  document.getElementById('quickAddActivity').addEventListener('click', ()=>{
-    closeSheet();
-    openDayModalEmpty();
-  });
-  document.getElementById('quickAddTodo').addEventListener('click', openQuickAddTodoForm);
-  document.getElementById('quickAddMileage').addEventListener('click', ()=>{
-    openSheet('Log mileage');
-    body.innerHTML = '';
-    relocateIntoSheet(document.getElementById('mileageLogFormCard'));
-    quickAddActive = 'mileage';
-    setTimeout(()=>{ const el=document.getElementById('mileageFromInput'); if(el) el.focus(); }, 100);
-  });
-  document.getElementById('quickAddExpense').addEventListener('click', ()=>{
-    openSheet('Log an expense');
-    body.innerHTML = '';
-    relocateIntoSheet(document.getElementById('expenseLogFormCard'));
-    quickAddActive = 'expense';
-    setTimeout(()=>{ const el=document.getElementById('expenseAmountInput'); if(el) el.focus(); }, 100);
-  });
-}
 let quickAddActive = null;
+function openQuickAddMileageForm(){
+  openSheet('Log mileage');
+  document.getElementById('sheetBody').innerHTML = '';
+  relocateIntoSheet(document.getElementById('mileageLogFormCard'));
+  quickAddActive = 'mileage';
+  const el = document.getElementById('mileageFromInput');
+  if(el) el.focus();
+}
+function openQuickAddExpenseForm(){
+  openSheet('Log an expense');
+  document.getElementById('sheetBody').innerHTML = '';
+  relocateIntoSheet(document.getElementById('expenseLogFormCard'));
+  quickAddActive = 'expense';
+  const el = document.getElementById('expenseAmountInput');
+  if(el) el.focus();
+}
 function openQuickAddTodoForm(){
   openSheet('Add a to-do');
   const body = document.getElementById('sheetBody');
@@ -1181,7 +1173,7 @@ function openQuickAddTodoForm(){
   };
   document.getElementById('quickTodoAddBtn').addEventListener('click', submit);
   document.getElementById('quickTodoText').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } });
-  setTimeout(()=> document.getElementById('quickTodoText').focus(), 50);
+  document.getElementById('quickTodoText').focus();
 }
 
 function setupSheet(){
@@ -1298,21 +1290,22 @@ async function routeMiles(coords){
 // ---------- Expenses ----------
 // ---------- Travel ----------
 const WORLD_COUNTRY_COUNT = 195;
+let travelCountries = []; // {id, name}
 let travelPickedCountry = null;
 function setupTravel(){
-  document.getElementById('travelAddBtn').addEventListener('click', addTravelPlace);
-  const input = document.getElementById('travelPlaceInput');
-  const list = document.getElementById('travelPlaceSuggestions');
+  document.getElementById('travelAddCountryBtn').addEventListener('click', addTravelCountry);
+  const input = document.getElementById('travelCountryInput');
+  const list = document.getElementById('travelCountrySuggestions');
   let debounceTimer = null, requestSeq = 0;
   input.addEventListener('input', ()=>{
     travelPickedCountry = null;
     const query = input.value.trim();
     clearTimeout(debounceTimer);
-    if(query.length<3){ list.classList.remove('show'); list.innerHTML=''; return; }
+    if(query.length<2){ list.classList.remove('show'); list.innerHTML=''; return; }
     debounceTimer = setTimeout(async ()=>{
       const seq = ++requestSeq;
       try{
-        const url = 'https://photon.komoot.io/api/?limit=6&q='+encodeURIComponent(query);
+        const url = 'https://photon.komoot.io/api/?limit=6&osm_tag=place:country&q='+encodeURIComponent(query);
         const res = await fetch(url);
         if(!res.ok) return;
         const data = await res.json();
@@ -1320,74 +1313,93 @@ function setupTravel(){
         list.innerHTML = '';
         if(!data || !data.features || !data.features.length){ list.classList.remove('show'); return; }
         data.features.forEach(f=>{
-          const label = photonLabel(f.properties);
-          if(!label) return;
+          const name = f.properties.name;
+          if(!name) return;
           const item = document.createElement('div');
           item.className = 'autocomplete-item';
-          item.textContent = label;
+          item.textContent = name;
           item.addEventListener('click', ()=>{
-            input.value = label;
-            travelPickedCountry = f.properties.country || null;
+            input.value = name;
             list.classList.remove('show');
             list.innerHTML = '';
           });
           list.appendChild(item);
         });
         list.classList.add('show');
-      }catch(e){ /* silent — typing without a pick still works via addTravelPlace's own lookup */ }
+      }catch(e){ /* silent — typing a plain country name still works fine without a pick */ }
     }, 400);
   });
   document.addEventListener('click', (e)=>{
     if(!input.contains(e.target) && !list.contains(e.target)) list.classList.remove('show');
   });
 }
-async function addTravelPlace(){
-  const input = document.getElementById('travelPlaceInput');
+async function addTravelCountry(){
+  const input = document.getElementById('travelCountryInput');
   const name = input.value.trim();
   if(!name) return;
-  let country = travelPickedCountry;
-  if(!country){
-    try{
-      const url = 'https://photon.komoot.io/api/?limit=1&q='+encodeURIComponent(name);
-      const res = await fetch(url);
-      if(res.ok){
-        const data = await res.json();
-        if(data && data.features && data.features[0]) country = data.features[0].properties.country || null;
-      }
-    }catch(e){ /* falls through to Unknown below */ }
+  if(travelCountries.some(c=>c.name.toLowerCase()===name.toLowerCase())){
+    showToast(name+' is already on your list.');
+    return;
   }
-  travelPlaces.push({id:Date.now(), date:todayStr(), name, country: country || 'Unknown'});
-  await saveKey('travel-places', travelPlaces);
+  travelCountries.push({id:Date.now(), name});
+  await saveKey('travel-countries', travelCountries);
   input.value = '';
-  travelPickedCountry = null;
+  renderTravelTab();
+}
+async function addTravelPlaceToCountry(countryName, text){
+  if(!text) return;
+  travelPlaces.push({id:Date.now(), date:todayStr(), name:text, country:countryName});
+  await saveKey('travel-places', travelPlaces);
   renderTravelTab();
 }
 function renderTravelTab(){
   const statsEl = document.getElementById('travelStats');
-  const listEl = document.getElementById('travelList');
+  const listEl = document.getElementById('travelCountryList');
   const emptyEl = document.getElementById('travelEmpty');
-  const countries = new Set(travelPlaces.map(p=>p.country).filter(c=>c && c!=='Unknown'));
-  const pct = WORLD_COUNTRY_COUNT ? ((countries.size / WORLD_COUNTRY_COUNT) * 100).toFixed(1) : '0';
+  const pct = WORLD_COUNTRY_COUNT ? ((travelCountries.length / WORLD_COUNTRY_COUNT) * 100).toFixed(1) : '0';
   statsEl.innerHTML =
-    '<div class="trend-row"><span>Countries visited</span><strong>'+countries.size+'</strong></div>'+
+    '<div class="trend-row"><span>Countries visited</span><strong>'+travelCountries.length+'</strong></div>'+
     '<div class="trend-row"><span>Of the world (~'+WORLD_COUNTRY_COUNT+' countries)</span><strong>'+pct+'%</strong></div>'+
     '<div class="trend-row"><span>Places logged</span><strong>'+travelPlaces.length+'</strong></div>';
 
   listEl.innerHTML = '';
-  if(travelPlaces.length===0){ emptyEl.style.display='block'; return; }
+  if(travelCountries.length===0){ emptyEl.style.display='block'; return; }
   emptyEl.style.display = 'none';
-  const byCountry = {};
-  travelPlaces.forEach(p=>{
-    const key = p.country || 'Unknown';
-    if(!byCountry[key]) byCountry[key] = [];
-    byCountry[key].push(p);
-  });
-  Object.keys(byCountry).sort().forEach(country=>{
-    const heading = document.createElement('div');
-    heading.className = 'autocomplete-heading';
-    heading.textContent = country;
-    listEl.appendChild(heading);
-    byCountry[country].forEach(p=>{
+
+  travelCountries.slice().sort((a,b)=>a.name.localeCompare(b.name)).forEach(country=>{
+    const places = travelPlaces.filter(p=>p.country===country.name);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;">'+
+        '<h2 style="font-size:15px;">'+escapeHtml(country.name)+'</h2>'+
+        '<button class="todo-del" data-del-country>&times;</button>'+
+      '</div>'+
+      '<div class="stat-sub" style="margin-bottom:8px;">'+places.length+' place'+(places.length===1?'':'s')+' logged</div>'+
+      '<div class="add-row">'+
+        '<input type="text" placeholder="Add a place in '+escapeHtml(country.name)+'" data-place-input>'+
+        '<button class="btn small" data-add-place>Add</button>'+
+      '</div>'+
+      '<div style="margin-top:6px;" data-place-list></div>';
+
+    card.querySelector('[data-del-country]').addEventListener('click', async ()=>{
+      travelCountries = travelCountries.filter(c=>c.id!==country.id);
+      travelPlaces = travelPlaces.filter(p=>p.country!==country.name);
+      await saveKey('travel-countries', travelCountries);
+      await saveKey('travel-places', travelPlaces);
+      renderTravelTab();
+    });
+    const placeInput = card.querySelector('[data-place-input]');
+    const submitPlace = ()=>{
+      const text = placeInput.value.trim();
+      if(!text) return;
+      addTravelPlaceToCountry(country.name, text);
+    };
+    card.querySelector('[data-add-place]').addEventListener('click', submitPlace);
+    placeInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); submitPlace(); } });
+
+    const placeListEl = card.querySelector('[data-place-list]');
+    places.forEach(p=>{
       const row = document.createElement('div');
       row.className = 'todo-item';
       row.innerHTML =
@@ -1399,15 +1411,29 @@ function renderTravelTab(){
         await saveKey('travel-places', travelPlaces);
         renderTravelTab();
       });
-      listEl.appendChild(row);
+      placeListEl.appendChild(row);
     });
+    listEl.appendChild(card);
   });
 }
 function setupExpenses(){
   document.getElementById('addExpenseBtn').addEventListener('click', addExpense);
   document.getElementById('expenseNoteInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.keyCode===13){ e.preventDefault(); addExpense(); } });
-  document.getElementById('expenseAmountInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.keyCode===13){ e.preventDefault(); addExpense(); } });
+  const amountInput = document.getElementById('expenseAmountInput');
+  amountInput.addEventListener('keydown', (e)=>{
+    if(e.key==='Enter' || e.keyCode===13){ e.preventDefault(); addExpense(); return; }
+    expenseAmountKeyEvent = true;
+  });
+  amountInput.addEventListener('input', ()=>{
+    if(expenseAmountWasEmpty && !expenseAmountKeyEvent && amountInput.value !== ''){
+      amountInput.value = '10';
+    }
+    expenseAmountWasEmpty = (amountInput.value.trim()==='');
+    expenseAmountKeyEvent = false;
+  });
 }
+let expenseAmountWasEmpty = true;
+let expenseAmountKeyEvent = false;
 async function addExpense(){
   const amountInput = document.getElementById('expenseAmountInput');
   const noteInput = document.getElementById('expenseNoteInput');
@@ -1417,6 +1443,7 @@ async function addExpense(){
   expenses.push({id:Date.now(), date:todayStr(), amount, note, done:false});
   await saveKey('expenses', expenses);
   amountInput.value = '';
+  expenseAmountWasEmpty = true;
   noteInput.value = '';
   renderExpensesTab();
   if(quickAddActive==='expense'){
@@ -1979,7 +2006,6 @@ function setupCalendarToolbar(){
     const now = new Date();
     scrollToMonth(now.getFullYear(), now.getMonth(), true);
   });
-  document.getElementById('addDayBtn').addEventListener('click', openQuickAddSheet);
 }
 function updateYearToggleLabel(year){
   document.getElementById('yearToggleLabel').textContent = year;
@@ -3339,7 +3365,7 @@ function renderTrends(){
 function exportData(){
   const payload = {
     exportedAt: new Date().toISOString(),
-    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces,
+    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries,
     rentRateHome: RATE_HOME, rentRateAway: RATE_AWAY
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -3384,6 +3410,7 @@ function handleImportClick(){
       mileageFavorites = data.mileageFavorites || [];
       expenses = data.expenses || [];
       travelPlaces = data.travelPlaces || [];
+      travelCountries = data.travelCountries || [];
       RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 0;
       RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 0;
       await saveKey('calendar-data', calendarData);
@@ -3397,6 +3424,7 @@ function handleImportClick(){
       await saveKey('mileage-favorites', mileageFavorites);
       await saveKey('expenses', expenses);
       await saveKey('travel-places', travelPlaces);
+      await saveKey('travel-countries', travelCountries);
       await saveKey('rent-rate-home', RATE_HOME);
       await saveKey('rent-rate-away', RATE_AWAY);
       renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab(); renderExpensesTab(); renderTravelTab();
@@ -3418,6 +3446,19 @@ function showToast(msg){
   setTimeout(()=>el.remove(), 4200);
 }
 
+let lastHiddenAt = null;
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='hidden'){
+    lastHiddenAt = Date.now();
+  }else if(document.visibilityState==='visible'){
+    if(lastHiddenAt && (Date.now()-lastHiddenAt) > 20*60*1000){
+      const now = new Date();
+      goToView('calendar');
+      scrollToMonth(now.getFullYear(), now.getMonth(), false);
+    }
+    lastHiddenAt = null;
+  }
+});
 init();
 })();
 </script>
