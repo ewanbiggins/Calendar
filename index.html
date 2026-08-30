@@ -271,6 +271,16 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 
 .divider{height:1px;background:var(--line);margin:12px 0;}
 .trend-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line);font-size:13px;}
+.trend-headline-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.trend-headline-card{background:var(--surface-2);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:6px;}
+.trend-headline-card svg{color:var(--home);}
+.trend-headline-card .thc-value{font-family:'Fraunces',serif;font-size:22px;font-weight:600;line-height:1.1;}
+.trend-headline-card .thc-label{font-size:11px;color:var(--ink-soft);}
+.trend-split-bar{display:flex;height:26px;border-radius:8px;overflow:hidden;margin-bottom:8px;}
+.trend-split-bar div{display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;}
+.trend-split-legend{display:flex;gap:16px;font-size:11.5px;color:var(--ink-soft);}
+.trend-split-legend span{display:flex;align-items:center;gap:5px;}
+.trend-split-legend i{width:9px;height:9px;border-radius:50%;display:inline-block;}
 .chart-bars{display:flex;align-items:flex-end;gap:6px;height:130px;margin-top:8px;}
 .chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0;}
 .chart-bar{width:100%;background:var(--home);border-radius:4px 4px 0 0;min-height:2px;}
@@ -331,7 +341,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v11.4</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v11.6</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -447,12 +457,12 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <input type="text" id="mileageFromInput" placeholder="Start address or place" autocomplete="off">
         <div class="autocomplete-list" id="mileageFromSuggestions"></div>
       </div>
+      <div id="mileageStopsContainer"></div>
       <label class="mini-label" style="margin-top:8px;display:block;">To</label>
       <div class="autocomplete-wrap">
         <input type="text" id="mileageToInput" placeholder="Destination address or place" autocomplete="off">
         <div class="autocomplete-list" id="mileageToSuggestions"></div>
       </div>
-      <div id="mileageStopsContainer"></div>
       <div style="display:flex;gap:6px;margin-top:8px;">
         <button type="button" class="btn secondary tiny" id="mileageAddStopBtn">+ Add stop</button>
         <button type="button" class="btn secondary tiny" id="mileageReturnStartBtn">&#8635; Return to start</button>
@@ -537,7 +547,15 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
   <div class="view" id="view-trends">
     <div class="card">
       <h2 style="font-size:15px;">Trends</h2>
-      <div class="stat-sub" style="margin-bottom:4px;">Everything since 1 July 2026.</div>
+      <div class="stat-sub" style="margin-bottom:8px;">Everything since 1 July 2026.</div>
+      <div class="trend-headline-grid" id="trendsHeadlineGrid"></div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;">Home vs Away</h2>
+      <div id="trendsSplitBar"></div>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;">The details</h2>
       <div id="trendsSection"></div>
     </div>
     <div class="card">
@@ -3331,11 +3349,11 @@ function minutesToClock(m){
 function renderBarChart(containerId, bars){
   const container = document.getElementById(containerId);
   if(!bars.length){ container.innerHTML = '<div class="empty">Not enough data yet.</div>'; return; }
-  const max = Math.max(...bars.map(b=>b.value), 0.001);
+  const max = Math.max(...bars.map(b=>Math.abs(b.value)), 0.001);
   container.innerHTML = '<div class="chart-bars">'+bars.map(b=>
     '<div class="chart-bar-col">'+
       '<div class="chart-bar-value">'+(b.value?b.value.toFixed(1):'')+'</div>'+
-      '<div class="chart-bar" style="height:'+Math.max(2,(b.value/max)*100)+'%"></div>'+
+      '<div class="chart-bar" style="height:'+Math.max(2,(Math.abs(b.value)/max)*100)+'%'+(b.value<0?';background:var(--danger)':'')+'"></div>'+
       '<div class="chart-bar-label">'+b.label+'</div>'+
     '</div>'
   ).join('')+'</div>';
@@ -3371,8 +3389,8 @@ const MONTH_NAMES_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep'
 function computeTrendsData(){
   const today = todayStr();
   const totalDays = Math.max(0, daysBetween(RENT_START_DATE, today));
-  let homeDaysTotal=0, awayDaysTotal=0, hoursTotal=0;
-  const monthlyHours = {}, monthlyHome = {}, monthlyAway = {};
+  let homeDaysTotal=0, awayDaysTotal=0, hoursTotal=0, alHours=0, alDays=0;
+  const monthlyHours = {}, monthlyHome = {}, monthlyAway = {}, monthlyAL = {};
   const startMins = [], finishMins = [];
   let cursor = RENT_START_DATE;
   while(cursor < today){
@@ -3384,6 +3402,10 @@ function computeTrendsData(){
     if(h){
       hoursTotal += h;
       monthlyHours[mKey] = (monthlyHours[mKey]||0) + h;
+    }
+    if(entry && entry.isAL){
+      alDays++;
+      if(h){ alHours += h; monthlyAL[mKey] = (monthlyAL[mKey]||0) + h; }
     }
     if(entry && entry.shift){
       const s = timeToMinutes(entry.shift.start), f = timeToMinutes(entry.shift.finish);
@@ -3408,11 +3430,18 @@ function computeTrendsData(){
     const mKey = e.date.slice(0,7);
     monthlyExpenses[mKey] = (monthlyExpenses[mKey]||0)+e.amount;
   });
-  const toilWeeks = computeToilWeeks().weeks.slice(-12);
+  const monthlyRent = {};
+  rentHistory.forEach(r=>{
+    const mKey = (r.paidDate||'').slice(0,7);
+    if(mKey) monthlyRent[mKey] = (monthlyRent[mKey]||0)+r.amount;
+  });
+  const toilWeeksAll = computeToilWeeks().weeks;
+  const toilWeeks = toilWeeksAll.slice(-12);
+  const toilBalanceSeries = toilWeeksAll.slice(-12).map(w=>({weekStart:w.weekStart, balance:w.balance}));
 
   return {
-    totalDays, homeDaysTotal, awayDaysTotal, hoursTotal, monthlyHours, monthlyHome, monthlyAway,
-    startMins, finishMins, monthlyBizMiles, monthlyPersMiles, monthlyTodos, monthlyExpenses, toilWeeks
+    totalDays, homeDaysTotal, awayDaysTotal, hoursTotal, alHours, alDays, monthlyHours, monthlyHome, monthlyAway, monthlyAL,
+    startMins, finishMins, monthlyBizMiles, monthlyPersMiles, monthlyTodos, monthlyExpenses, monthlyRent, toilWeeks, toilBalanceSeries
   };
 }
 function monthLabel(key){ const [y,m] = key.split('-').map(Number); return MONTH_NAMES_SHORT[m-1]; }
@@ -3465,6 +3494,18 @@ function renderSelectedChart(){
     titleEl.textContent = 'Expenses logged by month (£)';
     const keys = allMonthKeys(d.monthlyExpenses);
     renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyExpenses[k]||0})));
+  }else if(trendsChartType==='rent'){
+    titleEl.textContent = 'Rent paid by month (£)';
+    const keys = allMonthKeys(d.monthlyRent);
+    renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyRent[k]||0})));
+  }else if(trendsChartType==='toilbalance'){
+    titleEl.textContent = 'TOIL balance over time';
+    renderBarChart('trendsChartArea', d.toilBalanceSeries.map(w=>({label:shortDate(w.weekStart), value:w.balance})));
+  }else if(trendsChartType==='al'){
+    titleEl.textContent = 'Annual Leave hours by month';
+    const keys = allMonthKeys(d.monthlyAL);
+    if(keys.length===0){ document.getElementById('trendsChartArea').innerHTML = '<div class="empty">No Annual Leave logged yet.</div>'; }
+    else renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyAL[k]||0})));
   }
 }
 function renderTrends(){
@@ -3479,25 +3520,49 @@ function renderTrends(){
   const bizMilesTotal = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
   const persMilesTotal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
   const todosCompleted = todos.filter(t=>t.kind==='task' && t.done).length;
+  const totalTripCount = mileageTrips.length;
+  const avgTripMiles = totalTripCount ? (bizMilesTotal+persMilesTotal)/totalTripCount : 0;
+  const totalExpenses = expenses.reduce((s,e)=>s+e.amount,0);
+  const countriesVisited = travelCountries.length;
+
+  const headlineCards = [
+    ['<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>', d.hoursTotal.toFixed(0)+'h', 'Hours worked'],
+    ['<path d="M12 3a9 9 0 00-9 9h18a9 9 0 00-9-9z"/><line x1="12" y1="12" x2="12" y2="19"/>', toilBalance.toFixed(1)+'h', 'TOIL balance'],
+    ['<path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/>', (bizMilesTotal+persMilesTotal).toFixed(0), 'Miles logged'],
+    ['<path d="M3 12l18-8-7 18-3-7-8-3z"/>', countriesVisited, 'Countries visited']
+  ];
+  document.getElementById('trendsHeadlineGrid').innerHTML = headlineCards.map(c=>
+    '<div class="trend-headline-card"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+c[0]+'</svg><div class="thc-value">'+c[1]+'</div><div class="thc-label">'+c[2]+'</div></div>'
+  ).join('');
+
+  const homePct = d.totalDays ? Math.round((d.homeDaysTotal/d.totalDays)*100) : 0;
+  const awayPct = 100 - homePct;
+  document.getElementById('trendsSplitBar').innerHTML =
+    '<div class="trend-split-bar">'+
+      (homePct>0 ? '<div style="width:'+homePct+'%;background:var(--home);">'+(homePct>12?homePct+'%':'')+'</div>' : '')+
+      (awayPct>0 ? '<div style="width:'+awayPct+'%;background:var(--away);">'+(awayPct>12?awayPct+'%':'')+'</div>' : '')+
+    '</div>'+
+    '<div class="trend-split-legend"><span><i style="background:var(--home);"></i>Home ('+d.homeDaysTotal+')</span><span><i style="background:var(--away);"></i>Away ('+d.awayDaysTotal+')</span></div>';
 
   const rows = [
     ['Days tracked', d.totalDays],
-    ['Home / Away nights', d.homeDaysTotal+' / '+d.awayDaysTotal],
-    ['Hours worked', d.hoursTotal.toFixed(1)+'h'],
     ['Average hours / week', avgHoursPerWeek.toFixed(1)+'h'],
-    ['Current TOIL balance', toilBalance.toFixed(1)+'h'],
+    ['Annual Leave taken', d.alHours.toFixed(1)+'h ('+d.alDays+' day'+(d.alDays===1?'':'s')+')'],
     ['Rent paid to date', money(rentPaid)],
     ['Rent owed now', money(rentOwed)],
     ['Business miles', bizMilesTotal.toFixed(1)+' mi'],
     ['Personal miles', persMilesTotal.toFixed(1)+' mi'],
-    ['Trips logged', mileageTrips.length],
+    ['Trips logged', totalTripCount],
+    ['Average trip length', avgTripMiles.toFixed(1)+' mi'],
+    ['Expenses logged', money(totalExpenses)],
     ['To-dos completed', todosCompleted]
   ];
   section.innerHTML = rows.map(r=>'<div class="trend-row"><span>'+r[0]+'</span><strong>'+r[1]+'</strong></div>').join('');
 
   const chartTypes = [
     ['hours','Hours/month'], ['clock','Clock in/out'], ['homeaway','Home vs Away'],
-    ['miles','Miles/month'], ['toil','Hours/week'], ['todos','To-dos done'], ['expenses','Expenses']
+    ['miles','Miles/month'], ['toil','Hours/week'], ['toilbalance','TOIL trend'],
+    ['al','AL/month'], ['rent','Rent/month'], ['todos','To-dos done'], ['expenses','Expenses']
   ];
   const picker = document.getElementById('trendsChartPicker');
   picker.innerHTML = chartTypes.map(ct=>'<button type="button" class="chip-btn'+(ct[0]===trendsChartType?' active':'')+'" data-chart="'+ct[0]+'">'+ct[1]+'</button>').join('');
