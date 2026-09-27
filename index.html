@@ -117,8 +117,12 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .menu-item:active{background:var(--surface-2);}
 .drawer-overlay{position:fixed;inset:0;background:rgba(20,31,26,0.45);z-index:90;opacity:0;pointer-events:none;transition:opacity .2s ease;}
 .drawer-overlay.show{opacity:1;pointer-events:auto;}
-.drawer{position:fixed;top:0;left:0;bottom:0;width:78%;max-width:300px;background:var(--surface);z-index:91;transform:translateX(-100%);transition:transform .25s ease;box-shadow:2px 0 24px rgba(0,0,0,0.18);overflow-y:auto;padding:20px 18px;padding-top:calc(20px + env(safe-area-inset-top,0px));}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:78%;max-width:300px;background:var(--surface);z-index:91;transform:translateX(100%);transition:transform .25s ease;box-shadow:-2px 0 24px rgba(0,0,0,0.18);overflow-y:auto;padding:20px 18px;padding-top:calc(20px + env(safe-area-inset-top,0px));}
 .drawer.show{transform:translateX(0);}
+.overview-overlay{position:fixed;inset:0;background:rgba(20,31,26,0.2);z-index:90;opacity:0;pointer-events:none;transition:opacity .18s ease;}
+.overview-overlay.show{opacity:1;pointer-events:auto;}
+.overview-panel{position:fixed;top:calc(env(safe-area-inset-top,0px) + 128px);left:14px;width:min(320px, calc(100% - 28px));max-height:56vh;overflow-y:auto;background:var(--surface);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,0.22);z-index:91;transform:translateY(-10px) scale(0.97);opacity:0;pointer-events:none;transition:transform .18s ease, opacity .18s ease;padding:12px;transform-origin:top left;}
+.overview-panel.show{transform:translateY(0) scale(1);opacity:1;pointer-events:auto;}
 .autocomplete-heading{padding:6px 10px 3px;font-size:9.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
 .autocomplete-item:last-child{border-bottom:none;}
 .autocomplete-item:active{background:var(--surface-2);}
@@ -126,17 +130,17 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 /* Calendar (scrolling) */
 .cal-header-bar{
   position:sticky;top:env(safe-area-inset-top, 0px);z-index:46;background:var(--bg);
-  display:flex;align-items:center;justify-content:flex-start;gap:8px;flex-wrap:nowrap;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap;
   padding:14px 0;box-shadow:0 6px 8px -8px rgba(27,38,32,0.15);
 }
 .cal-back-btn{display:flex;align-items:center;gap:4px;background:none;border:none;color:var(--ink);font-family:'Fraunces',serif;font-weight:600;font-size:19px;padding:4px 2px;flex-shrink:0;}
-.cal-header-alert{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;color:var(--danger);text-align:center;padding:0 6px;cursor:pointer;}
-.cal-header-alert.today-tone{color:var(--ink-soft);}
 .cal-back-btn svg{transition:transform .15s ease;width:19px;height:19px;}
 .cal-back-btn.expanded svg{transform:rotate(180deg);}
-.cal-header-right{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;justify-content:flex-end;flex-shrink:0;margin-left:auto;}
+.cal-header-side{flex:1;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;min-width:0;position:relative;}
+.cal-header-right{justify-content:flex-end;}
 .cal-header-right .btn.small{padding:8px 11px;font-size:13px;white-space:nowrap;flex-shrink:0;}
-.round-btn{background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:34px;height:34px;padding:0;font-size:18px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cal-overview-badge{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--danger);border:2px solid var(--bg);display:none;}
+.round-btn{position:relative;background:var(--surface-2);border:1px solid var(--line);border-radius:50%;width:34px;height:34px;padding:0;font-size:18px;line-height:1;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .round-btn.lg{width:58px;height:58px;font-size:26px;}
 .round-btn.sm{width:30px;height:30px;}
 .cal-fade{position:fixed;left:0;right:0;height:56px;pointer-events:none;z-index:45;}
@@ -341,7 +345,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v11.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v12.0</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -351,16 +355,23 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <div id="drawerBody"></div>
   </div>
 
+  <div class="overview-overlay" id="overviewOverlay"></div>
+  <div class="overview-panel" id="overviewPanel">
+    <div id="overviewPanelBody"></div>
+  </div>
+
   <!-- CALENDAR -->
   <div class="view active" id="view-calendar">
     <div class="cal-fade cal-fade-top"></div>
     <div class="cal-header-bar">
+      <div class="cal-header-side">
+        <button class="round-btn" id="calOverviewBtn" title="Quick overview"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span class="cal-overview-badge" id="calOverviewBadge"></span></button>
+      </div>
       <button class="cal-back-btn" id="yearToggleBtn">
         <svg id="yearToggleIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         <span id="yearToggleLabel">2026</span>
       </button>
-      <div class="cal-header-alert" id="calHeaderAlert"></div>
-      <div class="cal-header-right">
+      <div class="cal-header-side cal-header-right">
         <button class="round-btn" id="searchBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
         <button class="btn secondary small" id="jumpTodayBtn">Today</button>
       </div>
@@ -583,6 +594,17 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       </label>
     </div>
     <div class="card">
+      <h2 style="font-size:15px;">Trends</h2>
+      <button class="btn secondary block" id="viewTrendsBtn">View trends</button>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;">Travel tracking</h2>
+      <label class="switch-row">
+        <span>Enable Travel</span>
+        <span class="switch"><input type="checkbox" id="travelEnabledToggle"><span class="switch-slider"></span></span>
+      </label>
+    </div>
+    <div class="card">
       <h2 style="font-size:15px;">Rent rates</h2>
       <div class="shift-compact" style="grid-template-columns:1fr 1fr;">
         <div><label class="mini-label">Home (£/night)</label><input type="number" id="rateHomeInput" step="0.05" min="0"></div>
@@ -753,6 +775,7 @@ let mileageTrips = [];  // {id,date,from,to,category,miles}
 let toilAdjustment = 0; // manual correction so the balance can be set directly
 let events = [];        // {id,title,date,repeat:'none'|'weekly'|'monthly'|'yearly'}
 let darkModeOn = false;
+let travelEnabled = false;
 
 let selectedDate = null;
 let selectedTagId = null;
@@ -1052,6 +1075,7 @@ async function init(){
   });
   if(needsResave) await saveKey('todos', todos);
   darkModeOn = await loadKey('dark-mode', false);
+  travelEnabled = await loadKey('travel-enabled', false);
   applyDarkMode(darkModeOn);
 
   const now = new Date();
@@ -1107,6 +1131,7 @@ function goToCalendarDate(dateStr){
   openDayModal(dateStr);
 }
 function goToView(viewName){
+  closeOverviewPanel();
   const wasCalendar = document.getElementById('view-calendar').classList.contains('active');
   if(wasCalendar) savedCalendarScrollY = window.scrollY;
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -1125,11 +1150,13 @@ function setupTabs(){
   document.getElementById('menuCalBtn').addEventListener('click', openMenuSheet);
   document.getElementById('returnCalBtn').addEventListener('click', ()=> goToView('calendar'));
   document.getElementById('returnBarMenuBtn').addEventListener('click', openMenuSheet);
+  document.getElementById('calOverviewBtn').addEventListener('click', openCalOverviewSheet);
   document.getElementById('calTodoBtn').addEventListener('click', openQuickAddTodoForm);
   document.getElementById('calExpenseBtn').addEventListener('click', openQuickAddExpenseForm);
   document.getElementById('calMileageBtn').addEventListener('click', openQuickAddMileageForm);
   document.getElementById('calClockBtn').addEventListener('click', toggleClockIn);
   document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
+  document.getElementById('overviewOverlay').addEventListener('click', closeOverviewPanel);
 }
 function openMenuSheet(){
   const body = document.getElementById('drawerBody');
@@ -1152,10 +1179,9 @@ function openMenuSheet(){
     ['rent','Rent',0],
     ['toil','TOIL',0],
     ['mileage','Mileage',0],
-    ['expenses','Expenses',pendingExpenses],
-    ['travel','Travel',0],
-    ['trends','Trends',0]
+    ['expenses','Expenses',pendingExpenses]
   ];
+  if(travelEnabled) items.push(['travel','Travel',0]);
   const itemHtml = (view,label,count)=>
     '<div class="menu-item" data-goto="'+view+'">'+
       '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+icons[view]+'</svg>'+
@@ -3017,24 +3043,79 @@ async function addNewTodo(){
   if(selectedDate) renderDayHappeningList(selectedDate);
 }
 function renderCalHeaderAlert(){
-  const el = document.getElementById('calHeaderAlert');
-  if(!el) return;
+  const badge = document.getElementById('calOverviewBadge');
+  if(!badge) return;
   const today = todayStr();
-  const pending = todos.filter(t=>t.kind==='task' && !t.done && t.dueDate);
-  const overdue = pending.filter(t=>t.dueDate < today).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
-  const dueToday = pending.filter(t=>t.dueDate === today);
-  el.classList.remove('today-tone');
-  if(overdue.length){
-    el.textContent = 'Overdue: '+overdue[0].text;
-    el.onclick = ()=> goToCalendarDate(overdue[0].dueDate);
-  }else if(dueToday.length){
-    el.classList.add('today-tone');
-    el.textContent = 'Today: '+dueToday[0].text;
-    el.onclick = ()=> goToCalendarDate(today);
-  }else{
-    el.textContent = '';
-    el.onclick = null;
-  }
+  const hasOverdue = todos.some(t=>t.kind==='task' && !t.done && t.dueDate && t.dueDate < today);
+  badge.style.display = hasOverdue ? 'block' : 'none';
+}
+function openOverviewPanel(){
+  document.getElementById('overviewOverlay').classList.add('show');
+  document.getElementById('overviewPanel').classList.add('show');
+}
+function closeOverviewPanel(){
+  document.getElementById('overviewOverlay').classList.remove('show');
+  document.getElementById('overviewPanel').classList.remove('show');
+}
+function openCalOverviewSheet(){
+  const body = document.getElementById('overviewPanelBody');
+  const today = todayStr();
+  const pending = todos.filter(t=>t.kind==='task' && !t.done).sort((a,b)=>{
+    if(!a.dueDate && !b.dueDate) return 0;
+    if(!a.dueDate) return 1;
+    if(!b.dueDate) return -1;
+    return a.dueDate.localeCompare(b.dueDate);
+  }).slice(0,8);
+  const recentExpenses = expenses.filter(e=>!e.done).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  const recentTrips = mileageTrips.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+
+  let html = '<div class="autocomplete-heading">To-dos</div>';
+  if(!pending.length) html += '<div class="empty">Nothing pending.</div>';
+  pending.forEach(t=>{
+    const overdue = t.dueDate && t.dueDate < today;
+    const dueLabel = t.dueDate ? (t.dueDate===today?'Today':(overdue?shortDate(t.dueDate)+' (overdue)':shortDate(t.dueDate))) : 'General';
+    html += '<div class="menu-item" data-goto-todo="'+t.id+'" data-date="'+(t.dueDate||'')+'" style="padding:9px 4px;">'+
+      '<span style="flex:1;font-size:13.5px;">'+escapeHtml(t.text)+'</span>'+
+      '<span style="font-size:11px;color:'+(overdue?'var(--danger)':'var(--ink-soft)')+';flex-shrink:0;">'+dueLabel+'</span>'+
+    '</div>';
+  });
+  html += '<button class="btn secondary small block" data-view-full="todo" style="margin-top:8px;">View full to-do list</button>';
+  html += '<div class="divider"></div>';
+
+  html += '<div class="autocomplete-heading">Recent expenses</div>';
+  if(!recentExpenses.length) html += '<div class="empty">Nothing pending.</div>';
+  recentExpenses.forEach(e=>{
+    html += '<div class="menu-item" style="padding:9px 4px;cursor:default;">'+
+      '<span style="flex:1;font-size:13.5px;">'+money(e.amount)+(e.note?' &middot; '+escapeHtml(e.note):'')+'</span>'+
+      '<span style="font-size:11px;color:var(--ink-soft);flex-shrink:0;">'+shortDate(e.date)+'</span>'+
+    '</div>';
+  });
+  html += '<button class="btn secondary small block" data-view-full="expenses" style="margin-top:8px;">View full expenses</button>';
+  html += '<div class="divider"></div>';
+
+  html += '<div class="autocomplete-heading">Recent mileage</div>';
+  if(!recentTrips.length) html += '<div class="empty">Nothing logged yet.</div>';
+  recentTrips.forEach(t=>{
+    html += '<div class="menu-item" style="padding:9px 4px;cursor:default;">'+
+      '<span style="flex:1;font-size:13.5px;">'+mileageRouteLabel(t)+'</span>'+
+      '<span style="font-size:11px;color:var(--ink-soft);flex-shrink:0;">'+t.miles.toFixed(1)+'mi</span>'+
+    '</div>';
+  });
+  html += '<button class="btn secondary small block" data-view-full="mileage" style="margin-top:8px;">View full mileage log</button>';
+
+  body.innerHTML = html;
+  body.querySelectorAll('[data-goto-todo]').forEach(row=>{
+    row.style.cursor = 'pointer';
+    row.addEventListener('click', ()=>{
+      closeOverviewPanel();
+      if(row.dataset.date) goToCalendarDate(row.dataset.date);
+      else goToView('todo');
+    });
+  });
+  body.querySelectorAll('[data-view-full]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ closeOverviewPanel(); goToView(btn.dataset.viewFull); });
+  });
+  openOverviewPanel();
 }
 function renderTodosTab(){
   const datedContainer = document.getElementById('list-dated');
@@ -3250,6 +3331,14 @@ function setupSettings(){
     darkModeOn = e.target.checked;
     applyDarkMode(darkModeOn);
     await saveKey('dark-mode', darkModeOn);
+  });
+  document.getElementById('viewTrendsBtn').addEventListener('click', ()=> goToView('trends'));
+  const travelToggle = document.getElementById('travelEnabledToggle');
+  travelToggle.checked = travelEnabled;
+  travelToggle.addEventListener('change', async (e)=>{
+    travelEnabled = e.target.checked;
+    await saveKey('travel-enabled', travelEnabled);
+    showToast(travelEnabled ? 'Travel is now in the menu.' : 'Travel hidden from the menu.');
   });
   document.getElementById('rateHomeInput').value = RATE_HOME;
   document.getElementById('rateAwayInput').value = RATE_AWAY;
