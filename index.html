@@ -111,6 +111,8 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .autocomplete-wrap{position:relative;}
 .autocomplete-list{display:none;position:absolute;left:0;right:0;top:100%;z-index:20;background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-top:2px;max-height:180px;overflow-y:auto;box-shadow:var(--shadow);}
 .autocomplete-list.show{display:block;}
+.autocomplete-list.ac-portal{position:fixed;left:0;top:0;right:auto;margin:0;z-index:130;max-height:260px;border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,0.24);overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+.autocomplete-list.ac-portal .autocomplete-item{padding:11px 12px;font-size:13.5px;}
 .autocomplete-item{padding:8px 10px;font-size:12.5px;color:var(--ink);border-bottom:1px solid var(--line);cursor:pointer;}
 .menu-item{display:flex;align-items:center;gap:12px;padding:12px 8px;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;border-radius:10px;}
 .menu-item svg{color:var(--home);flex-shrink:0;}
@@ -345,7 +347,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v12.0</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v12.1</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -506,6 +508,30 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
           <div class="big" id="mileagePersonalTotal">0.0 mi</div>
         </div>
       </div>
+      <div id="vanOdoBox" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);">
+        <div class="stat-sub">Van odometer (tracker estimate)</div>
+        <div class="big" id="vanOdoEstimate">&mdash;</div>
+        <div class="stat-sub" id="vanOdoDetail" style="margin-top:2px;"></div>
+        <button type="button" class="btn secondary small" id="vanOdoCheckBtn" style="margin-top:8px;">Check against the van</button>
+      </div>
+    </div>
+    <div class="card">
+      <button type="button" class="dm-section-header" id="savedPlacesToggleBtn">
+        <span class="dm-label" style="margin:0;">Saved places<span id="savedPlacesCount"></span></span>
+        <svg class="chevron-icon" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div id="savedPlacesBody" style="display:none;margin-top:10px;">
+        <label class="mini-label">Add a place</label>
+        <div class="autocomplete-wrap">
+          <input type="text" id="savedPlaceAddrInput" placeholder="Search an address or place" autocomplete="off">
+          <div class="autocomplete-list" id="savedPlaceAddrSuggestions"></div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:8px;">
+          <input type="text" id="savedPlaceNameInput" placeholder="Name (e.g. Home, Depot)" style="flex:1;min-width:0;">
+          <button type="button" class="btn small" id="savedPlaceAddBtn">Add</button>
+        </div>
+        <div id="savedPlacesList" style="margin-top:12px;"></div>
+      </div>
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Trip history</h2>
@@ -603,6 +629,14 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
         <span>Enable Travel</span>
         <span class="switch"><input type="checkbox" id="travelEnabledToggle"><span class="switch-slider"></span></span>
       </label>
+    </div>
+    <div class="card">
+      <h2 style="font-size:15px;">Van mileage</h2>
+      <div class="stat-sub" style="margin-bottom:8px;">Enter what the van's odometer reads. Trips you log from now are added on, so you can compare the tracker with the real dashboard. Enter a new reading any time to check how far out it is.</div>
+      <label class="mini-label">Odometer reading (miles)</label>
+      <input type="number" id="vanOdoInput" inputmode="decimal" min="0" step="1" placeholder="e.g. 48250">
+      <button class="btn block" id="vanOdoSaveBtn" style="margin-top:10px;">Save reading</button>
+      <div class="stat-sub" id="vanOdoInfo" style="margin-top:8px;"></div>
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Rent rates</h2>
@@ -776,6 +810,7 @@ let toilAdjustment = 0; // manual correction so the balance can be set directly
 let events = [];        // {id,title,date,repeat:'none'|'weekly'|'monthly'|'yearly'}
 let darkModeOn = false;
 let travelEnabled = false;
+let vanOdometer = null; // {reading, setDate, setAt, lastCheck}
 
 let selectedDate = null;
 let selectedTagId = null;
@@ -841,7 +876,7 @@ async function saveKey(key, value, attempt){
 }
 
 // ---------- cloud sync ----------
-const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','dark-mode','rent-rate-home','rent-rate-away'];
+const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','dark-mode','rent-rate-home','rent-rate-away'];
 let firebaseApp = null, firestoreDb = null, firestoreDoc = null, syncUnsub = null;
 let syncEnabled = false;
 async function pushToCloud(key, value){
@@ -872,6 +907,7 @@ async function applyRemoteValue(key, value){
     case 'expenses': expenses = value; break;
     case 'travel-places': travelPlaces = value; break;
     case 'travel-countries': travelCountries = value; break;
+    case 'van-odometer': vanOdometer = value; break;
     case 'dark-mode': darkModeOn = value; applyDarkMode(darkModeOn); break;
     case 'rent-rate-home': RATE_HOME = value; break;
     case 'rent-rate-away': RATE_AWAY = value; break;
@@ -942,7 +978,7 @@ async function connectSync(config, isInitialSetup){
       const currentValues = {
         'calendar-data':calendarData,'tag-defs':tagDefs,'rent-meta':rentMeta,'rent-history':rentHistory,
         'todos':todos,'toil-payouts':toilPayouts,'toil-adjustment':toilAdjustment,'mileage-trips':mileageTrips,
-        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,
+        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,
         'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY
       };
       SYNC_KEYS.forEach(key=>{ initial[key] = JSON.stringify(currentValues[key]); });
@@ -1076,6 +1112,7 @@ async function init(){
   if(needsResave) await saveKey('todos', todos);
   darkModeOn = await loadKey('dark-mode', false);
   travelEnabled = await loadKey('travel-enabled', false);
+  vanOdometer = await loadKey('van-odometer', null);
   applyDarkMode(darkModeOn);
 
   const now = new Date();
@@ -1096,6 +1133,7 @@ async function init(){
   setupSearch();
   setupSettings();
   setupMileage();
+  setupMileageExtras();
   setupExpenses();
   setupTravel();
   setupSync();
@@ -1637,7 +1675,7 @@ function mileageRecentAddresses(){
       if(addr && !recents.includes(addr) && !mileageFavorites.some(f=>f.address===addr)) recents.push(addr);
     });
   });
-  return recents.slice(0,6);
+  return recents.slice(0,4);
 }
 function renderMileagePlacesDropdown(list, input, onPick){
   list.innerHTML = '';
@@ -1646,9 +1684,18 @@ function renderMileagePlacesDropdown(list, input, onPick){
     heading.className = 'autocomplete-heading';
     heading.textContent = 'Favourites';
     list.appendChild(heading);
-    mileageFavorites.forEach(fav=>{
+    const usage = mileageAddressUsage();
+    const ranked = mileageFavorites.slice().sort((x,y)=> (usage[y.address]||0) - (usage[x.address]||0));
+    ranked.slice(0,6).forEach(fav=>{
       list.appendChild(buildFavouriteRow(fav, input, onPick, list));
     });
+    if(ranked.length > 6){
+      const more = document.createElement('div');
+      more.className = 'autocomplete-heading';
+      more.style.textTransform = 'none';
+      more.textContent = '+'+(ranked.length-6)+' more \u2014 start typing to find them';
+      list.appendChild(more);
+    }
   }
   const recents = mileageRecentAddresses();
   if(recents.length){
@@ -1663,7 +1710,7 @@ function renderMileagePlacesDropdown(list, input, onPick){
       const label = document.createElement('span');
       label.textContent = addr;
       label.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;';
-      label.addEventListener('click', ()=>{ input.value = addr; onPick(null); list.classList.remove('show'); });
+      label.addEventListener('click', ()=>{ input.value = addr; onPick(null); acHide(list); });
       const star = document.createElement('span');
       star.textContent = '\u2606';
       star.title = 'Add to favourites';
@@ -1681,7 +1728,7 @@ function renderMileagePlacesDropdown(list, input, onPick){
   if(!mileageFavorites.length && !recents.length){
     list.innerHTML = '<div class="empty" style="padding:8px 10px;">Start typing to search, or log a trip to build up recents.</div>';
   }
-  list.classList.add('show');
+  acShow(list, input);
 }
 function buildFavouriteRow(fav, input, onPick, list){
   const item = document.createElement('div');
@@ -1691,7 +1738,7 @@ function buildFavouriteRow(fav, input, onPick, list){
   label.textContent = fav.nickname || fav.address;
   label.title = fav.address;
   label.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;cursor:pointer;';
-  label.addEventListener('click', ()=>{ input.value = fav.address; onPick(null); list.classList.remove('show'); });
+  label.addEventListener('click', ()=>{ input.value = fav.address; onPick(null); acHide(list); });
   const actions = document.createElement('span');
   actions.style.cssText = 'display:flex;gap:8px;flex-shrink:0;padding-left:6px;';
   const editBtn = document.createElement('span');
@@ -1763,24 +1810,72 @@ async function ensureAddressLabelled(address){
   mileageFavorites.push({id:'fav_'+Date.now()+Math.random(), address, nickname});
   await saveKey('mileage-favorites', mileageFavorites);
 }
-function setupAddressAutocomplete(inputId, listId, onPick){
+function mileageAddressUsage(){
+  const u = {};
+  mileageTrips.forEach(t=>{
+    [t.from, ...(t.stops||[]), t.to].forEach(a=>{ if(a) u[a] = (u[a]||0) + 1; });
+  });
+  return u;
+}
+let acActive = null;
+function positionAcList(list, input){
+  const r = input.getBoundingClientRect();
+  const vv = window.visualViewport;
+  const viewTop = vv ? vv.offsetTop : 0;
+  const viewBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
+  if(r.bottom < viewTop || r.top > viewBottom){ acHide(list); return; }
+  const gap = 4, margin = 8;
+  const spaceBelow = viewBottom - r.bottom - gap - margin;
+  const spaceAbove = r.top - viewTop - gap - margin;
+  list.style.left = Math.max(8, r.left)+'px';
+  list.style.width = Math.min(r.width, window.innerWidth - 16)+'px';
+  if(spaceBelow >= 150 || spaceBelow >= spaceAbove){
+    list.style.top = (r.bottom + gap)+'px';
+    list.style.bottom = 'auto';
+    list.style.maxHeight = Math.max(90, Math.min(280, spaceBelow))+'px';
+  }else{
+    list.style.top = 'auto';
+    list.style.bottom = (window.innerHeight - r.top + gap)+'px';
+    list.style.maxHeight = Math.max(90, Math.min(280, spaceAbove))+'px';
+  }
+}
+function acShow(list, input){
+  if(list.parentNode !== document.body){ list._home = list.parentNode; document.body.appendChild(list); }
+  list.classList.add('show');
+  acActive = {list, input};
+  positionAcList(list, input);
+  setTimeout(()=>{ if(acActive && acActive.list===list && list.classList.contains('show')) positionAcList(list, input); }, 300);
+}
+function acHide(list){
+  list.classList.remove('show');
+  if(acActive && acActive.list===list) acActive = null;
+  if(list._home && list.parentNode === document.body) list._home.appendChild(list);
+}
+const acCache = new Map();
+function setupAddressAutocomplete(inputId, listId, onPick, opts){
+  opts = opts || {};
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
+  list.classList.add('ac-portal');
   let debounceTimer = null;
   let requestSeq = 0;
+  let controller = null;
+  const emptyState = ()=>{
+    if(opts.manager) acHide(list);
+    else renderMileagePlacesDropdown(list, input, onPick);
+  };
   input.addEventListener('focus', ()=>{
-    if(!input.value.trim()) renderMileagePlacesDropdown(list, input, onPick);
+    if(!input.value.trim()) emptyState();
   });
   input.addEventListener('input', ()=>{
     onPick(null);
     const query = input.value.trim();
     clearTimeout(debounceTimer);
-    if(query.length < 3){
-      if(!query) renderMileagePlacesDropdown(list, input, onPick);
-      else{ list.classList.remove('show'); list.innerHTML=''; }
-      return;
-    }
-    const labelMatches = mileageFavorites.filter(f=> (f.nickname||'').toLowerCase().includes(query.toLowerCase()));
+    if(controller){ controller.abort(); controller = null; }
+    const seq = ++requestSeq;
+    if(!query){ emptyState(); return; }
+    const q = query.toLowerCase();
+    const labelMatches = opts.manager ? [] : mileageFavorites.filter(f=> ((f.nickname||'')+' '+(f.address||'')).toLowerCase().includes(q)).slice(0,5);
     list.innerHTML = '';
     if(labelMatches.length){
       const heading = document.createElement('div');
@@ -1788,45 +1883,218 @@ function setupAddressAutocomplete(inputId, listId, onPick){
       heading.textContent = 'Saved';
       list.appendChild(heading);
       labelMatches.forEach(fav=> list.appendChild(buildFavouriteRow(fav, input, onPick, list)));
-      list.classList.add('show');
+      acShow(list, input);
+    }else{
+      acHide(list);
     }
+    if(query.length < 3) return;
+    const renderFeatures = (features)=>{
+      const seen = new Set();
+      const rows = [];
+      features.forEach(f=>{
+        const label = photonLabel(f.properties);
+        if(!label || seen.has(label)) return;
+        seen.add(label);
+        rows.push({label, coord:{lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]}});
+      });
+      if(!rows.length) return;
+      if(labelMatches.length){
+        const heading2 = document.createElement('div');
+        heading2.className = 'autocomplete-heading';
+        heading2.textContent = 'Results';
+        list.appendChild(heading2);
+      }
+      rows.forEach(r=>{
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        item.textContent = r.label;
+        item.addEventListener('click', async ()=>{
+          input.value = r.label;
+          onPick(r.coord);
+          acHide(list);
+          list.innerHTML = '';
+          if(opts.manager){ if(opts.onSelect) opts.onSelect(r.label); }
+          else await ensureAddressLabelled(r.label);
+        });
+        list.appendChild(item);
+      });
+      acShow(list, input);
+    };
+    if(acCache.has(q)){ renderFeatures(acCache.get(q)); return; }
     debounceTimer = setTimeout(async ()=>{
-      const seq = ++requestSeq;
+      controller = new AbortController();
       try{
-        const url = 'https://photon.komoot.io/api/?limit=5&q='+encodeURIComponent(query);
-        const res = await fetch(url);
+        const url = 'https://photon.komoot.io/api/?limit=6&lang=en&lat=52.5&lon=-1.5&q='+encodeURIComponent(query);
+        const res = await fetch(url, {signal: controller.signal});
         if(!res.ok) return;
         const data = await res.json();
-        if(seq !== requestSeq) return; // a newer keystroke has since fired, ignore this stale result
-        if(!data || !data.features || !data.features.length){ if(!labelMatches.length) list.classList.remove('show'); return; }
-        if(labelMatches.length){
-          const heading2 = document.createElement('div');
-          heading2.className = 'autocomplete-heading';
-          heading2.textContent = 'Results';
-          list.appendChild(heading2);
-        }
-        data.features.forEach(f=>{
-          const label = photonLabel(f.properties);
-          if(!label) return;
-          const item = document.createElement('div');
-          item.className = 'autocomplete-item';
-          item.textContent = label;
-          item.addEventListener('click', async ()=>{
-            input.value = label;
-            onPick({lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]});
-            list.classList.remove('show');
-            list.innerHTML = '';
-            await ensureAddressLabelled(label);
-          });
-          list.appendChild(item);
-        });
-        list.classList.add('show');
+        if(seq !== requestSeq) return; // a newer keystroke has fired since, ignore this stale result
+        const features = (data && data.features) || [];
+        acCache.set(q, features);
+        if(acCache.size > 80) acCache.delete(acCache.keys().next().value);
+        renderFeatures(features);
       }catch(e){ /* silent — autocomplete is a convenience, calculate-time fallback still works */ }
-    }, 400);
+    }, 200);
   });
   document.addEventListener('click', (e)=>{
-    if(!input.contains(e.target) && !list.contains(e.target)) list.classList.remove('show');
+    if(list.classList.contains('show') && !input.contains(e.target) && !list.contains(e.target)) acHide(list);
   });
+}
+// ---------- van odometer ----------
+function fmtMi(n, dp){ return Number(n).toLocaleString('en-GB', {minimumFractionDigits:dp||0, maximumFractionDigits:dp||0}); }
+function computeVanOdometer(){
+  if(!vanOdometer || typeof vanOdometer.reading !== 'number') return null;
+  let added = 0;
+  mileageTrips.forEach(t=>{
+    if(t.date > vanOdometer.setDate || (t.date === vanOdometer.setDate && t.id > vanOdometer.setAt)) added += t.miles;
+  });
+  return {estimate: vanOdometer.reading + added, added};
+}
+function renderVanOdo(){
+  const v = computeVanOdometer();
+  const box = document.getElementById('vanOdoBox');
+  const info = document.getElementById('vanOdoInfo');
+  if(!v){
+    if(box) box.style.display = 'none';
+    if(info) info.textContent = 'Not set yet.';
+    return;
+  }
+  const lc = vanOdometer.lastCheck;
+  let lastText = '';
+  if(lc){
+    const d = lc.diff;
+    lastText = ' Last check ('+shortDate(lc.date)+'): '+(Math.abs(d) < 0.5 ? 'spot on.' : (d > 0 ? 'the van was '+fmtMi(d)+' mi ahead of the tracker.' : 'the tracker was '+fmtMi(-d)+' mi ahead of the van.'));
+  }
+  const detail = 'Started at '+fmtMi(vanOdometer.reading)+' mi on '+shortDate(vanOdometer.setDate)+' \u00b7 +'+fmtMi(v.added,1)+' mi logged since.'+lastText;
+  if(box){
+    box.style.display = 'block';
+    document.getElementById('vanOdoEstimate').textContent = fmtMi(v.estimate)+' mi';
+    document.getElementById('vanOdoDetail').textContent = detail;
+  }
+  if(info) info.textContent = 'Tracker estimate now: '+fmtMi(v.estimate)+' mi. '+detail;
+}
+async function saveVanOdometer(){
+  const input = document.getElementById('vanOdoInput');
+  const val = parseFloat(input.value);
+  if(isNaN(val) || val < 0){ showToast("Enter the van's odometer reading."); return; }
+  const prev = computeVanOdometer();
+  let lastCheck = null;
+  let msg = 'Van odometer set to '+fmtMi(val)+' mi.';
+  if(prev){
+    const diff = val - prev.estimate;
+    lastCheck = {date: todayStr(), estimated: prev.estimate, actual: val, diff};
+    if(Math.abs(diff) < 0.5) msg = 'Spot on \u2014 tracker matched the van.';
+    else if(diff > 0) msg = 'Van is '+fmtMi(diff)+' mi ahead of the tracker. Reading updated.';
+    else msg = 'Tracker is '+fmtMi(-diff)+' mi ahead of the van. Reading updated.';
+  }
+  vanOdometer = {reading: val, setDate: todayStr(), setAt: Date.now(), lastCheck};
+  await saveKey('van-odometer', vanOdometer);
+  input.value = '';
+  renderVanOdo();
+  showToast(msg);
+}
+
+// ---------- saved places manager ----------
+function renderSavedPlaces(){
+  const list = document.getElementById('savedPlacesList');
+  const count = document.getElementById('savedPlacesCount');
+  if(!list) return;
+  count.textContent = mileageFavorites.length ? ' \u00b7 '+mileageFavorites.length : '';
+  list.innerHTML = '';
+  if(!mileageFavorites.length){ list.innerHTML = '<div class="empty">No saved places yet.</div>'; return; }
+  const usage = mileageAddressUsage();
+  const sorted = mileageFavorites.slice().sort((x,y)=> (usage[y.address]||0) - (usage[x.address]||0) || (x.nickname||x.address).localeCompare(y.nickname||y.address));
+  sorted.forEach(fav=>{
+    const uses = usage[fav.address] || 0;
+    const row = document.createElement('div');
+    row.className = 'todo-item';
+    row.innerHTML =
+      '<div style="flex:1;min-width:0;"><div class="todo-text sp-name" style="cursor:pointer;">'+escapeHtml(fav.nickname || fav.address)+' <span style="color:var(--ink-soft);font-size:11px;">\u270e</span></div>'+
+      '<div class="todo-due" style="font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(fav.address)+' \u00b7 '+(uses ? uses+' trip'+(uses===1?'':'s') : 'unused')+'</div></div>'+
+      '<button class="todo-del">&times;</button>';
+    const nameEl = row.querySelector('.sp-name');
+    nameEl.addEventListener('click', ()=>{
+      if(nameEl.querySelector('input')) return;
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.value = fav.nickname || fav.address;
+      inp.style.cssText = 'width:100%;font-size:16px;padding:4px 6px;';
+      nameEl.innerHTML = '';
+      nameEl.appendChild(inp);
+      inp.focus(); inp.select();
+      let done = false;
+      const commit = async ()=>{
+        if(done) return;
+        done = true;
+        fav.nickname = inp.value.trim() || fav.address;
+        await saveKey('mileage-favorites', mileageFavorites);
+        renderMileageTab();
+      };
+      inp.addEventListener('blur', commit);
+      inp.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter'){ ev.preventDefault(); inp.blur(); } });
+    });
+    const del = row.querySelector('.todo-del');
+    let armed = false, timer = null;
+    del.addEventListener('click', async ()=>{
+      if(!armed){
+        armed = true;
+        del.textContent = 'Delete?';
+        del.style.cssText = 'color:var(--danger);font-size:11.5px;font-weight:600;padding:2px 6px;';
+        timer = setTimeout(()=>{ armed = false; del.innerHTML = '&times;'; del.style.cssText = ''; }, 3000);
+        return;
+      }
+      clearTimeout(timer);
+      mileageFavorites = mileageFavorites.filter(f=>f.id !== fav.id);
+      await saveKey('mileage-favorites', mileageFavorites);
+      renderMileageTab();
+    });
+    list.appendChild(row);
+  });
+}
+function setupMileageExtras(){
+  const toggleBtn = document.getElementById('savedPlacesToggleBtn');
+  toggleBtn.addEventListener('click', ()=>{
+    const body = document.getElementById('savedPlacesBody');
+    const opening = body.style.display === 'none';
+    body.style.display = opening ? 'block' : 'none';
+    toggleBtn.classList.toggle('expanded', opening);
+  });
+  const addrInput = document.getElementById('savedPlaceAddrInput');
+  const nameInput = document.getElementById('savedPlaceNameInput');
+  setupAddressAutocomplete('savedPlaceAddrInput', 'savedPlaceAddrSuggestions', ()=>{}, {
+    manager: true,
+    onSelect: (label)=>{
+      if(!nameInput.value.trim()) nameInput.value = label.split(',')[0].trim();
+      nameInput.focus();
+    }
+  });
+  document.getElementById('savedPlaceAddBtn').addEventListener('click', async ()=>{
+    const address = addrInput.value.trim();
+    const nickname = nameInput.value.trim() || address.split(',')[0].trim();
+    if(!address){ showToast('Search for a place first.'); return; }
+    if(mileageFavorites.some(f=>f.address === address)){ showToast('That place is already saved.'); return; }
+    mileageFavorites.push({id:'fav_'+Date.now(), address, nickname});
+    await saveKey('mileage-favorites', mileageFavorites);
+    addrInput.value = '';
+    nameInput.value = '';
+    renderMileageTab();
+    showToast('Saved '+nickname+'.');
+  });
+  document.getElementById('vanOdoCheckBtn').addEventListener('click', ()=>{
+    goToView('settings');
+    setTimeout(()=>{ const i = document.getElementById('vanOdoInput'); if(i){ i.scrollIntoView({block:'center'}); i.focus(); } }, 120);
+  });
+  const repositionAc = (e)=>{
+    if(!acActive || !acActive.list.classList.contains('show')) return;
+    if(e && e.target === acActive.list) return;
+    positionAcList(acActive.list, acActive.input);
+  };
+  window.addEventListener('resize', repositionAc);
+  window.addEventListener('scroll', repositionAc, true);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', repositionAc);
+    window.visualViewport.addEventListener('scroll', repositionAc);
+  }
 }
 async function calculateAndAddTrip(){
   const from = document.getElementById('mileageFromInput').value.trim();
@@ -1916,6 +2184,8 @@ function renderMileageTab(){
   const personal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
   document.getElementById('mileageBusinessTotal').textContent = business.toFixed(1)+' mi';
   document.getElementById('mileagePersonalTotal').textContent = personal.toFixed(1)+' mi';
+  renderVanOdo();
+  renderSavedPlaces();
 
   const list = document.getElementById('mileageTripList');
   const empty = document.getElementById('mileageEmpty');
@@ -3340,6 +3610,9 @@ function setupSettings(){
     await saveKey('travel-enabled', travelEnabled);
     showToast(travelEnabled ? 'Travel is now in the menu.' : 'Travel hidden from the menu.');
   });
+  document.getElementById('vanOdoSaveBtn').addEventListener('click', saveVanOdometer);
+  document.getElementById('vanOdoInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); saveVanOdometer(); } });
+  renderVanOdo();
   document.getElementById('rateHomeInput').value = RATE_HOME;
   document.getElementById('rateAwayInput').value = RATE_AWAY;
   document.getElementById('rateSaveBtn').addEventListener('click', async ()=>{
@@ -3668,7 +3941,7 @@ function renderTrends(){
 function exportData(){
   const payload = {
     exportedAt: new Date().toISOString(),
-    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries,
+    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries, vanOdometer,
     rentRateHome: RATE_HOME, rentRateAway: RATE_AWAY
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -3714,6 +3987,7 @@ function handleImportClick(){
       expenses = data.expenses || [];
       travelPlaces = data.travelPlaces || [];
       travelCountries = data.travelCountries || [];
+      vanOdometer = data.vanOdometer || null;
       RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 0;
       RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 0;
       await saveKey('calendar-data', calendarData);
@@ -3728,6 +4002,7 @@ function handleImportClick(){
       await saveKey('expenses', expenses);
       await saveKey('travel-places', travelPlaces);
       await saveKey('travel-countries', travelCountries);
+      await saveKey('van-odometer', vanOdometer);
       await saveKey('rent-rate-home', RATE_HOME);
       await saveKey('rent-rate-away', RATE_AWAY);
       renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab(); renderExpensesTab(); renderTravelTab();
