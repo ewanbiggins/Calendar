@@ -111,8 +111,60 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .autocomplete-wrap{position:relative;}
 .autocomplete-list{display:none;position:absolute;left:0;right:0;top:100%;z-index:20;background:var(--surface);border:1px solid var(--line);border-radius:8px;margin-top:2px;max-height:180px;overflow-y:auto;box-shadow:var(--shadow);}
 .autocomplete-list.show{display:block;}
-.autocomplete-list.ac-portal{position:fixed;left:0;top:0;right:auto;margin:0;z-index:130;max-height:260px;border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,0.24);overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
-.autocomplete-list.ac-portal .autocomplete-item{padding:11px 12px;font-size:13.5px;}
+.autocomplete-list.ac-inline{position:static;left:auto;right:auto;top:auto;margin:6px 0 0;max-height:min(250px,36vh);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scroll-margin-bottom:130px;box-shadow:none;background:var(--surface-2);border-radius:10px;}
+.autocomplete-list.ac-inline .autocomplete-item{padding:10px 12px;font-size:13.5px;}
+.ac-info{padding:12px;font-size:12.5px;color:var(--ink-soft);}
+.ac-sub{display:block;font-size:10.5px;color:var(--ink-soft);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.route-to{display:flex;align-items:center;gap:8px;margin:9px 0 7px;color:var(--ink-soft);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;}
+.route-to::before,.route-to::after{content:'';flex:1;height:1px;background:var(--line);}
+.gym-search-row{display:flex;gap:8px;align-items:center;}
+.gym-search-row input[type=text]{flex:1;min-width:0;}
+.gym-results{background:var(--surface-2);border-radius:10px;margin-top:8px;overflow:hidden;}
+.gym-result{padding:11px 12px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;}
+.gym-result:last-child{border-bottom:none;}
+.gym-result:active{background:var(--line);}
+.gym-result small{color:var(--ink-soft);font-size:11px;text-align:right;}
+.gym-muscle-chip{display:inline-block;font-size:10.5px;padding:2px 9px;border-radius:12px;background:var(--home);color:#fff;margin:0 4px 4px 0;}
+.gym-muscle-chip.sec{background:transparent;color:var(--ink-soft);border:1px solid var(--line);}
+.gym-target{background:var(--surface-2);border-radius:10px;padding:10px 12px;margin:10px 0;}
+.gym-target strong{font-family:'Fraunces',serif;font-size:19px;}
+.gym-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+.gym-inputs > div{min-width:0;}
+.gym-inputs input{width:100%;min-width:0;font-size:18px;}
+.gym-stepper{display:flex;gap:6px;margin-top:8px;align-items:center;}
+.gym-stepper .btn{flex:1;}
+.gym-set-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px;}
+.gym-set-row:last-child{border-bottom:none;}
+.gym-bar-wrap{height:10px;border-radius:5px;background:var(--surface-2);overflow:hidden;margin:6px 0 4px;}
+.gym-bar{height:100%;border-radius:5px;transition:width .3s ease;}
+.gm-low{background:var(--danger);}.gm-mid{background:var(--gold);}.gm-ok{background:var(--home);}.gm-high{background:var(--accent);}
+.gym-muscle-row{padding:9px 0;border-bottom:1px solid var(--line);}
+.gym-muscle-top{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;}
+.gym-muscle-sub{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-soft);}
+.gym-group-title{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);margin:16px 0 0;}
+.gym-status{font-size:10px;padding:1px 8px;border-radius:10px;margin-left:6px;font-weight:500;}
+.gym-status.rec{background:var(--away-tint);color:var(--away);}
+.gym-status.rdy{background:var(--surface-2);color:var(--ink-soft);margin-left:0;}
+.gym-next-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;}
+.gym-hist-day{padding:10px 0 12px;border-bottom:1px solid var(--line);}
+.bm-stage{position:relative;border-radius:14px;overflow:hidden;background:#0b1117;}
+.bm-svg{display:block;width:100%;max-width:340px;margin:0 auto;height:auto;touch-action:pan-y;-webkit-user-select:none;user-select:none;}
+.bm-svg.bm-anim{animation:bmIn .35s ease;}
+@keyframes bmIn{from{opacity:0;transform:scale(.985);}to{opacity:1;transform:none;}}
+.bm-svg .mg{cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;transition:opacity .2s ease;}
+.bm-svg .mg .f{transition:fill .4s ease, stroke .2s ease;}
+.bm-svg.has-sel .mg:not(.sel){opacity:.45;}
+.bm-svg .mg.sel .f{stroke:#fff;stroke-opacity:1;stroke-width:2.2;}
+.bm-toggle{position:absolute;top:10px;right:10px;z-index:2;display:flex;background:rgba(255,255,255,.08);border-radius:18px;padding:2px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.bm-toggle button{background:none;border:none;color:#9aa7b5;font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px;}
+.bm-toggle button.active{background:#e8322a;color:#fff;}
+.bm-pill{position:absolute;top:12px;left:12px;z-index:2;background:rgba(0,0,0,.55);color:#fff;font-size:12.5px;padding:5px 11px;border-radius:16px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.bm-legend{margin-top:12px;}
+.bm-legend-bar{height:8px;border-radius:5px;}
+.bm-legend-lbl{position:relative;height:16px;font-size:10.5px;color:var(--ink-soft);margin-top:4px;}
+.bm-legend-lbl span{position:absolute;white-space:nowrap;}
+.bm-pct{font-family:'Fraunces',serif;font-size:24px;}
+.bm-info{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);}
 .autocomplete-item{padding:8px 10px;font-size:12.5px;color:var(--ink);border-bottom:1px solid var(--line);cursor:pointer;}
 .menu-item{display:flex;align-items:center;gap:12px;padding:12px 8px;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;border-radius:10px;}
 .menu-item svg{color:var(--home);flex-shrink:0;}
@@ -347,7 +399,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v12.1</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v12.5</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -465,15 +517,16 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
   <div class="view" id="view-mileage">
     <div class="card" id="mileageLogFormCard">
       <h2 style="font-size:15px;">Log a trip</h2>
-      <label class="mini-label">From</label>
+      <label class="mini-label">Start</label>
       <div class="autocomplete-wrap">
         <input type="text" id="mileageFromInput" placeholder="Start address or place" autocomplete="off">
         <div class="autocomplete-list" id="mileageFromSuggestions"></div>
       </div>
       <div id="mileageStopsContainer"></div>
-      <label class="mini-label" style="margin-top:8px;display:block;">To</label>
+      <div class="route-to">to</div>
+      <label class="mini-label" style="display:block;">Finish</label>
       <div class="autocomplete-wrap">
-        <input type="text" id="mileageToInput" placeholder="Destination address or place" autocomplete="off">
+        <input type="text" id="mileageToInput" placeholder="Finish address or place" autocomplete="off">
         <div class="autocomplete-list" id="mileageToSuggestions"></div>
       </div>
       <div style="display:flex;gap:6px;margin-top:8px;">
@@ -600,6 +653,58 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       <div class="chip-row" id="trendsChartPicker" style="margin-bottom:10px;"></div>
       <div id="trendsClockInfo"></div>
       <div id="trendsChartArea"></div>
+    </div>
+  </div>
+
+  <!-- GYM -->
+  <div class="view" id="view-gym">
+    <div class="card">
+      <h2 style="font-size:15px;">Gym</h2>
+      <div class="chip-row" id="gymTabRow" style="margin-top:8px;">
+        <button type="button" class="chip-btn active" data-gym-tab="log">Log</button>
+        <button type="button" class="chip-btn" data-gym-tab="muscles">Muscles</button>
+        <button type="button" class="chip-btn" data-gym-tab="history">History</button>
+      </div>
+    </div>
+    <div id="gymLogPane">
+      <div class="card">
+        <div class="gym-search-row">
+          <input type="text" id="gymSearchInput" placeholder="Search exercise or muscle…" autocomplete="off">
+          <input type="date" id="gymDateInput" class="solo-date-input">
+        </div>
+        <div id="gymRecent"></div>
+        <div id="gymSearchResults"></div>
+      </div>
+      <div class="card" id="gymExerciseCard" style="display:none;"></div>
+      <div class="card">
+        <h2 style="font-size:15px;">Session</h2>
+        <div id="gymSessionList"></div>
+      </div>
+    </div>
+    <div id="gymMusclesPane" style="display:none;">
+      <div class="card">
+        <h2 style="font-size:15px;">Body map</h2>
+        <div class="chip-row" id="gymPeriodRow" style="margin:8px 0 10px;"></div>
+        <div class="bm-stage">
+          <div class="bm-toggle" id="gymBodyToggle"><button type="button" class="active" data-bm-view="front">Front</button><button type="button" data-bm-view="back">Back</button></div>
+          <div class="bm-pill" id="gymBodyPill" style="display:none;"></div>
+          <div id="gymBodyStage"></div>
+        </div>
+        <div class="bm-legend" id="gymBodyLegend"></div>
+        <div id="gymBodyInfo"></div>
+      </div>
+      <div class="card">
+        <h2 style="font-size:15px;">Next session</h2>
+        <div id="gymNextBody" style="margin-top:6px;"></div>
+      </div>
+      <div class="card">
+        <h2 style="font-size:15px;">All muscles</h2>
+        <div class="stat-sub" style="margin-top:8px;">Hard sets against a weekly target (about 6&ndash;12 per muscle). A set counts 1 for the main muscles and &frac12; for helpers. Warm-ups don&rsquo;t count.</div>
+        <div id="gymMusclesBody"></div>
+      </div>
+    </div>
+    <div id="gymHistoryPane" style="display:none;">
+      <div class="card"><div id="gymHistoryBody"></div></div>
     </div>
   </div>
 
@@ -876,7 +981,7 @@ async function saveKey(key, value, attempt){
 }
 
 // ---------- cloud sync ----------
-const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','dark-mode','rent-rate-home','rent-rate-away'];
+const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','gym-log','gym-custom','clock-in-state','dark-mode','rent-rate-home','rent-rate-away'];
 let firebaseApp = null, firestoreDb = null, firestoreDoc = null, syncUnsub = null;
 let syncEnabled = false;
 async function pushToCloud(key, value){
@@ -908,6 +1013,9 @@ async function applyRemoteValue(key, value){
     case 'travel-places': travelPlaces = value; break;
     case 'travel-countries': travelCountries = value; break;
     case 'van-odometer': vanOdometer = value; break;
+    case 'gym-log': gymLog = value || []; break;
+    case 'gym-custom': gymCustom = value || []; break;
+    case 'clock-in-state': clockInState = value; updateClockInBtn(); break;
     case 'dark-mode': darkModeOn = value; applyDarkMode(darkModeOn); break;
     case 'rent-rate-home': RATE_HOME = value; break;
     case 'rent-rate-away': RATE_AWAY = value; break;
@@ -915,6 +1023,7 @@ async function applyRemoteValue(key, value){
   if(!hasClaudeStorage()) localStorage.setItem('homebase:'+key, JSON.stringify(value));
 }
 function refreshAllViews(){
+  updateClockInBtn();
   renderCalendarAll();
   renderRentTab();
   renderToilTab();
@@ -928,6 +1037,7 @@ function refreshAllViews(){
     document.getElementById('rateAwayInput').value = RATE_AWAY;
   }
   if(document.getElementById('view-trends').classList.contains('active')) renderTrends();
+  if(document.getElementById('view-gym').classList.contains('active') && !(document.activeElement && document.activeElement.closest && document.activeElement.closest('#view-gym'))) renderGym();
 }
 function parseFirebaseConfig(text){
   try{
@@ -978,7 +1088,7 @@ async function connectSync(config, isInitialSetup){
       const currentValues = {
         'calendar-data':calendarData,'tag-defs':tagDefs,'rent-meta':rentMeta,'rent-history':rentHistory,
         'todos':todos,'toil-payouts':toilPayouts,'toil-adjustment':toilAdjustment,'mileage-trips':mileageTrips,
-        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,
+        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,'gym-log':gymLog,'gym-custom':gymCustom,'clock-in-state':clockInState,
         'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY
       };
       SYNC_KEYS.forEach(key=>{ initial[key] = JSON.stringify(currentValues[key]); });
@@ -1092,7 +1202,7 @@ async function init(){
     await saveKey('travel-places', travelPlaces);
   }
   clockInState = await loadKey('clock-in-state', null);
-  if(clockInState && clockInState.date !== todayStr()){ clockInState = null; await saveKey('clock-in-state', null); }
+  if(clockInState && (!clockInState.date || !clockInState.start)) clockInState = null;
   events = await loadKey('events', []);
   let needsResave = false;
   if(events.length){
@@ -1113,6 +1223,9 @@ async function init(){
   darkModeOn = await loadKey('dark-mode', false);
   travelEnabled = await loadKey('travel-enabled', false);
   vanOdometer = await loadKey('van-odometer', null);
+  gymLog = await loadKey('gym-log', []);
+  gymCustom = await loadKey('gym-custom', []);
+  Object.assign(geoCache, await loadKey('geocache', {}));
   applyDarkMode(darkModeOn);
 
   const now = new Date();
@@ -1134,6 +1247,7 @@ async function init(){
   setupSettings();
   setupMileage();
   setupMileageExtras();
+  setupGym();
   setupExpenses();
   setupTravel();
   setupSync();
@@ -1170,6 +1284,7 @@ function goToCalendarDate(dateStr){
 }
 function goToView(viewName){
   closeOverviewPanel();
+  acCloseAll();
   const wasCalendar = document.getElementById('view-calendar').classList.contains('active');
   if(wasCalendar) savedCalendarScrollY = window.scrollY;
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
@@ -1182,6 +1297,7 @@ function goToView(viewName){
     requestAnimationFrame(()=> window.scrollTo(0, 0));
   }
   if(viewName==='trends') renderTrends();
+  if(viewName==='gym') renderGym();
 }
 function setupTabs(){
   document.getElementById('menuTopBtn').addEventListener('click', openMenuSheet);
@@ -1207,6 +1323,7 @@ function openMenuSheet(){
     toil:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
     mileage:'<path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/>',
     expenses:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/>',
+    gym:'<path d="M6.5 6.5v11"/><path d="M17.5 6.5v11"/><path d="M3.5 9v6"/><path d="M20.5 9v6"/><path d="M6.5 12h11"/>',
     travel:'<path d="M3 12l18-8-7 18-3-7-8-3z"/>',
     trends:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-7"/>',
     settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>'
@@ -1217,7 +1334,8 @@ function openMenuSheet(){
     ['rent','Rent',0],
     ['toil','TOIL',0],
     ['mileage','Mileage',0],
-    ['expenses','Expenses',pendingExpenses]
+    ['expenses','Expenses',pendingExpenses],
+    ['gym','Gym',0]
   ];
   if(travelEnabled) items.push(['travel','Travel',0]);
   const itemHtml = (view,label,count)=>
@@ -1306,6 +1424,7 @@ function openSheet(title){
   document.getElementById('sheetOverlay').classList.remove('hidden');
 }
 function closeSheet(){
+  acCloseAll();
   restoreRelocatedElement();
   quickAddActive = null;
   document.getElementById('sheetOverlay').classList.add('hidden');
@@ -1378,22 +1497,25 @@ function photonLabel(p){
   return parts.filter((v,i)=>parts.indexOf(v)===i).join(', ');
 }
 async function geocodePlace(address){
-  const url = 'https://photon.komoot.io/api/?limit=1&q='+encodeURIComponent(address);
-  const res = await fetch(url);
-  if(!res.ok) throw new Error('geocode failed');
-  const data = await res.json();
-  if(!data || !data.features || !data.features.length) return null;
-  const f = data.features[0];
-  return {lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0], label:photonLabel(f.properties)};
+  const k = geoKey(address);
+  if(geoCache[k]) return geoCache[k];
+  const rows = await searchPlaces(address, null, 1);
+  if(!rows.length) return null;
+  geoCacheSet(address, rows[0].coord);
+  return rows[0].coord;
 }
 async function routeMiles(coords){
   const path = coords.map(c=> c.lon+','+c.lat).join(';');
-  const url = 'https://router.project-osrm.org/route/v1/driving/'+path+'?overview=false';
-  const res = await fetch(url);
-  if(!res.ok) throw new Error('route failed');
-  const data = await res.json();
-  if(!data.routes || !data.routes.length) return null;
-  return Math.round((data.routes[0].distance/1609.344)*10)/10;
+  const mk = (base)=> async (signal)=>{
+    const data = await fetchJson(base + path + '?overview=false', signal, 20000);
+    if(!data.routes || !data.routes.length) return null;
+    return {miles: Math.round((data.routes[0].distance/1609.344)*10)/10};
+  };
+  const r = await hedged([
+    mk('https://router.project-osrm.org/route/v1/driving/'),
+    mk('https://routing.openstreetmap.de/routed-car/route/v1/driving/')
+  ], 2500);
+  return r ? r.miles : null;
 }
 // ---------- Expenses ----------
 // ---------- Travel ----------
@@ -1632,7 +1754,6 @@ function setupMileage(){
     addMileageStopRow(toVal, mileageToCoord);
     document.getElementById('mileageToInput').value = fromVal;
     mileageToCoord = mileageFromCoord;
-    showToast('Route set: '+fromVal+' \u2192 '+toVal+' \u2192 '+fromVal+'.');
   });
   document.getElementById('mileagePdfBtn').addEventListener('click', exportMileagePDF);
   setupAddressAutocomplete('mileageFromInput', 'mileageFromSuggestions', c=> mileageFromCoord = c);
@@ -1649,9 +1770,10 @@ function addMileageStopRow(prefillText, prefillCoord){
   mileageStops.push({id, coord:prefillCoord||null});
   const wrap = document.createElement('div');
   wrap.className = 'autocomplete-wrap';
-  wrap.style.marginTop = '8px';
   wrap.dataset.stopId = id;
   wrap.innerHTML =
+    '<div class="route-to">to</div>'+
+    '<label class="mini-label stop-label" style="display:block;">Stop</label>'+
     '<div style="display:flex;gap:6px;">'+
       '<input type="text" id="input-'+id+'" placeholder="Stop address or place" autocomplete="off" style="flex:1;">'+
       '<button type="button" class="todo-del" data-remove-stop="'+id+'">&times;</button>'+
@@ -1666,7 +1788,12 @@ function addMileageStopRow(prefillText, prefillCoord){
   wrap.querySelector('[data-remove-stop]').addEventListener('click', ()=>{
     mileageStops = mileageStops.filter(s=>s.id!==id);
     wrap.remove();
+    renumberStops();
   });
+  renumberStops();
+}
+function renumberStops(){
+  document.querySelectorAll('#mileageStopsContainer .stop-label').forEach((el,i)=>{ el.textContent = 'Stop '+(i+1); });
 }
 function mileageRecentAddresses(){
   const recents = [];
@@ -1677,32 +1804,43 @@ function mileageRecentAddresses(){
   });
   return recents.slice(0,4);
 }
+function acCloseAll(except){
+  document.querySelectorAll('.autocomplete-list.show').forEach(l=>{ if(l!==except) l.classList.remove('show'); });
+}
+function acReveal(list){
+  const go = ()=>{ if(list.classList.contains('show')){ try{ list.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){} } };
+  requestAnimationFrame(go);
+  setTimeout(go, 320);
+}
+function acShowList(list){
+  acCloseAll(list);
+  list.classList.add('show');
+  acReveal(list);
+}
+function acInfoRow(text){
+  const d = document.createElement('div');
+  d.className = 'ac-info';
+  d.textContent = text;
+  return d;
+}
+function acHeading(text){
+  const h = document.createElement('div');
+  h.className = 'autocomplete-heading';
+  h.textContent = text;
+  return h;
+}
 function renderMileagePlacesDropdown(list, input, onPick){
   list.innerHTML = '';
-  if(mileageFavorites.length){
-    const heading = document.createElement('div');
-    heading.className = 'autocomplete-heading';
-    heading.textContent = 'Favourites';
-    list.appendChild(heading);
-    const usage = mileageAddressUsage();
-    const ranked = mileageFavorites.slice().sort((x,y)=> (usage[y.address]||0) - (usage[x.address]||0));
-    ranked.slice(0,6).forEach(fav=>{
-      list.appendChild(buildFavouriteRow(fav, input, onPick, list));
-    });
-    if(ranked.length > 6){
-      const more = document.createElement('div');
-      more.className = 'autocomplete-heading';
-      more.style.textTransform = 'none';
-      more.textContent = '+'+(ranked.length-6)+' more \u2014 start typing to find them';
-      list.appendChild(more);
-    }
+  const usage = mileageAddressUsage();
+  const ranked = mileageFavorites.slice().sort((x,y)=> (usage[y.address]||0) - (usage[x.address]||0));
+  if(ranked.length){
+    list.appendChild(acHeading('Favourites'));
+    ranked.slice(0,6).forEach(fav=> list.appendChild(buildFavouriteRow(fav, input, onPick, list)));
+    if(ranked.length > 6) list.appendChild(acInfoRow('+'+(ranked.length-6)+' more \u2014 start typing to find them'));
   }
   const recents = mileageRecentAddresses();
   if(recents.length){
-    const heading = document.createElement('div');
-    heading.className = 'autocomplete-heading';
-    heading.textContent = 'Recent';
-    list.appendChild(heading);
+    list.appendChild(acHeading('Recent'));
     recents.forEach(addr=>{
       const item = document.createElement('div');
       item.className = 'autocomplete-item';
@@ -1710,72 +1848,44 @@ function renderMileagePlacesDropdown(list, input, onPick){
       const label = document.createElement('span');
       label.textContent = addr;
       label.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;';
-      label.addEventListener('click', ()=>{ input.value = addr; onPick(null); acHide(list); });
+      label.addEventListener('click', ()=>{ input.value = addr; onPick(geoCache[geoKey(addr)] || null); list.classList.remove('show'); });
       const star = document.createElement('span');
       star.textContent = '\u2606';
       star.title = 'Add to favourites';
-      star.style.cssText = 'cursor:pointer;color:var(--ink-soft);flex-shrink:0;padding-left:6px;';
+      star.style.cssText = 'cursor:pointer;color:var(--ink-soft);flex-shrink:0;padding:0 4px 0 10px;font-size:16px;';
       star.addEventListener('click', async (e)=>{
         e.stopPropagation();
         mileageFavorites.push({id:'fav_'+Date.now(), address:addr, nickname:addr});
         await saveKey('mileage-favorites', mileageFavorites);
         renderMileagePlacesDropdown(list, input, onPick);
+        renderSavedPlaces();
       });
       item.appendChild(label); item.appendChild(star);
       list.appendChild(item);
     });
   }
-  if(!mileageFavorites.length && !recents.length){
-    list.innerHTML = '<div class="empty" style="padding:8px 10px;">Start typing to search, or log a trip to build up recents.</div>';
-  }
-  acShow(list, input);
+  if(!list.children.length) list.appendChild(acInfoRow('Start typing to search, or log a trip to build up recents.'));
+  acShowList(list);
 }
 function buildFavouriteRow(fav, input, onPick, list){
   const item = document.createElement('div');
   item.className = 'autocomplete-item';
-  item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;';
-  const label = document.createElement('span');
-  label.textContent = fav.nickname || fav.address;
-  label.title = fav.address;
-  label.style.cssText = 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;cursor:pointer;';
-  label.addEventListener('click', ()=>{ input.value = fav.address; onPick(null); acHide(list); });
-  const actions = document.createElement('span');
-  actions.style.cssText = 'display:flex;gap:8px;flex-shrink:0;padding-left:6px;';
-  const editBtn = document.createElement('span');
-  editBtn.textContent = '\u270e';
-  editBtn.title = 'Rename';
-  editBtn.style.cssText = 'cursor:pointer;color:var(--ink-soft);';
-  editBtn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    const nameInput = document.createElement('input');
-    nameInput.type = 'text';
-    nameInput.value = fav.nickname || fav.address;
-    nameInput.style.cssText = 'flex:1;font-size:12.5px;padding:2px 5px;';
-    nameInput.addEventListener('click', ev=>ev.stopPropagation());
-    const commit = async ()=>{
-      fav.nickname = nameInput.value.trim() || fav.address;
-      await saveKey('mileage-favorites', mileageFavorites);
-      renderMileagePlacesDropdown(list, input, onPick);
-    };
-    nameInput.addEventListener('blur', commit);
-    nameInput.addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ ev.preventDefault(); nameInput.blur(); } });
-    item.innerHTML = '';
-    item.appendChild(nameInput);
-    nameInput.focus();
-    nameInput.select();
+  const hasNick = fav.nickname && fav.nickname !== fav.address;
+  const name = document.createElement('span');
+  name.textContent = hasNick ? fav.nickname : fav.address;
+  name.style.cssText = 'display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+  item.appendChild(name);
+  if(hasNick){
+    const sub = document.createElement('span');
+    sub.className = 'ac-sub';
+    sub.textContent = fav.address;
+    item.appendChild(sub);
+  }
+  item.addEventListener('click', ()=>{
+    input.value = fav.address;
+    onPick(geoCache[geoKey(fav.address)] || null);
+    list.classList.remove('show');
   });
-  const delBtn = document.createElement('span');
-  delBtn.textContent = '\u00d7';
-  delBtn.title = 'Remove favourite';
-  delBtn.style.cssText = 'cursor:pointer;color:var(--danger);font-size:15px;';
-  delBtn.addEventListener('click', async (e)=>{
-    e.stopPropagation();
-    mileageFavorites = mileageFavorites.filter(f=>f.id!==fav.id);
-    await saveKey('mileage-favorites', mileageFavorites);
-    renderMileagePlacesDropdown(list, input, onPick);
-  });
-  actions.appendChild(editBtn); actions.appendChild(delBtn);
-  item.appendChild(label); item.appendChild(actions);
   return item;
 }
 function promptForAddressLabel(address){
@@ -1817,127 +1927,153 @@ function mileageAddressUsage(){
   });
   return u;
 }
-let acActive = null;
-function positionAcList(list, input){
-  const r = input.getBoundingClientRect();
-  const vv = window.visualViewport;
-  const viewTop = vv ? vv.offsetTop : 0;
-  const viewBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
-  if(r.bottom < viewTop || r.top > viewBottom){ acHide(list); return; }
-  const gap = 4, margin = 8;
-  const spaceBelow = viewBottom - r.bottom - gap - margin;
-  const spaceAbove = r.top - viewTop - gap - margin;
-  list.style.left = Math.max(8, r.left)+'px';
-  list.style.width = Math.min(r.width, window.innerWidth - 16)+'px';
-  if(spaceBelow >= 150 || spaceBelow >= spaceAbove){
-    list.style.top = (r.bottom + gap)+'px';
-    list.style.bottom = 'auto';
-    list.style.maxHeight = Math.max(90, Math.min(280, spaceBelow))+'px';
-  }else{
-    list.style.top = 'auto';
-    list.style.bottom = (window.innerHeight - r.top + gap)+'px';
-    list.style.maxHeight = Math.max(90, Math.min(280, spaceAbove))+'px';
+// ----- network helpers: start the preferred service, and if it's slow, race a backup against it -----
+function hedged(starters, delayMs, outerSignal){
+  return new Promise(resolve=>{
+    let settled = false, next = 0, running = 0, timer = null;
+    const ctrls = [];
+    const finish = v=>{
+      if(settled) return;
+      settled = true;
+      clearTimeout(timer);
+      ctrls.forEach(c=>{ try{ c.abort(); }catch(e){} });
+      resolve(v);
+    };
+    const schedule = ()=>{ clearTimeout(timer); if(!settled && next < starters.length) timer = setTimeout(launch, delayMs); };
+    const fail = ()=>{ if(settled) return; if(!launch() && running === 0) finish(null); };
+    const launch = ()=>{
+      if(settled || next >= starters.length) return false;
+      const c = new AbortController();
+      ctrls.push(c);
+      const fn = starters[next++];
+      running++;
+      Promise.resolve().then(()=> fn(c.signal)).then(v=>{
+        running--;
+        if(v && (!Array.isArray(v) || v.length)) finish(v); else fail();
+      }).catch(()=>{ running--; fail(); });
+      schedule();
+      return true;
+    };
+    if(outerSignal) outerSignal.addEventListener('abort', ()=> finish(null));
+    launch();
+  });
+}
+async function fetchJson(url, signal, timeoutMs){
+  const ctrl = new AbortController();
+  const onAbort = ()=> ctrl.abort();
+  if(signal) signal.addEventListener('abort', onAbort);
+  const t = setTimeout(()=> ctrl.abort(), timeoutMs || 20000);
+  try{
+    const res = await fetch(url, {signal: ctrl.signal});
+    if(!res.ok) throw new Error('http '+res.status);
+    return await res.json();
+  }finally{
+    clearTimeout(t);
+    if(signal) signal.removeEventListener('abort', onAbort);
   }
 }
-function acShow(list, input){
-  if(list.parentNode !== document.body){ list._home = list.parentNode; document.body.appendChild(list); }
-  list.classList.add('show');
-  acActive = {list, input};
-  positionAcList(list, input);
-  setTimeout(()=>{ if(acActive && acActive.list===list && list.classList.contains('show')) positionAcList(list, input); }, 300);
+async function placesFromPhoton(q, signal, limit){
+  const data = await fetchJson('https://photon.komoot.io/api/?limit='+(limit||6)+'&lang=en&lat=52.5&lon=-1.5&q='+encodeURIComponent(q), signal);
+  return ((data && data.features) || []).map(f=>({
+    label: photonLabel(f.properties),
+    coord: {lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]}
+  })).filter(r=>r.label);
 }
-function acHide(list){
-  list.classList.remove('show');
-  if(acActive && acActive.list===list) acActive = null;
-  if(list._home && list.parentNode === document.body) list._home.appendChild(list);
+async function placesFromNominatim(q, signal, limit){
+  const data = await fetchJson('https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&accept-language=en&limit='+(limit||5)+'&q='+encodeURIComponent(q), signal);
+  return (data || []).map(r=>{
+    const a = r.address || {};
+    const line1 = [a.house_number, a.road].filter(Boolean).join(' ') || r.name || '';
+    const city = a.city || a.town || a.village || a.hamlet || a.suburb || '';
+    const parts = [line1, city, a.state || a.county, a.postcode, a.country].filter(Boolean);
+    const label = parts.filter((v,i)=>parts.indexOf(v)===i).join(', ') || r.display_name;
+    return {label, coord:{lat:parseFloat(r.lat), lon:parseFloat(r.lon)}};
+  }).filter(r=>r.label && !isNaN(r.coord.lat) && !isNaN(r.coord.lon));
+}
+function searchPlaces(q, signal, limit){
+  return hedged([s=>placesFromPhoton(q, s, limit), s=>placesFromNominatim(q, s, limit)], 1200, signal).then(r=> r || []);
+}
+// remembered coordinates for addresses, so repeat trips don't need a fresh lookup
+const geoCache = {};
+let geoSaveTimer = null;
+function geoKey(a){ return (a||'').trim().toLowerCase(); }
+function geoCacheSet(address, coord){
+  if(!address || !coord) return;
+  geoCache[geoKey(address)] = {lat:coord.lat, lon:coord.lon};
+  const keys = Object.keys(geoCache);
+  if(keys.length > 400) delete geoCache[keys[0]];
+  clearTimeout(geoSaveTimer);
+  geoSaveTimer = setTimeout(()=> saveKey('geocache', geoCache), 600);
 }
 const acCache = new Map();
 function setupAddressAutocomplete(inputId, listId, onPick, opts){
   opts = opts || {};
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
-  list.classList.add('ac-portal');
-  let debounceTimer = null;
-  let requestSeq = 0;
-  let controller = null;
-  const emptyState = ()=>{
-    if(opts.manager) acHide(list);
-    else renderMileagePlacesDropdown(list, input, onPick);
+  list.classList.add('ac-inline');
+  let timer = null, seq = 0, ctrl = null;
+  const hide = ()=> list.classList.remove('show');
+  const draw = (matches, results, status)=>{
+    list.innerHTML = '';
+    if(matches.length){
+      list.appendChild(acHeading('Saved'));
+      matches.forEach(fav=> list.appendChild(buildFavouriteRow(fav, input, onPick, list)));
+    }
+    if(results.length){
+      if(matches.length) list.appendChild(acHeading('Results'));
+      results.forEach(r=>{
+        const item = document.createElement('div');
+        item.className = 'autocomplete-item';
+        item.textContent = r.label;
+        item.addEventListener('click', ()=>{
+          input.value = r.label;
+          onPick(r.coord);
+          geoCacheSet(r.label, r.coord);
+          hide();
+          if(opts.manager && opts.onSelect) opts.onSelect(r.label);
+        });
+        list.appendChild(item);
+      });
+    }else if(status === 'searching'){
+      list.appendChild(acInfoRow('Searching\u2026'));
+    }else if(status === 'done' && !matches.length){
+      list.appendChild(acInfoRow('No matches \u2014 you can still type the address and calculate.'));
+    }
+    if(!list.children.length){ hide(); return; }
+    acShowList(list);
   };
   input.addEventListener('focus', ()=>{
-    if(!input.value.trim()) emptyState();
+    acCloseAll(list);
+    if(!input.value.trim() && !opts.manager) renderMileagePlacesDropdown(list, input, onPick);
   });
   input.addEventListener('input', ()=>{
     onPick(null);
     const query = input.value.trim();
-    clearTimeout(debounceTimer);
-    if(controller){ controller.abort(); controller = null; }
-    const seq = ++requestSeq;
-    if(!query){ emptyState(); return; }
-    const q = query.toLowerCase();
-    const labelMatches = opts.manager ? [] : mileageFavorites.filter(f=> ((f.nickname||'')+' '+(f.address||'')).toLowerCase().includes(q)).slice(0,5);
-    list.innerHTML = '';
-    if(labelMatches.length){
-      const heading = document.createElement('div');
-      heading.className = 'autocomplete-heading';
-      heading.textContent = 'Saved';
-      list.appendChild(heading);
-      labelMatches.forEach(fav=> list.appendChild(buildFavouriteRow(fav, input, onPick, list)));
-      acShow(list, input);
-    }else{
-      acHide(list);
+    clearTimeout(timer);
+    if(ctrl){ ctrl.abort(); ctrl = null; }
+    const my = ++seq;
+    if(!query){
+      if(opts.manager) hide(); else renderMileagePlacesDropdown(list, input, onPick);
+      return;
     }
-    if(query.length < 3) return;
-    const renderFeatures = (features)=>{
-      const seen = new Set();
-      const rows = [];
-      features.forEach(f=>{
-        const label = photonLabel(f.properties);
-        if(!label || seen.has(label)) return;
-        seen.add(label);
-        rows.push({label, coord:{lat:f.geometry.coordinates[1], lon:f.geometry.coordinates[0]}});
-      });
-      if(!rows.length) return;
-      if(labelMatches.length){
-        const heading2 = document.createElement('div');
-        heading2.className = 'autocomplete-heading';
-        heading2.textContent = 'Results';
-        list.appendChild(heading2);
-      }
-      rows.forEach(r=>{
-        const item = document.createElement('div');
-        item.className = 'autocomplete-item';
-        item.textContent = r.label;
-        item.addEventListener('click', async ()=>{
-          input.value = r.label;
-          onPick(r.coord);
-          acHide(list);
-          list.innerHTML = '';
-          if(opts.manager){ if(opts.onSelect) opts.onSelect(r.label); }
-          else await ensureAddressLabelled(r.label);
-        });
-        list.appendChild(item);
-      });
-      acShow(list, input);
-    };
-    if(acCache.has(q)){ renderFeatures(acCache.get(q)); return; }
-    debounceTimer = setTimeout(async ()=>{
-      controller = new AbortController();
-      try{
-        const url = 'https://photon.komoot.io/api/?limit=6&lang=en&lat=52.5&lon=-1.5&q='+encodeURIComponent(query);
-        const res = await fetch(url, {signal: controller.signal});
-        if(!res.ok) return;
-        const data = await res.json();
-        if(seq !== requestSeq) return; // a newer keystroke has fired since, ignore this stale result
-        const features = (data && data.features) || [];
-        acCache.set(q, features);
+    const q = query.toLowerCase();
+    const matches = opts.manager ? [] : mileageFavorites.filter(f=> ((f.nickname||'')+' '+(f.address||'')).toLowerCase().includes(q)).slice(0,3);
+    if(query.length < 3){ draw(matches, [], 'idle'); return; }
+    if(acCache.has(q)){ draw(matches, acCache.get(q), 'done'); return; }
+    draw(matches, [], 'searching');
+    timer = setTimeout(async ()=>{
+      ctrl = new AbortController();
+      const rows = await searchPlaces(query, ctrl.signal, 6);
+      if(my !== seq) return; // a newer keystroke has fired since, ignore this stale result
+      if(rows.length){
+        acCache.set(q, rows);
         if(acCache.size > 80) acCache.delete(acCache.keys().next().value);
-        renderFeatures(features);
-      }catch(e){ /* silent — autocomplete is a convenience, calculate-time fallback still works */ }
-    }, 200);
+      }
+      draw(matches, rows, 'done');
+    }, 300);
   });
   document.addEventListener('click', (e)=>{
-    if(list.classList.contains('show') && !input.contains(e.target) && !list.contains(e.target)) acHide(list);
+    if(list.classList.contains('show') && !input.contains(e.target) && !list.contains(e.target)) hide();
   });
 }
 // ---------- van odometer ----------
@@ -2084,17 +2220,6 @@ function setupMileageExtras(){
     goToView('settings');
     setTimeout(()=>{ const i = document.getElementById('vanOdoInput'); if(i){ i.scrollIntoView({block:'center'}); i.focus(); } }, 120);
   });
-  const repositionAc = (e)=>{
-    if(!acActive || !acActive.list.classList.contains('show')) return;
-    if(e && e.target === acActive.list) return;
-    positionAcList(acActive.list, acActive.input);
-  };
-  window.addEventListener('resize', repositionAc);
-  window.addEventListener('scroll', repositionAc, true);
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', repositionAc);
-    window.visualViewport.addEventListener('scroll', repositionAc);
-  }
 }
 async function calculateAndAddTrip(){
   const from = document.getElementById('mileageFromInput').value.trim();
@@ -2109,18 +2234,15 @@ async function calculateAndAddTrip(){
   btn.disabled = true;
   status.textContent = 'Working out the distance…';
   try{
-    const a = mileageFromCoord || await geocodePlace(from);
-    const b = mileageToCoord || await geocodePlace(to);
-    const stopCoords = [];
-    for(const stop of mileageStops){
-      const input = document.getElementById('input-'+stop.id);
-      if(!input || !input.value.trim()) continue;
-      const c = stop.coord || await geocodePlace(input.value.trim());
-      if(!c) throw new Error('Could not find one of the stops.');
-      stopCoords.push(c);
-    }
-    if(!a || !b) throw new Error('Could not find one of those places.');
-    const miles = await routeMiles([a, ...stopCoords, b]);
+    const pts = [{text:from, coord:mileageFromCoord}];
+    mileageStops.forEach(st=>{
+      const inp = document.getElementById('input-'+st.id);
+      if(inp && inp.value.trim()) pts.push({text:inp.value.trim(), coord:st.coord});
+    });
+    pts.push({text:to, coord:mileageToCoord});
+    const coords = await Promise.all(pts.map(pt=> pt.coord || geoCache[geoKey(pt.text)] || geocodePlace(pt.text)));
+    if(coords.some(c=>!c)) throw new Error('Could not find one of those places.');
+    const miles = await routeMiles(coords);
     if(miles==null) throw new Error('Could not work out a route.');
     await addTrip(from, to, miles, stopTexts);
     status.textContent = 'Added: '+miles+' miles.';
@@ -3161,41 +3283,50 @@ let clockInState = null; // {date, start} or null
 function updateClockInBtn(){
   const btn = document.getElementById('calClockBtn');
   if(!btn) return;
-  const today = todayStr();
-  if(clockInState && clockInState.date === today){
-    btn.classList.add('clocked-in');
-    btn.title = 'Clock out';
-  }else{
-    btn.classList.remove('clocked-in');
-    btn.title = 'Clock in';
-  }
+  const on = !!clockInState;
+  btn.classList.toggle('clocked-in', on);
+  btn.title = on ? 'Clock out (in since '+clockInState.start+')' : 'Clock in';
+  btn.setAttribute('aria-pressed', on ? 'true' : 'false');
 }
+let clockBusy = false;
 async function toggleClockIn(){
-  const today = todayStr();
-  const now = new Date();
-  const timeStr = pad(now.getHours())+':'+pad(now.getMinutes());
-  if(clockInState && clockInState.date === today){
-    if(!calendarData[today]) calendarData[today] = {};
-    if(!calendarData[today].shift) calendarData[today].shift = {};
-    calendarData[today].shift.start = clockInState.start;
-    calendarData[today].shift.finish = timeStr;
-    await saveKey('calendar-data', calendarData);
-    clockInState = null;
-    await saveKey('clock-in-state', null);
-    updateClockInBtn();
-    renderCalendarAll(); renderRentTab(); renderToilTab();
-    showToast('Clocked out at '+timeStr+'.');
-    goToCalendarDate(today);
-  }else{
-    if(!calendarData[today]) calendarData[today] = {};
-    if(!calendarData[today].shift) calendarData[today].shift = {};
-    calendarData[today].shift.start = timeStr;
-    await saveKey('calendar-data', calendarData);
-    clockInState = {date:today, start:timeStr};
-    await saveKey('clock-in-state', clockInState);
-    updateClockInBtn();
-    renderCalendarAll();
-    showToast('Clocked in at '+timeStr+'.');
+  if(clockBusy) return;
+  clockBusy = true;
+  try{
+    const now = new Date();
+    const timeStr = pad(now.getHours())+':'+pad(now.getMinutes());
+    if(clockInState){
+      const day = clockInState.date;
+      const startTime = clockInState.start;
+      if(!calendarData[day]) calendarData[day] = {status:'home', shift:{start:null,finish:null,breakMins:0,title:''}};
+      const entry = calendarData[day];
+      if(!entry.shift) entry.shift = {start:null,finish:null,breakMins:0,title:''};
+      entry.shift.start = startTime;
+      entry.shift.finish = timeStr;
+      const ranHours = (now - new Date(day+'T'+startTime+':00'))/3600000;
+      clockInState = null;
+      await saveKey('clock-in-state', null);
+      await saveKey('calendar-data', calendarData);
+      updateClockInBtn();
+      renderCalendarAll(); renderRentTab(); renderToilTab();
+      showToast(ranHours >= 24 ? 'Clocked out at '+timeStr+' \u2014 that ran over 24h, check the times.' : 'Clocked out at '+timeStr+'.');
+      goToCalendarDate(day);
+    }else{
+      const today = todayStr();
+      if(!calendarData[today]) calendarData[today] = {status:'home', shift:{start:null,finish:null,breakMins:0,title:''}};
+      const entry = calendarData[today];
+      if(!entry.shift) entry.shift = {start:null,finish:null,breakMins:0,title:''};
+      entry.shift.start = timeStr;
+      entry.shift.finish = null;
+      clockInState = {date:today, start:timeStr};
+      await saveKey('clock-in-state', clockInState);
+      await saveKey('calendar-data', calendarData);
+      updateClockInBtn();
+      renderCalendarAll();
+      showToast('Clocked in at '+timeStr+'.');
+    }
+  }finally{
+    clockBusy = false;
   }
 }
 function openDayModalEmpty(){
@@ -3364,6 +3495,10 @@ function openCalOverviewSheet(){
   html += '<div class="divider"></div>';
 
   html += '<div class="autocomplete-heading">Recent mileage</div>';
+  const odo = computeVanOdometer();
+  html += odo
+    ? '<div class="menu-item" data-go-settings="1" style="padding:9px 4px;cursor:pointer;"><span style="flex:1;font-size:13.5px;"><b>Van odometer</b></span><span style="font-size:13px;flex-shrink:0;"><b>'+fmtMi(odo.estimate)+' mi</b></span></div>'
+    : '<div class="menu-item" data-go-settings="1" style="padding:9px 4px;cursor:pointer;"><span style="flex:1;font-size:13px;color:var(--ink-soft);">Van odometer not set \u2014 add it</span></div>';
   if(!recentTrips.length) html += '<div class="empty">Nothing logged yet.</div>';
   recentTrips.forEach(t=>{
     html += '<div class="menu-item" style="padding:9px 4px;cursor:default;">'+
@@ -3384,6 +3519,9 @@ function openCalOverviewSheet(){
   });
   body.querySelectorAll('[data-view-full]').forEach(btn=>{
     btn.addEventListener('click', ()=>{ closeOverviewPanel(); goToView(btn.dataset.viewFull); });
+  });
+  body.querySelectorAll('[data-go-settings]').forEach(row=>{
+    row.addEventListener('click', ()=>{ closeOverviewPanel(); goToView('settings'); });
   });
   openOverviewPanel();
 }
@@ -3938,10 +4076,828 @@ function renderTrends(){
   });
   renderSelectedChart();
 }
+// ---------- body map (interactive anatomy diagram) ----------
+// Geometry is drawn for the viewer's LEFT half (x < 150) and mirrored for the right half.
+// Muscles are clipped to the body silhouette, so their outer edges always follow the outline.
+const BM_W = 300, BM_H = 660;
+const bmMirror = (d)=> '<path d="'+d+'" transform="translate(300 0) scale(-1 1)"/>';
+function bmRR(x1,y1,x2,y2,r1,r2){
+  r1 = r1==null ? 6 : r1; r2 = r2==null ? 3 : r2;
+  return 'M'+x2+','+(y1+r2)+' L'+x2+','+(y2-r2)+' L'+(x1+r1)+','+y2+' Q'+x1+','+y2+' '+x1+','+(y2-r1)+' L'+x1+','+(y1+r1)+' Q'+x1+','+y1+' '+(x1+r1)+','+y1+' Z';
+}
+const BM_SIL = {
+  torso: 'M150,84 C142,86 134,90 122,95 C110,99 100,103 96,114 C92,130 92,150 96,172 C100,196 104,226 112,258 C114,276 112,296 106,314 C100,330 98,346 98,362 C96,392 92,424 100,448 C104,458 110,462 112,466 C108,490 102,516 104,546 C106,566 114,582 120,590 C118,606 112,620 108,630 C110,638 124,640 136,636 C142,632 140,622 138,612 C136,600 134,592 134,586 C138,560 140,520 138,490 C138,478 142,468 144,456 C148,430 148,396 148,372 C149,356 150,346 150,340 L150,84 Z',
+  arm: 'M104,100 C90,96 68,102 60,124 C56,148 58,172 62,196 C62,210 58,224 56,238 C53,262 51,292 50,318 C50,328 50,334 49,340 C46,350 45,362 45,374 C45,388 47,398 51,404 C55,408 62,408 65,402 C69,392 71,380 72,366 C73,352 73,342 73,332 C74,326 75,322 76,316 C80,292 86,258 89,236 C92,218 94,204 92,188 C90,170 94,150 98,132 Z'
+};
+BM_SIL.torsoLine = BM_SIL.torso.replace(' L150,84 Z','');
+const BM_THUMB = 'M48,338 C42,346 38,358 40,370 C41,376 46,376 49,370 C52,362 53,352 53,342 Z';
+const BM_FINGERS = ['M54,376 L54,402','M60,376 L60,405','M66,372 L66,400'];
+const BM = {
+  front: {
+    neutral: [
+      // neck (sternocleidomastoid) + collarbone
+      'M141,80 C142,90 140,98 134,106 C136,98 136,90 134,82 Z',
+      'M149,108 C136,104 120,104 106,110 C112,108 128,108 149,112 Z',
+      // sartorius + adductors (inner thigh)
+      'M112,350 C122,372 134,404 144,440 C146,446 142,446 140,440 C130,410 120,380 108,356 Z',
+      'M146,350 C148,372 148,404 144,436 C140,420 140,384 146,350 Z',
+      // kneecap
+      'M120,452 C128,448 140,450 142,460 C142,470 132,474 124,470 C118,466 116,458 120,452 Z'
+    ],
+    muscles: [
+      {m:'upperback', n:'Upper back', s:[
+        'M143,80 C132,90 122,96 108,100 C100,104 102,112 112,110 C124,106 136,100 143,94 Z'
+      ]},
+      {m:'shoulders', n:'Shoulders', s:[
+        'M112,94 C92,90 62,100 52,128 C46,152 54,174 76,180 C88,174 94,158 96,142 C98,126 104,108 112,94 Z'
+      ], l:['M84,118 C78,134 76,150 80,166']},
+      {m:'chest', n:'Chest', s:[
+        'M148.5,112 C138,105 122,103 108,106 C100,110 96,122 95,136 C95,154 104,168 116,174 C128,180 140,178 148.5,172 Z'
+      ], l:['M148.5,152 C138,154 124,158 112,168','M104,126 C112,134 124,138 138,138']},
+      {m:'biceps', n:'Biceps', s:[
+        'M74,176 C88,168 100,174 100,190 C100,204 96,216 92,226 C84,230 70,226 62,220 C58,202 64,184 74,176 Z'
+      ], l:['M82,184 C88,196 88,210 84,222']},
+      {m:'triceps', n:'Triceps', s:[
+        'M62,172 C52,192 50,214 54,232 C60,226 64,204 72,180 Z'
+      ]},
+      {m:'forearms', n:'Forearms', s:[
+        'M60,228 C74,222 94,230 94,248 C92,274 82,304 72,334 C62,340 46,336 44,324 C44,292 50,254 60,228 Z'
+      ], l:['M74,242 C72,270 62,298 56,322']},
+      {m:'core', n:'Core', s:[
+        bmRR(138,178,148.5,203),bmRR(138,207,148.5,231),bmRR(138.5,235,148.5,259),bmRR(140,263,148.5,284,5,2),
+        'M98,164 C116,170 130,178 135,192 L135,270 C133,288 128,300 120,314 C108,306 100,288 100,262 C100,232 94,196 98,164 Z',
+        'M92,156 C100,154 108,160 108,168 C100,168 92,164 92,156 Z','M92,170 C100,168 107,174 107,181 C99,181 92,177 92,170 Z','M94,184 C100,182 106,187 106,194 C99,194 94,190 94,184 Z'
+      ], l:['M148.5,178 L148.5,286']},
+      {m:'quads', n:'Quads', s:[
+        'M88,350 C82,384 84,424 98,460 C108,466 120,462 124,452 C120,420 120,386 126,356 C116,346 100,342 88,350 Z',
+        'M126,356 C136,348 148,354 150,374 C150,404 146,430 136,450 C131,456 126,456 124,452 C121,420 121,386 126,356 Z',
+        'M141,398 C150,410 150,438 144,458 C139,468 128,466 128,454 C134,446 140,430 141,398 Z'
+      ], l:['M110,360 C106,390 108,424 114,446']},
+      {m:'calves', n:'Calves', s:[
+        'M92,478 C108,470 124,476 126,494 C128,524 126,558 122,590 C116,596 106,590 106,582 C102,550 92,514 92,478 Z',
+        'M127,486 C136,490 142,522 140,558 C138,574 136,588 132,596 C128,574 128,522 127,486 Z'
+      ], l:['M112,490 C114,520 114,552 112,580']}
+    ]
+  },
+  back: {
+    neutral: [
+      'M141,80 C142,90 140,98 134,106 C136,98 136,90 134,82 Z',
+      // adductors
+      'M146,350 C148,372 148,404 144,436 C140,420 140,384 146,350 Z',
+      // achilles
+      'M124,584 C128,590 130,598 128,606 C124,602 122,594 124,584 Z'
+    ],
+    muscles: [
+      {m:'lats', n:'Lats', s:[
+        'M92,138 C84,170 92,214 110,262 C118,280 132,278 138,266 C146,254 150,238 150,224 C142,198 128,172 114,158 C106,152 98,146 92,138 Z'
+      ], l:['M102,176 C112,206 124,238 132,262']},
+      {m:'upperback', n:'Upper back', s:[
+        'M150,76 C140,84 124,90 108,98 C100,104 100,112 106,120 C118,132 130,150 140,170 C145,182 148,196 150,212 Z',
+        'M98,140 C108,136 122,142 122,156 C110,162 98,158 98,140 Z',
+        'M94,124 C108,116 128,126 140,148 C146,162 148,178 150,196 C134,186 114,170 100,154 C92,146 90,132 94,124 Z',
+        'M150,176 C140,184 132,198 130,214 C138,222 146,224 150,226 Z'
+      ], l:['M150,100 C140,120 134,150 138,184','M112,120 C122,124 132,136 136,152']},
+      {m:'reardelts', n:'Rear delts', s:[
+        'M110,92 C92,88 62,98 52,126 C46,150 54,172 76,178 C88,172 96,156 98,140 C100,122 104,106 110,92 Z'
+      ], l:['M84,116 C78,134 76,150 80,166']},
+      {m:'triceps', n:'Triceps', s:[
+        'M74,176 C88,168 100,174 100,190 C100,204 96,216 92,226 C84,230 70,226 62,220 C56,200 62,184 74,176 Z'
+      ], l:['M80,184 C88,196 88,210 84,222']},
+      {m:'forearms', n:'Forearms', s:[
+        'M60,228 C74,222 94,230 94,248 C92,274 82,304 72,334 C62,340 46,336 44,324 C44,292 50,254 60,228 Z'
+      ], l:['M74,242 C72,270 62,298 56,322']},
+      {m:'lowerback', n:'Lower back', s:[
+        'M146.5,212 C141,212 135,222 134,238 C133,258 136,276 141,294 L146.5,304 Z'
+      ], l:['M146.5,226 C142,236 140,252 142,270']},
+      {m:'glutes', n:'Glutes', s:[
+        'M150,298 C138,292 116,292 100,304 C88,318 90,348 106,366 C122,378 140,374 150,366 Z'
+      ], l:['M122,310 C112,322 110,344 118,360']},
+      {m:'hamstrings', n:'Hamstrings', s:[
+        'M86,368 C82,400 86,436 98,460 C108,466 120,462 124,454 C124,424 120,394 121,370 Z',
+        'M123,370 C134,370 150,374 150,394 C150,420 146,444 136,460 C132,466 126,462 125,454 C123,422 123,396 123,370 Z'
+      ], l:['M110,384 C108,414 112,440 116,454']},
+      {m:'calves', n:'Calves', s:[
+        'M122,474 C134,472 144,482 144,500 C144,522 136,542 128,554 C122,542 118,518 118,494 C118,482 120,476 122,474 Z',
+        'M100,478 C112,472 118,476 118,494 C118,518 114,540 110,550 C102,536 96,510 98,492 C98,484 98,480 100,478 Z',
+        'M110,552 C116,554 124,554 128,556 C130,570 128,582 124,592 C118,594 112,590 110,584 C108,574 108,562 110,552 Z'
+      ], l:['M118,496 C120,520 122,538 126,552']}
+    ]
+  }
+};
+const BM_STOPS = [[0,'#4b5666'],[0.18,'#8a5a5a'],[0.4,'#c4504a'],[0.7,'#e8322a'],[1,'#ff1d1d'],[1.4,'#ff4a2e']];
+function bmHex(h){ return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
+function bmHeat(p){
+  p = Math.max(0, Math.min(1.4, p || 0));
+  for(let i=1; i<BM_STOPS.length; i++){
+    if(p <= BM_STOPS[i][0]){
+      const a = BM_STOPS[i-1], b = BM_STOPS[i];
+      const t = (p - a[0]) / (b[0] - a[0]);
+      const ca = bmHex(a[1]), cb = bmHex(b[1]);
+      return '#'+[0,1,2].map(k=> ('0'+Math.round(ca[k] + (cb[k]-ca[k])*t).toString(16)).slice(-2)).join('');
+    }
+  }
+  return BM_STOPS[BM_STOPS.length-1][1];
+}
+function bmBuildSvg(view, pctByMuscle, selected){
+  const V = BM[view], id = 'bm'+view;
+  let s = '<svg class="bm-svg'+(selected ? ' has-sel' : '')+'" viewBox="0 0 '+BM_W+' '+BM_H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Muscle map, '+view+' view">';
+  s += '<defs>'+
+    '<radialGradient id="'+id+'Stage" cx="50%" cy="36%" r="78%"><stop offset="0" stop-color="#2d3b4a"/><stop offset="1" stop-color="#0b1117"/></radialGradient>'+
+    '<linearGradient id="'+id+'Base" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4a5562"/><stop offset=".5" stop-color="#323b47"/><stop offset="1" stop-color="#252c36"/></linearGradient>'+
+    '<linearGradient id="'+id+'Shade" x1="0.1" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".30"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></linearGradient>'+
+    '<radialGradient id="'+id+'Floor"><stop offset="0" stop-color="#000" stop-opacity=".6"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>'+
+    '<clipPath id="'+id+'Clip"><path d="'+BM_SIL.torso+'"/>'+bmMirror(BM_SIL.torso)+'<path d="'+BM_SIL.arm+'"/>'+bmMirror(BM_SIL.arm)+'</clipPath>'+
+  '</defs>';
+  s += '<rect width="'+BM_W+'" height="'+BM_H+'" fill="url(#'+id+'Stage)"/>';
+  s += '<ellipse cx="150" cy="638" rx="74" ry="9" fill="url(#'+id+'Floor)"/>';
+  // base silhouette
+  s += '<g fill="url(#'+id+'Base)" stroke="#080c10" stroke-opacity=".7" stroke-width="1.2" stroke-linejoin="round">';
+  [BM_SIL.torso, BM_SIL.arm].forEach(d=>{ s += '<path d="'+d+'" stroke="none"/>'+bmMirror(d).replace('<path','<path stroke="none"'); });
+  s += '<path d="'+BM_THUMB+'"/>'+bmMirror(BM_THUMB);
+  // head, ears, neck
+  s += '<path d="M138,62 L134,92 C142,100 158,100 166,92 L162,62 Z"/>';
+  s += '<path d="M130,36 C130,16 140,10 150,10 C160,10 170,16 170,36 C170,48 166,60 158,68 C154,72 146,72 142,68 C134,60 130,48 130,36 Z"/>';
+  s += '<path d="M129,38 C124,36 122,44 125,52 C127,54 129,52 130,48 Z"/><path d="M171,38 C176,36 178,44 175,52 C173,54 171,52 170,48 Z"/>';
+  s += '</g>';
+  // clipped anatomy
+  s += '<g clip-path="url(#'+id+'Clip)">';
+  s += '<g class="neu" fill="#566170" stroke="#080c10" stroke-opacity=".55" stroke-width="1">';
+  V.neutral.forEach(d=>{ s += '<path d="'+d+'"/>'+bmMirror(d); });
+  s += '</g>';
+  V.muscles.forEach(g=>{
+    const p = pctByMuscle[g.m] || 0;
+    const col = bmHeat(p);
+    const cls = 'mg'+(p >= 1 ? ' hot' : '')+(selected===g.m ? ' sel' : '');
+    s += '<g class="'+cls+'" data-m="'+g.m+'" tabindex="0" role="button" aria-label="'+g.n+' '+Math.round(p*100)+'%">';
+    g.s.forEach(d=>{
+      for(let i=0;i<2;i++){
+        const tr = i ? ' transform="translate(300 0) scale(-1 1)"' : '';
+        s += '<path class="f" d="'+d+'" fill="'+col+'" stroke="#080c10" stroke-opacity=".6" stroke-width="1.1" stroke-linejoin="round"'+tr+'/>';
+        s += '<path class="sh" d="'+d+'" fill="url(#'+id+'Shade)" pointer-events="none"'+tr+'/>';
+      }
+    });
+    (g.l || []).forEach(d=>{
+      for(let i=0;i<2;i++){
+        s += '<path d="'+d+'" fill="none" stroke="#000" stroke-opacity=".3" stroke-width="1" stroke-linecap="round" pointer-events="none"'+(i ? ' transform="translate(300 0) scale(-1 1)"' : '')+'/>';
+      }
+    });
+    s += '</g>';
+  });
+  s += '</g>';
+  // crisp outline on top
+  s += '<g fill="none" stroke="#06090c" stroke-opacity=".75" stroke-width="1.3" stroke-linejoin="round" pointer-events="none">';
+  s += '<path d="'+BM_SIL.torsoLine+'"/>'+bmMirror(BM_SIL.torsoLine);
+  s += '<path d="'+BM_SIL.arm+'"/>'+bmMirror(BM_SIL.arm);
+  s += '</g>';
+  s += '<g fill="none" stroke="#06090c" stroke-opacity=".5" stroke-width="1" stroke-linecap="round" pointer-events="none">';
+  BM_FINGERS.forEach(d=>{ s += '<path d="'+d+'"/>'+bmMirror(d); });
+  if(view==='front'){ s += '<path d="M108,306 C120,314 138,326 150,342"/>'+bmMirror('M108,306 C120,314 138,326 150,342')+'<path d="M96,296 C104,300 112,304 120,312"/>'+bmMirror('M96,296 C104,300 112,304 120,312'); }
+  s += '<path d="M150,92 L150,'+(view==='back'?'312':'100')+'" stroke-opacity=".35"/>';
+  s += '</g>';
+  s += '</svg>';
+  return s;
+}
+
+// ---------- gym ----------
+const GYM_MUSCLES = [
+  {k:'chest',n:'Chest',t:12,g:'Push',rest:2},
+  {k:'shoulders',n:'Shoulders',t:10,g:'Push',rest:2},
+  {k:'triceps',n:'Triceps',t:10,g:'Push',rest:2},
+  {k:'lats',n:'Lats',t:12,g:'Pull',rest:2},
+  {k:'upperback',n:'Upper back',t:10,g:'Pull',rest:2},
+  {k:'reardelts',n:'Rear delts',t:8,g:'Pull',rest:2},
+  {k:'biceps',n:'Biceps',t:10,g:'Pull',rest:2},
+  {k:'forearms',n:'Forearms',t:6,g:'Pull',rest:2},
+  {k:'quads',n:'Quads',t:12,g:'Legs',rest:3},
+  {k:'hamstrings',n:'Hamstrings',t:10,g:'Legs',rest:3},
+  {k:'glutes',n:'Glutes',t:10,g:'Legs',rest:3},
+  {k:'calves',n:'Calves',t:8,g:'Legs',rest:2},
+  {k:'core',n:'Core',t:8,g:'Core',rest:2},
+  {k:'lowerback',n:'Lower back',t:6,g:'Core',rest:3}
+];
+const GYM_M = {};
+GYM_MUSCLES.forEach(m=>{ GYM_M[m.k] = m; });
+const GYM_KINDS = {
+  bbl:{rr:[5,8],inc:5},   bbu:{rr:[5,8],inc:2.5},
+  dbc:{rr:[8,12],inc:2},  dbi:{rr:[10,15],inc:1},
+  mac:{rr:[8,12],inc:2.5}, mai:{rr:[10,15],inc:2.5},
+  bw:{rr:[6,12],inc:2.5}, bwc:{rr:[10,20],inc:2.5}
+};
+const GYM_KIND_ORDER = ['bbu','bbl','dbc','mac','bw','dbi','mai','bwc'];
+// [name, primary muscles, secondary muscles, kind, optional rep range "lo-hi"]
+const GYM_RAW = [
+  ['Barbell Bench Press','chest','shoulders,triceps','bbu'],
+  ['Incline Barbell Bench Press','chest','shoulders,triceps','bbu'],
+  ['Decline Bench Press','chest','triceps','bbu'],
+  ['Dumbbell Bench Press','chest','shoulders,triceps','dbc'],
+  ['Incline Dumbbell Press','chest','shoulders,triceps','dbc'],
+  ['Chest Press Machine','chest','shoulders,triceps','mac'],
+  ['Incline Chest Press Machine','chest','shoulders,triceps','mac'],
+  ['Pec Deck Fly','chest','','mai'],
+  ['Cable Fly','chest','','mai'],
+  ['Low-to-High Cable Fly','chest','shoulders','mai'],
+  ['Dumbbell Fly','chest','','dbi'],
+  ['Push-Up','chest','shoulders,triceps','bwc'],
+  ['Chest Dip','chest','triceps,shoulders','bw'],
+  ['Pull-Up','lats','biceps,upperback','bw'],
+  ['Chin-Up','lats','biceps','bw'],
+  ['Lat Pulldown','lats','biceps,upperback','mac'],
+  ['Close-Grip Lat Pulldown','lats','biceps','mac'],
+  ['Single-Arm Lat Pulldown','lats','biceps','mac'],
+  ['Straight-Arm Pulldown','lats','','mai'],
+  ['Seated Cable Row','upperback','lats,biceps','mac'],
+  ['Barbell Row','upperback','lats,biceps,lowerback','bbu','6-10'],
+  ['Pendlay Row','upperback','lats,biceps,lowerback','bbu'],
+  ['Dumbbell Row','lats','upperback,biceps','dbc'],
+  ['Chest-Supported Row','upperback','lats,biceps,reardelts','mac'],
+  ['T-Bar Row','upperback','lats,biceps','mac'],
+  ['Machine Row','upperback','lats,biceps','mac'],
+  ['Face Pull','reardelts','upperback','mai'],
+  ['Dumbbell Shrug','upperback','forearms','dbc'],
+  ['Barbell Shrug','upperback','forearms','bbu','8-12'],
+  ['Deadlift','hamstrings,glutes,lowerback','quads,upperback,forearms','bbl','3-6'],
+  ['Romanian Deadlift','hamstrings,glutes','lowerback,forearms','bbl','6-10'],
+  ['Dumbbell Romanian Deadlift','hamstrings,glutes','lowerback','dbc'],
+  ['Back Extension','lowerback','glutes,hamstrings','bwc'],
+  ['Good Morning','hamstrings,lowerback','glutes','bbu','6-10'],
+  ['Overhead Press','shoulders','triceps,upperback','bbu'],
+  ['Seated Dumbbell Shoulder Press','shoulders','triceps','dbc'],
+  ['Shoulder Press Machine','shoulders','triceps','mac'],
+  ['Arnold Press','shoulders','triceps','dbc'],
+  ['Dumbbell Lateral Raise','shoulders','','dbi'],
+  ['Cable Lateral Raise','shoulders','','mai'],
+  ['Machine Lateral Raise','shoulders','','mai'],
+  ['Front Raise','shoulders','','dbi'],
+  ['Reverse Pec Deck','reardelts','upperback','mai'],
+  ['Cable Rear Delt Fly','reardelts','upperback','mai'],
+  ['Dumbbell Rear Delt Fly','reardelts','upperback','dbi'],
+  ['Upright Row','shoulders','upperback,biceps','bbu','8-12'],
+  ['Barbell Curl','biceps','forearms','bbu','8-12'],
+  ['EZ-Bar Curl','biceps','forearms','bbu','8-12'],
+  ['Dumbbell Curl','biceps','forearms','dbi'],
+  ['Hammer Curl','biceps','forearms','dbi'],
+  ['Incline Dumbbell Curl','biceps','','dbi'],
+  ['Preacher Curl','biceps','','mai'],
+  ['Cable Curl','biceps','','mai'],
+  ['Concentration Curl','biceps','','dbi'],
+  ['Bayesian Cable Curl','biceps','','mai'],
+  ['Close-Grip Bench Press','triceps','chest,shoulders','bbu','6-10'],
+  ['Triceps Pushdown','triceps','','mai'],
+  ['Rope Pushdown','triceps','','mai'],
+  ['Overhead Triceps Extension','triceps','','mai'],
+  ['Dumbbell Overhead Extension','triceps','','dbi'],
+  ['Skull Crusher','triceps','','bbu','8-12'],
+  ['Triceps Dip','triceps','chest,shoulders','bw'],
+  ['Triceps Kickback','triceps','','dbi'],
+  ['Wrist Curl','forearms','','dbi'],
+  ['Reverse Wrist Curl','forearms','','dbi'],
+  ['Reverse Curl','forearms','biceps','bbu','8-12'],
+  ["Farmer's Carry",'forearms','upperback,core','dbc'],
+  ['Back Squat','quads,glutes','hamstrings,lowerback,core','bbl'],
+  ['Front Squat','quads','glutes,core','bbl'],
+  ['Goblet Squat','quads,glutes','core','dbc'],
+  ['Smith Machine Squat','quads,glutes','','mac'],
+  ['Hack Squat','quads','glutes','mac'],
+  ['Leg Press','quads,glutes','hamstrings','mac'],
+  ['Bulgarian Split Squat','quads,glutes','hamstrings','dbc'],
+  ['Walking Lunge','quads,glutes','hamstrings','dbc'],
+  ['Reverse Lunge','quads,glutes','hamstrings','dbc'],
+  ['Step-Up','quads,glutes','','dbc'],
+  ['Leg Extension','quads','','mai'],
+  ['Lying Leg Curl','hamstrings','','mai'],
+  ['Seated Leg Curl','hamstrings','','mai'],
+  ['Hip Thrust','glutes','hamstrings','bbl','8-12'],
+  ['Glute Bridge','glutes','hamstrings','bbl','8-12'],
+  ['Cable Glute Kickback','glutes','','mai'],
+  ['Hip Abduction Machine','glutes','','mai'],
+  ['Standing Calf Raise','calves','','mac'],
+  ['Seated Calf Raise','calves','','mac'],
+  ['Leg Press Calf Raise','calves','','mac'],
+  ['Cable Crunch','core','','mai'],
+  ['Hanging Leg Raise','core','forearms','bwc'],
+  ['Ab Wheel Rollout','core','','bwc'],
+  ['Crunch','core','','bwc'],
+  ['Decline Sit-Up','core','','bwc'],
+  ['Pallof Press','core','','mai'],
+  ['Russian Twist','core','','dbi']
+];
+const GYM_DEFAULTS = {chest:'barbell-bench-press', shoulders:'overhead-press', triceps:'triceps-pushdown', lats:'lat-pulldown', upperback:'seated-cable-row', reardelts:'face-pull', biceps:'dumbbell-curl', forearms:'wrist-curl', quads:'back-squat', hamstrings:'romanian-deadlift', glutes:'hip-thrust', calves:'standing-calf-raise', core:'cable-crunch', lowerback:'back-extension'};
+const GYM_SYN = {db:'dumbbell', bb:'barbell', ohp:'overhead press', rdl:'romanian deadlift', sldl:'romanian deadlift', dl:'deadlift', bi:'biceps', tri:'triceps', quad:'quads', ham:'hamstrings', delts:'shoulders', abs:'core', pecs:'chest'};
+let gymLog = [];     // {id, date, ex, w, r, wu}
+let gymCustom = [];  // {id, name, p:[muscle], s:[], kind}
+let gymTab = 'log', gymSelectedId = null, gymPeriod = 7, gymHistLimit = 12, gymDateTouched = false;
+let gymBuiltIn = null;
+const gid = (id)=> document.getElementById(id);
+
+function gymSlug(n){ return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+function gymBuild(name, p, s, kind, rr, id){
+  const k = GYM_KINDS[kind] || GYM_KINDS.mac;
+  return {id: id || gymSlug(name), name, p: p ? p.split(',') : [], s: s ? s.split(',') : [], kind, rr: rr || k.rr, inc: k.inc, bw: kind==='bw' || kind==='bwc'};
+}
+function gymAll(){
+  if(!gymBuiltIn) gymBuiltIn = GYM_RAW.map(r=> gymBuild(r[0], r[1], r[2], r[3], r[4] ? r[4].split('-').map(Number) : null));
+  return gymBuiltIn.concat(gymCustom.map(c=> gymBuild(c.name, (c.p||[]).join(','), (c.s||[]).join(','), c.kind, null, c.id)));
+}
+function gymById(id){ return gymAll().find(e=>e.id===id) || null; }
+function gymNum(n){ return String(+Number(n).toFixed(2)); }
+function gymWeightText(ex, w){
+  if(ex && ex.bw) return w > 0 ? 'BW+'+gymNum(w)+'kg' : 'BW';
+  return gymNum(w)+'kg';
+}
+function gymSetText(ex, s){ return gymWeightText(ex, s.w)+' \u00d7 '+s.r; }
+function gymMetric(ex, s){ return (ex && ex.bw) ? s.r*(1+s.w/40) : s.w*(1+Math.min(s.r,12)/30); }
+function gymDate(){ const el = gid('gymDateInput'); return (el && el.value) || todayStr(); }
+function gymWorking(exId){ return gymLog.filter(l=> l.ex===exId && !l.wu); }
+function gymSessions(exId, beforeDate){
+  const m = {};
+  gymLog.forEach(l=>{
+    if(l.ex!==exId || l.wu) return;
+    if(beforeDate && l.date >= beforeDate) return;
+    (m[l.date] = m[l.date] || []).push(l);
+  });
+  return Object.keys(m).sort().map(d=>({date:d, sets:m[d].slice().sort((a,b)=>a.id-b.id)}));
+}
+const gymTopW = (sets)=> Math.max.apply(null, sets.map(s=>s.w));
+function gymSuggest(ex, beforeDate){
+  const sessions = gymSessions(ex.id, beforeDate);
+  const lo = ex.rr[0], hi = ex.rr[1], inc = ex.inc;
+  if(!sessions.length){
+    return {first:true, w:null, r:lo, sets:3, note:'First time on this one \u2014 pick a weight you can lift for '+lo+'\u2013'+hi+' clean reps with 1\u20132 left in the tank. I\u2019ll set targets from next time.'};
+  }
+  const last = sessions[sessions.length-1];
+  const maxW = gymTopW(last.sets);
+  const top = last.sets.filter(s=>s.w===maxW);
+  const minR = Math.min.apply(null, top.map(s=>s.r));
+  const setCount = Math.max(3, Math.min(5, last.sets.length));
+  let out;
+  if(minR >= hi){
+    out = {w:+(maxW+inc).toFixed(2), r:lo, sets:setCount, up:true, note:'You hit '+hi+' reps on every top set \u2014 add '+gymNum(inc)+'kg and start back at '+lo+'.'};
+  }else{
+    const tr = Math.min(hi, minR+1);
+    out = {w:maxW, r:tr, sets:setCount, note: minR < lo
+      ? 'Below the '+lo+'\u2013'+hi+' rep range last time \u2014 hold this weight and build reps (drop '+gymNum(inc)+'kg if it feels grindy).'
+      : 'Same weight \u2014 aim for '+tr+' reps on each set. Hit '+hi+' on all of them and the weight goes up.'};
+  }
+  if(sessions.length >= 3 && !out.up && maxW > 0){
+    const l3 = sessions.slice(-3);
+    const ws = l3.map(s=> gymTopW(s.sets));
+    const mr = l3.map((s,i)=> Math.min.apply(null, s.sets.filter(x=>x.w===ws[i]).map(x=>x.r)));
+    if(ws[0]===ws[1] && ws[1]===ws[2] && mr[2] <= mr[0]){
+      out.note += ' Stuck at this weight for 3 sessions \u2014 try a ~10% deload ('+gymNum(Math.round(maxW*0.9/inc)*inc)+'kg) for a week, or swap the variation.';
+    }
+  }
+  out.last = last;
+  return out;
+}
+function gymTargetText(ex, sug){
+  if(sug.first || sug.w==null) return '';
+  return gymWeightText(ex, sug.w)+' \u00d7 '+sug.r;
+}
+
+// ----- search -----
+function gymSearch(q){
+  const toks = q.toLowerCase().split(/\s+/).filter(Boolean).map(t=> GYM_SYN[t] || t).join(' ').split(/\s+/);
+  const counts = {};
+  gymLog.forEach(l=>{ counts[l.ex] = (counts[l.ex]||0) + 1; });
+  const scored = [];
+  gymAll().forEach(ex=>{
+    const name = ex.name.toLowerCase();
+    const pn = ex.p.map(m=> (GYM_M[m]||{n:''}).n.toLowerCase());
+    const hay = name+' '+pn.join(' ')+' '+ex.s.map(m=> (GYM_M[m]||{n:''}).n.toLowerCase()).join(' ');
+    let score = 0;
+    for(const t of toks){
+      if(name.startsWith(t)) score += 5;
+      else if(name.split(/[\s-]+/).some(w=>w.startsWith(t))) score += 4;
+      else if(name.includes(t)) score += 3;
+      else if(pn.some(n=>n.startsWith(t))) score += 2;
+      else if(hay.includes(t)) score += 1;
+      else { score = -1; break; }
+    }
+    if(score > 0) scored.push({ex, score: score + Math.min(3, (counts[ex.id]||0)*0.2)});
+  });
+  scored.sort((a,b)=> b.score - a.score || a.ex.name.localeCompare(b.ex.name));
+  return scored.slice(0,12).map(s=>s.ex);
+}
+
+// ----- log tab -----
+function gymSelect(id){
+  gymSelectedId = id;
+  gid('gymSearchInput').value = '';
+  renderGymLog();
+  const card = gid('gymExerciseCard');
+  if(card && card.scrollIntoView) card.scrollIntoView({behavior:'smooth', block:'start'});
+}
+function bindGymPicks(root){
+  root.querySelectorAll('[data-gym-pick]').forEach(el=>{
+    el.addEventListener('click', ()=> gymSelect(el.dataset.gymPick));
+  });
+}
+function renderGymRecent(){
+  const box = gid('gymRecent');
+  if(gid('gymSearchInput').value.trim()){ box.innerHTML = ''; return; }
+  const ids = [];
+  for(let i=gymLog.length-1; i>=0 && ids.length<6; i--){
+    const id = gymLog[i].ex;
+    if(!ids.includes(id) && gymById(id)) ids.push(id);
+  }
+  box.innerHTML = ids.length
+    ? '<div class="stat-sub" style="margin:10px 0 6px;">Recent</div><div class="chip-row" style="flex-wrap:wrap;overflow:visible;">'+ids.map(id=>'<button type="button" class="chip-btn" data-gym-pick="'+id+'">'+escapeHtml(gymById(id).name)+'</button>').join('')+'</div>'
+    : '<div class="stat-sub" style="margin-top:10px;">Search for an exercise to start logging \u2014 the list stays hidden until you do.</div>';
+  bindGymPicks(box);
+}
+function renderGymResults(){
+  const box = gid('gymSearchResults');
+  const term = gid('gymSearchInput').value.trim();
+  if(!term){ box.innerHTML = ''; return; }
+  const res = gymSearch(term);
+  let html = '';
+  if(res.length){
+    html += '<div class="gym-results">'+res.map(ex=>
+      '<div class="gym-result" data-gym-pick="'+ex.id+'"><span>'+escapeHtml(ex.name)+'</span><small>'+ex.p.map(m=>GYM_M[m].n).join(', ')+'</small></div>'
+    ).join('')+'</div>';
+  }
+  if(!res.some(e=> e.name.toLowerCase()===term.toLowerCase()) && term.length >= 2){
+    html += '<button type="button" class="btn secondary small block" id="gymAddCustomBtn" style="margin-top:8px;">+ Add \u201c'+escapeHtml(term)+'\u201d as a new exercise</button>';
+  }
+  box.innerHTML = html;
+  bindGymPicks(box);
+  const addBtn = gid('gymAddCustomBtn');
+  if(addBtn) addBtn.addEventListener('click', ()=> showGymCustomForm(term));
+}
+function showGymCustomForm(name){
+  const box = gid('gymSearchResults');
+  box.innerHTML =
+    '<div class="gym-results" style="padding:12px;">'+
+      '<label class="mini-label">Name</label><input type="text" id="gymCustomName" value="'+escapeHtml(name)+'">'+
+      '<label class="mini-label" style="display:block;margin-top:8px;">Main muscle</label>'+
+      '<select id="gymCustomMuscle">'+GYM_MUSCLES.map(m=>'<option value="'+m.k+'">'+m.n+'</option>').join('')+'</select>'+
+      '<label class="mini-label" style="display:block;margin-top:8px;">Type</label>'+
+      '<select id="gymCustomKind"><option value="bbu">Barbell</option><option value="dbc">Dumbbell</option><option value="mac">Machine / cable</option><option value="bw">Bodyweight</option></select>'+
+      '<button type="button" class="btn block" id="gymCustomSave" style="margin-top:10px;">Add exercise</button>'+
+    '</div>';
+  gid('gymCustomSave').addEventListener('click', async ()=>{
+    const nm = gid('gymCustomName').value.trim();
+    if(!nm){ showToast('Give it a name.'); return; }
+    const ex = {id:'c_'+Date.now(), name:nm, p:[gid('gymCustomMuscle').value], s:[], kind:gid('gymCustomKind').value};
+    gymCustom.push(ex);
+    await saveKey('gym-custom', gymCustom);
+    gymSelect(ex.id);
+  });
+}
+function renderGymExercise(){
+  const card = gid('gymExerciseCard');
+  const ex = gymSelectedId ? gymById(gymSelectedId) : null;
+  if(!ex){ card.style.display = 'none'; card.innerHTML = ''; return; }
+  card.style.display = 'block';
+  const date = gymDate();
+  const sug = gymSuggest(ex, date);
+  const todays = gymLog.filter(l=> l.ex===ex.id && l.date===date).sort((a,b)=>a.id-b.id);
+  const lastToday = todays.length ? todays[todays.length-1] : null;
+  const preW = lastToday ? lastToday.w : (sug.w!=null ? sug.w : '');
+  const preR = lastToday ? lastToday.r : sug.r;
+  let n = 0;
+  const setRows = todays.map(s=>{
+    if(!s.wu) n++;
+    return '<div class="gym-set-row"><span>'+(s.wu ? '<span class="gym-status rdy">Warm-up</span> ' : 'Set '+n+' \u00b7 ')+gymSetText(ex, s)+'</span><button class="todo-del" data-gym-del="'+s.id+'">&times;</button></div>';
+  }).join('');
+  const target = gymTargetText(ex, sug);
+  const lastTxt = sug.last ? 'Last time ('+shortDate(sug.last.date)+'): '+sug.last.sets.map(s=>gymSetText(ex,s)).join(', ') : '';
+  card.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">'+
+      '<div><h2 style="font-size:16px;margin-bottom:6px;">'+escapeHtml(ex.name)+'</h2>'+
+      ex.p.map(m=>'<span class="gym-muscle-chip">'+GYM_M[m].n+'</span>').join('')+
+      ex.s.map(m=>'<span class="gym-muscle-chip sec">'+GYM_M[m].n+'</span>').join('')+'</div>'+
+      '<button type="button" class="todo-del" id="gymCloseExBtn" title="Close">&times;</button>'+
+    '</div>'+
+    '<div class="gym-target">'+
+      (target ? '<div class="stat-sub" style="margin:0 0 2px;">Today\u2019s target</div><strong>'+target+'</strong> <span class="stat-sub">\u00b7 '+sug.sets+' sets'+(sug.up?' \u00b7 <b style="color:var(--home);">weight up</b>':'')+'</span>' : '')+
+      '<div class="stat-sub" style="margin-top:'+(target?'6':'0')+'px;">'+escapeHtml(sug.note)+'</div>'+
+      (lastTxt ? '<div class="stat-sub" style="margin-top:6px;">'+escapeHtml(lastTxt)+'</div>' : '')+
+    '</div>'+
+    '<div class="gym-inputs">'+
+      '<div><label class="mini-label">'+(ex.bw ? 'Added weight (kg)' : 'Weight (kg)')+'</label><input type="number" id="gymWeightInput" inputmode="decimal" step="any" min="0" value="'+(preW===''?'':gymNum(preW))+'"></div>'+
+      '<div><label class="mini-label">Reps</label><input type="number" id="gymRepsInput" inputmode="numeric" min="1" value="'+preR+'"></div>'+
+    '</div>'+
+    '<div class="gym-stepper">'+
+      '<button type="button" class="btn secondary small" data-wstep="-1">\u2212 '+gymNum(ex.inc)+'</button>'+
+      '<button type="button" class="btn secondary small" data-wstep="1">+ '+gymNum(ex.inc)+'</button>'+
+      '<label style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);flex:1;justify-content:center;"><input type="checkbox" id="gymWarmupChk"> Warm-up</label>'+
+    '</div>'+
+    '<button type="button" class="btn block" id="gymAddSetBtn" style="margin-top:10px;">Add set</button>'+
+    (setRows ? '<div style="margin-top:12px;">'+setRows+'</div>' : '')+
+    '<div id="gymExProgress" style="margin-top:12px;"></div>';
+  gid('gymCloseExBtn').addEventListener('click', ()=>{ gymSelectedId = null; renderGymExercise(); });
+  gid('gymAddSetBtn').addEventListener('click', gymAddSet);
+  gid('gymRepsInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); gymAddSet(); } });
+  card.querySelectorAll('[data-wstep]').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const inp = gid('gymWeightInput');
+      const cur = parseFloat(inp.value) || 0;
+      inp.value = gymNum(Math.max(0, cur + Number(b.dataset.wstep)*ex.inc));
+    });
+  });
+  card.querySelectorAll('[data-gym-del]').forEach(b=>{
+    b.addEventListener('click', async ()=>{
+      gymLog = gymLog.filter(l=> String(l.id)!==b.dataset.gymDel);
+      await saveKey('gym-log', gymLog);
+      renderGymExercise(); renderGymSession();
+    });
+  });
+  const sessions = gymSessions(ex.id, null).slice(-8);
+  if(sessions.length >= 2){
+    gid('gymExProgress').innerHTML = '<div class="stat-sub" style="margin-bottom:6px;">Best set each session</div><div id="gymExChart"></div>';
+    renderBarChart('gymExChart', sessions.map(s=>({label:shortDate(s.date), value: Math.max.apply(null, s.sets.map(x=>gymMetric(ex,x)))})));
+  }
+}
+async function gymAddSet(){
+  const ex = gymSelectedId ? gymById(gymSelectedId) : null;
+  if(!ex) return;
+  const w = parseFloat(gid('gymWeightInput').value);
+  const r = parseInt(gid('gymRepsInput').value, 10);
+  const wu = gid('gymWarmupChk').checked;
+  if(isNaN(r) || r <= 0 || (!ex.bw && (isNaN(w) || w <= 0))){ showToast(ex.bw ? 'Enter the reps.' : 'Enter the weight and reps.'); return; }
+  const entry = {id:Date.now(), date:gymDate(), ex:ex.id, w: isNaN(w) ? 0 : w, r, wu};
+  const prevBest = Math.max.apply(null, [0].concat(gymWorking(ex.id).map(s=> gymMetric(ex, s))));
+  gymLog.push(entry);
+  await saveKey('gym-log', gymLog);
+  if(!wu && prevBest > 0 && gymMetric(ex, entry) > prevBest + 0.001) showToast('New personal best \u2014 '+ex.name+'!');
+  renderGymExercise();
+  renderGymSession();
+}
+function renderGymSession(){
+  const box = gid('gymSessionList');
+  const date = gymDate();
+  const logs = gymLog.filter(l=> l.date===date).sort((a,b)=>a.id-b.id);
+  if(!logs.length){ box.innerHTML = '<div class="empty">Nothing logged for '+niceDate(date)+' yet.</div>'; return; }
+  const order = [], by = {};
+  logs.forEach(l=>{ if(!by[l.ex]){ by[l.ex] = []; order.push(l.ex); } by[l.ex].push(l); });
+  const work = logs.filter(l=>!l.wu);
+  const vol = work.reduce((a,l)=> a + (l.w>0 ? l.w*l.r : 0), 0);
+  let html = '<div class="stat-sub" style="margin:0 0 8px;">'+niceDate(date)+' \u00b7 '+work.length+' working sets \u00b7 '+Math.round(vol).toLocaleString('en-GB')+' kg volume</div>';
+  order.forEach(id=>{
+    const ex = gymById(id);
+    const sets = by[id];
+    html += '<div class="gym-set-row" style="cursor:pointer;" data-gym-pick="'+id+'"><span><b>'+escapeHtml(ex ? ex.name : 'Deleted exercise')+'</b><br><span class="stat-sub">'+sets.map(s=> (s.wu?'W ':'')+(ex ? gymSetText(ex,s) : s.w+'kg \u00d7 '+s.r)).join(' \u00b7 ')+'</span></span></div>';
+  });
+  box.innerHTML = html;
+  bindGymPicks(box);
+}
+function renderGymLog(){
+  renderGymRecent();
+  renderGymResults();
+  renderGymExercise();
+  renderGymSession();
+}
+
+// ----- body map UI -----
+let gymBodyView = 'front', gymBodySel = null, gymBodyCtx = null;
+function gymMuscleBreakdown(mk, info){
+  const by = {};
+  gymLog.forEach(l=>{
+    if(l.wu || l.date < info.start || l.date > info.end) return;
+    const ex = gymById(l.ex);
+    if(!ex) return;
+    const role = ex.p.includes(mk) ? 'main' : (ex.s.includes(mk) ? 'helper' : null);
+    if(!role) return;
+    const b = by[ex.id] = by[ex.id] || {ex, role, sets:0, credit:0};
+    b.sets++;
+    b.credit += role==='main' ? 1 : 0.5;
+  });
+  return Object.keys(by).map(k=>by[k]).sort((a,b)=> b.credit - a.credit);
+}
+function gymExercisesFor(mk){
+  const counts = {};
+  gymLog.forEach(l=>{ counts[l.ex] = (counts[l.ex]||0) + 1; });
+  return gymAll().filter(e=> e.p.includes(mk)).sort((a,b)=>
+    (counts[b.id]||0)-(counts[a.id]||0) || (b.id===GYM_DEFAULTS[mk]) - (a.id===GYM_DEFAULTS[mk]) || GYM_KIND_ORDER.indexOf(a.kind)-GYM_KIND_ORDER.indexOf(b.kind)
+  ).slice(0,4);
+}
+function gymBodyUpdateSel(){
+  const svg = gid('gymBodyStage').querySelector('.bm-svg');
+  if(!svg) return;
+  svg.classList.toggle('has-sel', !!gymBodySel);
+  svg.querySelectorAll('.mg').forEach(g=> g.classList.toggle('sel', g.dataset.m===gymBodySel));
+  const pill = gid('gymBodyPill');
+  if(gymBodySel && gymBodyCtx){
+    pill.innerHTML = '<b>'+GYM_M[gymBodySel].n+'</b> '+Math.round(gymBodyCtx.st.pct[gymBodySel]*100)+'%';
+    pill.style.display = 'block';
+  }else pill.style.display = 'none';
+}
+function renderGymBody(st, info){
+  gymBodyCtx = {st, info};
+  const stage = gid('gymBodyStage');
+  stage.innerHTML = bmBuildSvg(gymBodyView, st.pct, gymBodySel);
+  const svg = stage.firstChild;
+  svg.classList.add('bm-anim');
+  svg.addEventListener('click', ()=>{ if(gymBodySel){ gymBodySel = null; gymBodyUpdateSel(); renderGymBodyInfo(); } });
+  svg.querySelectorAll('.mg').forEach(g=>{
+    const pick = ()=>{ gymBodySel = (gymBodySel===g.dataset.m) ? null : g.dataset.m; gymBodyUpdateSel(); renderGymBodyInfo(); };
+    g.addEventListener('click', (e)=>{ e.stopPropagation(); pick(); });
+    g.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); pick(); } });
+  });
+  document.querySelectorAll('#gymBodyToggle [data-bm-view]').forEach(b=> b.classList.toggle('active', b.dataset.bmView===gymBodyView));
+  gid('gymBodyLegend').innerHTML =
+    '<div class="bm-legend-bar" style="background:linear-gradient(90deg,'+BM_STOPS.map(s=> s[1]+' '+Math.round(s[0]/1.4*100)+'%').join(',')+');"></div>'+
+    '<div class="bm-legend-lbl"><span style="left:0;">Not worked</span><span style="left:71%;transform:translateX(-50%);">On target</span><span style="right:0;">Heavy</span></div>';
+  gymBodyUpdateSel();
+  renderGymBodyInfo();
+}
+function renderGymBodyInfo(){
+  const box = gid('gymBodyInfo');
+  if(!gymBodyCtx) return;
+  if(!gymBodySel){
+    box.innerHTML = '<div class="stat-sub" style="margin-top:12px;text-align:center;">Tap a muscle for the detail, swipe the figure to turn it round. Helper work counts too \u2014 a bench press also hits shoulders and triceps.</div>';
+    return;
+  }
+  const m = GYM_M[gymBodySel], st = gymBodyCtx.st, info = gymBodyCtx.info;
+  const p = st.pct[m.k], target = m.t * info.days / 7;
+  const cls = p < 0.5 ? 'gm-low' : p < 1 ? 'gm-mid' : p <= 1.4 ? 'gm-ok' : 'gm-high';
+  const rows = gymMuscleBreakdown(m.k, info);
+  const train = gymExercisesFor(m.k);
+  let h = '<div class="bm-info">'+
+    '<div style="display:flex;justify-content:space-between;align-items:baseline;"><h2 style="font-size:17px;">'+m.n+(st.ready[m.k] ? '' : '<span class="gym-status rec">recovering</span>')+'</h2><b class="bm-pct">'+Math.round(p*100)+'%</b></div>'+
+    '<div class="gym-bar-wrap"><div class="gym-bar '+cls+'" style="width:'+Math.min(100,p*100)+'%"></div></div>'+
+    '<div class="gym-muscle-sub"><span>'+(Math.round(st.credit[m.k]*10)/10)+' of '+(Math.round(target*10)/10)+' target sets</span><span>last trained: '+gymAgo(st.since[m.k])+'</span></div>';
+  h += '<div class="stat-sub" style="margin:12px 0 4px;"><b>Where it came from</b></div>';
+  if(!rows.length) h += '<div class="stat-sub">Nothing hit this muscle in this period.</div>';
+  rows.forEach(r=>{
+    h += '<div class="gym-set-row"><span><b>'+escapeHtml(r.ex.name)+'</b><br><span class="stat-sub">'+r.sets+' set'+(r.sets===1?'':'s')+' \u00b7 '+(r.role==='main' ? 'main mover' : 'helper (counts half)')+'</span></span><b>+'+(Math.round(r.credit*10)/10)+'</b></div>';
+  });
+  h += '<div class="stat-sub" style="margin:12px 0 6px;"><b>Train it with</b></div><div class="chip-row" style="flex-wrap:wrap;overflow:visible;">'+
+    train.map(e=>'<button type="button" class="chip-btn" data-gym-start="'+e.id+'">'+escapeHtml(e.name)+'</button>').join('')+'</div></div>';
+  box.innerHTML = h;
+  box.querySelectorAll('[data-gym-start]').forEach(el=> el.addEventListener('click', ()=>{ gymTab = 'log'; renderGym(); gymSelect(el.dataset.gymStart); }));
+}
+
+// ----- muscles tab -----
+function gymPeriodInfo(period){
+  const end = todayStr();
+  if(period==='week') return {start:mondayOf(end), end, days:7};
+  return {start:addDays(end, -(period-1)), end, days:period};
+}
+function gymMuscleStats(period){
+  const info = gymPeriodInfo(period), start = info.start, end = info.end, days = info.days;
+  const credit = {}, last = {};
+  GYM_MUSCLES.forEach(m=>{ credit[m.k] = 0; last[m.k] = null; });
+  gymLog.forEach(l=>{
+    if(l.wu) return;
+    const ex = gymById(l.ex);
+    if(!ex) return;
+    const inWin = l.date >= start && l.date <= end;
+    ex.p.forEach(m=>{ if(inWin) credit[m] += 1; if(!last[m] || l.date > last[m]) last[m] = l.date; });
+    ex.s.forEach(m=>{ if(inWin) credit[m] += 0.5; });
+  });
+  const pct = {}, ready = {}, since = {};
+  GYM_MUSCLES.forEach(m=>{
+    pct[m.k] = credit[m.k] / (m.t * days / 7);
+    since[m.k] = last[m.k] ? daysBetween(last[m.k], end) : null;
+    ready[m.k] = since[m.k] === null || since[m.k] >= m.rest;
+  });
+  return {credit, last, pct, ready, since};
+}
+function gymAgo(d){ return d===null ? 'never' : d===0 ? 'today' : d===1 ? 'yesterday' : d+'d ago'; }
+function gymNextSession(st){
+  const needs = GYM_MUSCLES.filter(m=> st.ready[m.k] && st.pct[m.k] < 1).sort((a,b)=> (st.pct[a.k]-st.pct[b.k]) || (b.t-a.t));
+  if(!needs.length) return null;
+  const counts = {};
+  gymLog.forEach(l=>{ counts[l.ex] = (counts[l.ex]||0) + 1; });
+  const picks = needs.slice(0,4);
+  const chosen = [];
+  picks.forEach(m=>{
+    if(chosen.some(e=> e.p.includes(m.k))) return;
+    const cands = gymAll().filter(e=> e.p.includes(m.k));
+    cands.sort((a,b)=> (counts[b.id]||0)-(counts[a.id]||0) || (b.id===GYM_DEFAULTS[m.k]) - (a.id===GYM_DEFAULTS[m.k]) || GYM_KIND_ORDER.indexOf(a.kind)-GYM_KIND_ORDER.indexOf(b.kind));
+    if(cands[0]) chosen.push(cands[0]);
+  });
+  if(chosen.length < 4 && picks[0]){
+    const extra = gymAll().filter(e=> e.p.includes(picks[0].k) && !chosen.includes(e) && (counts[e.id]||0) > 0)
+      .sort((a,b)=> (counts[b.id]||0)-(counts[a.id]||0))[0];
+    if(extra) chosen.push(extra);
+  }
+  return {muscles: picks, exercises: chosen};
+}
+function renderGymMuscles(){
+  const box = gid('gymMusclesBody');
+  const st = gymMuscleStats(gymPeriod);
+  const pinfo = gymPeriodInfo(gymPeriod);
+  const anyData = gymLog.some(l=>!l.wu);
+  gid('gymPeriodRow').innerHTML = [[7,'7 days'],['week','This week'],[14,'14 days'],[30,'30 days']].map(p=>'<button type="button" class="chip-btn'+(p[0]===gymPeriod?' active':'')+'" data-gym-period="'+p[0]+'">'+p[1]+'</button>').join('');
+  gid('gymPeriodRow').querySelectorAll('[data-gym-period]').forEach(b=> b.addEventListener('click', ()=>{ gymPeriod = b.dataset.gymPeriod==='week' ? 'week' : Number(b.dataset.gymPeriod); renderGymMuscles(); }));
+  renderGymBody(st, pinfo);
+  if(!anyData){
+    gid('gymNextBody').innerHTML = '<div class="empty">Log a few sets and this will tell you what to hit next.</div>';
+    box.innerHTML = '';
+    return;
+  }
+  // next session
+  const next = gymNextSession(st);
+  const recovering = GYM_MUSCLES.filter(m=> !st.ready[m.k]);
+  let nh = '';
+  if(!next){
+    nh = '<div class="stat-sub">Every recovered muscle is at or over its weekly target \u2014 rest, or pick a weak point.</div>';
+  }else{
+    nh += '<div class="stat-sub" style="margin:0 0 4px;">Most under-worked and recovered: <b>'+next.muscles.map(m=> m.n+' ('+Math.round(st.pct[m.k]*100)+'%)').join(', ')+'</b></div>';
+    next.exercises.forEach(ex=>{
+      const sug = gymSuggest(ex, addDays(todayStr(), 1));
+      const t = gymTargetText(ex, sug);
+      nh += '<div class="gym-next-item" data-gym-start="'+ex.id+'"><div><b>'+escapeHtml(ex.name)+'</b><div class="stat-sub" style="margin-top:2px;">'+ex.p.map(m=>GYM_M[m].n).join(', ')+'</div></div><div style="text-align:right;font-size:13px;">'+(t ? '<b>'+t+'</b><div class="stat-sub" style="margin-top:2px;">'+sug.sets+' sets'+(sug.up?' \u00b7 weight up':'')+'</div>' : '<span class="stat-sub">pick a start weight</span>')+'</div></div>';
+    });
+  }
+  if(recovering.length) nh += '<div class="stat-sub" style="margin-top:10px;">Still recovering: '+recovering.map(m=> m.n+' ('+gymAgo(st.since[m.k])+')').join(', ')+'</div>';
+  gid('gymNextBody').innerHTML = nh;
+  gid('gymNextBody').querySelectorAll('[data-gym-start]').forEach(el=> el.addEventListener('click', ()=>{ gymTab = 'log'; renderGym(); gymSelect(el.dataset.gymStart); }));
+  // bars
+  const groups = ['Push','Pull','Legs','Core'];
+  let html = '';
+  groups.forEach(g=>{
+    html += '<div class="gym-group-title">'+g+'</div>';
+    GYM_MUSCLES.filter(m=>m.g===g).forEach(m=>{
+      const p = st.pct[m.k];
+      const cls = p < 0.5 ? 'gm-low' : p < 1 ? 'gm-mid' : p <= 1.4 ? 'gm-ok' : 'gm-high';
+      const target = m.t * pinfo.days / 7;
+      html += '<div class="gym-muscle-row"><div class="gym-muscle-top"><span>'+m.n+(st.ready[m.k] ? '' : '<span class="gym-status rec">recovering</span>')+'</span><b>'+Math.round(p*100)+'%</b></div>'+
+        '<div class="gym-bar-wrap"><div class="gym-bar '+cls+'" style="width:'+Math.min(100, p*100)+'%"></div></div>'+
+        '<div class="gym-muscle-sub"><span>'+(Math.round(st.credit[m.k]*10)/10)+' / '+(Math.round(target*10)/10)+' sets</span><span>last: '+gymAgo(st.since[m.k])+'</span></div></div>';
+    });
+  });
+  box.innerHTML = html;
+}
+
+// ----- history tab -----
+function renderGymHistory(){
+  const box = gid('gymHistoryBody');
+  const dates = Array.from(new Set(gymLog.map(l=>l.date))).sort().reverse();
+  if(!dates.length){ box.innerHTML = '<div class="empty">No workouts logged yet.</div>'; return; }
+  let html = '';
+  dates.slice(0, gymHistLimit).forEach(d=>{
+    const logs = gymLog.filter(l=>l.date===d).sort((a,b)=>a.id-b.id);
+    const work = logs.filter(l=>!l.wu);
+    const vol = work.reduce((a,l)=> a + (l.w>0 ? l.w*l.r : 0), 0);
+    const credit = {};
+    work.forEach(l=>{ const ex = gymById(l.ex); if(!ex) return; ex.p.forEach(m=>{ credit[m] = (credit[m]||0)+1; }); });
+    const top = Object.keys(credit).sort((a,b)=>credit[b]-credit[a]).slice(0,3).map(k=>GYM_M[k].n).join(', ');
+    html += '<div class="gym-hist-day"><div style="display:flex;justify-content:space-between;align-items:baseline;"><b>'+niceDate(d)+'</b><span class="stat-sub" style="margin:0;">'+work.length+' sets \u00b7 '+Math.round(vol).toLocaleString('en-GB')+' kg</span></div>'+
+      (top ? '<div class="stat-sub" style="margin:2px 0 6px;">'+top+'</div>' : '');
+    const order = [], by = {};
+    logs.forEach(l=>{ if(!by[l.ex]){ by[l.ex] = []; order.push(l.ex); } by[l.ex].push(l); });
+    order.forEach(id=>{
+      const ex = gymById(id);
+      html += '<div class="gym-set-row" style="align-items:flex-start;"><span><b>'+escapeHtml(ex ? ex.name : 'Deleted exercise')+'</b><br><span class="stat-sub">'+by[id].map(s=> (s.wu?'W ':'')+(ex ? gymSetText(ex,s) : s.w+'kg \u00d7 '+s.r)).join(' \u00b7 ')+'</span></span></div>';
+    });
+    html += '<button type="button" class="btn secondary tiny" data-gym-delday="'+d+'" style="margin-top:6px;">Delete day</button></div>';
+  });
+  if(dates.length > gymHistLimit) html += '<button type="button" class="btn secondary small block" id="gymMoreBtn" style="margin-top:10px;">Show more</button>';
+  box.innerHTML = html;
+  const more = gid('gymMoreBtn');
+  if(more) more.addEventListener('click', ()=>{ gymHistLimit += 12; renderGymHistory(); });
+  box.querySelectorAll('[data-gym-delday]').forEach(b=>{
+    let armed = false, timer = null;
+    b.addEventListener('click', async ()=>{
+      if(!armed){ armed = true; b.textContent = 'Tap again to delete'; timer = setTimeout(()=>{ armed = false; b.textContent = 'Delete day'; }, 3000); return; }
+      clearTimeout(timer);
+      gymLog = gymLog.filter(l=> l.date !== b.dataset.gymDelday);
+      await saveKey('gym-log', gymLog);
+      renderGymHistory();
+    });
+  });
+}
+
+// ----- shell -----
+function renderGym(){
+  if(!gymDateTouched){ const el = gid('gymDateInput'); if(el) el.value = todayStr(); }
+  document.querySelectorAll('#gymTabRow [data-gym-tab]').forEach(b=> b.classList.toggle('active', b.dataset.gymTab===gymTab));
+  gid('gymLogPane').style.display = gymTab==='log' ? '' : 'none';
+  gid('gymMusclesPane').style.display = gymTab==='muscles' ? '' : 'none';
+  gid('gymHistoryPane').style.display = gymTab==='history' ? '' : 'none';
+  if(gymTab==='log') renderGymLog();
+  else if(gymTab==='muscles') renderGymMuscles();
+  else renderGymHistory();
+}
+function setupGym(){
+  gid('gymDateInput').value = todayStr();
+  document.querySelectorAll('#gymTabRow [data-gym-tab]').forEach(b=>{
+    b.addEventListener('click', ()=>{ gymTab = b.dataset.gymTab; renderGym(); });
+  });
+  gid('gymSearchInput').addEventListener('input', ()=>{ renderGymRecent(); renderGymResults(); });
+  document.querySelectorAll('#gymBodyToggle [data-bm-view]').forEach(b=>{
+    b.addEventListener('click', ()=>{ if(gymBodyView===b.dataset.bmView) return; gymBodyView = b.dataset.bmView; if(gymBodyCtx) renderGymBody(gymBodyCtx.st, gymBodyCtx.info); });
+  });
+  let bmSx = null;
+  const bmStage = gid('gymBodyStage');
+  bmStage.addEventListener('touchstart', (e)=>{ bmSx = e.touches[0].clientX; }, {passive:true});
+  bmStage.addEventListener('touchend', (e)=>{
+    if(bmSx===null) return;
+    const dx = e.changedTouches[0].clientX - bmSx;
+    bmSx = null;
+    if(Math.abs(dx) > 70 && gymBodyCtx){ gymBodyView = gymBodyView==='front' ? 'back' : 'front'; renderGymBody(gymBodyCtx.st, gymBodyCtx.info); }
+  }, {passive:true});
+  gid('gymDateInput').addEventListener('change', ()=>{ gymDateTouched = gid('gymDateInput').value !== todayStr(); renderGymExercise(); renderGymSession(); });
+}
+
 function exportData(){
   const payload = {
     exportedAt: new Date().toISOString(),
-    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries, vanOdometer,
+    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries, vanOdometer, gymLog, gymCustom,
     rentRateHome: RATE_HOME, rentRateAway: RATE_AWAY
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -3988,6 +4944,8 @@ function handleImportClick(){
       travelPlaces = data.travelPlaces || [];
       travelCountries = data.travelCountries || [];
       vanOdometer = data.vanOdometer || null;
+      gymLog = data.gymLog || [];
+      gymCustom = data.gymCustom || [];
       RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 0;
       RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 0;
       await saveKey('calendar-data', calendarData);
@@ -4003,6 +4961,8 @@ function handleImportClick(){
       await saveKey('travel-places', travelPlaces);
       await saveKey('travel-countries', travelCountries);
       await saveKey('van-odometer', vanOdometer);
+      await saveKey('gym-log', gymLog);
+      await saveKey('gym-custom', gymCustom);
       await saveKey('rent-rate-home', RATE_HOME);
       await saveKey('rent-rate-away', RATE_AWAY);
       renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab(); renderExpensesTab(); renderTravelTab();
@@ -4035,11 +4995,7 @@ document.addEventListener('visibilitychange', ()=>{
       scrollToMonth(now.getFullYear(), now.getMonth(), false);
     }
     lastHiddenAt = null;
-    (async ()=>{
-      const saved = await loadKey('clock-in-state', null);
-      clockInState = (saved && saved.date === todayStr()) ? saved : null;
-      updateClockInBtn();
-    })();
+    updateClockInBtn();
   }
 });
 init();
