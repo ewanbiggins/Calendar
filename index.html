@@ -147,18 +147,32 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .gym-status.rdy{background:var(--surface-2);color:var(--ink-soft);margin-left:0;}
 .gym-next-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);cursor:pointer;font-size:14px;}
 .gym-hist-day{padding:10px 0 12px;border-bottom:1px solid var(--line);}
-.bm-stage{position:relative;border-radius:14px;overflow:hidden;background:#0b1117;}
+.bm-stage{position:relative;border-radius:14px;overflow:hidden;background:radial-gradient(ellipse at 50% 38%,var(--surface) 0%,var(--surface-2) 80%);border:1px solid var(--line);}
+.bm-hint{position:absolute;left:0;right:0;bottom:9px;text-align:center;font-size:11.5px;color:var(--ink-soft);pointer-events:none;}
 .bm-svg{display:block;width:100%;max-width:340px;margin:0 auto;height:auto;touch-action:pan-y;-webkit-user-select:none;user-select:none;}
 .bm-svg.bm-anim{animation:bmIn .35s ease;}
 @keyframes bmIn{from{opacity:0;transform:scale(.985);}to{opacity:1;transform:none;}}
 .bm-svg .mg{cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;transition:opacity .2s ease;}
 .bm-svg .mg .f{transition:fill .4s ease, stroke .2s ease;}
 .bm-svg.has-sel .mg:not(.sel){opacity:.45;}
-.bm-svg .mg.sel .f{stroke:#fff;stroke-opacity:1;stroke-width:2.2;}
-.bm-toggle{position:absolute;top:10px;right:10px;z-index:2;display:flex;background:rgba(255,255,255,.08);border-radius:18px;padding:2px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
-.bm-toggle button{background:none;border:none;color:#9aa7b5;font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px;}
-.bm-toggle button.active{background:#e8322a;color:#fff;}
-.bm-pill{position:absolute;top:12px;left:12px;z-index:2;background:rgba(0,0,0,.55);color:#fff;font-size:12.5px;padding:5px 11px;border-radius:16px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}
+.bm-svg .mg.sel .f{stroke:var(--ink);stroke-opacity:1;stroke-width:2.2;}
+.bm-toggle{position:absolute;top:10px;right:10px;z-index:2;display:flex;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:2px;}
+.bm-toggle button{background:none;border:none;color:var(--ink-soft);font-size:12px;font-weight:600;padding:5px 12px;border-radius:16px;}
+.bm-toggle button.active{background:var(--home);color:#fff;}
+.bm-pill{position:absolute;top:12px;left:12px;z-index:2;background:var(--fill);color:var(--fill-text);font-size:12.5px;padding:5px 11px;border-radius:16px;}
+.bm-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px;}
+.bm-stat .bm-pct{display:block;margin:2px 0;}
+.gd-chip{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:12px;margin:0 5px 5px 0;background:var(--surface-2);color:var(--ink-soft);border:1px solid var(--line);}
+.gd-chip.sec{opacity:.75;font-weight:500;}
+.gd-chip.gd-good{background:var(--home-tint);color:var(--home);border-color:transparent;}
+.gd-chip.gd-limit{background:var(--away-tint);color:var(--away);border-color:transparent;}
+.gd-chip.gd-over{background:var(--danger);color:#fff;border-color:transparent;}
+.gd-msg.gd-over{color:var(--danger);font-weight:500;}
+.gd-msg.gd-limit{color:var(--away);}
+.gd-warn{margin-top:6px;font-size:12px;color:var(--danger);font-weight:500;line-height:1.35;}
+.gym-dayload{margin:10px 0 2px;}
+.gym-rec{display:inline-flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;padding:7px 13px;border-radius:14px;line-height:1.25;}
+.gym-rec small{font-size:10.5px;font-weight:400;opacity:.78;}
 .bm-legend{margin-top:12px;}
 .bm-legend-bar{height:8px;border-radius:5px;}
 .bm-legend-lbl{position:relative;height:16px;font-size:10.5px;color:var(--ink-soft);margin-top:4px;}
@@ -399,7 +413,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v12.5</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v13.2</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -689,6 +703,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
           <div class="bm-toggle" id="gymBodyToggle"><button type="button" class="active" data-bm-view="front">Front</button><button type="button" data-bm-view="back">Back</button></div>
           <div class="bm-pill" id="gymBodyPill" style="display:none;"></div>
           <div id="gymBodyStage"></div>
+          <div class="bm-hint" id="gymBodyHint"></div>
         </div>
         <div class="bm-legend" id="gymBodyLegend"></div>
         <div id="gymBodyInfo"></div>
@@ -699,7 +714,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       </div>
       <div class="card">
         <h2 style="font-size:15px;">All muscles</h2>
-        <div class="stat-sub" style="margin-top:8px;">Hard sets against a weekly target (about 6&ndash;12 per muscle). A set counts 1 for the main muscles and &frac12; for helpers. Warm-ups don&rsquo;t count.</div>
+        <div class="chip-row" id="gymSortRow" style="margin-top:8px;"></div>
         <div id="gymMusclesBody"></div>
       </div>
     </div>
@@ -737,7 +752,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Van mileage</h2>
-      <div class="stat-sub" style="margin-bottom:8px;">Enter what the van's odometer reads. Trips you log from now are added on, so you can compare the tracker with the real dashboard. Enter a new reading any time to check how far out it is.</div>
+      <div class="stat-sub" style="margin-bottom:8px;">New trips are added on top so you can compare with the dashboard.</div>
       <label class="mini-label">Odometer reading (miles)</label>
       <input type="number" id="vanOdoInput" inputmode="decimal" min="0" step="1" placeholder="e.g. 48250">
       <button class="btn block" id="vanOdoSaveBtn" style="margin-top:10px;">Save reading</button>
@@ -1746,7 +1761,22 @@ function setupMileage(){
   });
   document.getElementById('mileageCalcBtn').addEventListener('click', calculateAndAddTrip);
   document.getElementById('mileageManualAddBtn').addEventListener('click', addManualTrip);
-  document.getElementById('mileageAddStopBtn').addEventListener('click', ()=> addMileageStopRow());
+  document.getElementById('mileageAddStopBtn').addEventListener('click', ()=>{
+    const toInput = document.getElementById('mileageToInput');
+    const toVal = toInput.value.trim();
+    acCloseAll();
+    if(toVal){
+      // what's in Finish becomes the next stop; Finish is left empty for whatever comes after it
+      addMileageStopRow(toVal, mileageToCoord);
+      toInput.value = '';
+      mileageToCoord = null;
+      toInput.focus();
+    }else{
+      addMileageStopRow();
+      const rows = document.querySelectorAll('#mileageStopsContainer .autocomplete-wrap input[type="text"]');
+      if(rows.length) rows[rows.length-1].focus();
+    }
+  });
   document.getElementById('mileageReturnStartBtn').addEventListener('click', ()=>{
     const fromVal = document.getElementById('mileageFromInput').value.trim();
     const toVal = document.getElementById('mileageToInput').value.trim();
@@ -4184,9 +4214,17 @@ const BM = {
     ]
   }
 };
-const BM_STOPS = [[0,'#4b5666'],[0.18,'#8a5a5a'],[0.4,'#c4504a'],[0.7,'#e8322a'],[1,'#ff1d1d'],[1.4,'#ff4a2e']];
+const BM_THEMES = {
+  light:{ stops:[[0,'#d4dbd1'],[0.18,'#dfb3a4'],[0.4,'#d6705b'],[0.7,'#cb4333'],[1,'#b8281d'],[1.4,'#86140e']],
+    base:['#c3ccc2','#aeb9ae','#99a599'], neu:'#b4beb3', line:'#1B2620', lineOp:.5, shadeW:.34, shadeB:.26, floor:.16, lines:.2 },
+  dark:{ stops:[[0,'#6f8678'],[0.18,'#a47e72'],[0.4,'#d4604f'],[0.7,'#ee3f2f'],[1,'#ff3a2a'],[1.4,'#ff6a45']],
+    base:['#3d4d44','#2f3c35','#242e29'], neu:'#42524a', line:'#050807', lineOp:.65, shadeW:.2, shadeB:.4, floor:.4, lines:.3 }
+};
+function bmTheme(){ return document.body.classList.contains('dark') ? BM_THEMES.dark : BM_THEMES.light; }
+function bmStops(){ return bmTheme().stops; }
 function bmHex(h){ return [parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]; }
 function bmHeat(p){
+  const BM_STOPS = bmStops();
   p = Math.max(0, Math.min(1.4, p || 0));
   for(let i=1; i<BM_STOPS.length; i++){
     if(p <= BM_STOPS[i][0]){
@@ -4199,19 +4237,17 @@ function bmHeat(p){
   return BM_STOPS[BM_STOPS.length-1][1];
 }
 function bmBuildSvg(view, pctByMuscle, selected){
-  const V = BM[view], id = 'bm'+view;
+  const V = BM[view], id = 'bm'+view, T = bmTheme();
   let s = '<svg class="bm-svg'+(selected ? ' has-sel' : '')+'" viewBox="0 0 '+BM_W+' '+BM_H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Muscle map, '+view+' view">';
   s += '<defs>'+
-    '<radialGradient id="'+id+'Stage" cx="50%" cy="36%" r="78%"><stop offset="0" stop-color="#2d3b4a"/><stop offset="1" stop-color="#0b1117"/></radialGradient>'+
-    '<linearGradient id="'+id+'Base" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4a5562"/><stop offset=".5" stop-color="#323b47"/><stop offset="1" stop-color="#252c36"/></linearGradient>'+
-    '<linearGradient id="'+id+'Shade" x1="0.1" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".30"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></linearGradient>'+
-    '<radialGradient id="'+id+'Floor"><stop offset="0" stop-color="#000" stop-opacity=".6"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>'+
+    '<linearGradient id="'+id+'Base" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="'+T.base[0]+'"/><stop offset=".5" stop-color="'+T.base[1]+'"/><stop offset="1" stop-color="'+T.base[2]+'"/></linearGradient>'+
+    '<linearGradient id="'+id+'Shade" x1="0.1" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="'+T.shadeW+'"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="'+T.shadeB+'"/></linearGradient>'+
+    '<radialGradient id="'+id+'Floor"><stop offset="0" stop-color="#000" stop-opacity="'+T.floor+'"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>'+
     '<clipPath id="'+id+'Clip"><path d="'+BM_SIL.torso+'"/>'+bmMirror(BM_SIL.torso)+'<path d="'+BM_SIL.arm+'"/>'+bmMirror(BM_SIL.arm)+'</clipPath>'+
   '</defs>';
-  s += '<rect width="'+BM_W+'" height="'+BM_H+'" fill="url(#'+id+'Stage)"/>';
   s += '<ellipse cx="150" cy="638" rx="74" ry="9" fill="url(#'+id+'Floor)"/>';
   // base silhouette
-  s += '<g fill="url(#'+id+'Base)" stroke="#080c10" stroke-opacity=".7" stroke-width="1.2" stroke-linejoin="round">';
+  s += '<g fill="url(#'+id+'Base)" stroke="'+T.line+'" stroke-opacity="'+T.lineOp+'" stroke-width="1.2" stroke-linejoin="round">';
   [BM_SIL.torso, BM_SIL.arm].forEach(d=>{ s += '<path d="'+d+'" stroke="none"/>'+bmMirror(d).replace('<path','<path stroke="none"'); });
   s += '<path d="'+BM_THUMB+'"/>'+bmMirror(BM_THUMB);
   // head, ears, neck
@@ -4221,7 +4257,7 @@ function bmBuildSvg(view, pctByMuscle, selected){
   s += '</g>';
   // clipped anatomy
   s += '<g clip-path="url(#'+id+'Clip)">';
-  s += '<g class="neu" fill="#566170" stroke="#080c10" stroke-opacity=".55" stroke-width="1">';
+  s += '<g class="neu" fill="'+T.neu+'" stroke="'+T.line+'" stroke-opacity="'+T.lineOp+'" stroke-width="1">';
   V.neutral.forEach(d=>{ s += '<path d="'+d+'"/>'+bmMirror(d); });
   s += '</g>';
   V.muscles.forEach(g=>{
@@ -4232,24 +4268,24 @@ function bmBuildSvg(view, pctByMuscle, selected){
     g.s.forEach(d=>{
       for(let i=0;i<2;i++){
         const tr = i ? ' transform="translate(300 0) scale(-1 1)"' : '';
-        s += '<path class="f" d="'+d+'" fill="'+col+'" stroke="#080c10" stroke-opacity=".6" stroke-width="1.1" stroke-linejoin="round"'+tr+'/>';
+        s += '<path class="f" d="'+d+'" fill="'+col+'" stroke="'+T.line+'" stroke-opacity="'+T.lineOp+'" stroke-width="1.1" stroke-linejoin="round"'+tr+'/>';
         s += '<path class="sh" d="'+d+'" fill="url(#'+id+'Shade)" pointer-events="none"'+tr+'/>';
       }
     });
     (g.l || []).forEach(d=>{
       for(let i=0;i<2;i++){
-        s += '<path d="'+d+'" fill="none" stroke="#000" stroke-opacity=".3" stroke-width="1" stroke-linecap="round" pointer-events="none"'+(i ? ' transform="translate(300 0) scale(-1 1)"' : '')+'/>';
+        s += '<path d="'+d+'" fill="none" stroke="#000" stroke-opacity="'+T.lines+'" stroke-width="1" stroke-linecap="round" pointer-events="none"'+(i ? ' transform="translate(300 0) scale(-1 1)"' : '')+'/>';
       }
     });
     s += '</g>';
   });
   s += '</g>';
   // crisp outline on top
-  s += '<g fill="none" stroke="#06090c" stroke-opacity=".75" stroke-width="1.3" stroke-linejoin="round" pointer-events="none">';
+  s += '<g fill="none" stroke="'+T.line+'" stroke-opacity="'+Math.min(1,T.lineOp+0.15)+'" stroke-width="1.3" stroke-linejoin="round" pointer-events="none">';
   s += '<path d="'+BM_SIL.torsoLine+'"/>'+bmMirror(BM_SIL.torsoLine);
   s += '<path d="'+BM_SIL.arm+'"/>'+bmMirror(BM_SIL.arm);
   s += '</g>';
-  s += '<g fill="none" stroke="#06090c" stroke-opacity=".5" stroke-width="1" stroke-linecap="round" pointer-events="none">';
+  s += '<g fill="none" stroke="'+T.line+'" stroke-opacity="'+(T.lineOp-0.1)+'" stroke-width="1" stroke-linecap="round" pointer-events="none">';
   BM_FINGERS.forEach(d=>{ s += '<path d="'+d+'"/>'+bmMirror(d); });
   if(view==='front'){ s += '<path d="M108,306 C120,314 138,326 150,342"/>'+bmMirror('M108,306 C120,314 138,326 150,342')+'<path d="M96,296 C104,300 112,304 120,312"/>'+bmMirror('M96,296 C104,300 112,304 120,312'); }
   s += '<path d="M150,92 L150,'+(view==='back'?'312':'100')+'" stroke-opacity=".35"/>';
@@ -4260,20 +4296,20 @@ function bmBuildSvg(view, pctByMuscle, selected){
 
 // ---------- gym ----------
 const GYM_MUSCLES = [
-  {k:'chest',n:'Chest',t:12,g:'Push',rest:2},
-  {k:'shoulders',n:'Shoulders',t:10,g:'Push',rest:2},
-  {k:'triceps',n:'Triceps',t:10,g:'Push',rest:2},
-  {k:'lats',n:'Lats',t:12,g:'Pull',rest:2},
-  {k:'upperback',n:'Upper back',t:10,g:'Pull',rest:2},
-  {k:'reardelts',n:'Rear delts',t:8,g:'Pull',rest:2},
-  {k:'biceps',n:'Biceps',t:10,g:'Pull',rest:2},
-  {k:'forearms',n:'Forearms',t:6,g:'Pull',rest:2},
-  {k:'quads',n:'Quads',t:12,g:'Legs',rest:3},
-  {k:'hamstrings',n:'Hamstrings',t:10,g:'Legs',rest:3},
-  {k:'glutes',n:'Glutes',t:10,g:'Legs',rest:3},
-  {k:'calves',n:'Calves',t:8,g:'Legs',rest:2},
-  {k:'core',n:'Core',t:8,g:'Core',rest:2},
-  {k:'lowerback',n:'Lower back',t:6,g:'Core',rest:3}
+  {k:'chest',n:'Chest',t:12,g:'Push',rest:2,d:10},
+  {k:'shoulders',n:'Shoulders',t:10,g:'Push',rest:2,d:8},
+  {k:'triceps',n:'Triceps',t:10,g:'Push',rest:2,d:8},
+  {k:'lats',n:'Lats',t:12,g:'Pull',rest:2,d:10},
+  {k:'upperback',n:'Upper back',t:10,g:'Pull',rest:2,d:8},
+  {k:'reardelts',n:'Rear delts',t:8,g:'Pull',rest:2,d:6},
+  {k:'biceps',n:'Biceps',t:10,g:'Pull',rest:2,d:8},
+  {k:'forearms',n:'Forearms',t:6,g:'Pull',rest:2,d:5},
+  {k:'quads',n:'Quads',t:12,g:'Legs',rest:3,d:10},
+  {k:'hamstrings',n:'Hamstrings',t:10,g:'Legs',rest:3,d:8},
+  {k:'glutes',n:'Glutes',t:10,g:'Legs',rest:3,d:8},
+  {k:'calves',n:'Calves',t:8,g:'Legs',rest:2,d:6},
+  {k:'core',n:'Core',t:8,g:'Core',rest:2,d:6},
+  {k:'lowerback',n:'Lower back',t:6,g:'Core',rest:3,d:4}
 ];
 const GYM_M = {};
 GYM_MUSCLES.forEach(m=>{ GYM_M[m.k] = m; });
@@ -4284,105 +4320,184 @@ const GYM_KINDS = {
   bw:{rr:[6,12],inc:2.5}, bwc:{rr:[10,20],inc:2.5}
 };
 const GYM_KIND_ORDER = ['bbu','bbl','dbc','mac','bw','dbi','mai','bwc'];
-// [name, primary muscles, secondary muscles, kind, optional rep range "lo-hi"]
+// [name, primary muscles, secondary muscles, kind, optional rep range "lo-hi", other names (|-separated)]
 const GYM_RAW = [
-  ['Barbell Bench Press','chest','shoulders,triceps','bbu'],
-  ['Incline Barbell Bench Press','chest','shoulders,triceps','bbu'],
-  ['Decline Bench Press','chest','triceps','bbu'],
-  ['Dumbbell Bench Press','chest','shoulders,triceps','dbc'],
-  ['Incline Dumbbell Press','chest','shoulders,triceps','dbc'],
-  ['Chest Press Machine','chest','shoulders,triceps','mac'],
-  ['Incline Chest Press Machine','chest','shoulders,triceps','mac'],
-  ['Pec Deck Fly','chest','','mai'],
-  ['Cable Fly','chest','','mai'],
-  ['Low-to-High Cable Fly','chest','shoulders','mai'],
-  ['Dumbbell Fly','chest','','dbi'],
-  ['Push-Up','chest','shoulders,triceps','bwc'],
-  ['Chest Dip','chest','triceps,shoulders','bw'],
-  ['Pull-Up','lats','biceps,upperback','bw'],
-  ['Chin-Up','lats','biceps','bw'],
-  ['Lat Pulldown','lats','biceps,upperback','mac'],
-  ['Close-Grip Lat Pulldown','lats','biceps','mac'],
-  ['Single-Arm Lat Pulldown','lats','biceps','mac'],
-  ['Straight-Arm Pulldown','lats','','mai'],
-  ['Seated Cable Row','upperback','lats,biceps','mac'],
-  ['Barbell Row','upperback','lats,biceps,lowerback','bbu','6-10'],
-  ['Pendlay Row','upperback','lats,biceps,lowerback','bbu'],
-  ['Dumbbell Row','lats','upperback,biceps','dbc'],
-  ['Chest-Supported Row','upperback','lats,biceps,reardelts','mac'],
-  ['T-Bar Row','upperback','lats,biceps','mac'],
-  ['Machine Row','upperback','lats,biceps','mac'],
-  ['Face Pull','reardelts','upperback','mai'],
-  ['Dumbbell Shrug','upperback','forearms','dbc'],
-  ['Barbell Shrug','upperback','forearms','bbu','8-12'],
-  ['Deadlift','hamstrings,glutes,lowerback','quads,upperback,forearms','bbl','3-6'],
-  ['Romanian Deadlift','hamstrings,glutes','lowerback,forearms','bbl','6-10'],
-  ['Dumbbell Romanian Deadlift','hamstrings,glutes','lowerback','dbc'],
-  ['Back Extension','lowerback','glutes,hamstrings','bwc'],
-  ['Good Morning','hamstrings,lowerback','glutes','bbu','6-10'],
-  ['Overhead Press','shoulders','triceps,upperback','bbu'],
-  ['Seated Dumbbell Shoulder Press','shoulders','triceps','dbc'],
-  ['Shoulder Press Machine','shoulders','triceps','mac'],
-  ['Arnold Press','shoulders','triceps','dbc'],
-  ['Dumbbell Lateral Raise','shoulders','','dbi'],
-  ['Cable Lateral Raise','shoulders','','mai'],
-  ['Machine Lateral Raise','shoulders','','mai'],
-  ['Front Raise','shoulders','','dbi'],
-  ['Reverse Pec Deck','reardelts','upperback','mai'],
-  ['Cable Rear Delt Fly','reardelts','upperback','mai'],
-  ['Dumbbell Rear Delt Fly','reardelts','upperback','dbi'],
-  ['Upright Row','shoulders','upperback,biceps','bbu','8-12'],
-  ['Barbell Curl','biceps','forearms','bbu','8-12'],
-  ['EZ-Bar Curl','biceps','forearms','bbu','8-12'],
-  ['Dumbbell Curl','biceps','forearms','dbi'],
-  ['Hammer Curl','biceps','forearms','dbi'],
-  ['Incline Dumbbell Curl','biceps','','dbi'],
-  ['Preacher Curl','biceps','','mai'],
-  ['Cable Curl','biceps','','mai'],
-  ['Concentration Curl','biceps','','dbi'],
-  ['Bayesian Cable Curl','biceps','','mai'],
-  ['Close-Grip Bench Press','triceps','chest,shoulders','bbu','6-10'],
-  ['Triceps Pushdown','triceps','','mai'],
-  ['Rope Pushdown','triceps','','mai'],
-  ['Overhead Triceps Extension','triceps','','mai'],
-  ['Dumbbell Overhead Extension','triceps','','dbi'],
-  ['Skull Crusher','triceps','','bbu','8-12'],
-  ['Triceps Dip','triceps','chest,shoulders','bw'],
-  ['Triceps Kickback','triceps','','dbi'],
-  ['Wrist Curl','forearms','','dbi'],
-  ['Reverse Wrist Curl','forearms','','dbi'],
-  ['Reverse Curl','forearms','biceps','bbu','8-12'],
-  ["Farmer's Carry",'forearms','upperback,core','dbc'],
-  ['Back Squat','quads,glutes','hamstrings,lowerback,core','bbl'],
-  ['Front Squat','quads','glutes,core','bbl'],
-  ['Goblet Squat','quads,glutes','core','dbc'],
-  ['Smith Machine Squat','quads,glutes','','mac'],
-  ['Hack Squat','quads','glutes','mac'],
-  ['Leg Press','quads,glutes','hamstrings','mac'],
-  ['Bulgarian Split Squat','quads,glutes','hamstrings','dbc'],
-  ['Walking Lunge','quads,glutes','hamstrings','dbc'],
-  ['Reverse Lunge','quads,glutes','hamstrings','dbc'],
-  ['Step-Up','quads,glutes','','dbc'],
-  ['Leg Extension','quads','','mai'],
-  ['Lying Leg Curl','hamstrings','','mai'],
-  ['Seated Leg Curl','hamstrings','','mai'],
-  ['Hip Thrust','glutes','hamstrings','bbl','8-12'],
-  ['Glute Bridge','glutes','hamstrings','bbl','8-12'],
-  ['Cable Glute Kickback','glutes','','mai'],
-  ['Hip Abduction Machine','glutes','','mai'],
-  ['Standing Calf Raise','calves','','mac'],
-  ['Seated Calf Raise','calves','','mac'],
-  ['Leg Press Calf Raise','calves','','mac'],
-  ['Cable Crunch','core','','mai'],
-  ['Hanging Leg Raise','core','forearms','bwc'],
-  ['Ab Wheel Rollout','core','','bwc'],
-  ['Crunch','core','','bwc'],
-  ['Decline Sit-Up','core','','bwc'],
-  ['Pallof Press','core','','mai'],
-  ['Russian Twist','core','','dbi']
+  ['Barbell Bench Press','chest','shoulders,triceps','bbu',null,'bench|bench press|flat bench|flat barbell bench|bb bench|barbell bench'],
+  ['Incline Barbell Bench Press','chest','shoulders,triceps','bbu',null,'incline bench|incline bench press|incline bb press|incline barbell press'],
+  ['Decline Bench Press','chest','triceps','bbu',null,'decline bench|decline barbell press|decline press'],
+  ['Dumbbell Bench Press','chest','shoulders,triceps','dbc',null,'db bench|flat dumbbell press|dumbbell press|flat db press|db press|dumbbell chest press'],
+  ['Incline Dumbbell Press','chest','shoulders,triceps','dbc',null,'incline db press|incline dumbbell bench|incline press|incline dumbbell chest press'],
+  ['Decline Dumbbell Press','chest','triceps','dbc',null,'decline db press'],
+  ['Chest Press Machine','chest','shoulders,triceps','mac',null,'machine chest press|seated chest press|hammer strength chest press|chest press|machine press'],
+  ['Incline Chest Press Machine','chest','shoulders,triceps','mac',null,'incline machine press|incline machine chest press|incline hammer press'],
+  ['Smith Machine Bench Press','chest','shoulders,triceps','mac',null,'smith bench|smith chest press|smith flat bench'],
+  ['Smith Machine Incline Press','chest','shoulders,triceps','mac',null,'smith incline|smith incline bench'],
+  ['Cable Chest Press','chest','shoulders,triceps','mac',null,'standing cable press|cable press|single arm cable press'],
+  ['Floor Press','chest','triceps','bbu',null,'dumbbell floor press|barbell floor press'],
+  ['Landmine Press','shoulders,chest','triceps','dbc',null,'single arm landmine press|landmine'],
+  ['Pec Deck Fly','chest','','mai',null,'pec deck|machine fly|chest fly machine|butterfly|pec fly|pec fly machine|butterfly machine'],
+  ['Cable Fly','chest','','mai',null,'cable crossover|cable chest fly|crossover|cable flye|cable flies'],
+  ['Low-to-High Cable Fly','chest','shoulders','mai',null,'low cable fly|low to high fly|upward cable fly|low to high crossover'],
+  ['High-to-Low Cable Fly','chest','shoulders','mai',null,'high cable fly|high to low crossover|downward cable fly'],
+  ['Dumbbell Fly','chest','','dbi',null,'db fly|dumbbell flye|flat fly|chest fly|dumbbell flies'],
+  ['Incline Dumbbell Fly','chest','shoulders','dbi',null,'incline fly|incline db fly|incline flye'],
+  ['Svend Press','chest','','dbi',null,'plate squeeze press|plate press'],
+  ['Push-Up','chest','shoulders,triceps','bwc',null,'pushup|press up|press-up|push ups|pushups'],
+  ['Diamond Push-Up','triceps,chest','shoulders','bwc',null,'close grip push up|narrow push up|triangle push up'],
+  ['Decline Push-Up','chest','shoulders,triceps','bwc',null,'feet elevated push up|decline pushup'],
+  ['Chest Dip','chest','triceps,shoulders','bw',null,'dips|parallel bar dip|chest dips|dip'],
+  ['Machine Dip','triceps','chest,shoulders','mac',null,'seated dip machine|dip machine|assisted dip'],
+  ['Pull-Up','lats','biceps,upperback,forearms','bw',null,'pullup|pull ups|wide grip pull up|wide pull up'],
+  ['Chin-Up','lats','biceps,forearms','bw',null,'chinup|chin ups|underhand pull up|supinated pull up'],
+  ['Neutral-Grip Pull-Up','lats','biceps,upperback,forearms','bw',null,'hammer grip pull up|parallel grip pull up|neutral pull up'],
+  ['Assisted Pull-Up','lats','biceps,upperback','mac',null,'assisted pullup|pull up machine|assisted chin up|band assisted pull up'],
+  ['Lat Pulldown','lats','biceps,upperback','mac',null,'pulldown|lat pull down|wide grip pulldown|lat pull|cable pulldown'],
+  ['Close-Grip Lat Pulldown','lats','biceps','mac',null,'close grip pulldown|v-bar pulldown|v handle pulldown|narrow pulldown'],
+  ['Single-Arm Lat Pulldown','lats','biceps','mac',null,'one arm pulldown|single arm pulldown'],
+  ['Reverse-Grip Lat Pulldown','lats','biceps','mac',null,'underhand pulldown|supinated pulldown|reverse grip pulldown'],
+  ['Machine Pulldown','lats','biceps,upperback','mac',null,'hammer pulldown|plate loaded pulldown|iso lateral pulldown'],
+  ['Straight-Arm Pulldown','lats','','mai',null,'straight arm pushdown|lat prayer|cable pullover|straight arm lat pulldown'],
+  ['Dumbbell Pullover','lats','chest,triceps','dbc',null,'db pullover|pullover'],
+  ['Seated Cable Row','upperback','lats,biceps','mac',null,'cable row|low row|seated row|low cable row|seated low row'],
+  ['Wide-Grip Seated Row','upperback','lats,reardelts,biceps','mac',null,'wide cable row|wide grip row'],
+  ['Single-Arm Cable Row','lats','upperback,biceps','mac',null,'one arm cable row|single arm row cable'],
+  ['Barbell Row','upperback','lats,biceps,lowerback,forearms','bbu','6-10','bent over row|bb row|bent-over barbell row|bent over barbell row|overhand row|yates row'],
+  ['Pendlay Row','upperback','lats,biceps,lowerback','bbu',null,'dead stop row|pendlay'],
+  ['Dumbbell Row','lats','upperback,biceps,forearms','dbc',null,'one arm row|single arm dumbbell row|db row|one arm dumbbell row|single arm row'],
+  ['Kroc Row','lats','upperback,biceps,forearms','dbc',null,'heavy dumbbell row|kroc rows'],
+  ['Meadows Row','lats','upperback,biceps','dbc',null,'landmine row|single arm landmine row'],
+  ['Chest-Supported Row','upperback','lats,biceps,reardelts','mac',null,'incline dumbbell row|chest supported dumbbell row|incline row|prone row'],
+  ['T-Bar Row','upperback','lats,biceps','mac',null,'tbar row|t bar|t bar row|landmine t-bar row'],
+  ['Machine Row','upperback','lats,biceps','mac',null,'hammer row|row machine|plate loaded row|seated machine row|iso row'],
+  ['Seal Row','upperback','lats,biceps,reardelts','bbu',null,'prone barbell row|bench row'],
+  ['Inverted Row','upperback','lats,biceps,reardelts','bw',null,'bodyweight row|australian pull-up|ring row|body row|smith machine row'],
+  ['Face Pull','reardelts','upperback','mai',null,'rope face pull|cable face pull|face pulls'],
+  ['Dumbbell Shrug','upperback','forearms','dbc',null,'db shrug|dumbbell shrugs|shrugs'],
+  ['Barbell Shrug','upperback','forearms','bbu','8-12','bb shrug|barbell shrugs'],
+  ['Rack Pull','lowerback,upperback','glutes,hamstrings,forearms','bbl','4-8','block pull|partial deadlift'],
+  ['Deadlift','hamstrings,glutes,lowerback','quads,upperback,forearms','bbl','3-6','conventional deadlift|dl|barbell deadlift|deads'],
+  ['Sumo Deadlift','glutes,hamstrings,lowerback','quads,upperback,forearms','bbl','3-6','sumo|sumo dl|wide stance deadlift'],
+  ['Trap Bar Deadlift','quads,glutes,hamstrings','lowerback,upperback,forearms','bbl','4-8','hex bar deadlift|trap bar|hex deadlift'],
+  ['Romanian Deadlift','hamstrings,glutes','lowerback,forearms','bbl','6-10','rdl|romanian dl|romanian|barbell rdl'],
+  ['Dumbbell Romanian Deadlift','hamstrings,glutes','lowerback','dbc',null,'db rdl|dumbbell rdl'],
+  ['Stiff-Leg Deadlift','hamstrings,glutes','lowerback,forearms','bbl','6-10','sldl|straight leg deadlift|stiff leg dl'],
+  ['Single-Leg Romanian Deadlift','hamstrings,glutes','lowerback','dbc',null,'single leg rdl|one leg rdl|sl rdl'],
+  ['Back Extension','lowerback','glutes,hamstrings','bwc',null,'hyperextension|hyper|45 degree back extension|back raise|hypers'],
+  ['Reverse Hyperextension','glutes,lowerback','hamstrings','mac',null,'reverse hyper'],
+  ['Good Morning','hamstrings,lowerback','glutes','bbu','6-10','barbell good morning|gm'],
+  ['Overhead Press','shoulders','triceps,upperback','bbu',null,'ohp|military press|standing press|barbell shoulder press|shoulder press|barbell overhead press|strict press'],
+  ['Push Press','shoulders','triceps,quads','bbu','4-6','barbell push press'],
+  ['Seated Dumbbell Shoulder Press','shoulders','triceps','dbc',null,'db shoulder press|dumbbell shoulder press|seated db press|dumbbell overhead press|seated shoulder press|db ohp'],
+  ['Standing Dumbbell Shoulder Press','shoulders','triceps','dbc',null,'standing db press|standing dumbbell press'],
+  ['Shoulder Press Machine','shoulders','triceps','mac',null,'machine shoulder press|shoulder machine|seated machine press'],
+  ['Arnold Press','shoulders','triceps','dbc',null,'arnold dumbbell press|arnolds'],
+  ['Handstand Push-Up','shoulders','triceps','bw',null,'hspu|wall handstand push up|handstand pushup'],
+  ['Pike Push-Up','shoulders','triceps','bwc',null,'pike pushup|pike press'],
+  ['Dumbbell Lateral Raise','shoulders','','dbi',null,'lateral raise|side raise|side lateral raise|db lateral raise|lat raise|dumbbell side raise|laterals'],
+  ['Cable Lateral Raise','shoulders','','mai',null,'cable side raise|single arm cable lateral|cable laterals'],
+  ['Machine Lateral Raise','shoulders','','mai',null,'lateral raise machine|side raise machine'],
+  ['Front Raise','shoulders','','dbi',null,'dumbbell front raise|plate front raise|front delt raise'],
+  ['Cable Front Raise','shoulders','','mai',null,'rope front raise|cable front delt raise'],
+  ['Cable Y-Raise','shoulders','upperback','mai',null,'y raise|cable y raise|prone y raise'],
+  ['Upright Row','shoulders','upperback,biceps','bbu','8-12','barbell upright row|upright rows|ez bar upright row'],
+  ['Reverse Pec Deck','reardelts','upperback','mai',null,'rear delt machine|reverse fly machine|rear delt fly machine|reverse pec fly|rear delt pec deck'],
+  ['Cable Rear Delt Fly','reardelts','upperback','mai',null,'reverse cable fly|cable reverse fly|cable rear delt'],
+  ['Dumbbell Rear Delt Fly','reardelts','upperback','dbi',null,'rear delt raise|bent over lateral raise|reverse fly|db reverse fly|bent over reverse fly|rear delt row'],
+  ['Barbell Curl','biceps','forearms','bbu','8-12','bb curl|standing barbell curl|bicep curl barbell|straight bar curl'],
+  ['EZ-Bar Curl','biceps','forearms','bbu','8-12','ez curl|ez bar curl|curl bar|ez bar bicep curl|e-z curl'],
+  ['Dumbbell Curl','biceps','forearms','dbi',null,'db curl|bicep curl|biceps curl|alternating dumbbell curl|dumbbell bicep curl|standing dumbbell curl'],
+  ['Hammer Curl','biceps','forearms','dbi',null,'dumbbell hammer curl|db hammer curl|hammers|neutral grip curl'],
+  ['Cross-Body Hammer Curl','biceps','forearms','dbi',null,'cross body curl|pinwheel curl'],
+  ['Incline Dumbbell Curl','biceps','forearms','dbi',null,'incline curl|incline db curl|incline bicep curl'],
+  ['Preacher Curl','biceps','forearms','mai',null,'ez preacher curl|scott curl|preacher|machine preacher curl|barbell preacher curl|preacher bicep curl'],
+  ['Dumbbell Preacher Curl','biceps','forearms','dbi',null,'single arm preacher curl|db preacher curl|one arm preacher'],
+  ['Cable Curl','biceps','forearms','mai',null,'cable bicep curl|cable biceps curl|standing cable curl'],
+  ['High Cable Curl','biceps','forearms','mai',null,'overhead cable curl|double bicep cable curl|crucifix curl'],
+  ['Machine Curl','biceps','forearms','mai',null,'bicep curl machine|biceps machine|seated curl machine'],
+  ['Concentration Curl','biceps','forearms','dbi',null,'seated concentration curl|conc curl'],
+  ['Bayesian Cable Curl','biceps','forearms','mai',null,'behind the body cable curl|bayesian curl|bayesian'],
+  ['Spider Curl','biceps','forearms','dbi',null,'prone incline curl|chest supported curl'],
+  ['Drag Curl','biceps','forearms','bbu','8-12','barbell drag curl'],
+  ['Zottman Curl','biceps,forearms','','dbi',null,'zottman'],
+  ['Reverse Curl','forearms','biceps','bbu','8-12','reverse barbell curl|reverse ez curl|overhand curl'],
+  ['Close-Grip Bench Press','triceps','chest,shoulders','bbu','6-10','close grip bench|cgbp|narrow grip bench|close grip bench press'],
+  ['Triceps Pushdown','triceps','','mai',null,'pushdown|tricep pushdown|cable pushdown|straight bar pushdown|triceps pressdown|tricep pressdown|pressdown'],
+  ['Rope Pushdown','triceps','','mai',null,'rope triceps pushdown|tricep rope|rope extension|triceps rope pushdown'],
+  ['Reverse-Grip Pushdown','triceps','forearms','mai',null,'underhand pushdown|reverse grip triceps pushdown'],
+  ['Overhead Triceps Extension','triceps','','mai',null,'cable overhead extension|overhead cable extension|triceps overhead cable|overhead rope extension'],
+  ['Dumbbell Overhead Extension','triceps','','dbi',null,'overhead tricep extension|db french press|french press|seated overhead extension|overhead dumbbell extension'],
+  ['Skull Crusher','triceps','','bbu','8-12','lying triceps extension|skullcrusher|ez bar skull crusher|lying tricep extension|french press lying|skull crushers|nose breaker'],
+  ['Tate Press','triceps','','dbi',null,'dumbbell tate press'],
+  ['JM Press','triceps','chest','bbu','6-10','jm press barbell'],
+  ['Triceps Dip','triceps','chest,shoulders','bw',null,'tricep dips|dips triceps|triceps dips|upright dip'],
+  ['Bench Dip','triceps','chest,shoulders','bwc',null,'bench dips|chair dip'],
+  ['Triceps Kickback','triceps','','dbi',null,'tricep kickback|db kickback|dumbbell kickback|cable kickback'],
+  ['Machine Triceps Extension','triceps','','mai',null,'triceps machine|tricep extension machine|seated triceps press'],
+  ['Wrist Curl','forearms','','dbi',null,'forearm curl|wrist curls|dumbbell wrist curl|barbell wrist curl'],
+  ['Reverse Wrist Curl','forearms','','dbi',null,'wrist extension|reverse wrist curls|forearm extension'],
+  ['Behind-the-Back Wrist Curl','forearms','','bbu','10-15','behind back wrist curl|behind the back barbell wrist curl'],
+  ['Farmer\'s Carry','forearms','upperback,core','dbc',null,'farmers walk|farmer walk|loaded carry|suitcase carry|farmers carry|farmer\'s walk'],
+  ['Back Squat','quads,glutes','hamstrings,lowerback,core','bbl',null,'squat|barbell squat|bb squat|high bar squat|low bar squat|squats'],
+  ['Front Squat','quads','glutes,core','bbl',null,'barbell front squat|front squats'],
+  ['Box Squat','quads,glutes','hamstrings,lowerback','bbl',null,'barbell box squat'],
+  ['Goblet Squat','quads,glutes','core','dbc',null,'db goblet squat|kettlebell goblet squat|goblet'],
+  ['Smith Machine Squat','quads,glutes','','mac',null,'smith squat|smith machine squats'],
+  ['Hack Squat','quads','glutes','mac',null,'machine hack squat|hack squats'],
+  ['Pendulum Squat','quads','glutes','mac',null,'pendulum'],
+  ['Belt Squat','quads,glutes','','mac',null,'belt squat machine'],
+  ['Leg Press','quads,glutes','hamstrings','mac',null,'45 degree leg press|sled press|leg press machine|seated leg press|leg presses'],
+  ['Single-Leg Press','quads,glutes','hamstrings','mac',null,'one leg press|single leg leg press'],
+  ['Bulgarian Split Squat','quads,glutes','hamstrings','dbc',null,'rear foot elevated split squat|rfess|split squat bulgarian|bulgarians'],
+  ['Split Squat','quads,glutes','hamstrings','dbc',null,'static lunge|stationary lunge'],
+  ['Sumo Squat','quads,glutes','','dbc',null,'dumbbell sumo squat|plie squat'],
+  ['Walking Lunge','quads,glutes','hamstrings','dbc',null,'lunges|dumbbell lunge|lunge|walking lunges|barbell lunge'],
+  ['Reverse Lunge','quads,glutes','hamstrings','dbc',null,'backward lunge|reverse lunges|rear lunge'],
+  ['Lateral Lunge','quads,glutes','','dbc',null,'side lunge|lateral lunges'],
+  ['Curtsy Lunge','glutes,quads','','dbc',null,'curtsey lunge'],
+  ['Step-Up','quads,glutes','','dbc',null,'box step up|dumbbell step up|step ups|step up'],
+  ['Smith Machine Lunge','quads,glutes','hamstrings','mac',null,'smith lunge'],
+  ['Leg Extension','quads','','mai',null,'leg extensions|quad extension|knee extension|leg extension machine'],
+  ['Sissy Squat','quads','','bwc',null,'sissy squats'],
+  ['Lying Leg Curl','hamstrings','','mai',null,'hamstring curl|leg curl lying|prone leg curl|leg curl|lying hamstring curl'],
+  ['Seated Leg Curl','hamstrings','','mai',null,'seated hamstring curl|leg curl seated|seated curl'],
+  ['Standing Leg Curl','hamstrings','','mai',null,'single leg curl standing|standing hamstring curl'],
+  ['Nordic Hamstring Curl','hamstrings','glutes','bwc',null,'nordic curl|nordics|nordic'],
+  ['Glute-Ham Raise','hamstrings,glutes','lowerback','bwc',null,'ghr|glute ham raise|glute ham developer'],
+  ['Cable Pull-Through','glutes,hamstrings','lowerback','mac',null,'pull through|cable pullthrough'],
+  ['Hip Thrust','glutes','hamstrings','bbl','8-12','barbell hip thrust|glute thrust|hip thrusts'],
+  ['Machine Hip Thrust','glutes','hamstrings','mac',null,'hip thrust machine|glute drive'],
+  ['Glute Bridge','glutes','hamstrings','bbl','8-12','barbell glute bridge|bridge|glute bridges'],
+  ['Cable Glute Kickback','glutes','','mai',null,'glute kickback|cable kickback glute|cable glute kick'],
+  ['Glute Kickback Machine','glutes','','mai',null,'machine glute kickback|kickback machine'],
+  ['Hip Abduction Machine','glutes','','mai',null,'abductor machine|hip abductor|outer thigh machine|abduction machine|hip abduction'],
+  ['Cable Hip Abduction','glutes','','mai',null,'standing cable abduction'],
+  ['Kettlebell Swing','glutes,hamstrings','lowerback,forearms','dbc','12-20','kb swing|russian swing|swings'],
+  ['Sled Push','quads,glutes','calves','mac','10-20','prowler push|sled'],
+  ['Standing Calf Raise','calves','','mac',null,'calf raise|calf raises|smith calf raise|standing calf|calf machine'],
+  ['Seated Calf Raise','calves','','mac',null,'seated calf|seated calf machine'],
+  ['Leg Press Calf Raise','calves','','mac',null,'calf press|calf raise leg press'],
+  ['Donkey Calf Raise','calves','','mac',null,'donkey calf'],
+  ['Single-Leg Calf Raise','calves','','bwc',null,'one leg calf raise|single leg calf'],
+  ['Tibialis Raise','calves','','bwc',null,'tib raise|tibialis anterior raise'],
+  ['Cable Crunch','core','','mai',null,'kneeling cable crunch|rope crunch|cable ab crunch'],
+  ['Machine Crunch','core','','mai',null,'ab machine|seated ab crunch|ab crunch machine'],
+  ['Hanging Leg Raise','core','forearms','bwc',null,'leg raise hanging|hanging leg raises|straight leg raise'],
+  ['Hanging Knee Raise','core','forearms','bwc',null,'knee raise hanging|hanging knee raises'],
+  ['Toes-to-Bar','core','forearms,lats','bwc',null,'toes to bar|t2b|ttb'],
+  ['Ab Wheel Rollout','core','','bwc',null,'ab roller|wheel rollout|ab wheel|rollouts'],
+  ['Crunch','core','','bwc',null,'sit up crunch|crunches|floor crunch'],
+  ['Decline Sit-Up','core','','bwc',null,'sit-up|situp|sit ups|decline situp'],
+  ['Reverse Crunch','core','','bwc',null,'reverse crunches'],
+  ['Bicycle Crunch','core','','bwc',null,'bicycle crunches|cycling crunch'],
+  ['Pallof Press','core','','mai',null,'anti-rotation press|pallof|pallof hold'],
+  ['Cable Woodchop','core','','mai',null,'wood chop|wood chopper|woodchopper|cable chop'],
+  ['Side Bend','core','','dbi',null,'dumbbell side bend|oblique crunch|side bends'],
+  ['Russian Twist','core','','dbi',null,'russian twists|weighted twist']
 ];
 const GYM_DEFAULTS = {chest:'barbell-bench-press', shoulders:'overhead-press', triceps:'triceps-pushdown', lats:'lat-pulldown', upperback:'seated-cable-row', reardelts:'face-pull', biceps:'dumbbell-curl', forearms:'wrist-curl', quads:'back-squat', hamstrings:'romanian-deadlift', glutes:'hip-thrust', calves:'standing-calf-raise', core:'cable-crunch', lowerback:'back-extension'};
 const GYM_SYN = {db:'dumbbell', bb:'barbell', ohp:'overhead press', rdl:'romanian deadlift', sldl:'romanian deadlift', dl:'deadlift', bi:'biceps', tri:'triceps', quad:'quads', ham:'hamstrings', delts:'shoulders', abs:'core', pecs:'chest'};
+const GYM_BODY_ORDER = ['upperback','shoulders','chest','reardelts','lats','biceps','triceps','forearms','core','lowerback','glutes','quads','hamstrings','calves'];
+let gymSort = 'need';
 let gymLog = [];     // {id, date, ex, w, r, wu}
 let gymCustom = [];  // {id, name, p:[muscle], s:[], kind}
 let gymTab = 'log', gymSelectedId = null, gymPeriod = 7, gymHistLimit = 12, gymDateTouched = false;
@@ -4390,12 +4505,12 @@ let gymBuiltIn = null;
 const gid = (id)=> document.getElementById(id);
 
 function gymSlug(n){ return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
-function gymBuild(name, p, s, kind, rr, id){
+function gymBuild(name, p, s, kind, rr, id, al){
   const k = GYM_KINDS[kind] || GYM_KINDS.mac;
-  return {id: id || gymSlug(name), name, p: p ? p.split(',') : [], s: s ? s.split(',') : [], kind, rr: rr || k.rr, inc: k.inc, bw: kind==='bw' || kind==='bwc'};
+  return {id: id || gymSlug(name), name, p: p ? p.split(',') : [], s: s ? s.split(',') : [], kind, rr: rr || k.rr, inc: k.inc, bw: kind==='bw' || kind==='bwc', al: al ? al.split('|').map(a=>a.toLowerCase()) : []};
 }
 function gymAll(){
-  if(!gymBuiltIn) gymBuiltIn = GYM_RAW.map(r=> gymBuild(r[0], r[1], r[2], r[3], r[4] ? r[4].split('-').map(Number) : null));
+  if(!gymBuiltIn) gymBuiltIn = GYM_RAW.map(r=> gymBuild(r[0], r[1], r[2], r[3], r[4] ? r[4].split('-').map(Number) : null, null, r[5]));
   return gymBuiltIn.concat(gymCustom.map(c=> gymBuild(c.name, (c.p||[]).join(','), (c.s||[]).join(','), c.kind, null, c.id)));
 }
 function gymById(id){ return gymAll().find(e=>e.id===id) || null; }
@@ -4422,7 +4537,7 @@ function gymSuggest(ex, beforeDate){
   const sessions = gymSessions(ex.id, beforeDate);
   const lo = ex.rr[0], hi = ex.rr[1], inc = ex.inc;
   if(!sessions.length){
-    return {first:true, w:null, r:lo, sets:3, note:'First time on this one \u2014 pick a weight you can lift for '+lo+'\u2013'+hi+' clean reps with 1\u20132 left in the tank. I\u2019ll set targets from next time.'};
+    return {first:true, w:null, r:lo, sets:3, note:'First time \u2014 pick a weight for '+lo+'\u2013'+hi+' reps.'};
   }
   const last = sessions[sessions.length-1];
   const maxW = gymTopW(last.sets);
@@ -4431,19 +4546,19 @@ function gymSuggest(ex, beforeDate){
   const setCount = Math.max(3, Math.min(5, last.sets.length));
   let out;
   if(minR >= hi){
-    out = {w:+(maxW+inc).toFixed(2), r:lo, sets:setCount, up:true, note:'You hit '+hi+' reps on every top set \u2014 add '+gymNum(inc)+'kg and start back at '+lo+'.'};
+    out = {w:+(maxW+inc).toFixed(2), r:lo, sets:setCount, up:true, note:'Hit '+hi+' on every set \u2014 add '+gymNum(inc)+'kg.'};
   }else{
     const tr = Math.min(hi, minR+1);
     out = {w:maxW, r:tr, sets:setCount, note: minR < lo
-      ? 'Below the '+lo+'\u2013'+hi+' rep range last time \u2014 hold this weight and build reps (drop '+gymNum(inc)+'kg if it feels grindy).'
-      : 'Same weight \u2014 aim for '+tr+' reps on each set. Hit '+hi+' on all of them and the weight goes up.'};
+      ? 'Below range \u2014 hold the weight.'
+      : 'Aim for '+tr+' reps each set.'};
   }
   if(sessions.length >= 3 && !out.up && maxW > 0){
     const l3 = sessions.slice(-3);
     const ws = l3.map(s=> gymTopW(s.sets));
     const mr = l3.map((s,i)=> Math.min.apply(null, s.sets.filter(x=>x.w===ws[i]).map(x=>x.r)));
     if(ws[0]===ws[1] && ws[1]===ws[2] && mr[2] <= mr[0]){
-      out.note += ' Stuck at this weight for 3 sessions \u2014 try a ~10% deload ('+gymNum(Math.round(maxW*0.9/inc)*inc)+'kg) for a week, or swap the variation.';
+      out.note += ' Stuck 3 sessions \u2014 try '+gymNum(Math.round(maxW*0.9/inc)*inc)+'kg.';
     }
   }
   out.last = last;
@@ -4455,28 +4570,76 @@ function gymTargetText(ex, sug){
 }
 
 // ----- search -----
+function gymLev(a, b){
+  if(a === b) return 0;
+  const m = a.length, n = b.length;
+  if(!m) return n;
+  if(!n) return m;
+  let prev = [], cur;
+  for(let j=0; j<=n; j++) prev[j] = j;
+  for(let i=1; i<=m; i++){
+    cur = [i];
+    for(let j=1; j<=n; j++) cur[j] = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1] + (a[i-1]===b[j-1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[n];
+}
+function gymScoreText(text, toks){
+  let score = 0;
+  for(const t of toks){
+    if(text.startsWith(t)) score += 5;
+    else if(text.split(/[\s-]+/).some(w=> w.startsWith(t))) score += 4;
+    else if(text.includes(t)) score += 3;
+    else return -1;
+  }
+  return score;
+}
 function gymSearch(q){
-  const toks = q.toLowerCase().split(/\s+/).filter(Boolean).map(t=> GYM_SYN[t] || t).join(' ').split(/\s+/);
+  const toks = q.toLowerCase().replace(/[^a-z0-9\s-]/g,' ').split(/\s+/).filter(Boolean).map(t=> GYM_SYN[t] || t).join(' ').split(/\s+/);
+  const qn = toks.join(' ');
   const counts = {};
   gymLog.forEach(l=>{ counts[l.ex] = (counts[l.ex]||0) + 1; });
-  const scored = [];
+  // searching a muscle by name lists the exercises that train it as a main mover
+  const mus = GYM_MUSCLES.find(m=> m.n.toLowerCase()===qn || m.k===qn);
+  if(mus){
+    return gymAll().filter(e=> e.p.includes(mus.k))
+      .sort((a,b)=> (counts[b.id]||0)-(counts[a.id]||0) || GYM_KIND_ORDER.indexOf(a.kind)-GYM_KIND_ORDER.indexOf(b.kind) || a.name.localeCompare(b.name))
+      .slice(0,12).map(ex=>({ex, via:null, fuzzy:false}));
+  }
+  const scored = [], seen = {};
   gymAll().forEach(ex=>{
-    const name = ex.name.toLowerCase();
-    const pn = ex.p.map(m=> (GYM_M[m]||{n:''}).n.toLowerCase());
-    const hay = name+' '+pn.join(' ')+' '+ex.s.map(m=> (GYM_M[m]||{n:''}).n.toLowerCase()).join(' ');
-    let score = 0;
-    for(const t of toks){
-      if(name.startsWith(t)) score += 5;
-      else if(name.split(/[\s-]+/).some(w=>w.startsWith(t))) score += 4;
-      else if(name.includes(t)) score += 3;
-      else if(pn.some(n=>n.startsWith(t))) score += 2;
-      else if(hay.includes(t)) score += 1;
-      else { score = -1; break; }
+    let best = gymScoreText(ex.name.toLowerCase(), toks), via = null;
+    ex.al.forEach(a=>{ const sc = gymScoreText(a, toks) - 0.25; if(sc > best){ best = sc; via = a; } });
+    if(best <= 0){
+      const pn = ex.p.map(m=> GYM_M[m].n.toLowerCase());
+      const hay = pn.join(' ')+' '+ex.s.map(m=> GYM_M[m].n.toLowerCase()).join(' ');
+      let ms = 0;
+      for(const t of toks){ if(pn.some(n=> n.startsWith(t))) ms += 2; else if(hay.includes(t)) ms += 1; else { ms = -1; break; } }
+      if(ms > 0){ best = ms*0.8; via = null; }
     }
-    if(score > 0) scored.push({ex, score: score + Math.min(3, (counts[ex.id]||0)*0.2)});
+    if(best > 0){ seen[ex.id] = true; scored.push({ex, via, fuzzy:false, score: best + Math.min(3, (counts[ex.id]||0)*0.2)}); }
   });
   scored.sort((a,b)=> b.score - a.score || a.ex.name.localeCompare(b.ex.name));
-  return scored.slice(0,12).map(s=>s.ex);
+  const out = scored.slice(0,12);
+  if(out.length < 4){
+    const fz = [];
+    gymAll().forEach(ex=>{
+      if(seen[ex.id]) return;
+      const words = (ex.name.toLowerCase()+' '+ex.al.join(' ')).split(/[\s-]+/).filter(w=> w.length >= 3);
+      let total = 0, ok = true;
+      for(const t of toks){
+        if(t.length < 4){ ok = false; break; }
+        let bd = 99;
+        words.forEach(w=>{ const d = Math.min(gymLev(t, w), gymLev(t, w.slice(0, t.length))); if(d < bd) bd = d; });
+        if(bd > (t.length >= 7 ? 2 : 1)){ ok = false; break; }
+        total += bd;
+      }
+      if(ok) fz.push({ex, via:null, fuzzy:true, score: -total + Math.min(3,(counts[ex.id]||0)*0.2)});
+    });
+    fz.sort((a,b)=> b.score - a.score || a.ex.name.localeCompare(b.ex.name));
+    fz.slice(0, 12 - out.length).forEach(r=> out.push(r));
+  }
+  return out;
 }
 
 // ----- log tab -----
@@ -4492,17 +4655,35 @@ function bindGymPicks(root){
     el.addEventListener('click', ()=> gymSelect(el.dataset.gymPick));
   });
 }
+function gymRecommend(date){
+  const st = gymMuscleStats(7), day = gymDayStats(date);
+  const done = new Set(gymLog.filter(l=> l.date===date).map(l=> l.ex));
+  const needs = GYM_MUSCLES.filter(m=> st.ready[m.k] && st.pct[m.k] < 1 && day.pct[m.k] < 0.6)
+    .sort((a,b)=> (st.pct[a.k]-st.pct[b.k]) || (b.t-a.t));
+  const out = [], seen = new Set();
+  const take = (m)=>{
+    const c = gymExercisesFor(m.k).find(e=> !done.has(e.id) && !seen.has(e.id));
+    if(c){ seen.add(c.id); out.push({ex:c, muscle:m}); }
+  };
+  needs.slice(0,6).forEach(take);
+  if(out.length < 6) needs.slice(0,3).forEach(take);
+  return out.slice(0,6);
+}
 function renderGymRecent(){
   const box = gid('gymRecent');
   if(gid('gymSearchInput').value.trim()){ box.innerHTML = ''; return; }
-  const ids = [];
-  for(let i=gymLog.length-1; i>=0 && ids.length<6; i--){
-    const id = gymLog[i].ex;
-    if(!ids.includes(id) && gymById(id)) ids.push(id);
+  const date = gymDate();
+  let recs = gymRecommend(date);
+  if(!recs.length){
+    const counts = {};
+    gymLog.forEach(l=>{ counts[l.ex] = (counts[l.ex]||0) + 1; });
+    recs = Object.keys(counts).sort((a,b)=> counts[b]-counts[a]).map(gymById).filter(Boolean).slice(0,6).map(ex=>({ex, muscle:GYM_M[ex.p[0]]}));
   }
-  box.innerHTML = ids.length
-    ? '<div class="stat-sub" style="margin:10px 0 6px;">Recent</div><div class="chip-row" style="flex-wrap:wrap;overflow:visible;">'+ids.map(id=>'<button type="button" class="chip-btn" data-gym-pick="'+id+'">'+escapeHtml(gymById(id).name)+'</button>').join('')+'</div>'
-    : '<div class="stat-sub" style="margin-top:10px;">Search for an exercise to start logging \u2014 the list stays hidden until you do.</div>';
+  box.innerHTML = '<div class="stat-sub" style="margin:10px 0 6px;"><b>Recommended</b></div>'+
+    '<div class="chip-row" style="flex-wrap:wrap;overflow:visible;">'+recs.map(r=>{
+      const sug = gymSuggest(r.ex, date), t = gymTargetText(r.ex, sug);
+      return '<button type="button" class="chip-btn gym-rec" data-gym-pick="'+r.ex.id+'"><span>'+escapeHtml(r.ex.name)+'</span>'+(t ? '<small>'+t+'</small>' : '')+'</button>';
+    }).join('')+'</div>';
   bindGymPicks(box);
 }
 function renderGymResults(){
@@ -4512,11 +4693,14 @@ function renderGymResults(){
   const res = gymSearch(term);
   let html = '';
   if(res.length){
-    html += '<div class="gym-results">'+res.map(ex=>
-      '<div class="gym-result" data-gym-pick="'+ex.id+'"><span>'+escapeHtml(ex.name)+'</span><small>'+ex.p.map(m=>GYM_M[m].n).join(', ')+'</small></div>'
+    html += '<div class="gym-results">'+res.map(r=>
+      '<div class="gym-result" data-gym-pick="'+r.ex.id+'"><span>'+escapeHtml(r.ex.name)+
+        (r.via ? '<span class="ac-sub">also called \u201c'+escapeHtml(r.via)+'\u201d</span>' : (r.fuzzy ? '<span class="ac-sub">close match</span>' : ''))+
+      '</span><small>'+r.ex.p.map(m=>GYM_M[m].n).join(', ')+'</small></div>'
     ).join('')+'</div>';
   }
-  if(!res.some(e=> e.name.toLowerCase()===term.toLowerCase()) && term.length >= 2){
+  const tl = term.toLowerCase();
+  if(!res.some(r=> r.ex.name.toLowerCase()===tl || r.ex.al.includes(tl)) && term.length >= 2){
     html += '<button type="button" class="btn secondary small block" id="gymAddCustomBtn" style="margin-top:8px;">+ Add \u201c'+escapeHtml(term)+'\u201d as a new exercise</button>';
   }
   box.innerHTML = html;
@@ -4562,6 +4746,7 @@ function renderGymExercise(){
   }).join('');
   const target = gymTargetText(ex, sug);
   const lastTxt = sug.last ? 'Last time ('+shortDate(sug.last.date)+'): '+sug.last.sets.map(s=>gymSetText(ex,s)).join(', ') : '';
+  const dayLoad = gymLoadHtml(ex, date);
   card.innerHTML =
     '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">'+
       '<div><h2 style="font-size:16px;margin-bottom:6px;">'+escapeHtml(ex.name)+'</h2>'+
@@ -4574,6 +4759,7 @@ function renderGymExercise(){
       '<div class="stat-sub" style="margin-top:'+(target?'6':'0')+'px;">'+escapeHtml(sug.note)+'</div>'+
       (lastTxt ? '<div class="stat-sub" style="margin-top:6px;">'+escapeHtml(lastTxt)+'</div>' : '')+
     '</div>'+
+    dayLoad+
     '<div class="gym-inputs">'+
       '<div><label class="mini-label">'+(ex.bw ? 'Added weight (kg)' : 'Weight (kg)')+'</label><input type="number" id="gymWeightInput" inputmode="decimal" step="any" min="0" value="'+(preW===''?'':gymNum(preW))+'"></div>'+
       '<div><label class="mini-label">Reps</label><input type="number" id="gymRepsInput" inputmode="numeric" min="1" value="'+preR+'"></div>'+
@@ -4618,9 +4804,14 @@ async function gymAddSet(){
   if(isNaN(r) || r <= 0 || (!ex.bw && (isNaN(w) || w <= 0))){ showToast(ex.bw ? 'Enter the reps.' : 'Enter the weight and reps.'); return; }
   const entry = {id:Date.now(), date:gymDate(), ex:ex.id, w: isNaN(w) ? 0 : w, r, wu};
   const prevBest = Math.max.apply(null, [0].concat(gymWorking(ex.id).map(s=> gymMetric(ex, s))));
+  const dayBefore = gymDayStats(entry.date);
   gymLog.push(entry);
   await saveKey('gym-log', gymLog);
-  if(!wu && prevBest > 0 && gymMetric(ex, entry) > prevBest + 0.001) showToast('New personal best \u2014 '+ex.name+'!');
+  const dayAfter = gymDayStats(entry.date);
+  const hitLimit = wu ? [] : ex.p.filter(k=> dayBefore.pct[k] < 1 && dayAfter.pct[k] >= 1).map(k=> GYM_M[k].n);
+  let msg = (!wu && prevBest > 0 && gymMetric(ex, entry) > prevBest + 0.001) ? 'New personal best \u2014 '+ex.name+'!' : '';
+  if(hitLimit.length) msg += (msg ? ' ' : '')+hitLimit.join(' & ')+' at the limit \u2014 move on.';
+  if(msg) showToast(msg);
   renderGymExercise();
   renderGymSession();
 }
@@ -4649,7 +4840,7 @@ function renderGymLog(){
   renderGymSession();
 }
 
-// ----- body map UI -----
+// ----- body map UI (3D with SVG fallback) + daily load -----
 let gymBodyView = 'front', gymBodySel = null, gymBodyCtx = null;
 function gymMuscleBreakdown(mk, info){
   const by = {};
@@ -4672,54 +4863,116 @@ function gymExercisesFor(mk){
     (counts[b.id]||0)-(counts[a.id]||0) || (b.id===GYM_DEFAULTS[mk]) - (a.id===GYM_DEFAULTS[mk]) || GYM_KIND_ORDER.indexOf(a.kind)-GYM_KIND_ORDER.indexOf(b.kind)
   ).slice(0,4);
 }
+// ----- daily load: how much of one session's sensible ceiling each muscle has had on a day -----
+function gymDayStats(date){
+  const credit = {}, pct = {};
+  GYM_MUSCLES.forEach(m=>{ credit[m.k] = 0; });
+  gymLog.forEach(l=>{
+    if(l.wu || l.date !== date) return;
+    const ex = gymById(l.ex);
+    if(!ex) return;
+    ex.p.forEach(m=>{ credit[m] += 1; });
+    ex.s.forEach(m=>{ credit[m] += 0.5; });
+  });
+  GYM_MUSCLES.forEach(m=>{ pct[m.k] = credit[m.k] / m.d; });
+  return {credit, pct, date};
+}
+function gymDayStatus(p){
+  if(p >= 1) return ['over', 'Over the limit'];
+  if(p >= 0.85) return ['limit', 'At the limit'];
+  if(p >= 0.55) return ['good', 'Solid'];
+  if(p > 0) return ['light', 'Room for more'];
+  return ['none', 'Not hit'];
+}
+function gymDayLabel(date){ return date === todayStr() ? 'Today' : niceDate(date); }
+function gymLoadHtml(ex, date){
+  const day = gymDayStats(date);
+  const keys = ex.p.concat(ex.s);
+  const chips = keys.map((k,i)=>{
+    const p = day.pct[k], st = gymDayStatus(p);
+    return '<span class="gd-chip gd-'+st[0]+(i >= ex.p.length ? ' sec' : '')+'">'+GYM_M[k].n+' '+Math.round(p*100)+'%</span>';
+  }).join('');
+  const over = ex.p.filter(k=> day.pct[k] >= 1);
+  return '<div class="gym-dayload"><div class="stat-sub" style="margin:0 0 6px;">'+gymDayLabel(date)+' \u00b7 load on these muscles</div>'+chips+
+    (over.length ? '<div class="gd-warn">'+over.map(k=>GYM_M[k].n).join(' & ')+(over.length>1 ? ' are' : ' is')+' over the limit \u2014 move on.</div>' : '')+'</div>';
+}
+function gymHeatOf(){
+  if(!gymBodyCtx) return {};
+  return gymPeriod === 'today' ? gymBodyCtx.day.pct : gymBodyCtx.st.pct;
+}
 function gymBodyUpdateSel(){
   const svg = gid('gymBodyStage').querySelector('.bm-svg');
-  if(!svg) return;
-  svg.classList.toggle('has-sel', !!gymBodySel);
-  svg.querySelectorAll('.mg').forEach(g=> g.classList.toggle('sel', g.dataset.m===gymBodySel));
+  if(svg){
+    svg.classList.toggle('has-sel', !!gymBodySel);
+    svg.querySelectorAll('.mg').forEach(g=> g.classList.toggle('sel', g.dataset.m===gymBodySel));
+  }
   const pill = gid('gymBodyPill');
   if(gymBodySel && gymBodyCtx){
-    pill.innerHTML = '<b>'+GYM_M[gymBodySel].n+'</b> '+Math.round(gymBodyCtx.st.pct[gymBodySel]*100)+'%';
+    pill.innerHTML = '<b>'+GYM_M[gymBodySel].n+'</b> '+Math.round((gymHeatOf()[gymBodySel]||0)*100)+'%';
     pill.style.display = 'block';
   }else pill.style.display = 'none';
 }
-function renderGymBody(st, info){
-  gymBodyCtx = {st, info};
-  const stage = gid('gymBodyStage');
-  stage.innerHTML = bmBuildSvg(gymBodyView, st.pct, gymBodySel);
-  const svg = stage.firstChild;
-  svg.classList.add('bm-anim');
-  svg.addEventListener('click', ()=>{ if(gymBodySel){ gymBodySel = null; gymBodyUpdateSel(); renderGymBodyInfo(); } });
-  svg.querySelectorAll('.mg').forEach(g=>{
-    const pick = ()=>{ gymBodySel = (gymBodySel===g.dataset.m) ? null : g.dataset.m; gymBodyUpdateSel(); renderGymBodyInfo(); };
-    g.addEventListener('click', (e)=>{ e.stopPropagation(); pick(); });
-    g.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); pick(); } });
-  });
-  document.querySelectorAll('#gymBodyToggle [data-bm-view]').forEach(b=> b.classList.toggle('active', b.dataset.bmView===gymBodyView));
-  gid('gymBodyLegend').innerHTML =
-    '<div class="bm-legend-bar" style="background:linear-gradient(90deg,'+BM_STOPS.map(s=> s[1]+' '+Math.round(s[0]/1.4*100)+'%').join(',')+');"></div>'+
-    '<div class="bm-legend-lbl"><span style="left:0;">Not worked</span><span style="left:71%;transform:translateX(-50%);">On target</span><span style="right:0;">Heavy</span></div>';
+function gymBodyChoose(key){
+  gymBodySel = (key && key !== gymBodySel) ? key : null;
   gymBodyUpdateSel();
   renderGymBodyInfo();
 }
+function gymBodyChips(){
+  document.querySelectorAll('#gymBodyToggle [data-bm-view]').forEach(b=> b.classList.toggle('active', b.dataset.bmView===gymBodyView));
+}
+function renderGymLegend(){
+  const stops = bmStops();
+  const lbl = gymPeriod === 'today' ? ['Fresh','Working','Over the limit'] : ['Not worked','On target','Heavy'];
+  gid('gymBodyLegend').innerHTML =
+    '<div class="bm-legend-bar" style="background:linear-gradient(90deg,'+stops.map(s=> s[1]+' '+Math.round(s[0]/1.4*100)+'%').join(',')+');"></div>'+
+    '<div class="bm-legend-lbl"><span style="left:0;">'+lbl[0]+'</span><span style="left:71%;transform:translateX(-50%);">'+lbl[1]+'</span><span style="right:0;">'+lbl[2]+'</span></div>';
+}
+function renderGymBody(st, info){
+  const day = gymDayStats(gymDate());
+  gymBodyCtx = {st, info, day};
+  const stage = gid('gymBodyStage');
+  stage.innerHTML = bmBuildSvg(gymBodyView, gymHeatOf(), gymBodySel);
+  const svg = stage.firstChild;
+  svg.classList.add('bm-anim');
+  svg.addEventListener('click', ()=>{ if(gymBodySel) gymBodyChoose(null); });
+  svg.querySelectorAll('.mg').forEach(g=>{
+    g.addEventListener('click', (e)=>{ e.stopPropagation(); gymBodyChoose(g.dataset.m); });
+    g.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); gymBodyChoose(g.dataset.m); } });
+  });
+  gid('gymBodyHint').textContent = 'Tap a muscle \u00b7 swipe to turn';
+  gymBodyChips();
+  renderGymLegend();
+  gymBodyUpdateSel();
+  renderGymBodyInfo();
+}
+const GYM_PERIOD_LABEL = {today:'Last 7 days', 7:'Last 7 days', week:'This week', 14:'Last 14 days', 30:'Last 30 days'};
 function renderGymBodyInfo(){
   const box = gid('gymBodyInfo');
   if(!gymBodyCtx) return;
   if(!gymBodySel){
-    box.innerHTML = '<div class="stat-sub" style="margin-top:12px;text-align:center;">Tap a muscle for the detail, swipe the figure to turn it round. Helper work counts too \u2014 a bench press also hits shoulders and triceps.</div>';
+    box.innerHTML = '<div class="stat-sub" style="margin-top:12px;text-align:center;">Tap a muscle for the detail.</div>';
     return;
   }
-  const m = GYM_M[gymBodySel], st = gymBodyCtx.st, info = gymBodyCtx.info;
+  const m = GYM_M[gymBodySel], st = gymBodyCtx.st, info = gymBodyCtx.info, day = gymBodyCtx.day;
   const p = st.pct[m.k], target = m.t * info.days / 7;
   const cls = p < 0.5 ? 'gm-low' : p < 1 ? 'gm-mid' : p <= 1.4 ? 'gm-ok' : 'gm-high';
-  const rows = gymMuscleBreakdown(m.k, info);
+  const dp = day.pct[m.k], ds = gymDayStatus(dp);
+  const dcls = dp >= 1 ? 'gm-low' : dp >= 0.85 ? 'gm-mid' : 'gm-ok';
+  const rows = gymMuscleBreakdown(m.k, gymPeriod === 'today' ? {start:day.date, end:day.date} : info);
   const train = gymExercisesFor(m.k);
   let h = '<div class="bm-info">'+
-    '<div style="display:flex;justify-content:space-between;align-items:baseline;"><h2 style="font-size:17px;">'+m.n+(st.ready[m.k] ? '' : '<span class="gym-status rec">recovering</span>')+'</h2><b class="bm-pct">'+Math.round(p*100)+'%</b></div>'+
-    '<div class="gym-bar-wrap"><div class="gym-bar '+cls+'" style="width:'+Math.min(100,p*100)+'%"></div></div>'+
-    '<div class="gym-muscle-sub"><span>'+(Math.round(st.credit[m.k]*10)/10)+' of '+(Math.round(target*10)/10)+' target sets</span><span>last trained: '+gymAgo(st.since[m.k])+'</span></div>';
-  h += '<div class="stat-sub" style="margin:12px 0 4px;"><b>Where it came from</b></div>';
-  if(!rows.length) h += '<div class="stat-sub">Nothing hit this muscle in this period.</div>';
+    '<h2 style="font-size:17px;">'+m.n+(st.ready[m.k] ? '' : '<span class="gym-status rec">recovering</span>')+'</h2>'+
+    '<div class="bm-two">'+
+      '<div class="bm-stat"><div class="stat-sub">'+(GYM_PERIOD_LABEL[gymPeriod]||'')+'</div><b class="bm-pct">'+Math.round(p*100)+'%</b>'+
+        '<div class="gym-bar-wrap"><div class="gym-bar '+cls+'" style="width:'+Math.min(100,p*100)+'%"></div></div>'+
+        '<div class="stat-sub">'+(Math.round(st.credit[m.k]*10)/10)+' of '+(Math.round(target*10)/10)+' sets</div></div>'+
+      '<div class="bm-stat"><div class="stat-sub">'+gymDayLabel(day.date)+'</div><b class="bm-pct">'+Math.round(dp*100)+'%</b>'+
+        '<div class="gym-bar-wrap"><div class="gym-bar '+dcls+'" style="width:'+Math.min(100,dp*100)+'%"></div></div>'+
+        '<div class="stat-sub">'+(Math.round(day.credit[m.k]*10)/10)+' of '+m.d+' sets \u00b7 '+ds[1]+'</div></div>'+
+    '</div>'+
+    '<div class="stat-sub" style="margin-top:6px;">Last trained: '+gymAgo(st.since[m.k])+'</div>';
+  h += '<div class="stat-sub" style="margin:12px 0 4px;"><b>Where it came from</b> ('+(gymPeriod === 'today' ? gymDayLabel(day.date).toLowerCase() : (GYM_PERIOD_LABEL[gymPeriod]||'').toLowerCase())+')</div>';
+  if(!rows.length) h += '<div class="stat-sub">Nothing hit this muscle '+(gymPeriod === 'today' ? 'on this day.' : 'in this period.')+'</div>';
   rows.forEach(r=>{
     h += '<div class="gym-set-row"><span><b>'+escapeHtml(r.ex.name)+'</b><br><span class="stat-sub">'+r.sets+' set'+(r.sets===1?'':'s')+' \u00b7 '+(r.role==='main' ? 'main mover' : 'helper (counts half)')+'</span></span><b>+'+(Math.round(r.credit*10)/10)+'</b></div>';
   });
@@ -4778,11 +5031,12 @@ function gymNextSession(st){
 }
 function renderGymMuscles(){
   const box = gid('gymMusclesBody');
-  const st = gymMuscleStats(gymPeriod);
-  const pinfo = gymPeriodInfo(gymPeriod);
+  const effPeriod = gymPeriod === 'today' ? 7 : gymPeriod;   // weekly context while viewing a single day
+  const st = gymMuscleStats(effPeriod);
+  const pinfo = gymPeriodInfo(effPeriod);
   const anyData = gymLog.some(l=>!l.wu);
-  gid('gymPeriodRow').innerHTML = [[7,'7 days'],['week','This week'],[14,'14 days'],[30,'30 days']].map(p=>'<button type="button" class="chip-btn'+(p[0]===gymPeriod?' active':'')+'" data-gym-period="'+p[0]+'">'+p[1]+'</button>').join('');
-  gid('gymPeriodRow').querySelectorAll('[data-gym-period]').forEach(b=> b.addEventListener('click', ()=>{ gymPeriod = b.dataset.gymPeriod==='week' ? 'week' : Number(b.dataset.gymPeriod); renderGymMuscles(); }));
+  gid('gymPeriodRow').innerHTML = [['today',gymDayLabel(gymDate())],[7,'7 days'],['week','This week'],[14,'14 days'],[30,'30 days']].map(p=>'<button type="button" class="chip-btn'+(p[0]===gymPeriod?' active':'')+'" data-gym-period="'+p[0]+'">'+p[1]+'</button>').join('');
+  gid('gymPeriodRow').querySelectorAll('[data-gym-period]').forEach(b=> b.addEventListener('click', ()=>{ gymPeriod = (b.dataset.gymPeriod==='week' || b.dataset.gymPeriod==='today') ? b.dataset.gymPeriod : Number(b.dataset.gymPeriod); renderGymMuscles(); }));
   renderGymBody(st, pinfo);
   if(!anyData){
     gid('gymNextBody').innerHTML = '<div class="empty">Log a few sets and this will tell you what to hit next.</div>';
@@ -4794,31 +5048,32 @@ function renderGymMuscles(){
   const recovering = GYM_MUSCLES.filter(m=> !st.ready[m.k]);
   let nh = '';
   if(!next){
-    nh = '<div class="stat-sub">Every recovered muscle is at or over its weekly target \u2014 rest, or pick a weak point.</div>';
+    nh = '<div class="stat-sub">All covered.</div>';
   }else{
-    nh += '<div class="stat-sub" style="margin:0 0 4px;">Most under-worked and recovered: <b>'+next.muscles.map(m=> m.n+' ('+Math.round(st.pct[m.k]*100)+'%)').join(', ')+'</b></div>';
     next.exercises.forEach(ex=>{
       const sug = gymSuggest(ex, addDays(todayStr(), 1));
       const t = gymTargetText(ex, sug);
-      nh += '<div class="gym-next-item" data-gym-start="'+ex.id+'"><div><b>'+escapeHtml(ex.name)+'</b><div class="stat-sub" style="margin-top:2px;">'+ex.p.map(m=>GYM_M[m].n).join(', ')+'</div></div><div style="text-align:right;font-size:13px;">'+(t ? '<b>'+t+'</b><div class="stat-sub" style="margin-top:2px;">'+sug.sets+' sets'+(sug.up?' \u00b7 weight up':'')+'</div>' : '<span class="stat-sub">pick a start weight</span>')+'</div></div>';
+      nh += '<div class="gym-next-item" data-gym-start="'+ex.id+'"><div><b>'+escapeHtml(ex.name)+'</b><div class="stat-sub" style="margin-top:2px;">'+ex.p.map(m=>GYM_M[m].n).join(', ')+'</div></div><div style="text-align:right;font-size:13px;">'+(t ? '<b>'+t+'</b><div class="stat-sub" style="margin-top:2px;">'+sug.sets+' sets'+(sug.up?' \u00b7 weight up':'')+'</div>' : '<span class="stat-sub">new</span>')+'</div></div>';
     });
   }
-  if(recovering.length) nh += '<div class="stat-sub" style="margin-top:10px;">Still recovering: '+recovering.map(m=> m.n+' ('+gymAgo(st.since[m.k])+')').join(', ')+'</div>';
+  if(recovering.length) nh += '<div class="stat-sub" style="margin-top:10px;">Resting: '+recovering.slice(0,5).map(m=> m.n).join(', ')+(recovering.length>5 ? '\u2026' : '')+'</div>';
   gid('gymNextBody').innerHTML = nh;
   gid('gymNextBody').querySelectorAll('[data-gym-start]').forEach(el=> el.addEventListener('click', ()=>{ gymTab = 'log'; renderGym(); gymSelect(el.dataset.gymStart); }));
-  // bars
-  const groups = ['Push','Pull','Legs','Core'];
+  // every muscle in one flat list
+  const day = gymBodyCtx ? gymBodyCtx.day : gymDayStats(gymDate());
+  const order = gymSort === 'body' ? GYM_BODY_ORDER : GYM_MUSCLES.map(m=> m.k).sort((a,b)=> (st.pct[a]-st.pct[b]) || (GYM_M[b].t-GYM_M[a].t));
+  gid('gymSortRow').innerHTML = [['need','Needs most'],['body','Head to toe']].map(o=>'<button type="button" class="chip-btn'+(o[0]===gymSort?' active':'')+'" data-gym-sort="'+o[0]+'">'+o[1]+'</button>').join('');
+  gid('gymSortRow').querySelectorAll('[data-gym-sort]').forEach(b=> b.addEventListener('click', ()=>{ gymSort = b.dataset.gymSort; renderGymMuscles(); }));
   let html = '';
-  groups.forEach(g=>{
-    html += '<div class="gym-group-title">'+g+'</div>';
-    GYM_MUSCLES.filter(m=>m.g===g).forEach(m=>{
-      const p = st.pct[m.k];
-      const cls = p < 0.5 ? 'gm-low' : p < 1 ? 'gm-mid' : p <= 1.4 ? 'gm-ok' : 'gm-high';
-      const target = m.t * pinfo.days / 7;
-      html += '<div class="gym-muscle-row"><div class="gym-muscle-top"><span>'+m.n+(st.ready[m.k] ? '' : '<span class="gym-status rec">recovering</span>')+'</span><b>'+Math.round(p*100)+'%</b></div>'+
-        '<div class="gym-bar-wrap"><div class="gym-bar '+cls+'" style="width:'+Math.min(100, p*100)+'%"></div></div>'+
-        '<div class="gym-muscle-sub"><span>'+(Math.round(st.credit[m.k]*10)/10)+' / '+(Math.round(target*10)/10)+' sets</span><span>last: '+gymAgo(st.since[m.k])+'</span></div></div>';
-    });
+  order.forEach(k=>{
+    const m = GYM_M[k], p = st.pct[k];
+    const cls = p < 0.5 ? 'gm-low' : p < 1 ? 'gm-mid' : p <= 1.4 ? 'gm-ok' : 'gm-high';
+    const target = m.t * pinfo.days / 7;
+    const dp = day.pct[k], ds = gymDayStatus(dp);
+    html += '<div class="gym-muscle-row"><div class="gym-muscle-top"><span>'+m.n+(st.ready[k] ? '' : '<span class="gym-status rec">recovering</span>')+'</span><b>'+Math.round(p*100)+'%</b></div>'+
+      '<div class="gym-bar-wrap"><div class="gym-bar '+cls+'" style="width:'+Math.min(100, p*100)+'%"></div></div>'+
+      '<div class="gym-muscle-sub"><span>'+(Math.round(st.credit[k]*10)/10)+' / '+(Math.round(target*10)/10)+' sets \u00b7 last '+gymAgo(st.since[k])+'</span>'+
+      (day.credit[k] > 0 ? '<span class="gd-chip gd-'+ds[0]+'" style="margin:0;">'+gymDayLabel(day.date)+' '+Math.round(dp*100)+'%'+(dp >= 1 ? ' \u00b7 over' : '')+'</span>' : '')+'</div></div>';
   });
   box.innerHTML = html;
 }
@@ -4880,7 +5135,12 @@ function setupGym(){
   });
   gid('gymSearchInput').addEventListener('input', ()=>{ renderGymRecent(); renderGymResults(); });
   document.querySelectorAll('#gymBodyToggle [data-bm-view]').forEach(b=>{
-    b.addEventListener('click', ()=>{ if(gymBodyView===b.dataset.bmView) return; gymBodyView = b.dataset.bmView; if(gymBodyCtx) renderGymBody(gymBodyCtx.st, gymBodyCtx.info); });
+    b.addEventListener('click', ()=>{
+      const v = b.dataset.bmView;
+      if(gymBodyView === v) return;
+      gymBodyView = v;
+      if(gymBodyCtx) renderGymBody(gymBodyCtx.st, gymBodyCtx.info);
+    });
   });
   let bmSx = null;
   const bmStage = gid('gymBodyStage');
