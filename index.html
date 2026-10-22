@@ -117,7 +117,31 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .ac-sub{display:block;font-size:10.5px;color:var(--ink-soft);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .route-to{display:flex;align-items:center;gap:8px;margin:9px 0 7px;color:var(--ink-soft);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;}
 .route-to::before,.route-to::after{content:'';flex:1;height:1px;background:var(--line);}
-.gym-search-row{display:flex;gap:8px;align-items:center;}
+.sum-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.sum-head span{font-size:12px;color:var(--ink-soft);}
+.sum-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;}
+.sum-row:last-child{border-bottom:none;}
+.sum-row .sum-k{color:var(--ink-soft);font-size:12.5px;flex-shrink:0;}
+.sum-row .sum-v{text-align:right;min-width:0;}
+.sum-row.now{font-weight:600;}
+.sum-row.tap{cursor:pointer;}
+.sum-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:var(--ink-soft);}
+.sum-dot.on{background:var(--home);}
+.sum-row .sum-k.sum-over{color:var(--danger);font-weight:600;}
+.gym-date-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
+#gymLogPane{display:flex;flex-direction:column;}
+.gym-target .gt-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:3px 0;font-size:14px;}
+.gym-inputs input.cmp-up{background:var(--home-tint);border-color:var(--home);color:var(--home);font-weight:600;}
+.gym-inputs input.cmp-down{background:rgba(179,69,59,.14);border-color:var(--danger);color:var(--danger);font-weight:600;}
+.cmp-up-t{color:var(--home);font-weight:600;}
+.cmp-down-t{color:var(--danger);font-weight:600;}
+.gym-bwask{display:flex;gap:8px;align-items:center;margin:8px 0;}
+.gym-bwask input{flex:1;min-width:0;}
+.gym-hist-head{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;background:none;border:none;padding:10px 0;text-align:left;color:inherit;font:inherit;cursor:pointer;}
+.gym-hist-head .chev{transition:transform .15s ease;flex-shrink:0;color:var(--ink-soft);}
+.gym-hist-day.open .chev{transform:rotate(180deg);}
+.gym-hist-body{display:none;padding-bottom:6px;}
+.gym-hist-day.open .gym-hist-body{display:block;}
 .gym-search-row input[type=text]{flex:1;min-width:0;}
 .gym-results{background:var(--surface-2);border-radius:10px;margin-top:8px;overflow:hidden;}
 .gym-result{padding:11px 12px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;}
@@ -171,8 +195,6 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .gd-msg.gd-limit{color:var(--away);}
 .gd-warn{margin-top:6px;font-size:12px;color:var(--danger);font-weight:500;line-height:1.35;}
 .gym-dayload{margin:10px 0 2px;}
-.gym-rec{display:inline-flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;padding:7px 13px;border-radius:14px;line-height:1.25;}
-.gym-rec small{font-size:10.5px;font-weight:400;opacity:.78;}
 .bm-legend{margin-top:12px;}
 .bm-legend-bar{height:8px;border-radius:5px;}
 .bm-legend-lbl{position:relative;height:16px;font-size:10.5px;color:var(--ink-soft);margin-top:4px;}
@@ -185,12 +207,8 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .menu-item:active{background:var(--surface-2);}
 .drawer-overlay{position:fixed;inset:0;background:rgba(20,31,26,0.45);z-index:90;opacity:0;pointer-events:none;transition:opacity .2s ease;}
 .drawer-overlay.show{opacity:1;pointer-events:auto;}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:78%;max-width:300px;background:var(--surface);z-index:91;transform:translateX(100%);transition:transform .25s ease;box-shadow:-2px 0 24px rgba(0,0,0,0.18);overflow-y:auto;padding:20px 18px;padding-top:calc(20px + env(safe-area-inset-top,0px));}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:78%;max-width:300px;background:var(--surface);z-index:91;transform:translateX(-100%);transition:transform .25s ease;box-shadow:2px 0 24px rgba(0,0,0,0.18);overflow-y:auto;padding:20px 18px;padding-top:calc(20px + env(safe-area-inset-top,0px));}
 .drawer.show{transform:translateX(0);}
-.overview-overlay{position:fixed;inset:0;background:rgba(20,31,26,0.2);z-index:90;opacity:0;pointer-events:none;transition:opacity .18s ease;}
-.overview-overlay.show{opacity:1;pointer-events:auto;}
-.overview-panel{position:fixed;top:calc(env(safe-area-inset-top,0px) + 128px);left:14px;width:min(320px, calc(100% - 28px));max-height:56vh;overflow-y:auto;background:var(--surface);border-radius:14px;box-shadow:0 12px 32px rgba(0,0,0,0.22);z-index:91;transform:translateY(-10px) scale(0.97);opacity:0;pointer-events:none;transition:transform .18s ease, opacity .18s ease;padding:12px;transform-origin:top left;}
-.overview-panel.show{transform:translateY(0) scale(1);opacity:1;pointer-events:auto;}
 .autocomplete-heading{padding:6px 10px 3px;font-size:9.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;}
 .autocomplete-item:last-child{border-bottom:none;}
 .autocomplete-item:active{background:var(--surface-2);}
@@ -413,7 +431,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v13.2</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v13.5</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -423,17 +441,13 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <div id="drawerBody"></div>
   </div>
 
-  <div class="overview-overlay" id="overviewOverlay"></div>
-  <div class="overview-panel" id="overviewPanel">
-    <div id="overviewPanelBody"></div>
-  </div>
 
   <!-- CALENDAR -->
   <div class="view active" id="view-calendar">
     <div class="cal-fade cal-fade-top"></div>
     <div class="cal-header-bar">
       <div class="cal-header-side">
-        <button class="round-btn" id="calOverviewBtn" title="Quick overview"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span class="cal-overview-badge" id="calOverviewBadge"></span></button>
+        <button class="round-btn" id="calOverviewBtn" title="Menu"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg><span class="cal-overview-badge" id="calOverviewBadge"></span></button>
       </div>
       <button class="cal-back-btn" id="yearToggleBtn">
         <svg id="yearToggleIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
@@ -451,9 +465,9 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     <div class="cal-bottom-bar" id="calBottomBar">
       <button class="round-btn lg" id="calTodoBtn" title="Add a to-do"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg></button>
       <button class="round-btn lg" id="calMileageBtn" title="Log mileage"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg></button>
-      <button class="round-btn lg primary" id="menuCalBtn"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
       <button class="round-btn lg" id="calExpenseBtn" title="Log an expense"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg></button>
       <button class="round-btn lg" id="calClockBtn" title="Clock in"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></button>
+      <button class="round-btn lg" id="calGymBtn" title="Gym"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11"/><path d="M17.5 6.5v11"/><path d="M3.5 9v6"/><path d="M20.5 9v6"/><path d="M6.5 12h11"/></svg></button>
     </div>
   </div>
 
@@ -670,6 +684,11 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     </div>
   </div>
 
+  <!-- SUMMARY -->
+  <div class="view" id="view-summary">
+    <div id="summaryBody"></div>
+  </div>
+
   <!-- GYM -->
   <div class="view" id="view-gym">
     <div class="card">
@@ -682,17 +701,18 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     </div>
     <div id="gymLogPane">
       <div class="card">
-        <div class="gym-search-row">
-          <input type="text" id="gymSearchInput" placeholder="Search exercise or muscle…" autocomplete="off">
-          <input type="date" id="gymDateInput" class="solo-date-input">
-        </div>
-        <div id="gymRecent"></div>
+        <input type="text" id="gymSearchInput" placeholder="Search exercise or muscle…" autocomplete="off" style="width:100%;">
+        <div class="gym-date-row"><span class="stat-sub" style="margin:0;">Date</span><input type="date" id="gymDateInput" class="solo-date-input"></div>
         <div id="gymSearchResults"></div>
       </div>
       <div class="card" id="gymExerciseCard" style="display:none;"></div>
       <div class="card">
         <h2 style="font-size:15px;">Session</h2>
         <div id="gymSessionList"></div>
+      </div>
+      <div class="card" id="gymBwCard">
+        <h2 style="font-size:15px;margin-bottom:8px;">Bodyweight</h2>
+        <div id="gymBwBody"></div>
       </div>
     </div>
     <div id="gymMusclesPane" style="display:none;">
@@ -996,7 +1016,7 @@ async function saveKey(key, value, attempt){
 }
 
 // ---------- cloud sync ----------
-const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','gym-log','gym-custom','clock-in-state','dark-mode','rent-rate-home','rent-rate-away'];
+const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','gym-log','gym-custom','gym-bw','clock-in-state','dark-mode','rent-rate-home','rent-rate-away'];
 let firebaseApp = null, firestoreDb = null, firestoreDoc = null, syncUnsub = null;
 let syncEnabled = false;
 async function pushToCloud(key, value){
@@ -1030,6 +1050,7 @@ async function applyRemoteValue(key, value){
     case 'van-odometer': vanOdometer = value; break;
     case 'gym-log': gymLog = value || []; break;
     case 'gym-custom': gymCustom = value || []; break;
+    case 'gym-bw': gymBw = value || []; break;
     case 'clock-in-state': clockInState = value; updateClockInBtn(); break;
     case 'dark-mode': darkModeOn = value; applyDarkMode(darkModeOn); break;
     case 'rent-rate-home': RATE_HOME = value; break;
@@ -1052,6 +1073,7 @@ function refreshAllViews(){
     document.getElementById('rateAwayInput').value = RATE_AWAY;
   }
   if(document.getElementById('view-trends').classList.contains('active')) renderTrends();
+  if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
   if(document.getElementById('view-gym').classList.contains('active') && !(document.activeElement && document.activeElement.closest && document.activeElement.closest('#view-gym'))) renderGym();
 }
 function parseFirebaseConfig(text){
@@ -1103,7 +1125,7 @@ async function connectSync(config, isInitialSetup){
       const currentValues = {
         'calendar-data':calendarData,'tag-defs':tagDefs,'rent-meta':rentMeta,'rent-history':rentHistory,
         'todos':todos,'toil-payouts':toilPayouts,'toil-adjustment':toilAdjustment,'mileage-trips':mileageTrips,
-        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,'gym-log':gymLog,'gym-custom':gymCustom,'clock-in-state':clockInState,
+        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,'gym-log':gymLog,'gym-custom':gymCustom,'gym-bw':gymBw,'clock-in-state':clockInState,
         'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY
       };
       SYNC_KEYS.forEach(key=>{ initial[key] = JSON.stringify(currentValues[key]); });
@@ -1240,6 +1262,7 @@ async function init(){
   vanOdometer = await loadKey('van-odometer', null);
   gymLog = await loadKey('gym-log', []);
   gymCustom = await loadKey('gym-custom', []);
+  gymBw = await loadKey('gym-bw', []);
   Object.assign(geoCache, await loadKey('geocache', {}));
   applyDarkMode(darkModeOn);
 
@@ -1298,7 +1321,6 @@ function goToCalendarDate(dateStr){
   openDayModal(dateStr);
 }
 function goToView(viewName){
-  closeOverviewPanel();
   acCloseAll();
   const wasCalendar = document.getElementById('view-calendar').classList.contains('active');
   if(wasCalendar) savedCalendarScrollY = window.scrollY;
@@ -1312,20 +1334,33 @@ function goToView(viewName){
     requestAnimationFrame(()=> window.scrollTo(0, 0));
   }
   if(viewName==='trends') renderTrends();
-  if(viewName==='gym') renderGym();
+  if(viewName==='gym'){ gymAutoPick = true; renderGym(); }
+  if(viewName==='summary') renderSummary();
 }
 function setupTabs(){
   document.getElementById('menuTopBtn').addEventListener('click', openMenuSheet);
-  document.getElementById('menuCalBtn').addEventListener('click', openMenuSheet);
   document.getElementById('returnCalBtn').addEventListener('click', ()=> goToView('calendar'));
   document.getElementById('returnBarMenuBtn').addEventListener('click', openMenuSheet);
-  document.getElementById('calOverviewBtn').addEventListener('click', openCalOverviewSheet);
+  document.getElementById('calOverviewBtn').addEventListener('click', openMenuSheet);   // top-left on the calendar = menu
   document.getElementById('calTodoBtn').addEventListener('click', openQuickAddTodoForm);
   document.getElementById('calExpenseBtn').addEventListener('click', openQuickAddExpenseForm);
   document.getElementById('calMileageBtn').addEventListener('click', openQuickAddMileageForm);
   document.getElementById('calClockBtn').addEventListener('click', toggleClockIn);
+  document.getElementById('calGymBtn').addEventListener('click', ()=> goToView('gym'));
   document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
-  document.getElementById('overviewOverlay').addEventListener('click', closeOverviewPanel);
+  // swipe left on the calendar -> quick summary; swipe right on the summary -> back
+  const swipe = (el, onSwipe)=>{
+    let sx = null, sy = null, st = 0;
+    el.addEventListener('touchstart', (e)=>{ if(e.touches.length !== 1){ sx = null; return; } sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }, {passive:true});
+    el.addEventListener('touchend', (e)=>{
+      if(sx === null) return;
+      const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy, dt = Date.now() - st;
+      sx = null;
+      if(Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)*1.8 && dt < 800 && document.body.style.overflow !== 'hidden') onSwipe(dx < 0 ? 'left' : 'right');
+    }, {passive:true});
+  };
+  swipe(document.getElementById('view-calendar'), (dir)=>{ if(dir==='left' && !yearViewActive) goToView('summary'); });
+  swipe(document.getElementById('view-summary'), (dir)=>{ if(dir==='right') goToView('calendar'); });
 }
 function openMenuSheet(){
   const body = document.getElementById('drawerBody');
@@ -1333,6 +1368,7 @@ function openMenuSheet(){
   const pendingExpenses = expenses.filter(e=>!e.done).length;
   const icons = {
     calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>',
+    summary:'<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
     todo:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l2.5 2.5L16 9"/>',
     rent:'<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/>',
     toil:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
@@ -1345,6 +1381,7 @@ function openMenuSheet(){
   };
   const items = [
     ['calendar','Calendar',0],
+    ['summary','Summary',0],
     ['todo','To-Do',urgentCount],
     ['rent','Rent',0],
     ['toil','TOIL',0],
@@ -1372,49 +1409,19 @@ function closeDrawer(){
 }
 let quickAddActive = null;
 function openQuickAddMileageForm(){
-  openSheet('Log mileage');
-  document.getElementById('sheetBody').innerHTML = '';
-  relocateIntoSheet(document.getElementById('mileageLogFormCard'));
-  quickAddActive = 'mileage';
+  goToView('mileage');
   const el = document.getElementById('mileageFromInput');
-  if(el){
-    el.focus();
-    el.dispatchEvent(new Event('focus'));
-  }
+  if(el){ el.focus(); el.dispatchEvent(new Event('focus')); }
 }
 function openQuickAddExpenseForm(){
-  openSheet('Log an expense');
-  document.getElementById('sheetBody').innerHTML = '';
-  relocateIntoSheet(document.getElementById('expenseLogFormCard'));
-  quickAddActive = 'expense';
+  goToView('expenses');
   const el = document.getElementById('expenseAmountInput');
   if(el) el.focus();
 }
 function openQuickAddTodoForm(){
-  openSheet('Add a to-do');
-  const body = document.getElementById('sheetBody');
-  body.innerHTML =
-    '<input type="text" id="quickTodoText" placeholder="What needs doing?">'+
-    '<label class="mini-label" style="margin-top:8px;display:block;">Date (optional)</label>'+
-    '<input type="date" id="quickTodoDate" class="solo-date-input">'+
-    '<button class="btn block" id="quickTodoAddBtn" style="margin-top:10px;">Add</button>';
-  const submit = async ()=>{
-    const text = document.getElementById('quickTodoText').value.trim();
-    if(!text){ showToast('Enter what needs doing.'); return; }
-    const date = document.getElementById('quickTodoDate').value || null;
-    const t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope: date?'day':'urgent', dueDate:date, rangeStart:date, rangeEnd:date, repeat:'none'};
-    todos.push(t);
-    await saveKey('todos', todos);
-    renderTodosTab();
-    renderCalendarAll();
-    if(selectedDate) renderDayHappeningList(selectedDate);
-    closeSheet();
-    goToView('calendar');
-    showToast('Added to your to-do list.');
-  };
-  document.getElementById('quickTodoAddBtn').addEventListener('click', submit);
-  document.getElementById('quickTodoText').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); submit(); } });
-  document.getElementById('quickTodoText').focus();
+  goToView('todo');
+  const el = document.getElementById('input-newtodo');
+  if(el) el.focus();
 }
 
 function setupSheet(){
@@ -3480,80 +3487,80 @@ function renderCalHeaderAlert(){
   const hasOverdue = todos.some(t=>t.kind==='task' && !t.done && t.dueDate && t.dueDate < today);
   badge.style.display = hasOverdue ? 'block' : 'none';
 }
-function openOverviewPanel(){
-  document.getElementById('overviewOverlay').classList.add('show');
-  document.getElementById('overviewPanel').classList.add('show');
-}
-function closeOverviewPanel(){
-  document.getElementById('overviewOverlay').classList.remove('show');
-  document.getElementById('overviewPanel').classList.remove('show');
-}
-function openCalOverviewSheet(){
-  const body = document.getElementById('overviewPanelBody');
+function renderSummary(){
+  const box = document.getElementById('summaryBody');
+  if(!box) return;
   const today = todayStr();
-  const pending = todos.filter(t=>t.kind==='task' && !t.done).sort((a,b)=>{
-    if(!a.dueDate && !b.dueDate) return 0;
-    if(!a.dueDate) return 1;
-    if(!b.dueDate) return -1;
-    return a.dueDate.localeCompare(b.dueDate);
-  }).slice(0,8);
-  const recentExpenses = expenses.filter(e=>!e.done).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
-  const recentTrips = mileageTrips.slice().sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
-
-  let html = '<div class="autocomplete-heading">To-dos</div>';
-  if(!pending.length) html += '<div class="empty">Nothing pending.</div>';
-  pending.forEach(t=>{
-    const overdue = t.dueDate && t.dueDate < today;
-    const dueLabel = t.dueDate ? (t.dueDate===today?'Today':(overdue?shortDate(t.dueDate)+' (overdue)':shortDate(t.dueDate))) : 'General';
-    html += '<div class="menu-item" data-goto-todo="'+t.id+'" data-date="'+(t.dueDate||'')+'" style="padding:9px 4px;">'+
-      '<span style="flex:1;font-size:13.5px;">'+escapeHtml(t.text)+'</span>'+
-      '<span style="font-size:11px;color:'+(overdue?'var(--danger)':'var(--ink-soft)')+';flex-shrink:0;">'+dueLabel+'</span>'+
-    '</div>';
-  });
-  html += '<button class="btn secondary small block" data-view-full="todo" style="margin-top:8px;">View full to-do list</button>';
-  html += '<div class="divider"></div>';
-
-  html += '<div class="autocomplete-heading">Recent expenses</div>';
-  if(!recentExpenses.length) html += '<div class="empty">Nothing pending.</div>';
-  recentExpenses.forEach(e=>{
-    html += '<div class="menu-item" style="padding:9px 4px;cursor:default;">'+
-      '<span style="flex:1;font-size:13.5px;">'+money(e.amount)+(e.note?' &middot; '+escapeHtml(e.note):'')+'</span>'+
-      '<span style="font-size:11px;color:var(--ink-soft);flex-shrink:0;">'+shortDate(e.date)+'</span>'+
-    '</div>';
-  });
-  html += '<button class="btn secondary small block" data-view-full="expenses" style="margin-top:8px;">View full expenses</button>';
-  html += '<div class="divider"></div>';
-
-  html += '<div class="autocomplete-heading">Recent mileage</div>';
+  const e = calendarData[today];
+  let h = '';
+  // ---- today ----
+  const sh = e && e.shift;
+  const hrs = shiftHours(sh);
+  const events = [].concat(autoEventsForDate(today).map(x=>x.title), todos.filter(t=> t.kind==='whatson' && todoOccursOn(t, today)).map(t=>t.text));
+  h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Today</h2><span>'+niceDate(today)+'</span></div>'+
+    '<div class="sum-row tap" data-sum-day><span class="sum-k">Status</span><span class="sum-v">'+(e && e.status==='away' ? 'Away' : 'Home')+(e && e.isAL ? ' \u00b7 Annual leave' : '')+'</span></div>'+
+    '<div class="sum-row tap" data-sum-day><span class="sum-k">Shift</span><span class="sum-v">'+(sh && sh.start ? escapeHtml(sh.start)+'\u2013'+escapeHtml(sh.finish || '\u2026')+(hrs ? ' \u00b7 '+hrs+'h' : '') : 'None')+'</span></div>'+
+    events.map(t=>'<div class="sum-row tap" data-sum-day><span class="sum-k">On</span><span class="sum-v">'+escapeHtml(t)+'</span></div>').join('')+
+  '</div>';
+  // ---- clock ----
+  const on = !!clockInState;
+  let since = '';
+  if(on){
+    const mins = Math.max(0, Math.round((Date.now() - new Date(clockInState.date+'T'+clockInState.start+':00').getTime())/60000));
+    since = ' since '+clockInState.start+' ('+Math.floor(mins/60)+'h '+(mins%60)+'m)';
+  }
+  h += '<div class="card"><div class="sum-row" style="padding-top:0;"><span><span class="sum-dot'+(on ? ' on' : '')+'"></span>'+(on ? 'Clocked in'+since : 'Not clocked in')+'</span><button class="btn small'+(on ? '' : ' secondary')+'" id="sumClockBtn">'+(on ? 'Clock out' : 'Clock in')+'</button></div></div>';
+  // ---- this week ----
+  const mon = mondayOf(today);
+  let total = 0, rows = '';
+  const dn = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  for(let i=0;i<7;i++){
+    const d = addDays(mon, i), en = calendarData[d], hh = en ? shiftHours(en.shift) : null;
+    if(hh) total += hh;
+    let v = '\u2014';
+    if(en && en.shift && en.shift.start) v = escapeHtml(en.shift.start)+'\u2013'+escapeHtml(en.shift.finish || '\u2026')+(hh ? ' \u00b7 '+hh+'h' : '');
+    else if(en && en.isAL) v = 'Annual leave';
+    else if(en && en.status==='away') v = 'Away';
+    rows += '<div class="sum-row tap'+(d===today ? ' now' : '')+'" data-sum-date="'+d+'"><span class="sum-k">'+dn[i]+' '+parseYMD(d).getDate()+'</span><span class="sum-v">'+v+'</span></div>';
+  }
+  h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Shifts this week</h2><span>'+(Math.round(total*10)/10)+'h</span></div>'+rows+'</div>';
+  // ---- van ----
   const odo = computeVanOdometer();
-  html += odo
-    ? '<div class="menu-item" data-go-settings="1" style="padding:9px 4px;cursor:pointer;"><span style="flex:1;font-size:13.5px;"><b>Van odometer</b></span><span style="font-size:13px;flex-shrink:0;"><b>'+fmtMi(odo.estimate)+' mi</b></span></div>'
-    : '<div class="menu-item" data-go-settings="1" style="padding:9px 4px;cursor:pointer;"><span style="flex:1;font-size:13px;color:var(--ink-soft);">Van odometer not set \u2014 add it</span></div>';
-  if(!recentTrips.length) html += '<div class="empty">Nothing logged yet.</div>';
-  recentTrips.forEach(t=>{
-    html += '<div class="menu-item" style="padding:9px 4px;cursor:default;">'+
-      '<span style="flex:1;font-size:13.5px;">'+mileageRouteLabel(t)+'</span>'+
-      '<span style="font-size:11px;color:var(--ink-soft);flex-shrink:0;">'+t.miles.toFixed(1)+'mi</span>'+
-    '</div>';
-  });
-  html += '<button class="btn secondary small block" data-view-full="mileage" style="margin-top:8px;">View full mileage log</button>';
-
-  body.innerHTML = html;
-  body.querySelectorAll('[data-goto-todo]').forEach(row=>{
-    row.style.cursor = 'pointer';
-    row.addEventListener('click', ()=>{
-      closeOverviewPanel();
-      if(row.dataset.date) goToCalendarDate(row.dataset.date);
-      else goToView('todo');
-    });
-  });
-  body.querySelectorAll('[data-view-full]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{ closeOverviewPanel(); goToView(btn.dataset.viewFull); });
-  });
-  body.querySelectorAll('[data-go-settings]').forEach(row=>{
-    row.addEventListener('click', ()=>{ closeOverviewPanel(); goToView('settings'); });
-  });
-  openOverviewPanel();
+  h += '<div class="card"><div class="sum-row tap" data-sum-go="'+(odo ? 'mileage' : 'settings')+'" style="padding:0;border:none;"><span class="sum-k">Van odometer</span><span class="sum-v">'+(odo ? '<b>'+fmtMi(odo.estimate)+' mi</b>' : 'Not set')+'</span></div></div>';
+  // ---- to-dos ----
+  const pend = todos.filter(t=> t.kind==='task' && !t.done).sort((a,b)=>{
+    if(!a.dueDate && !b.dueDate) return 0; if(!a.dueDate) return 1; if(!b.dueDate) return -1; return a.dueDate.localeCompare(b.dueDate);
+  }).slice(0,6);
+  h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">To-dos</h2><span data-sum-go="todo" style="cursor:pointer;">All</span></div>'+
+    (pend.length ? pend.map(t=>{
+      const over = t.dueDate && t.dueDate < today;
+      return '<div class="sum-row tap" data-sum-todo="'+t.id+'"><span>'+escapeHtml(t.text)+'</span><span class="sum-k'+(over ? ' sum-over' : '')+'">'+(t.dueDate ? (t.dueDate===today ? 'Today' : shortDate(t.dueDate)) : '')+'</span></div>';
+    }).join('') : '<div class="sum-row"><span class="sum-k">Nothing pending</span></div>')+'</div>';
+  // ---- gym ----
+  const work = gymLog.filter(l=> !l.wu && l.date===today);
+  const vol = work.reduce((a,l)=> a + gymVolume(l), 0);
+  const exCount = new Set(work.map(l=>l.ex)).size;
+  const wkStart = addDays(today,-6);
+  const wkLogs = gymLog.filter(l=> !l.wu && l.date>=wkStart && l.date<=today);
+  const wkDays = new Set(wkLogs.map(l=>l.date)).size;
+  let nextTxt = '';
+  try{ const nx = gymNextSession(gymMuscleStats(7)); if(nx) nextTxt = nx.muscles.slice(0,3).map(m=>m.n).join(', '); }catch(err){}
+  const bwNow = gymBwLatest();
+  h += '<div class="card tap" data-sum-go="gym"><div class="sum-head"><h2 style="font-size:15px;">Gym</h2><span>'+(bwNow ? bwNow.kg+'kg' : '')+'</span></div>'+
+    '<div class="sum-row"><span class="sum-k">Today</span><span class="sum-v">'+(work.length ? work.length+' sets \u00b7 '+exCount+' exercise'+(exCount===1?'':'s')+' \u00b7 '+Math.round(vol).toLocaleString('en-GB')+'kg' : 'Nothing yet')+'</span></div>'+
+    '<div class="sum-row"><span class="sum-k">Last 7 days</span><span class="sum-v">'+wkDays+' day'+(wkDays===1?'':'s')+' \u00b7 '+wkLogs.length+' sets</span></div>'+
+    (nextTxt ? '<div class="sum-row"><span class="sum-k">Next</span><span class="sum-v">'+escapeHtml(nextTxt)+'</span></div>' : '')+
+  '</div>';
+  box.innerHTML = h;
+  box.querySelectorAll('[data-sum-day]').forEach(el=> el.addEventListener('click', ()=> goToCalendarDate(today)));
+  box.querySelectorAll('[data-sum-date]').forEach(el=> el.addEventListener('click', ()=> goToCalendarDate(el.dataset.sumDate)));
+  box.querySelectorAll('[data-sum-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.sumGo)));
+  box.querySelectorAll('[data-sum-todo]').forEach(el=> el.addEventListener('click', ()=>{
+    const t = todos.find(x=> String(x.id)===el.dataset.sumTodo);
+    if(t && t.dueDate) goToCalendarDate(t.dueDate); else goToView('todo');
+  }));
+  const cb = document.getElementById('sumClockBtn');
+  if(cb) cb.addEventListener('click', async ()=>{ await toggleClockIn(); if(document.getElementById('view-summary').classList.contains('active')) renderSummary(); });
 }
 function renderTodosTab(){
   const datedContainer = document.getElementById('list-dated');
@@ -4296,20 +4303,20 @@ function bmBuildSvg(view, pctByMuscle, selected){
 
 // ---------- gym ----------
 const GYM_MUSCLES = [
-  {k:'chest',n:'Chest',t:12,g:'Push',rest:2,d:10},
-  {k:'shoulders',n:'Shoulders',t:10,g:'Push',rest:2,d:8},
-  {k:'triceps',n:'Triceps',t:10,g:'Push',rest:2,d:8},
-  {k:'lats',n:'Lats',t:12,g:'Pull',rest:2,d:10},
-  {k:'upperback',n:'Upper back',t:10,g:'Pull',rest:2,d:8},
-  {k:'reardelts',n:'Rear delts',t:8,g:'Pull',rest:2,d:6},
-  {k:'biceps',n:'Biceps',t:10,g:'Pull',rest:2,d:8},
-  {k:'forearms',n:'Forearms',t:6,g:'Pull',rest:2,d:5},
-  {k:'quads',n:'Quads',t:12,g:'Legs',rest:3,d:10},
-  {k:'hamstrings',n:'Hamstrings',t:10,g:'Legs',rest:3,d:8},
-  {k:'glutes',n:'Glutes',t:10,g:'Legs',rest:3,d:8},
-  {k:'calves',n:'Calves',t:8,g:'Legs',rest:2,d:6},
-  {k:'core',n:'Core',t:8,g:'Core',rest:2,d:6},
-  {k:'lowerback',n:'Lower back',t:6,g:'Core',rest:3,d:4}
+  {k:'chest',n:'Chest',t:12,g:'Push',rest:2,d:9},
+  {k:'shoulders',n:'Shoulders',t:12,g:'Push',rest:2,d:8},
+  {k:'triceps',n:'Triceps',t:12,g:'Push',rest:2,d:8},
+  {k:'lats',n:'Lats',t:12,g:'Pull',rest:2,d:9},
+  {k:'upperback',n:'Upper back',t:12,g:'Pull',rest:2,d:8},
+  {k:'reardelts',n:'Rear delts',t:6,g:'Pull',rest:2,d:5},
+  {k:'biceps',n:'Biceps',t:12,g:'Pull',rest:2,d:8},
+  {k:'forearms',n:'Forearms',t:4,g:'Pull',rest:2,d:3},
+  {k:'quads',n:'Quads',t:8,g:'Legs',rest:3,d:6},
+  {k:'hamstrings',n:'Hamstrings',t:8,g:'Legs',rest:3,d:6},
+  {k:'glutes',n:'Glutes',t:6,g:'Legs',rest:3,d:5},
+  {k:'calves',n:'Calves',t:6,g:'Legs',rest:2,d:5},
+  {k:'core',n:'Core',t:6,g:'Core',rest:2,d:5},
+  {k:'lowerback',n:'Lower back',t:4,g:'Core',rest:3,d:3}
 ];
 const GYM_M = {};
 GYM_MUSCLES.forEach(m=>{ GYM_M[m.k] = m; });
@@ -4317,9 +4324,10 @@ const GYM_KINDS = {
   bbl:{rr:[5,8],inc:5},   bbu:{rr:[5,8],inc:2.5},
   dbc:{rr:[8,12],inc:2},  dbi:{rr:[10,15],inc:1},
   mac:{rr:[8,12],inc:2.5}, mai:{rr:[10,15],inc:2.5},
-  bw:{rr:[6,12],inc:2.5}, bwc:{rr:[10,20],inc:2.5}
+  bw:{rr:[6,12],inc:2.5}, bwc:{rr:[10,20],inc:2.5},
+  time:{rr:[30,60],inc:2.5}
 };
-const GYM_KIND_ORDER = ['bbu','bbl','dbc','mac','bw','dbi','mai','bwc'];
+const GYM_KIND_ORDER = ['bbu','bbl','dbc','mac','bw','dbi','mai','bwc','time'];
 // [name, primary muscles, secondary muscles, kind, optional rep range "lo-hi", other names (|-separated)]
 const GYM_RAW = [
   ['Barbell Bench Press','chest','shoulders,triceps','bbu',null,'bench|bench press|flat bench|flat barbell bench|bb bench|barbell bench'],
@@ -4342,7 +4350,7 @@ const GYM_RAW = [
   ['Dumbbell Fly','chest','','dbi',null,'db fly|dumbbell flye|flat fly|chest fly|dumbbell flies'],
   ['Incline Dumbbell Fly','chest','shoulders','dbi',null,'incline fly|incline db fly|incline flye'],
   ['Svend Press','chest','','dbi',null,'plate squeeze press|plate press'],
-  ['Push-Up','chest','shoulders,triceps','bwc',null,'pushup|press up|press-up|push ups|pushups'],
+  ['Push-Up','chest','shoulders,triceps','bwc',null,'pushup|press up|press-up|pressup|press ups|push ups|pushups|push up'],
   ['Diamond Push-Up','triceps,chest','shoulders','bwc',null,'close grip push up|narrow push up|triangle push up'],
   ['Decline Push-Up','chest','shoulders,triceps','bwc',null,'feet elevated push up|decline pushup'],
   ['Chest Dip','chest','triceps,shoulders','bw',null,'dips|parallel bar dip|chest dips|dip'],
@@ -4493,11 +4501,39 @@ const GYM_RAW = [
   ['Cable Woodchop','core','','mai',null,'wood chop|wood chopper|woodchopper|cable chop'],
   ['Side Bend','core','','dbi',null,'dumbbell side bend|oblique crunch|side bends'],
   ['Russian Twist','core','','dbi',null,'russian twists|weighted twist']
+,
+  ['Plank','core','shoulders,lowerback','time',null,'planks|front plank|forearm plank|elbow plank|high plank'],
+  ['Side Plank','core','shoulders','time',null,'side planks|lateral plank'],
+  ['Reverse Plank','lowerback,glutes','hamstrings,shoulders','time',null,'reverse planks'],
+  ['Hollow Hold','core','','time',null,'hollow body hold|hollow hold'],
+  ['L-Sit','core','triceps,forearms','time',null,'l sit|lsit'],
+  ['Dead Hang','forearms','lats,shoulders','time',null,'hang|bar hang|passive hang'],
+  ['Wall Sit','quads','glutes','time',null,'wall squat hold|wall sits'],
+  ['Handstand Hold','shoulders','triceps,core','time',null,'wall handstand|handstand'],
+  ['Bear Crawl','core','shoulders,quads','time',null,'bear crawls'],
+  ['Dead Bug','core','','bwc',null,'deadbug|dead bugs'],
+  ['Mountain Climber','core','shoulders,quads','bwc',null,'mountain climbers'],
+  ['Burpee','quads,chest','shoulders,triceps,core','bwc',null,'burpees'],
+  ['Bodyweight Squat','quads,glutes','','bwc',null,'air squat|bw squat|squat bodyweight|bodyweight squats'],
+  ['Jump Squat','quads,glutes','calves','bwc',null,'squat jump|jump squats'],
+  ['Pistol Squat','quads,glutes','core','bw',null,'single leg squat|pistol'],
+  ['Bird Dog','lowerback,glutes','core','bwc',null,'birddog|bird dogs'],
+  ['Superman','lowerback','glutes','bwc',null,'supermans|back extension floor'],
+  ['Archer Push-Up','chest','triceps,shoulders','bwc',null,'archer pushup|archer press up'],
+  ['Knee Push-Up','chest','triceps,shoulders','bwc',null,'knee pushup|kneeling push up|modified push up|knee press up'],
+  ['Incline Push-Up','chest','triceps,shoulders','bwc',null,'incline pushup|incline press up'],
+  ['Muscle-Up','lats','chest,triceps,biceps,forearms','bw',null,'muscle up|muscleup'],
+  ['Plank Shoulder Tap','core','shoulders','bwc',null,'shoulder taps|plank taps|shoulder tap'],
+  ['V-Up','core','','bwc',null,'v up|v-ups|jackknife'],
+  ['Flutter Kick','core','','bwc',null,'flutter kicks'],
+  ['Single-Leg Glute Bridge','glutes','hamstrings','bwc',null,'single leg bridge|one leg glute bridge']
 ];
 const GYM_DEFAULTS = {chest:'barbell-bench-press', shoulders:'overhead-press', triceps:'triceps-pushdown', lats:'lat-pulldown', upperback:'seated-cable-row', reardelts:'face-pull', biceps:'dumbbell-curl', forearms:'wrist-curl', quads:'back-squat', hamstrings:'romanian-deadlift', glutes:'hip-thrust', calves:'standing-calf-raise', core:'cable-crunch', lowerback:'back-extension'};
 const GYM_SYN = {db:'dumbbell', bb:'barbell', ohp:'overhead press', rdl:'romanian deadlift', sldl:'romanian deadlift', dl:'deadlift', bi:'biceps', tri:'triceps', quad:'quads', ham:'hamstrings', delts:'shoulders', abs:'core', pecs:'chest'};
 const GYM_BODY_ORDER = ['upperback','shoulders','chest','reardelts','lats','biceps','triceps','forearms','core','lowerback','glutes','quads','hamstrings','calves'];
 let gymSort = 'need';
+let gymBw = [];          // {date, kg}
+let gymAutoPick = true, gymHistOpen = null;
 let gymLog = [];     // {id, date, ex, w, r, wu}
 let gymCustom = [];  // {id, name, p:[muscle], s:[], kind}
 let gymTab = 'log', gymSelectedId = null, gymPeriod = 7, gymHistLimit = 12, gymDateTouched = false;
@@ -4507,7 +4543,7 @@ const gid = (id)=> document.getElementById(id);
 function gymSlug(n){ return n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
 function gymBuild(name, p, s, kind, rr, id, al){
   const k = GYM_KINDS[kind] || GYM_KINDS.mac;
-  return {id: id || gymSlug(name), name, p: p ? p.split(',') : [], s: s ? s.split(',') : [], kind, rr: rr || k.rr, inc: k.inc, bw: kind==='bw' || kind==='bwc', al: al ? al.split('|').map(a=>a.toLowerCase()) : []};
+  return {id: id || gymSlug(name), name, p: p ? p.split(',') : [], s: s ? s.split(',') : [], kind, rr: rr || k.rr, inc: k.inc, bw: kind==='bw' || kind==='bwc' || kind==='time', time: kind==='time', bwf: kind==='bw' ? 1 : (kind==='bwc' ? 0.6 : (kind==='time' ? 0.5 : 0)), al: al ? al.split('|').map(a=>a.toLowerCase()) : []};
 }
 function gymAll(){
   if(!gymBuiltIn) gymBuiltIn = GYM_RAW.map(r=> gymBuild(r[0], r[1], r[2], r[3], r[4] ? r[4].split('-').map(Number) : null, null, r[5]));
@@ -4519,8 +4555,52 @@ function gymWeightText(ex, w){
   if(ex && ex.bw) return w > 0 ? 'BW+'+gymNum(w)+'kg' : 'BW';
   return gymNum(w)+'kg';
 }
-function gymSetText(ex, s){ return gymWeightText(ex, s.w)+' \u00d7 '+s.r; }
-function gymMetric(ex, s){ return (ex && ex.bw) ? s.r*(1+s.w/40) : s.w*(1+Math.min(s.r,12)/30); }
+function gymSetText(ex, s){
+  if(ex && ex.time) return (s.w > 0 ? '+'+gymNum(s.w)+'kg ' : '')+s.r+'s';
+  return gymWeightText(ex, s.w)+' \u00d7 '+s.r;
+}
+function gymBwSorted(){ return gymBw.slice().sort((a,b)=> a.date.localeCompare(b.date)); }
+function gymBwLatest(){ const a = gymBwSorted(); return a.length ? a[a.length-1] : null; }
+function gymBwAt(date){
+  const a = gymBwSorted();
+  if(!a.length) return null;
+  let best = null;
+  a.forEach(e=>{ if(e.date <= date) best = e; });
+  return (best || a[0]).kg;
+}
+async function gymSetBw(kg, date){
+  date = date || todayStr();
+  gymBw = gymBw.filter(e=> e.date !== date);
+  gymBw.push({date, kg});
+  await saveKey('gym-bw', gymBw);
+}
+// the weight actually being moved: bodyweight moves count a share of bodyweight plus anything added
+function gymLoad(ex, s){
+  if(!ex || !ex.bw) return s.w;
+  const bw = gymBwAt(s.date);
+  return (bw ? bw * ex.bwf : 0) + s.w;
+}
+function gymMetric(ex, s){
+  if(ex && ex.time) return s.r * (1 + s.w/40);
+  const L = gymLoad(ex, s);
+  if(ex && ex.bw && L <= 0) return s.r;
+  return L * (1 + Math.min(s.r,12)/30);
+}
+function gymVolume(l){
+  const ex = gymById(l.ex);
+  if(!ex || ex.time) return 0;
+  const L = gymLoad(ex, l);
+  return L > 0 ? L * l.r : 0;
+}
+function gymLastText(ex, sets){
+  if(!sets.length) return '';
+  const w0 = sets[0].w;
+  if(sets.every(x=> x.w === w0)){
+    if(ex.time) return (w0 > 0 ? '+'+gymNum(w0)+'kg ' : '')+sets.map(x=>x.r).join(', ')+'s';
+    return gymWeightText(ex, w0)+' \u00d7 '+sets.map(x=>x.r).join(', ');
+  }
+  return sets.map(x=> gymSetText(ex, x)).join(', ');
+}
 function gymDate(){ const el = gid('gymDateInput'); return (el && el.value) || todayStr(); }
 function gymWorking(exId){ return gymLog.filter(l=> l.ex===exId && !l.wu); }
 function gymSessions(exId, beforeDate){
@@ -4537,7 +4617,7 @@ function gymSuggest(ex, beforeDate){
   const sessions = gymSessions(ex.id, beforeDate);
   const lo = ex.rr[0], hi = ex.rr[1], inc = ex.inc;
   if(!sessions.length){
-    return {first:true, w:null, r:lo, sets:3, note:'First time \u2014 pick a weight for '+lo+'\u2013'+hi+' reps.'};
+    return {first:true, w:null, r:lo, sets:3, note: ex.bw ? 'First time \u2014 aim for '+lo+'\u2013'+hi+(ex.time ? 's' : ' reps')+'.' : 'First time \u2014 pick a weight for '+lo+'\u2013'+hi+' reps.'};
   }
   const last = sessions[sessions.length-1];
   const maxW = gymTopW(last.sets);
@@ -4546,12 +4626,12 @@ function gymSuggest(ex, beforeDate){
   const setCount = Math.max(3, Math.min(5, last.sets.length));
   let out;
   if(minR >= hi){
-    out = {w:+(maxW+inc).toFixed(2), r:lo, sets:setCount, up:true, note:'Hit '+hi+' on every set \u2014 add '+gymNum(inc)+'kg.'};
+    out = {w:+(maxW+inc).toFixed(2), r:lo, sets:setCount, up:true, note:'Hit '+hi+(ex.time ? 's' : '')+' on every set \u2014 add '+gymNum(inc)+'kg.'};
   }else{
-    const tr = Math.min(hi, minR+1);
+    const tr = Math.min(hi, minR + (ex.time ? 5 : 1));
     out = {w:maxW, r:tr, sets:setCount, note: minR < lo
       ? 'Below range \u2014 hold the weight.'
-      : 'Aim for '+tr+' reps each set.'};
+      : 'Aim for '+tr+(ex.time ? 's' : ' reps')+' each set.'};
   }
   if(sessions.length >= 3 && !out.up && maxW > 0){
     const l3 = sessions.slice(-3);
@@ -4566,6 +4646,7 @@ function gymSuggest(ex, beforeDate){
 }
 function gymTargetText(ex, sug){
   if(sug.first || sug.w==null) return '';
+  if(ex.time) return (sug.w > 0 ? '+'+gymNum(sug.w)+'kg ' : '')+sug.r+'s';
   return gymWeightText(ex, sug.w)+' \u00d7 '+sug.r;
 }
 
@@ -4669,23 +4750,6 @@ function gymRecommend(date){
   if(out.length < 6) needs.slice(0,3).forEach(take);
   return out.slice(0,6);
 }
-function renderGymRecent(){
-  const box = gid('gymRecent');
-  if(gid('gymSearchInput').value.trim()){ box.innerHTML = ''; return; }
-  const date = gymDate();
-  let recs = gymRecommend(date);
-  if(!recs.length){
-    const counts = {};
-    gymLog.forEach(l=>{ counts[l.ex] = (counts[l.ex]||0) + 1; });
-    recs = Object.keys(counts).sort((a,b)=> counts[b]-counts[a]).map(gymById).filter(Boolean).slice(0,6).map(ex=>({ex, muscle:GYM_M[ex.p[0]]}));
-  }
-  box.innerHTML = '<div class="stat-sub" style="margin:10px 0 6px;"><b>Recommended</b></div>'+
-    '<div class="chip-row" style="flex-wrap:wrap;overflow:visible;">'+recs.map(r=>{
-      const sug = gymSuggest(r.ex, date), t = gymTargetText(r.ex, sug);
-      return '<button type="button" class="chip-btn gym-rec" data-gym-pick="'+r.ex.id+'"><span>'+escapeHtml(r.ex.name)+'</span>'+(t ? '<small>'+t+'</small>' : '')+'</button>';
-    }).join('')+'</div>';
-  bindGymPicks(box);
-}
 function renderGymResults(){
   const box = gid('gymSearchResults');
   const term = gid('gymSearchInput').value.trim();
@@ -4716,7 +4780,7 @@ function showGymCustomForm(name){
       '<label class="mini-label" style="display:block;margin-top:8px;">Main muscle</label>'+
       '<select id="gymCustomMuscle">'+GYM_MUSCLES.map(m=>'<option value="'+m.k+'">'+m.n+'</option>').join('')+'</select>'+
       '<label class="mini-label" style="display:block;margin-top:8px;">Type</label>'+
-      '<select id="gymCustomKind"><option value="bbu">Barbell</option><option value="dbc">Dumbbell</option><option value="mac">Machine / cable</option><option value="bw">Bodyweight</option></select>'+
+      '<select id="gymCustomKind"><option value="bbu">Barbell</option><option value="dbc">Dumbbell</option><option value="mac">Machine / cable</option><option value="bw">Bodyweight</option><option value="time">Timed (seconds)</option></select>'+
       '<button type="button" class="btn block" id="gymCustomSave" style="margin-top:10px;">Add exercise</button>'+
     '</div>';
   gid('gymCustomSave').addEventListener('click', async ()=>{
@@ -4727,6 +4791,15 @@ function showGymCustomForm(name){
     await saveKey('gym-custom', gymCustom);
     gymSelect(ex.id);
   });
+}
+function gymBwSaveHandler(inputId){
+  return async ()=>{
+    const v = parseFloat(gid(inputId).value);
+    if(isNaN(v) || v <= 0){ showToast('Enter your bodyweight.'); return; }
+    await gymSetBw(v);
+    renderGymExercise(); renderGymBw();
+    showToast('Bodyweight saved.');
+  };
 }
 function renderGymExercise(){
   const card = gid('gymExerciseCard');
@@ -4739,13 +4812,22 @@ function renderGymExercise(){
   const lastToday = todays.length ? todays[todays.length-1] : null;
   const preW = lastToday ? lastToday.w : (sug.w!=null ? sug.w : '');
   const preR = lastToday ? lastToday.r : sug.r;
+  const lastSets = sug.last ? sug.last.sets : null;
+  const working = todays.filter(x=>!x.wu).length;
+  const refSet = lastSets ? lastSets[Math.min(working, lastSets.length-1)] : null;
+  const cmpCls = (v, r)=> (r==null || v==='' || isNaN(v)) ? '' : (v > r+1e-9 ? ' cmp-up' : (v < r-1e-9 ? ' cmp-down' : ''));
   let n = 0;
-  const setRows = todays.map(s=>{
-    if(!s.wu) n++;
-    return '<div class="gym-set-row"><span>'+(s.wu ? '<span class="gym-status rdy">Warm-up</span> ' : 'Set '+n+' \u00b7 ')+gymSetText(ex, s)+'</span><button class="todo-del" data-gym-del="'+s.id+'">&times;</button></div>';
+  const setRows = todays.map(st=>{
+    let cls = '';
+    if(!st.wu){
+      const ref = lastSets ? lastSets[Math.min(n, lastSets.length-1)] : null;
+      n++;
+      if(ref){ const a = gymMetric(ex, st), b = gymMetric(ex, ref); cls = a > b+0.01 ? ' cmp-up-t' : (a < b-0.01 ? ' cmp-down-t' : ''); }
+    }
+    return '<div class="gym-set-row"><span class="'+cls.trim()+'">'+(st.wu ? '<span class="gym-status rdy">Warm-up</span> ' : 'Set '+n+' \u00b7 ')+gymSetText(ex, st)+'</span><button class="todo-del" data-gym-del="'+st.id+'">&times;</button></div>';
   }).join('');
   const target = gymTargetText(ex, sug);
-  const lastTxt = sug.last ? 'Last time ('+shortDate(sug.last.date)+'): '+sug.last.sets.map(s=>gymSetText(ex,s)).join(', ') : '';
+  const bwNow = ex.bw ? gymBwLatest() : null;
   const dayLoad = gymLoadHtml(ex, date);
   card.innerHTML =
     '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">'+
@@ -4755,14 +4837,16 @@ function renderGymExercise(){
       '<button type="button" class="todo-del" id="gymCloseExBtn" title="Close">&times;</button>'+
     '</div>'+
     '<div class="gym-target">'+
-      (target ? '<div class="stat-sub" style="margin:0 0 2px;">Today\u2019s target</div><strong>'+target+'</strong> <span class="stat-sub">\u00b7 '+sug.sets+' sets'+(sug.up?' \u00b7 <b style="color:var(--home);">weight up</b>':'')+'</span>' : '')+
-      '<div class="stat-sub" style="margin-top:'+(target?'6':'0')+'px;">'+escapeHtml(sug.note)+'</div>'+
-      (lastTxt ? '<div class="stat-sub" style="margin-top:6px;">'+escapeHtml(lastTxt)+'</div>' : '')+
+      (sug.last ? '<div class="gt-row"><span class="stat-sub">Last \u00b7 '+shortDate(sug.last.date)+'</span><b>'+escapeHtml(gymLastText(ex, sug.last.sets))+'</b></div>' : '')+
+      (target ? '<div class="gt-row"><span class="stat-sub">Target</span><b>'+target+'</b><span class="stat-sub">'+sug.sets+' sets'+(sug.up ? ' \u00b7 up' : '')+'</span></div>' : '')+
+      (bwNow ? '<div class="gt-row"><span class="stat-sub">Bodyweight</span><b>'+gymNum(bwNow.kg)+'kg</b></div>' : '')+
+      '<div class="stat-sub" style="margin-top:4px;">'+escapeHtml(sug.note)+'</div>'+
     '</div>'+
+    (ex.bw && !bwNow ? '<div class="gym-bwask"><input type="number" id="gymBwInline" inputmode="decimal" step="0.1" min="0" placeholder="Your bodyweight (kg)"><button type="button" class="btn small" id="gymBwInlineSave">Save</button></div>' : '')+
     dayLoad+
     '<div class="gym-inputs">'+
-      '<div><label class="mini-label">'+(ex.bw ? 'Added weight (kg)' : 'Weight (kg)')+'</label><input type="number" id="gymWeightInput" inputmode="decimal" step="any" min="0" value="'+(preW===''?'':gymNum(preW))+'"></div>'+
-      '<div><label class="mini-label">Reps</label><input type="number" id="gymRepsInput" inputmode="numeric" min="1" value="'+preR+'"></div>'+
+      '<div><label class="mini-label">'+(ex.bw ? 'Added weight (kg)' : 'Weight (kg)')+'</label><input type="number" id="gymWeightInput" inputmode="decimal" step="any" min="0" value="'+(preW===''?'':gymNum(preW))+'" class="'+cmpCls(parseFloat(preW), refSet && refSet.w).trim()+'"></div>'+
+      '<div><label class="mini-label">'+(ex.time ? 'Secs' : 'Reps')+'</label><input type="number" id="gymRepsInput" inputmode="numeric" min="1" value="'+preR+'" class="'+cmpCls(parseFloat(preR), refSet && refSet.r).trim()+'"></div>'+
     '</div>'+
     '<div class="gym-stepper">'+
       '<button type="button" class="btn secondary small" data-wstep="-1">\u2212 '+gymNum(ex.inc)+'</button>'+
@@ -4772,14 +4856,28 @@ function renderGymExercise(){
     '<button type="button" class="btn block" id="gymAddSetBtn" style="margin-top:10px;">Add set</button>'+
     (setRows ? '<div style="margin-top:12px;">'+setRows+'</div>' : '')+
     '<div id="gymExProgress" style="margin-top:12px;"></div>';
+  const wI = gid('gymWeightInput'), rI = gid('gymRepsInput'), wuChk = gid('gymWarmupChk');
+  const upd = ()=>{
+    [[wI, refSet && refSet.w],[rI, refSet && refSet.r]].forEach(pair=>{
+      const el = pair[0], ref = pair[1];
+      el.classList.remove('cmp-up','cmp-down');
+      if(wuChk.checked || ref == null) return;
+      const v = parseFloat(el.value);
+      if(isNaN(v)) return;
+      if(v > ref+1e-9) el.classList.add('cmp-up'); else if(v < ref-1e-9) el.classList.add('cmp-down');
+    });
+  };
+  wI.addEventListener('input', upd); rI.addEventListener('input', upd); wuChk.addEventListener('change', upd);
   gid('gymCloseExBtn').addEventListener('click', ()=>{ gymSelectedId = null; renderGymExercise(); });
   gid('gymAddSetBtn').addEventListener('click', gymAddSet);
-  gid('gymRepsInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); gymAddSet(); } });
+  rI.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); gymAddSet(); } });
+  const bwBtn = gid('gymBwInlineSave');
+  if(bwBtn) bwBtn.addEventListener('click', gymBwSaveHandler('gymBwInline'));
   card.querySelectorAll('[data-wstep]').forEach(b=>{
     b.addEventListener('click', ()=>{
-      const inp = gid('gymWeightInput');
-      const cur = parseFloat(inp.value) || 0;
-      inp.value = gymNum(Math.max(0, cur + Number(b.dataset.wstep)*ex.inc));
+      const cur = parseFloat(wI.value) || 0;
+      wI.value = gymNum(Math.max(0, cur + Number(b.dataset.wstep)*ex.inc));
+      upd();
     });
   });
   card.querySelectorAll('[data-gym-del]').forEach(b=>{
@@ -4792,7 +4890,7 @@ function renderGymExercise(){
   const sessions = gymSessions(ex.id, null).slice(-8);
   if(sessions.length >= 2){
     gid('gymExProgress').innerHTML = '<div class="stat-sub" style="margin-bottom:6px;">Best set each session</div><div id="gymExChart"></div>';
-    renderBarChart('gymExChart', sessions.map(s=>({label:shortDate(s.date), value: Math.max.apply(null, s.sets.map(x=>gymMetric(ex,x)))})));
+    renderBarChart('gymExChart', sessions.map(x=>({label:shortDate(x.date), value: Math.max.apply(null, x.sets.map(y=>gymMetric(ex,y)))})));
   }
 }
 async function gymAddSet(){
@@ -4823,7 +4921,7 @@ function renderGymSession(){
   const order = [], by = {};
   logs.forEach(l=>{ if(!by[l.ex]){ by[l.ex] = []; order.push(l.ex); } by[l.ex].push(l); });
   const work = logs.filter(l=>!l.wu);
-  const vol = work.reduce((a,l)=> a + (l.w>0 ? l.w*l.r : 0), 0);
+  const vol = work.reduce((a,l)=> a + gymVolume(l), 0);
   let html = '<div class="stat-sub" style="margin:0 0 8px;">'+niceDate(date)+' \u00b7 '+work.length+' working sets \u00b7 '+Math.round(vol).toLocaleString('en-GB')+' kg volume</div>';
   order.forEach(id=>{
     const ex = gymById(id);
@@ -4833,11 +4931,32 @@ function renderGymSession(){
   box.innerHTML = html;
   bindGymPicks(box);
 }
+function renderGymBw(){
+  const box = gid('gymBwBody');
+  if(!box) return;
+  const list = gymBwSorted().reverse();
+  box.innerHTML =
+    '<div style="display:flex;gap:8px;align-items:center;"><input type="number" id="gymBwInput" inputmode="decimal" step="0.1" min="0" placeholder="'+(list.length ? gymNum(list[0].kg)+' kg' : 'Bodyweight (kg)')+'" style="flex:1;min-width:0;"><button type="button" class="btn small" id="gymBwSaveBtn">Save</button></div>'+
+    list.slice(0,4).map((e,i)=>'<div class="sum-row"><span class="sum-k">'+(e.date===todayStr() ? 'Today' : shortDate(e.date))+'</span><span class="sum-v">'+(i===0 ? '<b>'+gymNum(e.kg)+' kg</b>' : gymNum(e.kg)+' kg')+'</span></div>').join('');
+  gid('gymBwSaveBtn').addEventListener('click', gymBwSaveHandler('gymBwInput'));
+  gid('gymBwCard').style.order = gymBw.length ? '' : '-1';      // ask for it first until it's been given
+}
 function renderGymLog(){
-  renderGymRecent();
+  if(gymAutoPick){
+    gymAutoPick = false;
+    if(!gymSelectedId && !gid('gymSearchInput').value.trim()){
+      // prefer a recommended exercise you've lifted before, so there's a last-time note to beat
+      const recs = gymRecommend(gymDate());
+      const rec = recs.find(r=> gymSessions(r.ex.id, null).length) || recs[0];
+      let ex = rec ? rec.ex : null;
+      if(!ex && gymLog.length) ex = gymById(gymLog[gymLog.length-1].ex);
+      if(ex) gymSelectedId = ex.id;
+    }
+  }
   renderGymResults();
   renderGymExercise();
   renderGymSession();
+  renderGymBw();
 }
 
 // ----- body map UI (3D with SVG fallback) + daily load -----
@@ -5083,26 +5202,38 @@ function renderGymHistory(){
   const box = gid('gymHistoryBody');
   const dates = Array.from(new Set(gymLog.map(l=>l.date))).sort().reverse();
   if(!dates.length){ box.innerHTML = '<div class="empty">No workouts logged yet.</div>'; return; }
-  let html = '';
+  if(gymHistOpen === null) gymHistOpen = new Set(dates.slice(0,1));
+  let html = '<div class="chip-row" style="margin-bottom:6px;"><button type="button" class="chip-btn" id="gymHistExpand">Expand all</button><button type="button" class="chip-btn" id="gymHistCollapse">Collapse all</button></div>';
   dates.slice(0, gymHistLimit).forEach(d=>{
     const logs = gymLog.filter(l=>l.date===d).sort((a,b)=>a.id-b.id);
     const work = logs.filter(l=>!l.wu);
-    const vol = work.reduce((a,l)=> a + (l.w>0 ? l.w*l.r : 0), 0);
+    const vol = work.reduce((a,l)=> a + gymVolume(l), 0);
     const credit = {};
     work.forEach(l=>{ const ex = gymById(l.ex); if(!ex) return; ex.p.forEach(m=>{ credit[m] = (credit[m]||0)+1; }); });
     const top = Object.keys(credit).sort((a,b)=>credit[b]-credit[a]).slice(0,3).map(k=>GYM_M[k].n).join(', ');
-    html += '<div class="gym-hist-day"><div style="display:flex;justify-content:space-between;align-items:baseline;"><b>'+niceDate(d)+'</b><span class="stat-sub" style="margin:0;">'+work.length+' sets \u00b7 '+Math.round(vol).toLocaleString('en-GB')+' kg</span></div>'+
-      (top ? '<div class="stat-sub" style="margin:2px 0 6px;">'+top+'</div>' : '');
+    const open = gymHistOpen.has(d);
+    html += '<div class="gym-hist-day'+(open ? ' open' : '')+'" data-hist-day="'+d+'">'+
+      '<button type="button" class="gym-hist-head" data-gym-hist="'+d+'"><span><b>'+niceDate(d)+'</b>'+(top ? '<br><span class="stat-sub">'+top+'</span>' : '')+'</span>'+
+      '<span style="display:flex;align-items:center;gap:8px;"><span class="stat-sub" style="margin:0;text-align:right;">'+work.length+' sets'+(vol ? ' \u00b7 '+Math.round(vol).toLocaleString('en-GB')+' kg' : '')+'</span>'+
+      '<svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></button>'+
+      '<div class="gym-hist-body">';
     const order = [], by = {};
     logs.forEach(l=>{ if(!by[l.ex]){ by[l.ex] = []; order.push(l.ex); } by[l.ex].push(l); });
     order.forEach(id=>{
       const ex = gymById(id);
-      html += '<div class="gym-set-row" style="align-items:flex-start;"><span><b>'+escapeHtml(ex ? ex.name : 'Deleted exercise')+'</b><br><span class="stat-sub">'+by[id].map(s=> (s.wu?'W ':'')+(ex ? gymSetText(ex,s) : s.w+'kg \u00d7 '+s.r)).join(' \u00b7 ')+'</span></span></div>';
+      html += '<div class="gym-set-row" style="align-items:flex-start;"><span><b>'+escapeHtml(ex ? ex.name : 'Deleted exercise')+'</b><br><span class="stat-sub">'+by[id].map(x=> (x.wu?'W ':'')+(ex ? gymSetText(ex,x) : x.w+'kg \u00d7 '+x.r)).join(' \u00b7 ')+'</span></span></div>';
     });
-    html += '<button type="button" class="btn secondary tiny" data-gym-delday="'+d+'" style="margin-top:6px;">Delete day</button></div>';
+    html += '<button type="button" class="btn secondary tiny" data-gym-delday="'+d+'" style="margin-top:6px;">Delete day</button></div></div>';
   });
   if(dates.length > gymHistLimit) html += '<button type="button" class="btn secondary small block" id="gymMoreBtn" style="margin-top:10px;">Show more</button>';
   box.innerHTML = html;
+  box.querySelectorAll('[data-gym-hist]').forEach(b=> b.addEventListener('click', ()=>{
+    const d = b.dataset.gymHist;
+    if(gymHistOpen.has(d)) gymHistOpen.delete(d); else gymHistOpen.add(d);
+    b.parentNode.classList.toggle('open', gymHistOpen.has(d));
+  }));
+  gid('gymHistExpand').addEventListener('click', ()=>{ gymHistOpen = new Set(dates); renderGymHistory(); });
+  gid('gymHistCollapse').addEventListener('click', ()=>{ gymHistOpen = new Set(); renderGymHistory(); });
   const more = gid('gymMoreBtn');
   if(more) more.addEventListener('click', ()=>{ gymHistLimit += 12; renderGymHistory(); });
   box.querySelectorAll('[data-gym-delday]').forEach(b=>{
@@ -5133,7 +5264,7 @@ function setupGym(){
   document.querySelectorAll('#gymTabRow [data-gym-tab]').forEach(b=>{
     b.addEventListener('click', ()=>{ gymTab = b.dataset.gymTab; renderGym(); });
   });
-  gid('gymSearchInput').addEventListener('input', ()=>{ renderGymRecent(); renderGymResults(); });
+  gid('gymSearchInput').addEventListener('input', ()=>{ renderGymResults(); });
   document.querySelectorAll('#gymBodyToggle [data-bm-view]').forEach(b=>{
     b.addEventListener('click', ()=>{
       const v = b.dataset.bmView;
@@ -5157,7 +5288,7 @@ function setupGym(){
 function exportData(){
   const payload = {
     exportedAt: new Date().toISOString(),
-    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries, vanOdometer, gymLog, gymCustom,
+    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries, vanOdometer, gymLog, gymCustom, gymBw,
     rentRateHome: RATE_HOME, rentRateAway: RATE_AWAY
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -5206,6 +5337,7 @@ function handleImportClick(){
       vanOdometer = data.vanOdometer || null;
       gymLog = data.gymLog || [];
       gymCustom = data.gymCustom || [];
+      gymBw = data.gymBw || [];
       RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 0;
       RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 0;
       await saveKey('calendar-data', calendarData);
@@ -5223,6 +5355,7 @@ function handleImportClick(){
       await saveKey('van-odometer', vanOdometer);
       await saveKey('gym-log', gymLog);
       await saveKey('gym-custom', gymCustom);
+      await saveKey('gym-bw', gymBw);
       await saveKey('rent-rate-home', RATE_HOME);
       await saveKey('rent-rate-away', RATE_AWAY);
       renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab(); renderExpensesTab(); renderTravelTab();
