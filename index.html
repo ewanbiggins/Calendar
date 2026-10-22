@@ -117,6 +117,30 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .ac-sub{display:block;font-size:10.5px;color:var(--ink-soft);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .route-to{display:flex;align-items:center;gap:8px;margin:9px 0 7px;color:var(--ink-soft);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;}
 .route-to::before,.route-to::after{content:'';flex:1;height:1px;background:var(--line);}
+.sp-big{font-family:'Fraunces',serif;font-size:30px;font-weight:600;line-height:1.1;margin-top:2px;}
+.sp-bar{height:8px;border-radius:5px;background:var(--surface-2);overflow:hidden;margin-top:10px;border:1px solid var(--line);}
+.sp-bar.thin{height:5px;margin-top:6px;}
+.sp-fill{height:100%;background:var(--home);border-radius:5px;}
+.sp-fill.warn{background:#C9A227;}
+.sp-fill.over{background:var(--danger);}
+.sp-month{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.sp-cat{padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer;}
+.sp-cat:last-child{border-bottom:none;}
+.sp-catrow{display:flex;justify-content:space-between;gap:10px;font-size:14px;}
+.sp-txn{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);align-items:flex-start;}
+.sp-txn:last-child{border-bottom:none;}
+.sp-pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:10px;color:#fff;cursor:pointer;}
+.sp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.sp-sort{padding:10px 0;border-bottom:1px solid var(--line);}
+.sp-sort:last-child{border-bottom:none;}
+.sp-add{display:flex;gap:8px;}
+.sp-add input{min-width:0;}
+.sp-edit-row{display:flex;gap:6px;align-items:center;margin-bottom:6px;}
+.sp-edit-row input[type=number]{width:92px;flex-shrink:0;}
+.sp-code{font-family:monospace;font-size:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:8px;word-break:break-all;margin:6px 0;max-height:96px;overflow:auto;}
+.sp-steps{padding-left:18px;font-size:13px;line-height:1.5;}
+.sp-steps li{margin-bottom:8px;}
+.sp-btnrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
 .sum-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
 .sum-head span{font-size:12px;color:var(--ink-soft);}
 .sum-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;}
@@ -127,6 +151,7 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .sum-row.tap{cursor:pointer;}
 .sum-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:var(--ink-soft);}
 .sum-dot.on{background:var(--home);}
+.sum-dot.bad{background:var(--danger);}
 .sum-row .sum-k.sum-over{color:var(--danger);font-weight:600;}
 .gym-date-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
 #gymLogPane{display:flex;flex-direction:column;}
@@ -135,13 +160,9 @@ label.mini-label{font-size:9.5px;color:var(--ink-soft);display:block;margin-bott
 .gym-inputs input.cmp-down{background:rgba(179,69,59,.14);border-color:var(--danger);color:var(--danger);font-weight:600;}
 .cmp-up-t{color:var(--home);font-weight:600;}
 .cmp-down-t{color:var(--danger);font-weight:600;}
-.gym-bwask{display:flex;gap:8px;align-items:center;margin:8px 0;}
-.gym-bwask input{flex:1;min-width:0;}
 .gym-hist-head{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;background:none;border:none;padding:10px 0;text-align:left;color:inherit;font:inherit;cursor:pointer;}
 .gym-hist-head .chev{transition:transform .15s ease;flex-shrink:0;color:var(--ink-soft);}
 .gym-hist-day.open .chev{transform:rotate(180deg);}
-.gym-hist-body{display:none;padding-bottom:6px;}
-.gym-hist-day.open .gym-hist-body{display:block;}
 .gym-search-row input[type=text]{flex:1;min-width:0;}
 .gym-results{background:var(--surface-2);border-radius:10px;margin-top:8px;overflow:hidden;}
 .gym-result{padding:11px 12px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14px;}
@@ -424,6 +445,84 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
   .mileage-print-area .print-totals div{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #eee;}
   .mileage-print-area .print-totals .grand{border-top:2px solid #333;border-bottom:none;margin-top:4px;padding-top:8px;font-weight:600;}
 }
+
+/* ---------- one-screen summary ---------- */
+#view-summary.active{padding-bottom:0;}
+.sum2{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:10px;overflow:hidden;}
+.sum2-col{display:flex;flex-direction:column;gap:8px;min-height:0;height:100%;}
+.card.sum2-card{padding:10px 12px;margin:0;min-height:0;overflow:hidden;flex:0 0 auto;}
+.sum2-card[data-sum-go],.sum2-card[data-sum-day]{cursor:pointer;}
+.sum2-h{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:10.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:5px;white-space:nowrap;}
+.sum2-big{font-family:'Fraunces',serif;font-size:19px;font-weight:600;line-height:1.15;white-space:nowrap;}
+.sum2-big.sm{font-size:17px;}
+.sum2-big small{font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;color:var(--ink-soft);}
+.sum2-sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+.sum2-line{font-size:12.5px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.card.sum2-clock{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px 8px 12px;}
+.sum2-clk{font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.sum2-clock .btn{padding:7px 14px;flex-shrink:0;}
+.card.sum2-week{flex:1.25 1 0;display:flex;flex-direction:column;}
+.sum2-wk{flex:1;min-height:0;display:flex;gap:4px;align-items:stretch;}
+.wk{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;font-size:10px;cursor:pointer;}
+.wk em{font-style:normal;color:var(--ink-soft);font-size:9.5px;margin-bottom:2px;white-space:nowrap;}
+.wk-bar{flex:1;min-height:22px;width:100%;max-width:20px;background:var(--surface-2);border:1px solid var(--line);border-radius:6px;display:flex;align-items:flex-end;overflow:hidden;}
+.wk-bar i{display:block;width:100%;background:var(--home);border-radius:4px;transform-origin:bottom;}
+.wk.away .wk-bar i{background:#3F6FA6;}
+.wk.now .wk-bar{border-color:var(--home);}
+.wk b{font-weight:600;color:var(--ink-soft);margin-top:3px;}
+.wk.now b{color:var(--ink);}
+.card.sum2-todos{flex:1 1 0;}
+.sum2-trow{display:flex;justify-content:space-between;gap:8px;font-size:12.5px;padding:3px 0;}
+.sum2-trow span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
+.sum2-trow em{font-style:normal;font-size:11px;color:var(--ink-soft);flex-shrink:0;}
+.card.sum2-fig{flex:1 1 0;display:flex;align-items:center;justify-content:center;padding:6px;}
+.sum2-svg{height:100%;width:auto;max-width:100%;}
+.sum2-alert{background:var(--danger);color:#fff;font-size:12px;font-weight:600;border-radius:10px;padding:6px 10px;cursor:pointer;flex-shrink:0;}
+@media (max-height:700px){ .sum2-line{display:none;} .sum2-sub{display:none;} .sum2-big{font-size:17px;} }
+
+/* ---------- motion ---------- */
+:root{--ease:cubic-bezier(.22,1,.36,1);}
+html{-webkit-tap-highlight-color:transparent;}
+button{transition:transform .18s var(--ease), opacity .2s ease, background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease;}
+button:active,.round-btn:active,.btn:active,.chip-btn:active{transform:scale(.94);}
+.menu-item,.sum2-card[data-sum-go],.sum2-card[data-sum-day],.card.tap,.sum-row.tap,.sp-cat,.gym-result,.gym-next-item{transition:background-color .2s ease, transform .2s var(--ease);}
+.sum2-card[data-sum-go]:active,.sum2-card[data-sum-day]:active,.card.tap:active{transform:scale(.985);}
+.chip-btn{transition:background-color .2s ease, border-color .2s ease, color .2s ease, transform .18s var(--ease);}
+.view.active{animation:viewIn .36s var(--ease) both;}
+#view-calendar.active{animation:calIn .3s ease both;}
+body[data-nav="fwd"] .view.active:not(#view-calendar){animation:slideInR .4s var(--ease) both;}
+body[data-nav="back"] .view.active:not(#view-calendar){animation:slideInL .4s var(--ease) both;}
+@keyframes viewIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+@keyframes calIn{from{opacity:0;}to{opacity:1;}}
+@keyframes slideInR{from{opacity:0;transform:translateX(38px);}to{opacity:1;transform:none;}}
+@keyframes slideInL{from{opacity:0;transform:translateX(-38px);}to{opacity:1;transform:none;}}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px) scale(.985);}to{opacity:1;transform:none;}}
+@keyframes growX{from{transform:scaleX(0);}to{transform:scaleX(1);}}
+@keyframes growY{from{transform:scaleY(0);}to{transform:scaleY(1);}}
+@keyframes popIn{from{opacity:0;transform:translateY(-6px) scale(.98);}to{opacity:1;transform:none;}}
+@keyframes menuItemIn{from{opacity:0;transform:translateX(-14px);}to{opacity:1;transform:none;}}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-16px) scale(.96);}to{opacity:1;transform:translateX(-50%);}}
+.fresh .sum2-card,.fresh #budgetBody>.card{animation:cardIn .5s var(--ease) both;animation-delay:calc(var(--i,0)*55ms);}
+.fresh #budgetBody>.card:nth-child(2){animation-delay:60ms;} .fresh #budgetBody>.card:nth-child(3){animation-delay:120ms;} .fresh #budgetBody>.card:nth-child(4){animation-delay:180ms;} .fresh #budgetBody>.card:nth-child(5){animation-delay:240ms;}
+.fresh .sp-fill,.fresh .gym-bar{transform-origin:left;animation:growX .8s var(--ease) both;animation-delay:.12s;}
+.fresh .wk-bar i{animation:growY .7s var(--ease) both;animation-delay:.18s;}
+.drawer{transition:transform .42s var(--ease);will-change:transform;}
+.drawer-overlay{transition:opacity .42s var(--ease);}
+.drawer.show .menu-item{animation:menuItemIn .45s var(--ease) both;animation-delay:calc(var(--i,0)*30ms + 90ms);}
+.overlay{transition:opacity .3s var(--ease), visibility 0s linear .3s;}
+.overlay:not(.hidden){transition:opacity .3s var(--ease), visibility 0s;}
+.sheet{transform:translateY(30px) scale(.96);opacity:0;transition:transform .48s var(--ease), opacity .3s var(--ease);will-change:transform,opacity;}
+.overlay:not(.hidden) .sheet{transform:none;opacity:1;}
+.notif-toast{animation:toastIn .42s var(--ease) both;transition:opacity .4s var(--ease), transform .4s var(--ease);}
+.notif-toast.out{opacity:0;transform:translateX(-50%) translateY(-12px);}
+.autocomplete-list{animation:popIn .22s var(--ease);transform-origin:top;}
+.gym-hist-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .36s var(--ease);padding-bottom:0;}
+.gym-hist-day.open .gym-hist-body{grid-template-rows:1fr;}
+.gym-hist-body .gh-in{overflow:hidden;min-height:0;}
+.gym-hist-head .chev{transition:transform .3s var(--ease);}
+.gym-bar,.sp-fill{transition:width .5s var(--ease), background-color .3s ease;}
+.switch-slider,.switch-slider::before{transition-duration:.25s;transition-timing-function:var(--ease);}
+@media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;} }
 </style>
 </head>
 <body>
@@ -431,7 +530,7 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v13.5</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v13.8</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -684,6 +783,11 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
     </div>
   </div>
 
+  <!-- BUDGET -->
+  <div class="view" id="view-budget">
+    <div id="budgetBody"></div>
+  </div>
+
   <!-- SUMMARY -->
   <div class="view" id="view-summary">
     <div id="summaryBody"></div>
@@ -751,6 +855,10 @@ table.hist td{padding:7px 4px;border-bottom:1px solid var(--line);}
       <textarea id="syncConfigInput" placeholder="Paste your firebaseConfig object here" style="min-height:90px;font-family:monospace;font-size:11px;"></textarea>
       <button class="btn block" id="syncConnectBtn" style="margin-top:8px;">Connect</button>
       <button class="btn secondary block" id="syncDisconnectBtn" style="margin-top:8px;display:none;">Disconnect</button>
+    </div>
+    <div class="card" id="applePayCard">
+      <h2 style="font-size:15px;margin-bottom:8px;">Apple Pay capture</h2>
+      <div id="applePayBody"></div>
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Appearance</h2>
@@ -1016,20 +1124,29 @@ async function saveKey(key, value, attempt){
 }
 
 // ---------- cloud sync ----------
-const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','gym-log','gym-custom','gym-bw','clock-in-state','dark-mode','rent-rate-home','rent-rate-away'];
+const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','gym-log','gym-custom','gym-bw','gym-bw-asked','spend-txns','spend-cats','spend-rules','spend-meta','clock-in-state','dark-mode','rent-rate-home','rent-rate-away'];
 let firebaseApp = null, firestoreDb = null, firestoreDoc = null, syncUnsub = null;
-let syncEnabled = false;
+let syncEnabled = false, syncFailed = false, syncStatusText = '', lastSyncToast = 0;
+function notifySyncFail(){
+  syncFailed = true;
+  if(Date.now() - lastSyncToast > 600000){ lastSyncToast = Date.now(); showToast('Sync failed \u2014 changes are only saved on this device.'); }
+  const v = document.getElementById('view-summary');
+  if(v && v.classList.contains('active')) renderSummary();
+}
 async function pushToCloud(key, value){
   if(!syncEnabled || !firestoreDb || SYNC_KEYS.indexOf(key)===-1) return;
   try{
     await firestoreDoc.set({[key]: JSON.stringify(value)}, {merge:true});
+    syncFailed = false;
     setSyncStatus('Synced just now');
   }catch(e){
     console.error('cloud push failed', key, e);
-    setSyncStatus('Sync error — will retry on next change');
+    setSyncStatus('Sync error \u2014 '+(e && e.code==='permission-denied' ? 'Firebase rules are blocking writes (test rules expire after 30 days)' : 'will retry on next change'));
+    notifySyncFail();
   }
 }
 function setSyncStatus(text){
+  syncStatusText = text;
   const el = document.getElementById('syncStatus');
   if(el) el.textContent = text;
 }
@@ -1051,6 +1168,11 @@ async function applyRemoteValue(key, value){
     case 'gym-log': gymLog = value || []; break;
     case 'gym-custom': gymCustom = value || []; break;
     case 'gym-bw': gymBw = value || []; break;
+    case 'gym-bw-asked': gymBwAsked = value || ''; break;
+    case 'spend-txns': spendTxns = value || []; break;
+    case 'spend-cats': spendCats = value || null; break;
+    case 'spend-rules': spendRules = value || {}; break;
+    case 'spend-meta': spendMeta = Object.assign({secret:'', seen:[], last:null}, value || {}); break;
     case 'clock-in-state': clockInState = value; updateClockInBtn(); break;
     case 'dark-mode': darkModeOn = value; applyDarkMode(darkModeOn); break;
     case 'rent-rate-home': RATE_HOME = value; break;
@@ -1074,6 +1196,7 @@ function refreshAllViews(){
   }
   if(document.getElementById('view-trends').classList.contains('active')) renderTrends();
   if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
+  if(document.getElementById('view-budget').classList.contains('active')) renderBudget();
   if(document.getElementById('view-gym').classList.contains('active') && !(document.activeElement && document.activeElement.closest && document.activeElement.closest('#view-gym'))) renderGym();
 }
 function parseFirebaseConfig(text){
@@ -1084,6 +1207,15 @@ function parseFirebaseConfig(text){
     if(obj && obj.apiKey && obj.projectId) return obj;
   }catch(e){}
   return null;
+}
+function loadFirebaseAuth(){
+  return new Promise((resolve, reject)=>{
+    if(window.firebase && window.firebase.auth){ resolve(); return; }
+    const sc = document.createElement('script');
+    sc.src = 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js';
+    sc.onload = resolve; sc.onerror = reject;
+    document.head.appendChild(sc);
+  });
 }
 function loadFirebaseSDK(){
   return new Promise((resolve, reject)=>{
@@ -1103,9 +1235,27 @@ function loadFirebaseSDK(){
 }
 async function connectSync(config, isInitialSetup){
   setSyncStatus('Connecting…');
+  syncConfig = config;
   try{
     await loadFirebaseSDK();
     firebaseApp = firebase.initializeApp(config, 'homebase-'+Date.now());
+    if(syncAuth && syncAuth.email){
+      try{
+        await loadFirebaseAuth();
+        const auth = firebase.auth(firebaseApp);
+        let user = await new Promise(r=>{ const un = auth.onAuthStateChanged(u=>{ un(); r(u); }); });
+        if(!user && syncAuthPassword){ user = (await auth.signInWithEmailAndPassword(syncAuth.email, syncAuthPassword)).user; }
+        syncAuthPassword = '';
+        if(!user){ syncNeedsSignIn = true; setSyncStatus('Sign in needed \u2014 see Apple Pay capture below'); renderApplePaySetup(); return; }
+        syncNeedsSignIn = false;
+      }catch(e){
+        syncAuthPassword = '';
+        syncNeedsSignIn = true;
+        setSyncStatus('Sign-in failed \u2014 '+((e && (e.code || e.message)) || 'try again'));
+        renderApplePaySetup();
+        return;
+      }
+    }
     firestoreDb = firebase.firestore(firebaseApp);
     firestoreDoc = firestoreDb.collection('homebase').doc('shared');
     await saveKey('firebase-config', config);
@@ -1125,7 +1275,7 @@ async function connectSync(config, isInitialSetup){
       const currentValues = {
         'calendar-data':calendarData,'tag-defs':tagDefs,'rent-meta':rentMeta,'rent-history':rentHistory,
         'todos':todos,'toil-payouts':toilPayouts,'toil-adjustment':toilAdjustment,'mileage-trips':mileageTrips,
-        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,'gym-log':gymLog,'gym-custom':gymCustom,'gym-bw':gymBw,'clock-in-state':clockInState,
+        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,'gym-log':gymLog,'gym-custom':gymCustom,'gym-bw':gymBw,'gym-bw-asked':gymBwAsked,'spend-txns':spendTxns,'spend-cats':spendCats,'spend-rules':spendRules,'spend-meta':spendMeta,'clock-in-state':clockInState,
         'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY
       };
       SYNC_KEYS.forEach(key=>{ initial[key] = JSON.stringify(currentValues[key]); });
@@ -1143,11 +1293,18 @@ async function connectSync(config, isInitialSetup){
         await applyRemoteValue(key, JSON.parse(data[key]));
       }
       await enforceTagScheme();
+      syncFailed = false;
       refreshAllViews();
       setSyncStatus('Synced just now');
+    }, (err)=>{
+      console.error('cloud listener failed', err);
+      setSyncStatus('Sync error \u2014 '+(err && err.code==='permission-denied' ? 'Firebase rules are blocking reads (test rules expire after 30 days)' : (err && err.message) || 'listener stopped'));
+      notifySyncFail();
     });
 
     setSyncStatus('Connected');
+    importInbox();
+    renderApplePaySetup();
     document.getElementById('syncConnectBtn').style.display = 'none';
     document.getElementById('syncDisconnectBtn').style.display = 'block';
     document.getElementById('syncConfigInput').style.display = 'none';
@@ -1160,7 +1317,7 @@ async function connectSync(config, isInitialSetup){
 async function disconnectSync(){
   if(syncUnsub){ syncUnsub(); syncUnsub = null; }
   syncEnabled = false;
-  firestoreDb = null; firestoreDoc = null;
+  firestoreDb = null; firestoreDoc = null; syncConfig = null;
   await saveKey('firebase-config', null);
   setSyncStatus('Not connected');
   document.getElementById('syncConnectBtn').style.display = 'block';
@@ -1263,6 +1420,12 @@ async function init(){
   gymLog = await loadKey('gym-log', []);
   gymCustom = await loadKey('gym-custom', []);
   gymBw = await loadKey('gym-bw', []);
+  gymBwAsked = await loadKey('gym-bw-asked', '');
+  spendTxns = await loadKey('spend-txns', []);
+  spendCats = await loadKey('spend-cats', null);
+  spendRules = await loadKey('spend-rules', {});
+  spendMeta = Object.assign({secret:'', seen:[], last:null}, await loadKey('spend-meta', {}));
+  syncAuth = await loadKey('sync-auth', null);
   Object.assign(geoCache, await loadKey('geocache', {}));
   applyDarkMode(darkModeOn);
 
@@ -1303,6 +1466,7 @@ async function init(){
     document.getElementById('monthsContainer').style.visibility = 'visible';
   }, 400);
   initSyncFromSaved();
+  setTimeout(maybeAskBodyweight, 2200);
 }
 
 function normalizeRange(){
@@ -1320,7 +1484,8 @@ function goToCalendarDate(dateStr){
   scrollToMonth(d.getFullYear(), d.getMonth(), true);
   openDayModal(dateStr);
 }
-function goToView(viewName){
+function goToView(viewName, dir){
+  document.body.dataset.nav = dir || '';
   acCloseAll();
   const wasCalendar = document.getElementById('view-calendar').classList.contains('active');
   if(wasCalendar) savedCalendarScrollY = window.scrollY;
@@ -1335,7 +1500,10 @@ function goToView(viewName){
   }
   if(viewName==='trends') renderTrends();
   if(viewName==='gym'){ gymAutoPick = true; renderGym(); }
+  { const vEl = document.getElementById('view-'+viewName); vEl.classList.add('fresh'); clearTimeout(vEl._fresh); vEl._fresh = setTimeout(()=>{ vEl.classList.remove('fresh'); document.body.dataset.nav = ''; }, 950); }
   if(viewName==='summary') renderSummary();
+  if(viewName==='budget'){ renderBudget(); importInbox(); }
+  if(viewName==='settings'){ renderApplePaySetup(); importInbox(); }
 }
 function setupTabs(){
   document.getElementById('menuTopBtn').addEventListener('click', openMenuSheet);
@@ -1351,18 +1519,21 @@ function setupTabs(){
   // swipe left on the calendar -> quick summary; swipe right on the summary -> back
   const swipe = (el, onSwipe)=>{
     let sx = null, sy = null, st = 0;
-    el.addEventListener('touchstart', (e)=>{ if(e.touches.length !== 1){ sx = null; return; } sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }, {passive:true});
+    let sx0 = 0;
+    el.addEventListener('touchstart', (e)=>{ if(e.touches.length !== 1){ sx = null; return; } sx = sx0 = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); }, {passive:true});
     el.addEventListener('touchend', (e)=>{
       if(sx === null) return;
       const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy, dt = Date.now() - st;
       sx = null;
-      if(Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)*1.8 && dt < 800 && document.body.style.overflow !== 'hidden') onSwipe(dx < 0 ? 'left' : 'right');
+      if(sx0 > 24 && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)*1.8 && dt < 800 && document.body.style.overflow !== 'hidden') onSwipe(dx < 0 ? 'left' : 'right');
     }, {passive:true});
   };
-  swipe(document.getElementById('view-calendar'), (dir)=>{ if(dir==='left' && !yearViewActive) goToView('summary'); });
-  swipe(document.getElementById('view-summary'), (dir)=>{ if(dir==='right') goToView('calendar'); });
+  swipe(document.getElementById('view-calendar'), (dir)=>{ if(dir==='left' && !yearViewActive) goToView('summary', 'fwd'); });
+  swipe(document.getElementById('view-summary'), (dir)=>{ if(dir==='right') goToView('calendar', 'back'); });
+  setupDrawerGestures();
+  window.addEventListener('resize', fitSummary);
 }
-function openMenuSheet(){
+function buildMenuBody(){
   const body = document.getElementById('drawerBody');
   const urgentCount = todos.filter(t=>t.kind==='task' && !t.done && t.dueDate && t.dueDate < todayStr()).length;
   const pendingExpenses = expenses.filter(e=>!e.done).length;
@@ -1374,6 +1545,7 @@ function openMenuSheet(){
     toil:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
     mileage:'<path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/>',
     expenses:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/>',
+    budget:'<circle cx="12" cy="12" r="9"/><path d="M14.5 8.5a3 3 0 00-5 2.2V14c0 1-.6 1.8-1.5 2h8"/><line x1="8.5" y1="12" x2="13" y2="12"/>',
     gym:'<path d="M6.5 6.5v11"/><path d="M17.5 6.5v11"/><path d="M3.5 9v6"/><path d="M20.5 9v6"/><path d="M6.5 12h11"/>',
     travel:'<path d="M3 12l18-8-7 18-3-7-8-3z"/>',
     trends:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-7"/>',
@@ -1387,25 +1559,80 @@ function openMenuSheet(){
     ['toil','TOIL',0],
     ['mileage','Mileage',0],
     ['expenses','Expenses',pendingExpenses],
+    ['budget','Budget',spendStats(todayStr().slice(0,7)).uncat],
     ['gym','Gym',0]
   ];
   if(travelEnabled) items.push(['travel','Travel',0]);
-  const itemHtml = (view,label,count)=>
-    '<div class="menu-item" data-goto="'+view+'">'+
+  const itemHtml = (view,label,count,i)=>
+    '<div class="menu-item" style="--i:'+(i||0)+'" data-goto="'+view+'">'+
       '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+icons[view]+'</svg>'+
       '<span>'+label+'</span>'+
       (count>0?'<span class="tab-badge" style="position:static;display:inline-block;margin-left:auto;">'+count+'</span>':'')+
     '</div>';
-  body.innerHTML = items.map(it=>itemHtml(it[0],it[1],it[2])).join('') + '<div class="divider"></div>' + itemHtml('settings','Settings',0);
+  body.innerHTML = items.map((it,i)=>itemHtml(it[0],it[1],it[2],i)).join('') + '<div class="divider"></div>' + itemHtml('settings','Settings',0,items.length+1);
   body.querySelectorAll('[data-goto]').forEach(el=>{
     el.addEventListener('click', ()=>{ closeDrawer(); goToView(el.dataset.goto); });
   });
-  document.getElementById('drawerOverlay').classList.add('show');
-  document.getElementById('drawerPanel').classList.add('show');
+}
+function openMenuSheet(){
+  buildMenuBody();
+  const o = document.getElementById('drawerOverlay'), pn = document.getElementById('drawerPanel');
+  pn.style.transition = o.style.transition = ''; pn.style.transform = ''; o.style.opacity = '';
+  o.classList.add('show'); pn.classList.add('show');
 }
 function closeDrawer(){
-  document.getElementById('drawerOverlay').classList.remove('show');
-  document.getElementById('drawerPanel').classList.remove('show');
+  const o = document.getElementById('drawerOverlay'), pn = document.getElementById('drawerPanel');
+  pn.style.transition = o.style.transition = ''; pn.style.transform = ''; o.style.opacity = '';
+  o.classList.remove('show'); pn.classList.remove('show');
+}
+// drag the menu in from the left edge (or drag it away) with the finger
+function setupDrawerGestures(){
+  const pn = document.getElementById('drawerPanel'), ov = document.getElementById('drawerOverlay');
+  let mode = null, x0 = 0, y0 = 0, w = 300, active = false, cur = 0, lastX = 0, lastT = 0, vx = 0;
+  const blocked = ()=> document.body.style.overflow === 'hidden' || !!document.querySelector('.overlay:not(.hidden)');
+  const onMove = (e)=>{
+    if(!mode) return;
+    const t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+    if(!active){
+      if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      if(Math.abs(dy) > Math.abs(dx)*0.8 || (mode==='open' && dx < 0) || (mode==='close' && dx > 0)){ mode = null; return; }
+      active = true;
+      if(mode==='open'){ buildMenuBody(); ov.classList.add('show'); pn.classList.add('show'); }
+      pn.style.transition = 'none'; ov.style.transition = 'none';
+    }
+    if(e.cancelable) e.preventDefault();
+    const base = mode==='open' ? -w : 0;
+    cur = Math.max(-w, Math.min(0, base + dx));
+    pn.style.transform = 'translateX('+cur+'px)';
+    ov.style.opacity = String(1 + cur/w);
+    const now = Date.now();
+    vx = (t.clientX - lastX) / Math.max(1, now - lastT); lastX = t.clientX; lastT = now;
+  };
+  const end = ()=>{
+    document.removeEventListener('touchmove', onMove);
+    if(!mode || !active){ mode = null; return; }
+    const open = mode==='open' ? (cur > -w*0.55 || vx > 0.45) : (cur > -w*0.35 && vx > -0.45);
+    mode = null; active = false;
+    pn.style.transition = ''; ov.style.transition = '';
+    void pn.offsetWidth;
+    pn.style.transform = open ? 'translateX(0px)' : 'translateX(-100%)';
+    ov.style.opacity = open ? '1' : '0';
+    pn.classList.toggle('show', open); ov.classList.toggle('show', open);
+    setTimeout(()=>{ pn.style.transform = ''; ov.style.opacity = ''; }, 420);
+  };
+  document.addEventListener('touchstart', (e)=>{
+    if(e.touches.length !== 1) return;
+    const t = e.touches[0];
+    if(pn.classList.contains('show')) mode = 'close';
+    else if(t.clientX <= 24 && !blocked()) mode = 'open';
+    else { mode = null; return; }
+    x0 = lastX = t.clientX; y0 = t.clientY; lastT = Date.now(); vx = 0; active = false; cur = mode==='open' ? -w : 0;
+    w = pn.offsetWidth || 300;
+    cur = mode==='open' ? -w : 0;
+    document.addEventListener('touchmove', onMove, {passive:false});
+  }, {passive:true});
+  document.addEventListener('touchend', end, {passive:true});
+  document.addEventListener('touchcancel', end, {passive:true});
 }
 let quickAddActive = null;
 function openQuickAddMileageForm(){
@@ -1743,6 +1970,13 @@ function renderExpensesTab(){
     pendingList.appendChild(row);
   });
 
+  if(pending.length > 1){
+    const tot = document.createElement('div');
+    tot.className = 'stat-sub';
+    tot.style.cssText = 'text-align:right;margin-top:8px;';
+    tot.innerHTML = 'Total <b>'+money(pending.reduce((a,e)=> a + e.amount, 0))+'</b>';
+    pendingList.appendChild(tot);
+  }
   if(done.length===0){ doneList.innerHTML = '<div class="empty">Nothing here yet.</div>'; }
   done.forEach(e=>{
     const row = document.createElement('div');
@@ -3341,12 +3575,14 @@ async function toggleClockIn(){
       entry.shift.start = startTime;
       entry.shift.finish = timeStr;
       const ranHours = (now - new Date(day+'T'+startTime+':00'))/3600000;
+      const forgot = ranHours > 16;      // an old clock-in: don't invent a finish time
+      if(forgot) entry.shift.finish = null;
       clockInState = null;
       await saveKey('clock-in-state', null);
       await saveKey('calendar-data', calendarData);
       updateClockInBtn();
       renderCalendarAll(); renderRentTab(); renderToilTab();
-      showToast(ranHours >= 24 ? 'Clocked out at '+timeStr+' \u2014 that ran over 24h, check the times.' : 'Clocked out at '+timeStr+'.');
+      showToast(forgot ? 'You clocked in on '+shortDate(day)+' \u2014 enter the finish time.' : 'Clocked out at '+timeStr+'.');
       goToCalendarDate(day);
     }else{
       const today = todayStr();
@@ -3487,81 +3723,392 @@ function renderCalHeaderAlert(){
   const hasOverdue = todos.some(t=>t.kind==='task' && !t.done && t.dueDate && t.dueDate < today);
   badge.style.display = hasOverdue ? 'block' : 'none';
 }
+function fitSummary(){
+  const g = document.getElementById('sumGrid');
+  if(!g || !g.offsetParent) return;
+  const bar = document.getElementById('returnCalBar'), fade = document.getElementById('returnCalFade');
+  let limit = window.innerHeight;
+  [bar, fade].forEach(el=>{ if(el && el.style.display !== 'none'){ const r = el.getBoundingClientRect(); if(r.height > 0) limit = Math.min(limit, r.top); } });
+  g.style.height = Math.max(300, Math.floor(limit - g.getBoundingClientRect().top - 4))+'px';
+}
 function renderSummary(){
   const box = document.getElementById('summaryBody');
   if(!box) return;
-  const today = todayStr();
-  const e = calendarData[today];
-  let h = '';
-  // ---- today ----
-  const sh = e && e.shift;
-  const hrs = shiftHours(sh);
+  const today = todayStr(), e = calendarData[today];
+  const sh = e && e.shift, hrs = shiftHours(sh);
   const events = [].concat(autoEventsForDate(today).map(x=>x.title), todos.filter(t=> t.kind==='whatson' && todoOccursOn(t, today)).map(t=>t.text));
-  h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Today</h2><span>'+niceDate(today)+'</span></div>'+
-    '<div class="sum-row tap" data-sum-day><span class="sum-k">Status</span><span class="sum-v">'+(e && e.status==='away' ? 'Away' : 'Home')+(e && e.isAL ? ' \u00b7 Annual leave' : '')+'</span></div>'+
-    '<div class="sum-row tap" data-sum-day><span class="sum-k">Shift</span><span class="sum-v">'+(sh && sh.start ? escapeHtml(sh.start)+'\u2013'+escapeHtml(sh.finish || '\u2026')+(hrs ? ' \u00b7 '+hrs+'h' : '') : 'None')+'</span></div>'+
-    events.map(t=>'<div class="sum-row tap" data-sum-day><span class="sum-k">On</span><span class="sum-v">'+escapeHtml(t)+'</span></div>').join('')+
-  '</div>';
-  // ---- clock ----
+  const m0 = n=> '\u00a3'+Math.round(n).toLocaleString('en-GB');
+  // clock
   const on = !!clockInState;
-  let since = '';
+  let clockTxt = 'Not clocked in', stale = false;
   if(on){
     const mins = Math.max(0, Math.round((Date.now() - new Date(clockInState.date+'T'+clockInState.start+':00').getTime())/60000));
-    since = ' since '+clockInState.start+' ('+Math.floor(mins/60)+'h '+(mins%60)+'m)';
+    stale = mins > 16*60;
+    clockTxt = stale ? 'In since '+shortDate(clockInState.date)+' \u2014 forgot?' : 'In '+Math.floor(mins/60)+'h '+pad(mins%60)+'m';
   }
-  h += '<div class="card"><div class="sum-row" style="padding-top:0;"><span><span class="sum-dot'+(on ? ' on' : '')+'"></span>'+(on ? 'Clocked in'+since : 'Not clocked in')+'</span><button class="btn small'+(on ? '' : ' secondary')+'" id="sumClockBtn">'+(on ? 'Clock out' : 'Clock in')+'</button></div></div>';
-  // ---- this week ----
-  const mon = mondayOf(today);
-  let total = 0, rows = '';
-  const dn = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  // week strip
+  const mon = mondayOf(today), dn = ['M','T','W','T','F','S','S'];
+  let total = 0, wk = '';
   for(let i=0;i<7;i++){
     const d = addDays(mon, i), en = calendarData[d], hh = en ? shiftHours(en.shift) : null;
     if(hh) total += hh;
-    let v = '\u2014';
-    if(en && en.shift && en.shift.start) v = escapeHtml(en.shift.start)+'\u2013'+escapeHtml(en.shift.finish || '\u2026')+(hh ? ' \u00b7 '+hh+'h' : '');
-    else if(en && en.isAL) v = 'Annual leave';
-    else if(en && en.status==='away') v = 'Away';
-    rows += '<div class="sum-row tap'+(d===today ? ' now' : '')+'" data-sum-date="'+d+'"><span class="sum-k">'+dn[i]+' '+parseYMD(d).getDate()+'</span><span class="sum-v">'+v+'</span></div>';
+    const cls = (d===today ? ' now' : '')+(en && en.status==='away' ? ' away' : '');
+    const lab = hh ? String(Math.round(hh*10)/10) : (en && en.isAL ? 'AL' : '\u00b7');
+    wk += '<div class="wk'+cls+'" data-sum-date="'+d+'"><em>'+lab+'</em><div class="wk-bar"><i style="height:'+(hh ? Math.max(8, Math.min(100, hh/12*100)) : 0)+'%"></i></div><b>'+dn[i]+'</b></div>';
   }
-  h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Shifts this week</h2><span>'+(Math.round(total*10)/10)+'h</span></div>'+rows+'</div>';
-  // ---- van ----
-  const odo = computeVanOdometer();
-  h += '<div class="card"><div class="sum-row tap" data-sum-go="'+(odo ? 'mileage' : 'settings')+'" style="padding:0;border:none;"><span class="sum-k">Van odometer</span><span class="sum-v">'+(odo ? '<b>'+fmtMi(odo.estimate)+' mi</b>' : 'Not set')+'</span></div></div>';
-  // ---- to-dos ----
+  // to-dos
   const pend = todos.filter(t=> t.kind==='task' && !t.done).sort((a,b)=>{
     if(!a.dueDate && !b.dueDate) return 0; if(!a.dueDate) return 1; if(!b.dueDate) return -1; return a.dueDate.localeCompare(b.dueDate);
-  }).slice(0,6);
-  h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">To-dos</h2><span data-sum-go="todo" style="cursor:pointer;">All</span></div>'+
-    (pend.length ? pend.map(t=>{
-      const over = t.dueDate && t.dueDate < today;
-      return '<div class="sum-row tap" data-sum-todo="'+t.id+'"><span>'+escapeHtml(t.text)+'</span><span class="sum-k'+(over ? ' sum-over' : '')+'">'+(t.dueDate ? (t.dueDate===today ? 'Today' : shortDate(t.dueDate)) : '')+'</span></div>';
-    }).join('') : '<div class="sum-row"><span class="sum-k">Nothing pending</span></div>')+'</div>';
-  // ---- gym ----
-  const work = gymLog.filter(l=> !l.wu && l.date===today);
-  const vol = work.reduce((a,l)=> a + gymVolume(l), 0);
-  const exCount = new Set(work.map(l=>l.ex)).size;
-  const wkStart = addDays(today,-6);
-  const wkLogs = gymLog.filter(l=> !l.wu && l.date>=wkStart && l.date<=today);
-  const wkDays = new Set(wkLogs.map(l=>l.date)).size;
-  let nextTxt = '';
-  try{ const nx = gymNextSession(gymMuscleStats(7)); if(nx) nextTxt = nx.muscles.slice(0,3).map(m=>m.n).join(', '); }catch(err){}
-  const bwNow = gymBwLatest();
-  h += '<div class="card tap" data-sum-go="gym"><div class="sum-head"><h2 style="font-size:15px;">Gym</h2><span>'+(bwNow ? bwNow.kg+'kg' : '')+'</span></div>'+
-    '<div class="sum-row"><span class="sum-k">Today</span><span class="sum-v">'+(work.length ? work.length+' sets \u00b7 '+exCount+' exercise'+(exCount===1?'':'s')+' \u00b7 '+Math.round(vol).toLocaleString('en-GB')+'kg' : 'Nothing yet')+'</span></div>'+
-    '<div class="sum-row"><span class="sum-k">Last 7 days</span><span class="sum-v">'+wkDays+' day'+(wkDays===1?'':'s')+' \u00b7 '+wkLogs.length+' sets</span></div>'+
-    (nextTxt ? '<div class="sum-row"><span class="sum-k">Next</span><span class="sum-v">'+escapeHtml(nextTxt)+'</span></div>' : '')+
-  '</div>';
-  box.innerHTML = h;
+  });
+  const todoRows = pend.slice(0,3).map(t=>{
+    const over = t.dueDate && t.dueDate < today;
+    return '<div class="sum2-trow" data-sum-todo="'+t.id+'"><span>'+escapeHtml(t.text)+'</span><em class="'+(over ? 'sum-over' : '')+'">'+(t.dueDate ? (t.dueDate===today ? 'Today' : shortDate(t.dueDate)) : '')+'</em></div>';
+  }).join('');
+  // van, spending
+  const odo = computeVanOdometer();
+  const sst = spendStats(today.slice(0,7));
+  const pct = sst.budget ? sst.spent/sst.budget : 0;
+  // body map = the gym summary
+  let fig = '';
+  try{ fig = bmBuildSvg('front', gymMuscleStats(7).pct, null, 'sm').replace('<svg class="bm-svg', '<svg class="bm-svg sum2-svg'); }catch(err){ fig = ''; }
+  let i = 0;
+  const card = (cls, attrs, inner)=> '<div class="card sum2-card '+cls+'" style="--i:'+(i++)+'" '+attrs+'>'+inner+'</div>';
+  const left =
+    (syncEnabled && syncFailed ? '<div class="sum2-alert" data-sum-go="settings">Sync isn\u2019t working</div>' : '')+
+    card('sum2-today', 'data-sum-day', '<div class="sum2-h"><span>Today</span><span>'+niceDate(today)+'</span></div>'+
+      '<div class="sum2-big">'+(sh && sh.start ? escapeHtml(sh.start)+'\u2013'+escapeHtml(sh.finish || '\u2026') : (e && e.isAL ? 'Annual leave' : 'No shift'))+'</div>'+
+      '<div class="sum2-sub">'+(hrs ? hrs+'h \u00b7 ' : '')+(e && e.status==='away' ? 'Away' : 'Home')+'</div>'+
+      events.slice(0,2).map(t=>'<div class="sum2-line">'+escapeHtml(t)+'</div>').join(''))+
+    card('sum2-clock', '', '<span class="sum2-clk'+(stale ? ' sum-over' : '')+'"><span class="sum-dot'+(on ? ' on' : '')+'"></span>'+clockTxt+'</span><button type="button" class="btn small'+(on ? '' : ' secondary')+'" id="sumClockBtn">'+(on ? 'Out' : 'In')+'</button>')+
+    card('sum2-week', '', '<div class="sum2-h"><span>Week</span><span>'+(Math.round(total*10)/10)+'h</span></div><div class="sum2-wk">'+wk+'</div>')+
+    card('sum2-todos', 'data-sum-go="todo"', '<div class="sum2-h"><span>To-dos</span><span>'+(pend.length || '')+'</span></div>'+(todoRows || '<div class="sum2-sub">All clear</div>'));
+  const right =
+    card('sum2-fig', 'data-sum-go="gym"', fig)+
+    card('sum2-mini', 'data-sum-go="'+(odo ? 'mileage' : 'settings')+'"', '<div class="sum2-h"><span>Van</span></div><div class="sum2-big sm">'+(odo ? fmtMi(odo.estimate)+' <small>mi</small>' : 'Not set')+'</div>')+
+    card('sum2-mini', 'data-sum-go="budget"', '<div class="sum2-h"><span>Spent</span><span>'+(sst.budget ? (sst.left >= 0 ? m0(sst.left)+' left' : '<b class="sum-over">'+m0(-sst.left)+' over</b>') : '')+'</span></div><div class="sum2-big sm">'+m0(sst.spent)+'</div>'+
+      (sst.budget ? '<div class="sp-bar thin"><div class="sp-fill'+(pct > 1 ? ' over' : (pct > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pct*100)+'%"></div></div>' : ''));
+  box.innerHTML = '<div class="sum2" id="sumGrid"><div class="sum2-col">'+left+'</div><div class="sum2-col">'+right+'</div></div>';
+  fitSummary();
   box.querySelectorAll('[data-sum-day]').forEach(el=> el.addEventListener('click', ()=> goToCalendarDate(today)));
-  box.querySelectorAll('[data-sum-date]').forEach(el=> el.addEventListener('click', ()=> goToCalendarDate(el.dataset.sumDate)));
+  box.querySelectorAll('[data-sum-date]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); goToCalendarDate(el.dataset.sumDate); }));
   box.querySelectorAll('[data-sum-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.sumGo)));
-  box.querySelectorAll('[data-sum-todo]').forEach(el=> el.addEventListener('click', ()=>{
+  box.querySelectorAll('[data-sum-todo]').forEach(el=> el.addEventListener('click', (ev)=>{
+    ev.stopPropagation();
     const t = todos.find(x=> String(x.id)===el.dataset.sumTodo);
     if(t && t.dueDate) goToCalendarDate(t.dueDate); else goToView('todo');
   }));
   const cb = document.getElementById('sumClockBtn');
   if(cb) cb.addEventListener('click', async ()=>{ await toggleClockIn(); if(document.getElementById('view-summary').classList.contains('active')) renderSummary(); });
 }
+
+// ---------- spending / budget ----------
+const SPEND_DEFAULT_CATS = [
+  {id:'groceries', name:'Groceries', budget:0, color:'#5E8C61'},
+  {id:'eating', name:'Eating out', budget:0, color:'#D08A3E'},
+  {id:'travel', name:'Travel & fuel', budget:0, color:'#3F6FA6'},
+  {id:'bills', name:'Bills & subs', budget:0, color:'#8A6FB3'},
+  {id:'fun', name:'Fun', budget:0, color:'#C4504A'},
+  {id:'shopping', name:'Shopping', budget:0, color:'#B58B1E'},
+  {id:'other', name:'Other', budget:0, color:'#7C867F'}
+];
+const SPEND_COLOURS = ['#5E8C61','#D08A3E','#3F6FA6','#8A6FB3','#C4504A','#B58B1E','#7C867F','#3E8E8E','#A0527C'];
+const SPEND_HINTS = [
+  [/tesco|sainsbury|asda|\baldi\b|\blidl\b|morrisons|waitrose|co-?op\b|iceland|ocado|\bspar\b/, 'groceries'],
+  [/mcdonald|\bkfc\b|greggs|costa|starbucks|\bpret\b|nando|subway|burger king|domino|pizza|deliveroo|uber ?eats|just ?eat|wetherspoon|\bpub\b|\bbar\b|cafe|coffee|restaurant|wagamama|five guys|\bitsu\b|\bleon\b|bakery|takeaway/, 'eating'],
+  [/\bshell\b|\bbp\b|\besso\b|texaco|\bjet\b|\btfl\b|trainline|\buber\b|\bbolt\b|national rail|avanti|northern rail|merseyrail|parking|ringgo|paybyphone|\bncp\b|stagecoach|arriva|\blner\b|easyjet|ryanair|petrol|fuel|halfords/, 'travel'],
+  [/netflix|spotify|disney|prime video|apple\.com|icloud|google|youtube|\bsky\b|vodafone|\bee\b|\bo2\b|giffgaff|\bbt\b|virgin media|octopus|british gas|\bedf\b|water|council|insurance|puregym|anytime fitness|\bgym\b/, 'bills'],
+  [/amazon|ebay|argos|currys|ikea|b&q|screwfix|primark|\bnext\b|h&m|zara|boots|superdrug|asos|etsy|jd sports|decathlon/, 'shopping'],
+  [/cinema|odeon|\bvue\b|cineworld|ticketmaster|steam|playstation|xbox|nintendo|bowling|theatre|skiddle|dice\.fm|eventbrite/, 'fun']
+];
+function spendCatList(){ return spendCats || SPEND_DEFAULT_CATS; }
+function spendCatById(id){ return spendCatList().find(c=> c.id===id) || null; }
+function spendKey(m){
+  return String(m || '').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\b\d+\b/g,' ')
+    .replace(/\b(ltd|limited|plc|uk|gb|store|stores|the)\b/g,' ').replace(/\s+/g,' ').trim().split(' ').slice(0,2).join(' ');
+}
+function spendGuess(m){
+  const k = spendKey(m);
+  if(!k) return null;
+  let id = spendRules[k] || spendRules[k.split(' ')[0]] || null;
+  if(!id){
+    const low = String(m).toLowerCase();
+    for(const h of SPEND_HINTS){ if(h[0].test(low)){ id = h[1]; break; } }
+  }
+  return id && spendCatById(id) ? id : null;
+}
+function spendParseAmount(a){
+  const n = parseFloat(String(a==null ? '' : a).replace(/[^0-9.\-]/g,''));
+  return isNaN(n) ? 0 : Math.round(n*100)/100;
+}
+function spendNewId(p){ return p + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function spendRandom(n){
+  const abc = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let out = '';
+  const arr = (window.crypto && crypto.getRandomValues) ? crypto.getRandomValues(new Uint8Array(n)) : Array.from({length:n}, ()=> Math.floor(Math.random()*256));
+  for(let i=0;i<n;i++) out += abc[arr[i] % abc.length];
+  return out;
+}
+function spendStats(ym){
+  const tx = spendTxns.filter(t=> t.date && t.date.slice(0,7)===ym);
+  const by = {}; let spent = 0, uncat = 0;
+  tx.forEach(t=>{ spent += t.amount; const k = t.cat || '_'; by[k] = (by[k]||0) + t.amount; if(!t.cat) uncat++; });
+  const budget = spendCatList().reduce((a,c)=> a + (c.budget||0), 0);
+  const [y, m] = ym.split('-').map(Number);
+  const dim = new Date(y, m, 0).getDate();
+  const cur = todayStr().slice(0,7);
+  const daysLeft = ym===cur ? dim - new Date().getDate() + 1 : 0;
+  const left = budget ? budget - spent : null;
+  return {tx, by, spent, uncat, budget, left, perDay: (left!=null && left > 0 && daysLeft > 0) ? left/daysLeft : null};
+}
+async function spendSetCat(id, cat){
+  const t = spendTxns.find(x=> x.id===id);
+  if(!t) return;
+  t.cat = cat;
+  const k = spendKey(t.merchant);
+  if(k && cat){
+    spendRules[k] = cat;
+    spendTxns.forEach(x=>{ if(!x.cat && spendKey(x.merchant)===k) x.cat = cat; });
+    await saveKey('spend-rules', spendRules);
+  }
+  spendOpen = null;
+  await saveKey('spend-txns', spendTxns);
+  renderBudget();
+}
+async function spendSaveCats(){ await saveKey('spend-cats', spendCats); }
+function spendEnsureCats(){ if(!spendCats) spendCats = SPEND_DEFAULT_CATS.map(c=> Object.assign({}, c)); }
+
+// ---- Apple Pay inbox: the Shortcut drops each tap into Firestore, the app files it here ----
+function spendFromInbox(d, id){
+  if(!d || !spendMeta.secret || d.k !== spendMeta.secret) return null;
+  if(spendTxns.some(x=> x.id === 'ap_'+id)) return null;
+  const merchant = String(d.m || '').trim() || 'Unknown';
+  const dm = /^(\d{4}-\d{2}-\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(String(d.d || ''));
+  return {id:'ap_'+id, date: dm ? dm[1] : todayStr(), time: dm && dm[2] ? dm[2] : '', amount: spendParseAmount(d.a), merchant, card: String(d.c || ''), src:'applepay', cat: spendGuess(merchant)};
+}
+let inboxBusy = false;
+async function importInbox(){
+  if(inboxBusy || !syncEnabled || !firestoreDb || !spendMeta.secret) return 0;
+  inboxBusy = true;
+  let added = 0, sawTest = false;
+  try{
+    const snap = await firestoreDb.collection('inbox').get();
+    for(const doc of snap.docs){
+      const d = doc.data();
+      if(!spendMeta.seen.includes(doc.id)){
+        spendMeta.seen.push(doc.id);
+        if(d && d.k === spendMeta.secret){
+          if(d.m === 'Test payment' && d.c === 'Test'){ sawTest = true; }
+          else{
+            const t = spendFromInbox(d, doc.id);
+            if(t){ spendTxns.push(t); added++; spendMeta.last = {merchant:t.merchant, amount:t.amount, date:t.date, time:t.time}; }
+          }
+        }
+      }
+      try{ await doc.ref.delete(); }catch(e){}
+    }
+    if(spendMeta.seen.length > 300) spendMeta.seen = spendMeta.seen.slice(-300);
+    if(added || sawTest){
+      if(sawTest && !added) spendMeta.last = {merchant:'Test payment', amount:0.01, date:todayStr(), time:''};
+      await saveKey('spend-txns', spendTxns);
+      await saveKey('spend-meta', spendMeta);
+      if(document.getElementById('view-budget').classList.contains('active')) renderBudget();
+      if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
+      if(document.getElementById('view-settings').classList.contains('active')) renderApplePaySetup();
+      showToast(added ? added+' Apple Pay payment'+(added===1 ? '' : 's')+' added.' : 'Test received \u2014 Apple Pay capture works.');
+    }
+  }catch(e){ console.error('inbox import failed', e); }
+  finally{ inboxBusy = false; }
+  return added;
+}
+function spendEndpoint(){
+  return 'https://firestore.googleapis.com/v1/projects/'+syncConfig.projectId+'/databases/(default)/documents/inbox?key='+syncConfig.apiKey;
+}
+function spendBodyTemplate(){
+  return '{"fields":{"k":{"stringValue":"'+spendMeta.secret+'"},"a":{"stringValue":"AMOUNT"},"m":{"stringValue":"MERCHANT"},"c":{"stringValue":"CARD"},"d":{"stringValue":"DATE"}}}';
+}
+function spendRulesText(locked){
+  const email = (syncAuth && syncAuth.email) || 'you@example.com';
+  const who = locked ? "request.auth != null && request.auth.token.email == '"+email+"'" : 'true';
+  return "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /homebase/{doc} {\n      allow read, write: if "+who+";\n    }\n    match /inbox/{id} {\n      allow create: if request.resource.data.k == '"+spendMeta.secret+"'\n        && request.resource.data.keys().hasOnly(['k','a','m','c','d'])\n        && request.resource.data.m.size() < 120;\n      allow read, delete: if "+who+";\n    }\n  }\n}";
+}
+async function spendSendTest(){
+  if(!syncConfig){ showToast('Connect sync first.'); return; }
+  try{
+    const r = await fetch(spendEndpoint(), {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({fields:{k:{stringValue:spendMeta.secret}, a:{stringValue:'0.01'}, m:{stringValue:'Test payment'}, c:{stringValue:'Test'}, d:{stringValue:new Date().toISOString()}}})});
+    if(!r.ok){
+      let msg = ''; try{ msg = (await r.json()).error.message || ''; }catch(e){}
+      showToast('Test failed ('+r.status+') \u2014 check the rules. '+msg.slice(0,50));
+      return;
+    }
+    await importInbox();
+  }catch(e){ showToast('Test failed \u2014 no connection.'); }
+}
+async function syncSignIn(){
+  const email = document.getElementById('spAuthEmail').value.trim(), pw = document.getElementById('spAuthPw').value;
+  if(!email || !pw){ showToast('Enter the email and password.'); return; }
+  if(!syncConfig){ showToast('Connect sync first.'); return; }
+  syncAuth = {email};
+  await saveKey('sync-auth', syncAuth);
+  syncAuthPassword = pw;
+  document.getElementById('spAuthPw').value = '';
+  if(syncUnsub){ syncUnsub(); syncUnsub = null; }
+  syncEnabled = false;
+  await connectSync(syncConfig, false);
+  renderApplePaySetup();
+}
+async function copyText(text, label){
+  try{
+    if(navigator.clipboard && navigator.clipboard.writeText){ await navigator.clipboard.writeText(text); }
+    else{
+      const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    showToast((label || 'Text')+' copied.');
+  }catch(e){ showToast('Couldn\u2019t copy \u2014 long-press the box to copy.'); }
+}
+function renderApplePaySetup(){
+  const box = document.getElementById('applePayBody');
+  if(!box) return;
+  if(!spendMeta.secret){ spendMeta.secret = spendRandom(24); saveKey('spend-meta', spendMeta); }
+  if(!syncConfig){ box.innerHTML = '<div class="stat-sub">Connect sync above first.</div>'; return; }
+  const l = spendMeta.last;
+  const lastTxt = l ? escapeHtml(l.merchant)+' \u00b7 '+money(l.amount)+' \u00b7 '+shortDate(l.date)+(l.time ? ' '+l.time : '') : 'Nothing received yet';
+  const authOn = !!(syncAuth && syncAuth.email);
+  box.innerHTML =
+    '<div class="sum-row" style="padding-top:0;"><span class="sum-k">Last tap</span><span class="sum-v">'+lastTxt+'</span></div>'+
+    '<ol class="sp-steps">'+
+      '<li><b>Firebase \u2192 Firestore \u2192 Rules.</b> Paste these and Publish.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="rulesLocked">Copy rules (locked)</button><button type="button" class="btn secondary small" data-ap-copy="rulesOpen">Copy rules (open)</button></div></li>'+
+      '<li><b>Shortcuts \u2192 Automation \u2192 +  \u2192 Transaction.</b> Pick your cards, <b>Run Immediately</b>, Notify off, New Blank Automation.</li>'+
+      '<li>Add a <b>Text</b> action and paste this. Replace AMOUNT, MERCHANT, CARD, DATE with Shortcut Input\u2019s Amount, Merchant, Card or Pass, and Current Date.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="body">Copy text</button></div></li>'+
+      '<li>Add <b>Get Contents of URL</b>. Paste the URL, Method <b>POST</b>, header <b>Content-Type</b> = <b>application/json</b>, Request Body <b>File</b> = the Text.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="url">Copy URL</button></div></li>'+
+      '<li>Check it end to end.<div class="sp-btnrow"><button type="button" class="btn small" id="apTestBtn">Send test</button><button type="button" class="btn secondary small" id="apCheckBtn">Check inbox</button></div></li>'+
+    '</ol>'+
+    '<details'+(authOn || syncNeedsSignIn ? ' open' : '')+' style="margin-top:6px;"><summary style="cursor:pointer;font-weight:600;font-size:13px;">Lock it down with a sign-in (recommended)</summary>'+
+      '<div class="stat-sub" style="margin:6px 0;">Firebase \u2192 Authentication \u2192 enable Email/Password \u2192 add yourself. Sign in here, then use the locked rules.</div>'+
+      '<input type="email" id="spAuthEmail" placeholder="Email" autocomplete="username" value="'+escapeHtml(authOn ? syncAuth.email : '')+'" style="margin-bottom:6px;">'+
+      '<input type="password" id="spAuthPw" placeholder="Password" autocomplete="current-password" style="margin-bottom:6px;">'+
+      '<button type="button" class="btn small" id="spAuthBtn">Sign in</button>'+
+      (syncNeedsSignIn ? ' <span class="sum-over" style="font-size:12.5px;">Sign in needed</span>' : '')+
+    '</details>';
+  const texts = {rulesLocked: ()=> spendRulesText(true), rulesOpen: ()=> spendRulesText(false), body: spendBodyTemplate, url: spendEndpoint};
+  box.querySelectorAll('[data-ap-copy]').forEach(b=> b.addEventListener('click', ()=> copyText(texts[b.dataset.apCopy](), {rulesLocked:'Locked rules', rulesOpen:'Open rules', body:'Text', url:'URL'}[b.dataset.apCopy])));
+  document.getElementById('apTestBtn').addEventListener('click', spendSendTest);
+  document.getElementById('apCheckBtn').addEventListener('click', async ()=>{ const n = await importInbox(); if(!n) showToast('Nothing new in the inbox.'); });
+  document.getElementById('spAuthBtn').addEventListener('click', syncSignIn);
+}
+
+function renderBudget(){
+  const box = document.getElementById('budgetBody');
+  if(!box) return;
+  if(!spendMonth) spendMonth = todayStr().slice(0,7);
+  const ym = spendMonth, st = spendStats(ym), cats = spendCatList();
+  const [yy, mm] = ym.split('-').map(Number);
+  const label = new Date(yy, mm-1, 1).toLocaleDateString('en-GB', {month:'long', year:'numeric'});
+  const amt = n=> (n < 0 ? '\u2212' : '')+money(Math.abs(n));
+  const pillOf = c=> c ? '<span class="sp-pill" style="background:'+c.color+'">'+escapeHtml(c.name)+'</span>' : '<span class="sp-pill" style="background:var(--ink-soft)">Sort</span>';
+  const chipRow = id=> '<div class="sp-chips">'+cats.map(c=> '<button type="button" class="chip-btn" data-sp-set="'+id+'" data-cat="'+c.id+'">'+escapeHtml(c.name)+'</button>').join('')+'</div>';
+  let h = '';
+  if(!spendMeta.last && !spendTxns.length){
+    h += '<div class="card tap" data-sp-go="settings"><div class="sum-row" style="padding:0;border:none;"><span><b>Capture Apple Pay taps automatically</b></span><span class="sum-k">Set up</span></div></div>';
+  }
+  // ---- month ----
+  const pct = st.budget ? st.spent/st.budget : 0;
+  h += '<div class="card"><div class="sp-month"><button type="button" class="chip-btn" data-sp-m="-1">\u2039</button><b>'+label+'</b><button type="button" class="chip-btn" data-sp-m="1">\u203a</button></div>'+
+    '<div class="sp-big">'+amt(st.spent)+'</div>'+
+    '<div class="stat-sub">'+(st.budget ? 'of '+money(st.budget)+' \u00b7 '+(st.left >= 0 ? money(st.left)+' left' : '<b class="sum-over">'+money(-st.left)+' over</b>')+(st.perDay ? ' \u00b7 '+money(st.perDay)+'/day' : '') : 'Set budgets below to see what\u2019s left')+'</div>'+
+    (st.budget ? '<div class="sp-bar"><div class="sp-fill'+(pct > 1 ? ' over' : (pct > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pct*100)+'%"></div></div>' : '')+'</div>';
+  // ---- to sort ----
+  const unc = st.tx.filter(t=> !t.cat).sort((a,b)=> (b.date+(b.time||'')).localeCompare(a.date+(a.time||'')));
+  if(unc.length){
+    h += '<div class="card"><h2 style="font-size:15px;margin-bottom:4px;">To sort</h2>'+unc.slice(0,6).map(t=>
+      '<div class="sp-sort"><div style="display:flex;justify-content:space-between;gap:10px;"><b>'+escapeHtml(t.merchant)+'</b><b>'+amt(t.amount)+'</b></div><div class="stat-sub" style="margin:0;">'+shortDate(t.date)+'</div>'+chipRow(t.id)+'</div>').join('')+
+      (unc.length > 6 ? '<div class="stat-sub" style="margin-top:6px;">+ '+(unc.length-6)+' more</div>' : '')+'</div>';
+  }
+  // ---- quick add ----
+  const since = addDays(todayStr(), -120), freq = {};
+  spendTxns.forEach(t=>{ if(t.date >= since){ freq[t.merchant] = (freq[t.merchant]||0) + 1; } });
+  const top = Object.keys(freq).sort((a,b)=> freq[b]-freq[a]).slice(0,6);
+  h += '<div class="card"><h2 style="font-size:15px;margin-bottom:8px;">Add spend</h2><div class="sp-add"><input type="text" id="spAmt" inputmode="decimal" placeholder="\u00a3" style="width:84px;flex-shrink:0;"><input type="text" id="spMer" placeholder="Where?" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="spAddBtn">Add</button></div>'+
+    (top.length ? '<div class="sp-chips">'+top.map(m=> '<button type="button" class="chip-btn" data-sp-mer="'+escapeHtml(m)+'">'+escapeHtml(m)+'</button>').join('')+'</div>' : '')+'</div>';
+  // ---- categories ----
+  if(spendEditing){
+    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budgets</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Done</span></div>'+
+      cats.map(c=> '<div class="sp-edit-row" data-cat-row="'+c.id+'"><input type="text" value="'+escapeHtml(c.name)+'" data-sp-name="'+c.id+'" style="flex:1;min-width:0;"><input type="number" inputmode="decimal" min="0" step="1" placeholder="\u00a3/mo" value="'+(c.budget || '')+'" data-sp-bud="'+c.id+'"><button type="button" class="todo-del" data-sp-delcat="'+c.id+'">&times;</button></div>').join('')+
+      '<button type="button" class="btn secondary small" id="spAddCat" style="margin-top:4px;">+ Category</button></div>';
+  }else{
+    const shown = cats.filter(c=> c.budget > 0 || (st.by[c.id] || 0) !== 0);
+    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Categories</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Budgets</span></div>'+
+      (shown.length ? shown.map(c=>{
+        const sp = st.by[c.id] || 0, p = c.budget ? sp/c.budget : 0;
+        return '<div class="sp-cat" data-sp-filter="'+c.id+'"><div class="sp-catrow"><span><span class="sp-pill" style="background:'+c.color+';padding:0;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;"></span>'+escapeHtml(c.name)+(spendFilter===c.id ? ' \u2713' : '')+'</span><span>'+amt(sp)+(c.budget ? ' <span class="sum-k">/ '+money(c.budget)+'</span>' : '')+'</span></div>'+
+          (c.budget ? '<div class="sp-bar thin"><div class="sp-fill'+(p > 1 ? ' over' : (p > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, p*100)+'%"></div></div>' : '')+'</div>';
+      }).join('') : '<div class="stat-sub">Nothing yet \u2014 tap Budgets to set monthly limits.</div>')+'</div>';
+  }
+  // ---- transactions ----
+  let list = st.tx.slice().sort((a,b)=> (b.date+(b.time||'')+b.id).localeCompare(a.date+(a.time||'')+a.id));
+  if(spendFilter) list = list.filter(t=> (t.cat || '_') === spendFilter);
+  const fc = spendFilter ? spendCatById(spendFilter) : null;
+  const rows = spendShowAll ? list : list.slice(0, 25);
+  h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Transactions</h2>'+(spendFilter ? '<span data-sp-filter-clear style="cursor:pointer;">'+(fc ? escapeHtml(fc.name) : 'Sort')+' \u00d7</span>' : '<span>'+list.length+'</span>')+'</div>'+
+    (rows.length ? rows.map(t=>
+      '<div class="sp-txn"><div style="min-width:0;"><div style="font-size:14px;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(t.merchant)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+shortDate(t.date)+(t.time ? ' '+t.time : '')+' \u00b7 <span data-sp-open="'+t.id+'">'+pillOf(spendCatById(t.cat))+'</span></div>'+(spendOpen===t.id ? chipRow(t.id) : '')+'</div>'+
+      '<div style="text-align:right;flex-shrink:0;"><b>'+amt(t.amount)+'</b><br><button type="button" class="todo-del" data-sp-del="'+t.id+'">&times;</button></div></div>').join('') : '<div class="empty">Nothing this month.</div>')+
+    (list.length > 25 && !spendShowAll ? '<button type="button" class="btn secondary small block" id="spMore" style="margin-top:8px;">Show all '+list.length+'</button>' : '')+'</div>';
+  box.innerHTML = h;
+  // ---- events ----
+  box.querySelectorAll('[data-sp-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.spGo)));
+  box.querySelectorAll('[data-sp-m]').forEach(b=> b.addEventListener('click', ()=>{
+    const d = new Date(yy, mm-1+Number(b.dataset.spM), 1);
+    spendMonth = d.getFullYear()+'-'+pad(d.getMonth()+1); spendFilter = null; spendShowAll = false; renderBudget();
+  }));
+  box.querySelectorAll('[data-sp-set]').forEach(b=> b.addEventListener('click', ()=> spendSetCat(b.dataset.spSet, b.dataset.cat)));
+  box.querySelectorAll('[data-sp-open]').forEach(el=> el.addEventListener('click', ()=>{ spendOpen = spendOpen===el.dataset.spOpen ? null : el.dataset.spOpen; renderBudget(); }));
+  box.querySelectorAll('[data-sp-del]').forEach(b=> b.addEventListener('click', async ()=>{
+    spendTxns = spendTxns.filter(t=> t.id !== b.dataset.spDel);
+    await saveKey('spend-txns', spendTxns); renderBudget();
+  }));
+  box.querySelectorAll('[data-sp-filter]').forEach(el=> el.addEventListener('click', ()=>{ spendFilter = spendFilter===el.dataset.spFilter ? null : el.dataset.spFilter; renderBudget(); }));
+  const fcl = box.querySelector('[data-sp-filter-clear]'); if(fcl) fcl.addEventListener('click', ()=>{ spendFilter = null; renderBudget(); });
+  const more = document.getElementById('spMore'); if(more) more.addEventListener('click', ()=>{ spendShowAll = true; renderBudget(); });
+  box.querySelectorAll('[data-sp-edit]').forEach(el=> el.addEventListener('click', ()=>{ spendEditing = !spendEditing; renderBudget(); }));
+  box.querySelectorAll('[data-sp-mer]').forEach(b=> b.addEventListener('click', ()=>{ document.getElementById('spMer').value = b.dataset.spMer; document.getElementById('spAmt').focus(); }));
+  const add = async ()=>{
+    const a = spendParseAmount(document.getElementById('spAmt').value), m = document.getElementById('spMer').value.trim();
+    if(!a){ showToast('Enter the amount.'); return; }
+    spendTxns.push({id:spendNewId('m'), date:todayStr(), time:'', amount:a, merchant:m || 'Cash', card:'', src:'manual', cat:spendGuess(m || '')});
+    await saveKey('spend-txns', spendTxns);
+    spendMonth = todayStr().slice(0,7);
+    renderBudget();
+    const ai = document.getElementById('spAmt'); if(ai) ai.focus();
+  };
+  document.getElementById('spAddBtn').addEventListener('click', add);
+  ['spAmt','spMer'].forEach(id=> document.getElementById(id).addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); add(); } }));
+  box.querySelectorAll('[data-sp-name]').forEach(inp=> inp.addEventListener('change', async ()=>{
+    spendEnsureCats(); const c = spendCats.find(x=> x.id===inp.dataset.spName); if(c){ c.name = inp.value.trim() || c.name; await spendSaveCats(); }
+  }));
+  box.querySelectorAll('[data-sp-bud]').forEach(inp=> inp.addEventListener('change', async ()=>{
+    spendEnsureCats(); const c = spendCats.find(x=> x.id===inp.dataset.spBud); if(c){ c.budget = Math.max(0, parseFloat(inp.value) || 0); await spendSaveCats(); }
+  }));
+  box.querySelectorAll('[data-sp-delcat]').forEach(b=>{
+    let armed = false, timer = null;
+    b.addEventListener('click', async ()=>{
+      if(!armed){ armed = true; b.innerHTML = 'Sure?'; b.style.fontSize = '11px'; timer = setTimeout(()=>{ armed = false; b.innerHTML = '&times;'; b.style.fontSize = ''; }, 3000); return; }
+      clearTimeout(timer);
+      const id = b.dataset.spDelcat;
+      spendEnsureCats(); spendCats = spendCats.filter(c=> c.id !== id);
+      spendTxns.forEach(t=>{ if(t.cat===id) t.cat = null; });
+      Object.keys(spendRules).forEach(k=>{ if(spendRules[k]===id) delete spendRules[k]; });
+      await spendSaveCats(); await saveKey('spend-txns', spendTxns); await saveKey('spend-rules', spendRules);
+      renderBudget();
+    });
+  });
+  const ac = document.getElementById('spAddCat');
+  if(ac) ac.addEventListener('click', async ()=>{
+    spendEnsureCats();
+    spendCats.push({id:spendNewId('c'), name:'New category', budget:0, color:SPEND_COLOURS[spendCats.length % SPEND_COLOURS.length]});
+    await spendSaveCats(); renderBudget();
+  });
+}
+
 function renderTodosTab(){
   const datedContainer = document.getElementById('list-dated');
   const generalContainer = document.getElementById('list-general');
@@ -3840,7 +4387,7 @@ function mileageExportFields(t){
     to: mileageDisplayName(t.to)
   };
 }
-function exportMileagePDF(){
+function printMileageFallback(){
   if(mileageTrips.length===0){ showToast('No trips logged yet.'); return; }
   const area = document.getElementById('mileagePrintArea');
   const sorted = mileageTrips.slice().sort((a,b)=>a.date.localeCompare(b.date));
@@ -3869,6 +4416,116 @@ function exportMileagePDF(){
       '<div class="grand"><span>Grand total</span><strong>'+(businessTotal+personalTotal).toFixed(1)+' mi</strong></div>'+
     '</div>';
   window.print();
+}
+// ---- minimal PDF writer (A4, Helvetica) so the export is a real file the share sheet can save ----
+function pdfBuildMileage(rows, totals, metaLine){
+  const PW = 595, PH = 842, M = 40;
+  const clean = t=> String(t==null ? '' : t).replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"').replace(/[\u2013\u2014]/g,'-').replace(/\u00b7/g,'-').replace(/\u2192/g,'>').replace(/[^\x20-\x7E\xA0-\xFF]/g,'?');
+  const esc = t=> clean(t).replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+  const cw = ch=> 'ijlI.,:;|!\' tf'.indexOf(ch) > -1 ? 0.28 : ('mwMW@'.indexOf(ch) > -1 ? 0.84 : (/[A-Z]/.test(ch) ? 0.68 : (/[0-9]/.test(ch) ? 0.556 : 0.5)));
+  const tw = (t, size)=> clean(t).split('').reduce((a,ch)=> a + cw(ch), 0) * size;
+  const wrap = (text, maxW, size)=>{
+    const words = clean(text).split(/\s+/).filter(Boolean), lines = []; let cur = '';
+    const push = w=>{
+      while(tw(w, size) > maxW){ let n = w.length; while(n > 1 && tw(w.slice(0,n), size) > maxW) n--; lines.push(w.slice(0,n)); w = w.slice(n); }
+      cur = w;
+    };
+    words.forEach(w=>{
+      const t = cur ? cur+' '+w : w;
+      if(tw(t, size) <= maxW) cur = t; else { if(cur) lines.push(cur); cur = ''; push(w); }
+    });
+    if(cur) lines.push(cur);
+    return lines.length ? lines : [''];
+  };
+  const cols = [{k:'date',x:40,w:52},{k:'from',x:96,w:124},{k:'via',x:224,w:88},{k:'to',x:316,w:124},{k:'cat',x:444,w:52},{k:'miles',x:500,w:55,r:true}];
+  const heads = {date:'Date',from:'From',via:'Via',to:'To',cat:'Category',miles:'Miles'};
+  const pages = []; let ops = null, y = 0;
+  const text = (t, x, yy, size, bold, right, w)=>{
+    const xx = right ? x + w - tw(t, size) : x;
+    ops.push('BT /'+(bold ? 'F2' : 'F1')+' '+size+' Tf '+xx.toFixed(1)+' '+yy.toFixed(1)+' Td ('+esc(t)+') Tj ET');
+  };
+  const line = (x1, yy, x2, gray, wd)=> ops.push(gray+' G '+wd+' w '+x1+' '+yy.toFixed(1)+' m '+x2+' '+yy.toFixed(1)+' l S');
+  const header = ()=>{
+    cols.forEach(c=> text(heads[c.k], c.x, y, 8.5, true, c.r, c.w));
+    line(M, y-4, PW-M, '0.2', 1);
+    y -= 16;
+  };
+  const newPage = (first)=>{
+    ops = []; pages.push(ops); y = PH - M;
+    if(first){
+      text('HOME BASE', M, y, 8, false); y -= 22;
+      text('Mileage Log', M, y, 20, true); y -= 16;
+      text(metaLine, M, y, 9, false); y -= 28;
+    }else y -= 6;
+    header();
+  };
+  newPage(true);
+  rows.forEach(r=>{
+    const cells = cols.map(c=> c.k==='miles' || c.k==='date' || c.k==='cat' ? [String(r[c.k])] : wrap(r[c.k], c.w, 8.5));
+    const n = Math.max.apply(null, cells.map(c=>c.length));
+    const h = n*11 + 7;
+    if(y - h < 60) newPage(false);
+    cols.forEach((c,i)=> cells[i].forEach((ln,j)=> text(ln, c.x, y - j*11, 8.5, false, c.r, c.w)));
+    y -= h - 3;
+    line(M, y, PW-M, '0.85', 0.5);
+    y -= 12;
+  });
+  if(y < 120) newPage(false);
+  y -= 6;
+  [['Business total', totals.biz.toFixed(1)+' mi', false],['Personal total', totals.pers.toFixed(1)+' mi', false],['Grand total', (totals.biz+totals.pers).toFixed(1)+' mi', true]].forEach(t=>{
+    if(t[2]) line(PW-M-200, y+11, PW-M, '0.2', 1);
+    text(t[0], PW-M-200, y, 10, t[2]); text(t[1], PW-M-80, y, 10, true, true, 80);
+    y -= 16;
+  });
+  pages.forEach((o,i)=> o.push('BT /F1 8 Tf '+(PW/2-24)+' 24 Td (Page '+(i+1)+' of '+pages.length+') Tj ET'));
+  // assemble the file
+  const objs = [];
+  objs[1] = '<</Type/Catalog/Pages 2 0 R>>';
+  objs[2] = '<</Type/Pages/Kids ['+pages.map((_,i)=> (5+i*2)+' 0 R').join(' ')+'] /Count '+pages.length+'>>';
+  objs[3] = '<</Type/Font/Subtype/Type1/BaseFont/Helvetica/Encoding/WinAnsiEncoding>>';
+  objs[4] = '<</Type/Font/Subtype/Type1/BaseFont/Helvetica-Bold/Encoding/WinAnsiEncoding>>';
+  pages.forEach((o,i)=>{
+    const body = o.join('\n');
+    objs[5+i*2] = '<</Type/Page/Parent 2 0 R/MediaBox [0 0 '+PW+' '+PH+']/Resources<</Font<</F1 3 0 R/F2 4 0 R>>>>/Contents '+(6+i*2)+' 0 R>>';
+    objs[6+i*2] = '<</Length '+body.length+'>>\nstream\n'+body+'\nendstream';
+  });
+  const infoId = objs.length;
+  objs[infoId] = '<</Title (Mileage Log)/Producer (Home Base)>>';
+  let out = '%PDF-1.4\n'; const offs = [];
+  for(let i=1;i<objs.length;i++){ offs[i] = out.length; out += i+' 0 obj\n'+objs[i]+'\nendobj\n'; }
+  const xr = out.length;
+  out += 'xref\n0 '+objs.length+'\n0000000000 65535 f \n';
+  for(let i=1;i<objs.length;i++) out += String(offs[i]).padStart(10,'0')+' 00000 n \n';
+  out += 'trailer\n<</Size '+objs.length+'/Root 1 0 R/Info '+infoId+' 0 R>>\nstartxref\n'+xr+'\n%%EOF';
+  const bytes = new Uint8Array(out.length);
+  for(let i=0;i<out.length;i++) bytes[i] = out.charCodeAt(i) & 255;
+  return bytes;
+}
+async function exportMileagePDF(){
+  if(mileageTrips.length===0){ showToast('No trips logged yet.'); return; }
+  const sorted = mileageTrips.slice().sort((a,b)=>a.date.localeCompare(b.date));
+  const totals = {
+    biz: mileageTrips.filter(t=>t.category==='business').reduce((a,t)=>a+t.miles,0),
+    pers: mileageTrips.filter(t=>t.category==='personal').reduce((a,t)=>a+t.miles,0)
+  };
+  let bytes;
+  try{
+    bytes = pdfBuildMileage(sorted.map(t=>{
+      const f = mileageExportFields(t);
+      return {date:shortDate(t.date), from:f.from, via:f.via, to:f.to, cat:t.category==='business' ? 'Business' : 'Personal', miles:t.miles.toFixed(1)};
+    }), totals, 'Exported '+shortDate(todayStr())+' - '+sorted.length+' trip'+(sorted.length===1 ? '' : 's'));
+  }catch(e){ console.error('pdf build failed', e); printMileageFallback(); return; }
+  const name = 'mileage-log-'+todayStr()+'.pdf';
+  const blob = new Blob([bytes], {type:'application/pdf'});
+  try{
+    const file = new File([blob], name, {type:'application/pdf'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){ await navigator.share({files:[file], title:'Mileage log'}); return; }
+  }catch(e){ if(e && e.name==='AbortError') return; }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 4000);
+  showToast('PDF saved.');
 }
 function timeToMinutes(t){
   if(!t) return null;
@@ -4243,8 +4900,8 @@ function bmHeat(p){
   }
   return BM_STOPS[BM_STOPS.length-1][1];
 }
-function bmBuildSvg(view, pctByMuscle, selected){
-  const V = BM[view], id = 'bm'+view, T = bmTheme();
+function bmBuildSvg(view, pctByMuscle, selected, idp){
+  const V = BM[view], id = (idp || 'bm')+view, T = bmTheme();
   let s = '<svg class="bm-svg'+(selected ? ' has-sel' : '')+'" viewBox="0 0 '+BM_W+' '+BM_H+'" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Muscle map, '+view+' view">';
   s += '<defs>'+
     '<linearGradient id="'+id+'Base" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="'+T.base[0]+'"/><stop offset=".5" stop-color="'+T.base[1]+'"/><stop offset="1" stop-color="'+T.base[2]+'"/></linearGradient>'+
@@ -4533,7 +5190,10 @@ const GYM_SYN = {db:'dumbbell', bb:'barbell', ohp:'overhead press', rdl:'romania
 const GYM_BODY_ORDER = ['upperback','shoulders','chest','reardelts','lats','biceps','triceps','forearms','core','lowerback','glutes','quads','hamstrings','calves'];
 let gymSort = 'need';
 let gymBw = [];          // {date, kg}
-let gymAutoPick = true, gymHistOpen = null;
+let spendTxns = [], spendCats = null, spendRules = {}, spendMeta = {secret:'', seen:[], last:null};
+let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = null, spendShowAll = false;
+let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
+let gymAutoPick = true, gymHistOpen = null, gymBwAsked = '';
 let gymLog = [];     // {id, date, ex, w, r, wu}
 let gymCustom = [];  // {id, name, p:[muscle], s:[], kind}
 let gymTab = 'log', gymSelectedId = null, gymPeriod = 7, gymHistLimit = 12, gymDateTouched = false;
@@ -4574,6 +5234,29 @@ async function gymSetBw(kg, date){
   gymBw.push({date, kg});
   await saveKey('gym-bw', gymBw);
 }
+function isLastDayOfMonth(){ const t = new Date(); t.setDate(t.getDate()+1); return t.getDate() === 1; }
+function gymBwDue(){ return isLastDayOfMonth() && !gymBw.some(e=> e.date.slice(0,7) === todayStr().slice(0,7)); }
+async function maybeAskBodyweight(){
+  if(!gymBwDue() || gymBwAsked === todayStr()) return;
+  if(document.querySelector('.overlay:not(.hidden)')) return;
+  gymBwAsked = todayStr();
+  await saveKey('gym-bw-asked', gymBwAsked);
+  openSheet('Month-end weigh-in');
+  document.getElementById('sheetBody').innerHTML =
+    '<div class="stat-sub" style="margin:0 0 10px;">Last day of the month \u2014 what do you weigh?</div>'+
+    '<div style="display:flex;gap:8px;"><input type="number" id="bwAskInput" inputmode="decimal" step="0.1" min="0" placeholder="kg" style="flex:1;min-width:0;"><button type="button" class="btn" id="bwAskSave">Save</button></div>'+
+    '<button type="button" class="btn secondary block" id="bwAskSkip" style="margin-top:8px;">Not now</button>';
+  const inp = document.getElementById('bwAskInput');
+  const save = async ()=>{
+    const v = parseFloat(inp.value);
+    if(isNaN(v) || v <= 0){ showToast('Enter your weight in kg.'); return; }
+    await gymSetBw(v); closeSheet(); renderGymBw(); showToast('Bodyweight saved.');
+  };
+  document.getElementById('bwAskSave').addEventListener('click', save);
+  inp.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); save(); } });
+  document.getElementById('bwAskSkip').addEventListener('click', closeSheet);
+  setTimeout(()=> inp.focus(), 380);
+}
 // the weight actually being moved: bodyweight moves count a share of bodyweight plus anything added
 function gymLoad(ex, s){
   if(!ex || !ex.bw) return s.w;
@@ -4612,44 +5295,6 @@ function gymSessions(exId, beforeDate){
   });
   return Object.keys(m).sort().map(d=>({date:d, sets:m[d].slice().sort((a,b)=>a.id-b.id)}));
 }
-const gymTopW = (sets)=> Math.max.apply(null, sets.map(s=>s.w));
-function gymSuggest(ex, beforeDate){
-  const sessions = gymSessions(ex.id, beforeDate);
-  const lo = ex.rr[0], hi = ex.rr[1], inc = ex.inc;
-  if(!sessions.length){
-    return {first:true, w:null, r:lo, sets:3, note: ex.bw ? 'First time \u2014 aim for '+lo+'\u2013'+hi+(ex.time ? 's' : ' reps')+'.' : 'First time \u2014 pick a weight for '+lo+'\u2013'+hi+' reps.'};
-  }
-  const last = sessions[sessions.length-1];
-  const maxW = gymTopW(last.sets);
-  const top = last.sets.filter(s=>s.w===maxW);
-  const minR = Math.min.apply(null, top.map(s=>s.r));
-  const setCount = Math.max(3, Math.min(5, last.sets.length));
-  let out;
-  if(minR >= hi){
-    out = {w:+(maxW+inc).toFixed(2), r:lo, sets:setCount, up:true, note:'Hit '+hi+(ex.time ? 's' : '')+' on every set \u2014 add '+gymNum(inc)+'kg.'};
-  }else{
-    const tr = Math.min(hi, minR + (ex.time ? 5 : 1));
-    out = {w:maxW, r:tr, sets:setCount, note: minR < lo
-      ? 'Below range \u2014 hold the weight.'
-      : 'Aim for '+tr+(ex.time ? 's' : ' reps')+' each set.'};
-  }
-  if(sessions.length >= 3 && !out.up && maxW > 0){
-    const l3 = sessions.slice(-3);
-    const ws = l3.map(s=> gymTopW(s.sets));
-    const mr = l3.map((s,i)=> Math.min.apply(null, s.sets.filter(x=>x.w===ws[i]).map(x=>x.r)));
-    if(ws[0]===ws[1] && ws[1]===ws[2] && mr[2] <= mr[0]){
-      out.note += ' Stuck 3 sessions \u2014 try '+gymNum(Math.round(maxW*0.9/inc)*inc)+'kg.';
-    }
-  }
-  out.last = last;
-  return out;
-}
-function gymTargetText(ex, sug){
-  if(sug.first || sug.w==null) return '';
-  if(ex.time) return (sug.w > 0 ? '+'+gymNum(sug.w)+'kg ' : '')+sug.r+'s';
-  return gymWeightText(ex, sug.w)+' \u00d7 '+sug.r;
-}
-
 // ----- search -----
 function gymLev(a, b){
   if(a === b) return 0;
@@ -4807,14 +5452,16 @@ function renderGymExercise(){
   if(!ex){ card.style.display = 'none'; card.innerHTML = ''; return; }
   card.style.display = 'block';
   const date = gymDate();
-  const sug = gymSuggest(ex, date);
+  const before = gymSessions(ex.id, date);
+  const lastSess = before.length ? before[before.length-1] : null;
+  const lastSets = lastSess ? lastSess.sets : null;
   const todays = gymLog.filter(l=> l.ex===ex.id && l.date===date).sort((a,b)=>a.id-b.id);
   const lastToday = todays.length ? todays[todays.length-1] : null;
-  const preW = lastToday ? lastToday.w : (sug.w!=null ? sug.w : '');
-  const preR = lastToday ? lastToday.r : sug.r;
-  const lastSets = sug.last ? sug.last.sets : null;
   const working = todays.filter(x=>!x.wu).length;
   const refSet = lastSets ? lastSets[Math.min(working, lastSets.length-1)] : null;
+  // boxes start at what you did last time, so you only change what's different
+  const preW = lastToday ? lastToday.w : (refSet ? refSet.w : '');
+  const preR = lastToday ? lastToday.r : (refSet ? refSet.r : '');
   const cmpCls = (v, r)=> (r==null || v==='' || isNaN(v)) ? '' : (v > r+1e-9 ? ' cmp-up' : (v < r-1e-9 ? ' cmp-down' : ''));
   let n = 0;
   const setRows = todays.map(st=>{
@@ -4826,7 +5473,6 @@ function renderGymExercise(){
     }
     return '<div class="gym-set-row"><span class="'+cls.trim()+'">'+(st.wu ? '<span class="gym-status rdy">Warm-up</span> ' : 'Set '+n+' \u00b7 ')+gymSetText(ex, st)+'</span><button class="todo-del" data-gym-del="'+st.id+'">&times;</button></div>';
   }).join('');
-  const target = gymTargetText(ex, sug);
   const bwNow = ex.bw ? gymBwLatest() : null;
   const dayLoad = gymLoadHtml(ex, date);
   card.innerHTML =
@@ -4836,13 +5482,10 @@ function renderGymExercise(){
       ex.s.map(m=>'<span class="gym-muscle-chip sec">'+GYM_M[m].n+'</span>').join('')+'</div>'+
       '<button type="button" class="todo-del" id="gymCloseExBtn" title="Close">&times;</button>'+
     '</div>'+
-    '<div class="gym-target">'+
-      (sug.last ? '<div class="gt-row"><span class="stat-sub">Last \u00b7 '+shortDate(sug.last.date)+'</span><b>'+escapeHtml(gymLastText(ex, sug.last.sets))+'</b></div>' : '')+
-      (target ? '<div class="gt-row"><span class="stat-sub">Target</span><b>'+target+'</b><span class="stat-sub">'+sug.sets+' sets'+(sug.up ? ' \u00b7 up' : '')+'</span></div>' : '')+
+    (lastSess || bwNow ? '<div class="gym-target">'+
+      (lastSess ? '<div class="gt-row"><span class="stat-sub">Last \u00b7 '+shortDate(lastSess.date)+'</span><b>'+escapeHtml(gymLastText(ex, lastSess.sets))+'</b></div>' : '')+
       (bwNow ? '<div class="gt-row"><span class="stat-sub">Bodyweight</span><b>'+gymNum(bwNow.kg)+'kg</b></div>' : '')+
-      '<div class="stat-sub" style="margin-top:4px;">'+escapeHtml(sug.note)+'</div>'+
-    '</div>'+
-    (ex.bw && !bwNow ? '<div class="gym-bwask"><input type="number" id="gymBwInline" inputmode="decimal" step="0.1" min="0" placeholder="Your bodyweight (kg)"><button type="button" class="btn small" id="gymBwInlineSave">Save</button></div>' : '')+
+    '</div>' : '<div class="stat-sub" style="margin:8px 0 0;">First time</div>')+
     dayLoad+
     '<div class="gym-inputs">'+
       '<div><label class="mini-label">'+(ex.bw ? 'Added weight (kg)' : 'Weight (kg)')+'</label><input type="number" id="gymWeightInput" inputmode="decimal" step="any" min="0" value="'+(preW===''?'':gymNum(preW))+'" class="'+cmpCls(parseFloat(preW), refSet && refSet.w).trim()+'"></div>'+
@@ -4871,8 +5514,6 @@ function renderGymExercise(){
   gid('gymCloseExBtn').addEventListener('click', ()=>{ gymSelectedId = null; renderGymExercise(); });
   gid('gymAddSetBtn').addEventListener('click', gymAddSet);
   rI.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ e.preventDefault(); gymAddSet(); } });
-  const bwBtn = gid('gymBwInlineSave');
-  if(bwBtn) bwBtn.addEventListener('click', gymBwSaveHandler('gymBwInline'));
   card.querySelectorAll('[data-wstep]').forEach(b=>{
     b.addEventListener('click', ()=>{
       const cur = parseFloat(wI.value) || 0;
@@ -4939,7 +5580,7 @@ function renderGymBw(){
     '<div style="display:flex;gap:8px;align-items:center;"><input type="number" id="gymBwInput" inputmode="decimal" step="0.1" min="0" placeholder="'+(list.length ? gymNum(list[0].kg)+' kg' : 'Bodyweight (kg)')+'" style="flex:1;min-width:0;"><button type="button" class="btn small" id="gymBwSaveBtn">Save</button></div>'+
     list.slice(0,4).map((e,i)=>'<div class="sum-row"><span class="sum-k">'+(e.date===todayStr() ? 'Today' : shortDate(e.date))+'</span><span class="sum-v">'+(i===0 ? '<b>'+gymNum(e.kg)+' kg</b>' : gymNum(e.kg)+' kg')+'</span></div>').join('');
   gid('gymBwSaveBtn').addEventListener('click', gymBwSaveHandler('gymBwInput'));
-  gid('gymBwCard').style.order = gymBw.length ? '' : '-1';      // ask for it first until it's been given
+  gid('gymBwCard').style.order = gymBwDue() ? '-1' : '';          // month-end weigh-in sits on top until it's done
 }
 function renderGymLog(){
   if(gymAutoPick){
@@ -5170,9 +5811,9 @@ function renderGymMuscles(){
     nh = '<div class="stat-sub">All covered.</div>';
   }else{
     next.exercises.forEach(ex=>{
-      const sug = gymSuggest(ex, addDays(todayStr(), 1));
-      const t = gymTargetText(ex, sug);
-      nh += '<div class="gym-next-item" data-gym-start="'+ex.id+'"><div><b>'+escapeHtml(ex.name)+'</b><div class="stat-sub" style="margin-top:2px;">'+ex.p.map(m=>GYM_M[m].n).join(', ')+'</div></div><div style="text-align:right;font-size:13px;">'+(t ? '<b>'+t+'</b><div class="stat-sub" style="margin-top:2px;">'+sug.sets+' sets'+(sug.up?' \u00b7 weight up':'')+'</div>' : '<span class="stat-sub">new</span>')+'</div></div>';
+      const ss = gymSessions(ex.id, addDays(todayStr(), 1));
+      const lastS = ss.length ? ss[ss.length-1] : null;
+      nh += '<div class="gym-next-item" data-gym-start="'+ex.id+'"><div><b>'+escapeHtml(ex.name)+'</b><div class="stat-sub" style="margin-top:2px;">'+ex.p.map(m=>GYM_M[m].n).join(', ')+'</div></div><div style="text-align:right;font-size:13px;">'+(lastS ? '<span class="stat-sub">Last</span><div><b>'+escapeHtml(gymLastText(ex, lastS.sets))+'</b></div>' : '<span class="stat-sub">new</span>')+'</div></div>';
     });
   }
   if(recovering.length) nh += '<div class="stat-sub" style="margin-top:10px;">Resting: '+recovering.slice(0,5).map(m=> m.n).join(', ')+(recovering.length>5 ? '\u2026' : '')+'</div>';
@@ -5216,14 +5857,14 @@ function renderGymHistory(){
       '<button type="button" class="gym-hist-head" data-gym-hist="'+d+'"><span><b>'+niceDate(d)+'</b>'+(top ? '<br><span class="stat-sub">'+top+'</span>' : '')+'</span>'+
       '<span style="display:flex;align-items:center;gap:8px;"><span class="stat-sub" style="margin:0;text-align:right;">'+work.length+' sets'+(vol ? ' \u00b7 '+Math.round(vol).toLocaleString('en-GB')+' kg' : '')+'</span>'+
       '<svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span></button>'+
-      '<div class="gym-hist-body">';
+      '<div class="gym-hist-body"><div class="gh-in">';
     const order = [], by = {};
     logs.forEach(l=>{ if(!by[l.ex]){ by[l.ex] = []; order.push(l.ex); } by[l.ex].push(l); });
     order.forEach(id=>{
       const ex = gymById(id);
       html += '<div class="gym-set-row" style="align-items:flex-start;"><span><b>'+escapeHtml(ex ? ex.name : 'Deleted exercise')+'</b><br><span class="stat-sub">'+by[id].map(x=> (x.wu?'W ':'')+(ex ? gymSetText(ex,x) : x.w+'kg \u00d7 '+x.r)).join(' \u00b7 ')+'</span></span></div>';
     });
-    html += '<button type="button" class="btn secondary tiny" data-gym-delday="'+d+'" style="margin-top:6px;">Delete day</button></div></div>';
+    html += '<button type="button" class="btn secondary tiny" data-gym-delday="'+d+'" style="margin-top:6px;">Delete day</button></div></div></div>';
   });
   if(dates.length > gymHistLimit) html += '<button type="button" class="btn secondary small block" id="gymMoreBtn" style="margin-top:10px;">Show more</button>';
   box.innerHTML = html;
@@ -5288,7 +5929,7 @@ function setupGym(){
 function exportData(){
   const payload = {
     exportedAt: new Date().toISOString(),
-    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries, vanOdometer, gymLog, gymCustom, gymBw,
+    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries, vanOdometer, gymLog, gymCustom, gymBw, spendTxns, spendCats, spendRules, spendMeta,
     rentRateHome: RATE_HOME, rentRateAway: RATE_AWAY
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -5338,6 +5979,10 @@ function handleImportClick(){
       gymLog = data.gymLog || [];
       gymCustom = data.gymCustom || [];
       gymBw = data.gymBw || [];
+      spendTxns = data.spendTxns || [];
+      spendCats = data.spendCats || null;
+      spendRules = data.spendRules || {};
+      spendMeta = Object.assign({secret:'', seen:[], last:null}, data.spendMeta || {});
       RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 0;
       RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 0;
       await saveKey('calendar-data', calendarData);
@@ -5356,6 +6001,10 @@ function handleImportClick(){
       await saveKey('gym-log', gymLog);
       await saveKey('gym-custom', gymCustom);
       await saveKey('gym-bw', gymBw);
+      await saveKey('spend-txns', spendTxns);
+      await saveKey('spend-cats', spendCats);
+      await saveKey('spend-rules', spendRules);
+      await saveKey('spend-meta', spendMeta);
       await saveKey('rent-rate-home', RATE_HOME);
       await saveKey('rent-rate-away', RATE_AWAY);
       renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab(); renderExpensesTab(); renderTravelTab();
@@ -5374,7 +6023,8 @@ function handleImportClick(){
 function showToast(msg){
   const el = document.createElement('div'); el.className = 'notif-toast'; el.textContent = msg;
   document.body.appendChild(el);
-  setTimeout(()=>el.remove(), 4200);
+  setTimeout(()=> el.classList.add('out'), 3800);
+  setTimeout(()=> el.remove(), 4250);
 }
 
 let lastHiddenAt = null;
@@ -5389,6 +6039,8 @@ document.addEventListener('visibilitychange', ()=>{
     }
     lastHiddenAt = null;
     updateClockInBtn();
+    importInbox();
+    setTimeout(maybeAskBodyweight, 700);
   }
 });
 init();
