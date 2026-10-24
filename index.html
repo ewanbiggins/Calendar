@@ -597,7 +597,7 @@ body[data-nav="back"] .view.active:not(#view-calendar){animation:slideInL .4s va
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v15.5</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v15.6</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -4710,7 +4710,7 @@ function renderFinRecurring(box, kind, forYm){
   fr.addEventListener('change', ()=>{ document.getElementById('frDateLbl').textContent = fr.value === 'once' ? 'Date' : 'Next payment date'; });
 }
 
-const FIN_PRICE_PY = "import datetime\nimport json\nimport os\nimport re\nimport sys\nimport time\nimport urllib.parse\nimport urllib.request\n\nUA = {\n    \"User-Agent\": \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36\",\n    \"Accept\": \"application/json\",\n}\n\n\ndef get(url):\n    last = None\n    for i in range(3):\n        try:\n            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:\n                return json.loads(r.read().decode(\"utf-8\"))\n        except Exception as e:\n            last = e\n            time.sleep(2 + 3 * i)\n    raise last\n\n\ndef resolve(ident):\n    # a fund's ISIN is turned into the symbol Yahoo uses for it; a ticker is used as it is\n    if not re.fullmatch(r\"[A-Z]{2}[A-Z0-9]{9}[0-9]\", ident):\n        return ident\n    for host in (\"query2\", \"query1\"):\n        try:\n            j = get(\"https://%s.finance.yahoo.com/v1/finance/search?q=%s&quotesCount=6&newsCount=0\" % (host, ident))\n            for q in j.get(\"quotes\", []):\n                if q.get(\"symbol\"):\n                    return q[\"symbol\"]\n        except Exception:\n            pass\n    return None\n\n\ndef quote(sym):\n    last = None\n    for host in (\"query1\", \"query2\"):\n        try:\n            j = get(\"https://%s.finance.yahoo.com/v8/finance/chart/%s?range=10d&interval=1d\" % (host, urllib.parse.quote(sym)))\n            res = j[\"chart\"][\"result\"][0]\n            meta = res.get(\"meta\", {})\n            stamps = res.get(\"timestamp\") or []\n            closes = ((res.get(\"indicators\") or {}).get(\"quote\") or [{}])[0].get(\"close\") or []\n            pts = [(t, c) for t, c in zip(stamps, closes) if c]\n            price = meta.get(\"regularMarketPrice\") or (pts[-1][1] if pts else None)\n            when = meta.get(\"regularMarketTime\") or (pts[-1][0] if pts else None)\n            if not price:\n                raise ValueError(\"no price\")\n            cur = meta.get(\"currency\") or \"\"\n            if cur == \"GBp\":\n                cur = \"GBX\"\n            day = datetime.datetime.fromtimestamp(when, datetime.timezone.utc).strftime(\"%Y-%m-%d\") if when else \"\"\n            return {\"price\": round(float(price), 4), \"currency\": cur, \"date\": day, \"symbol\": sym, \"name\": meta.get(\"longName\") or meta.get(\"shortName\") or \"\"}\n        except Exception as e:\n            last = e\n    raise last\n\n\nold = {}\ntry:\n    old = json.load(open(\"prices.json\")).get(\"prices\", {})\nexcept Exception:\n    pass\nout, errors = {}, {}\nfor ident in [s.strip().upper() for s in os.environ.get(\"SYMBOLS\", \"\").split(\",\") if s.strip()]:\n    try:\n        sym = resolve(ident)\n        if not sym:\n            raise ValueError(\"could not find \" + ident)\n        out[ident] = quote(sym)\n    except Exception as e:\n        errors[ident] = str(e)\n        if ident in old:\n            out[ident] = dict(old[ident], stale=True)\n        print(\"FAILED\", ident, e, file=sys.stderr)\nstamp = datetime.datetime.now(datetime.timezone.utc).strftime(\"%Y-%m-%dT%H:%M:%SZ\")\njson.dump({\"updated\": stamp, \"prices\": out, \"errors\": errors}, open(\"prices.json\", \"w\"), indent=1)\nprint(json.dumps(out)[:600])\n";
+const FIN_PRICE_PY = "import datetime\nimport json\nimport os\nimport re\nimport sys\nimport time\nimport urllib.parse\nimport urllib.request\n\nUA = {\n    \"User-Agent\": \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36\",\n    \"Accept\": \"application/json\",\n}\n\n\ndef get(url):\n    last = None\n    for i in range(3):\n        try:\n            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:\n                return json.loads(r.read().decode(\"utf-8\"))\n        except Exception as e:\n            last = e\n            time.sleep(2 + 3 * i)\n    raise last\n\n\n# funds Yahoo may not find by ISIN: the name to search for, and words the right result must contain\nNAMES = {\"GB00B4PQW151\": (\"Vanguard LifeStrategy 100% Equity\", [\"lifestrategy\", \"100\"])}\n\n\ndef search(q):\n    for host in (\"query2\", \"query1\"):\n        try:\n            j = get(\"https://%s.finance.yahoo.com/v1/finance/search?q=%s&quotesCount=10&newsCount=0\" % (host, urllib.parse.quote(q)))\n            if j.get(\"quotes\"):\n                return j[\"quotes\"]\n        except Exception:\n            pass\n    return []\n\n\ndef pick(quotes, words):\n    # the accumulation unit class if there is one, otherwise the first match\n    found = [q for q in quotes if q.get(\"symbol\") and all(w in ((q.get(\"longname\") or \"\") + \" \" + (q.get(\"shortname\") or \"\")).lower() for w in words)]\n    for q in found:\n        if \"acc\" in ((q.get(\"longname\") or \"\") + \" \" + (q.get(\"shortname\") or \"\")).lower():\n            return q[\"symbol\"]\n    return found[0][\"symbol\"] if found else None\n\n\ndef resolve(ident):\n    # SYMBOLS can say  CODE=YAHOOSYMBOL  to name the Yahoo symbol yourself\n    if \"=\" in ident:\n        return ident.split(\"=\", 1)[1].strip()\n    # a fund's ISIN is turned into the symbol Yahoo uses for it; a ticker is used as it is\n    if not re.fullmatch(r\"[A-Z]{2}[A-Z0-9]{9}[0-9]\", ident):\n        return ident\n    for q in search(ident):\n        if q.get(\"symbol\"):\n            return q[\"symbol\"]\n    if ident in NAMES:\n        name, words = NAMES[ident]\n        return pick(search(name), words)\n    return None\n\n\ndef quote(sym):\n    last = None\n    for host in (\"query1\", \"query2\"):\n        try:\n            j = get(\"https://%s.finance.yahoo.com/v8/finance/chart/%s?range=10d&interval=1d\" % (host, urllib.parse.quote(sym)))\n            res = j[\"chart\"][\"result\"][0]\n            meta = res.get(\"meta\", {})\n            stamps = res.get(\"timestamp\") or []\n            closes = ((res.get(\"indicators\") or {}).get(\"quote\") or [{}])[0].get(\"close\") or []\n            pts = [(t, c) for t, c in zip(stamps, closes) if c]\n            price = meta.get(\"regularMarketPrice\") or (pts[-1][1] if pts else None)\n            when = meta.get(\"regularMarketTime\") or (pts[-1][0] if pts else None)\n            if not price:\n                raise ValueError(\"no price\")\n            cur = meta.get(\"currency\") or \"\"\n            if cur == \"GBp\":\n                cur = \"GBX\"\n            day = datetime.datetime.fromtimestamp(when, datetime.timezone.utc).strftime(\"%Y-%m-%d\") if when else \"\"\n            return {\"price\": round(float(price), 4), \"currency\": cur, \"date\": day, \"symbol\": sym, \"name\": meta.get(\"longName\") or meta.get(\"shortName\") or \"\"}\n        except Exception as e:\n            last = e\n    raise last\n\n\nold = {}\ntry:\n    old = json.load(open(\"prices.json\")).get(\"prices\", {})\nexcept Exception:\n    pass\nout, errors = {}, {}\nfor ident in [s.strip().upper() for s in os.environ.get(\"SYMBOLS\", \"\").split(\",\") if s.strip()]:\n    key = ident.split(\"=\", 1)[0].strip()\n    try:\n        sym = resolve(ident)\n        if not sym:\n            raise ValueError(\"could not find \" + key + \" on Yahoo - add its Yahoo symbol like \" + key + \"=XXXX.L\")\n        out[key] = quote(sym)\n    except Exception as e:\n        errors[key] = str(e)\n        if key in old:\n            out[key] = dict(old[key], stale=True)\n        print(\"FAILED\", key, e, file=sys.stderr)\nstamp = datetime.datetime.now(datetime.timezone.utc).strftime(\"%Y-%m-%dT%H:%M:%SZ\")\njson.dump({\"updated\": stamp, \"prices\": out, \"errors\": errors}, open(\"prices.json\", \"w\"), indent=1)\nprint(json.dumps(out)[:600])\n";
 
 // ---- presets, savings accounts and the daily price file ----
 const FIN_PRESETS = [
@@ -4758,8 +4758,17 @@ function finSavingsRow(x){
         '<div class="sp-chips" style="margin-top:0;">'+[['monthly','Interest paid monthly'],['yearly','Interest paid yearly']].map(u=> '<button type="button" class="chip-btn'+((x.comp || 'monthly') === u[0] ? ' active' : '')+'" data-fh-comp="'+u[0]+'">'+u[1]+'</button>').join('')+'</div>'+
         '<div class="fin-edit-row"><button type="button" class="btn small" data-fh-save="'+x.id+'">Save</button><button type="button" class="btn secondary small" data-fh-del="'+x.id+'">Delete</button></div></div></div>' : '')+'</div>';
 }
+function finNormalizePriceUrl(v){
+  v = String(v || '').trim();
+  if(!v) return '';
+  let m = /^(?:https?:\/\/)?(?:www\.)?github\.com\/([^\/\s]+)\/([^\/\s]+)\/(?:blob|raw)\/([^\/\s]+)\/(.+)$/i.exec(v);      // the file's page on github.com
+  if(m) return 'https://raw.githubusercontent.com/'+m[1]+'/'+m[2]+'/'+m[3]+'/'+m[4];
+  m = /^@?([A-Za-z0-9-]+)\/([A-Za-z0-9._-]+)\/?$/.exec(v);                                                                // just username/repository
+  if(m) return 'https://raw.githubusercontent.com/'+m[1]+'/'+m[2]+'/main/prices.json';
+  return v;
+}
 function finDailyUrl(){
-  const set = (finSettings.priceUrl || '').trim();
+  const set = finNormalizePriceUrl(finSettings.priceUrl);
   if(set) return set;
   try{
     const m = /^([a-z0-9-]+)\.github\.io$/i.exec(location.hostname);
@@ -4772,25 +4781,33 @@ async function finEnsureFx(){
   try{ const j = await finFetchJson('https://api.coinbase.com/v2/exchange-rates?currency=USD'); const g = parseFloat(j.data.rates.GBP); if(g > 0) finPrices._fx = {usdgbp:g, at:Date.now()}; }catch(e){}
 }
 // the once-a-day price file written by the GitHub job
+const finAliases = k=>{ const K = String(k).toUpperCase(); return [K, K.replace(/\.L$/, '.LON'), K.replace(/\.LON$/, '.L'), K.replace(/\.(L|LON)$/, '')]; };
 async function finLoadDaily(){
   const url = finDailyUrl(), used = new Set();
   if(!url || !finHoldings.some(h=> h.type === 'stock')) return {used};
+  const get = u=> finFetchJson(u+(u.indexOf('?') > -1 ? '&' : '?')+'_='+Math.floor(Date.now()/600000));
   try{
-    const j = await finFetchJson(url+(url.indexOf('?') > -1 ? '&' : '?')+'_='+Math.floor(Date.now()/600000));
+    let j;
+    try{ j = await get(url); }
+    catch(err){ if(/\/main\/prices\.json/.test(url) && /404/.test(String(err && err.message))) j = await get(url.replace('/main/prices.json', '/master/prices.json')); else throw err; }
     const P = (j && j.prices) || {}, when = Date.parse(j.updated) || Date.now();
+    const alias = {}, errs = {};
+    Object.keys(P).forEach(k=> finAliases(k).forEach(a=>{ if(!(a in alias)) alias[a] = k; }));
+    Object.keys(j.errors || {}).forEach(k=> finAliases(k).forEach(a=>{ errs[a] = j.errors[k]; }));
+    const entry = sym=>{ const k = alias[sym]; return k ? P[k] : null; };
     const cur = e=> e.currency === 'GBp' ? 'GBX' : String(e.currency || '').toUpperCase();
     const stocks = finHoldings.filter(h=> h.type === 'stock' && h.symbol);
-    if(stocks.some(h=>{ const e = P[h.symbol.toUpperCase()]; return e && e.price > 0 && cur(e) === 'USD'; })) await finEnsureFx();
+    if(stocks.some(h=>{ const e = entry(h.symbol.toUpperCase()); return e && e.price > 0 && cur(e) === 'USD'; })) await finEnsureFx();
     stocks.forEach(h=>{
-      const sym = h.symbol.toUpperCase(), e = P[sym];
+      const sym = h.symbol.toUpperCase(), e = entry(sym);
       if(!e || !(e.price > 0)) return;
       const c = cur(e); let gbp = 0;
       if(c === 'GBX') gbp = e.price/100; else if(c === 'GBP') gbp = e.price; else if(c === 'USD') gbp = e.price*finFx();
       if(!(gbp > 0)) return;
-      finPrices['stock:'+sym] = {raw:e.price, gbp, at:when, date:e.date || '', daily:true};
+      finPrices['stock:'+sym] = {raw:e.price, gbp, at:when, date:e.date || '', daily:true, fname:e.name || ''};
       used.add(sym);
     });
-    finPrices._daily = {at:Date.now(), updated:j.updated || '', ok:true, n:used.size, errors:j.errors || {}};
+    finPrices._daily = {at:Date.now(), updated:j.updated || '', ok:true, n:used.size, errors:errs, bad:Object.keys(j.errors || {})};
   }catch(err){
     finPrices._daily = {at:Date.now(), updated:(finPrices._daily || {}).updated || '', ok:false, err:String(err && err.message || err)};
   }
@@ -4803,11 +4820,18 @@ function finWorkflowText(){
 }
 function finDailyStatus(){
   const url = finDailyUrl(), d = finPrices._daily;
-  if(!url) return 'Paste the link to your price file below.';
+  if(!url) return 'No link yet \u2014 type your GitHub username/repository below (for example ewan/home-base).';
   if(!d) return 'Not checked yet \u2014 tap Refresh.';
   if(!d.ok) return 'Couldn\u2019t read the price file ('+d.err+'). Has the GitHub job run yet?';
-  const u = d.updated ? new Date(d.updated) : null, bad = Object.keys(d.errors || {});
-  return 'File updated '+(u ? shortDate(fmt(u))+' '+pad(u.getHours())+':'+pad(u.getMinutes()) : '\u2014')+' \u00b7 '+d.n+' price'+(d.n === 1 ? '' : 's')+' found'+(bad.length ? ' \u00b7 couldn\u2019t get '+bad.join(', ') : '');
+  const u = d.updated ? new Date(d.updated) : null, bad = d.bad || [];
+  return 'File updated '+(u ? shortDate(fmt(u))+' '+pad(u.getHours())+':'+pad(u.getMinutes()) : '\u2014')+' \u00b7 '+d.n+' price'+(d.n === 1 ? '' : 's')+' found'+(bad.length ? ' \u00b7 the job couldn\u2019t get '+bad.join(', ') : '');
+}
+function finDailyDetail(){
+  return finHoldings.filter(h=> h.type === 'stock' && h.symbol).map(h=>{
+    const sym = h.symbol.toUpperCase(), c = finPrices['stock:'+sym], d = finPrices._daily, why = d && d.errors ? d.errors[sym] : '';
+    const right = c && c.daily ? escapeHtml((c.fname || 'priced')+(c.date ? ' \u00b7 close '+shortDate(c.date) : '')) : '<span class="sum-over">not found'+(why ? ' \u2014 '+escapeHtml(why) : '')+'</span>';
+    return '<div class="sum-row" style="padding:5px 0;"><span style="min-width:0;">'+escapeHtml(sym)+'</span><span class="stat-sub" style="margin:0;text-align:right;max-width:68%;">'+right+'</span></div>';
+  }).join('');
 }
 
 // ---- investments: live prices ----
@@ -4913,13 +4937,17 @@ async function finRefreshPrices(force){
     const coins = Array.from(new Set(finHoldings.filter(h=> h.type === 'crypto' && h.symbol).map(h=> h.symbol.toUpperCase())));
     await Promise.all(coins.map(async sym=>{ const p = await finCoinPrice(sym); if(p > 0) finPrices['crypto:'+sym] = {raw:p, at:Date.now()}; else errs.push(sym); }));
     const daily = await finLoadDaily();
-    if(finPrices._daily && finPrices._daily.ok === false && finDailyUrl() && finHoldings.some(h=> h.type === 'stock')) errs.push('the daily price file ('+finPrices._daily.err+')');
+    const dUrl = finDailyUrl(), dSt = finPrices._daily, hasStock = finHoldings.some(h=> h.type === 'stock');
     const allSyms = Array.from(new Set(finHoldings.filter(h=> h.type === 'stock' && h.symbol).map(h=> h.symbol.toUpperCase())));
-    const syms = allSyms.filter(sy=> !daily.used.has(sy) && !FIN_ISIN.test(sy));
-    const fundsMissing = allSyms.filter(sy=> !daily.used.has(sy) && FIN_ISIN.test(sy));
-    if(fundsMissing.length) errs.push(fundsMissing.join(', ')+' needs the daily price file (Price settings, below)');
+    const missing = allSyms.filter(sy=> !daily.used.has(sy));
+    const syms = missing.filter(sy=> !FIN_ISIN.test(sy));                 // these can still try Alpha Vantage
     const key = (finSettings.avKey || '').trim();
-    if(syms.length && !key){ errs.push('set up daily prices or add an Alpha Vantage key (Price settings, below)'); }
+    if(hasStock && missing.length){
+      if(!dUrl){ if(!key || missing.some(sy=> FIN_ISIN.test(sy))) errs.push('no price file linked yet \u2014 type your GitHub username/repository in Price settings (below)'); }
+      else if(dSt && dSt.ok === false) errs.push('the price file ('+dSt.err+')');
+      else if(dSt && dSt.ok) missing.forEach(sy=>{ if(key && !FIN_ISIN.test(sy)) return; const why = (dSt.errors || {})[sy]; errs.push(sy+' isn\u2019t in the price file'+(why ? ' ('+why+')' : ' yet')); });
+    }
+    if(syms.length && !key){ /* explained above */ }
     else if(syms.length){
       let first = true;
       for(const sym of syms){
@@ -4988,7 +5016,7 @@ function renderFinInvest(box){
   const upd = times.length ? new Date(Math.max.apply(null, times)).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) : '';
   const prev = finSnap.filter(s=> s.date < todayStr()).slice(-1)[0];
   const addedThisMonth = finR2(finHoldings.reduce((a,x)=> a + (x.contribs || []).filter(c=> c.src === 'added' && (c.date || '').slice(0,7) === todayStr().slice(0,7)).reduce((b,c)=> b + c.amount, 0), 0));
-  const needKey = finHoldings.some(x=> x.type === 'stock') && !(finSettings.avKey || '').trim() && !(finPrices._daily && finPrices._daily.ok);
+  const needKey = finHoldings.some(x=> x.type === 'stock') && (!!finPriceMsg || (!(finSettings.avKey || '').trim() && !(finPrices._daily && finPrices._daily.ok)));
   let h = '<div class="card"><div class="sum-head"><div class="sum2-h" style="margin:0;"><span>Portfolio</span></div><button type="button" class="chip-btn" id="finRefresh"'+(finPriceBusy ? ' disabled' : '')+'>'+(finPriceBusy ? 'Updating\u2026' : 'Refresh')+'</button></div>'+
     '<div class="fin-big">'+(pf.priced ? money(pf.value) : '\u2014')+'</div>'+
     '<div class="stat-sub" style="margin:2px 0 0;">'+(pf.gain !== null ? '<b style="color:'+(pf.gain >= 0 ? 'var(--home)' : 'var(--danger)')+'">'+(pf.gain >= 0 ? '+' : '\u2212')+money(Math.abs(pf.gain))+' ('+(pf.gain >= 0 ? '+' : '\u2212')+Math.abs(pf.gain/pf.invested*100).toFixed(1)+'%)</b> on what you put in' : (pf.count ? '' : 'Add your first holding below'))+'</div>'+
@@ -4997,6 +5025,7 @@ function renderFinInvest(box){
     (upd ? '<div class="stat-sub" style="margin:2px 0 0;">Prices at '+upd+'</div>' : '')+
     (dailyLine ? '<div class="stat-sub" style="margin:2px 0 0;">'+dailyLine+'</div>' : '')+
     (finPriceMsg ? '<div class="stat-sub sum-over" style="margin-top:6px;">'+escapeHtml(finPriceMsg)+'</div>' : '')+
+    (!finPriceMsg && finHoldings.some(x=> x.type === 'stock') && !finDailyUrl() && !(finSettings.avKey || '').trim() ? '<div class="stat-sub sum-over" style="margin-top:6px;">No price file linked yet \u2014 type your GitHub username/repository in Price settings (below).</div>' : '')+
     finSpark(finSnap.slice(-30).map(s=> s.value))+'</div>';
   h += '<div class="card">'+(finHoldings.length ? finHoldings.map(x=>{
     if(x.type === 'savings') return finSavingsRow(x);
@@ -5037,8 +5066,8 @@ function renderFinInvest(box){
   h += '<details class="card" id="finPriceSet" style="margin-top:12px;"'+(needKey ? ' open' : '')+'><summary style="cursor:pointer;font-weight:600;font-size:14px;">Price settings</summary>'+
     '<div class="sum2-h" style="margin:10px 0 2px;"><span>Daily prices (ETFs and funds)</span></div>'+
     '<div class="stat-sub" style="margin:0 0 6px;">Free, no key. A small GitHub job fetches your prices once a day into a file this page reads.</div>'+
-    '<div class="stat-sub" style="margin:0 0 8px;" id="finDailyStatus">'+escapeHtml(finDailyStatus())+'</div>'+
-    '<div class="sp-add"><input type="text" id="finPriceUrl" placeholder="'+escapeHtml(finDailyUrl() || 'Link to prices.json')+'" value="'+escapeHtml(finSettings.priceUrl || '')+'" autocomplete="off" autocapitalize="none" style="flex:1;"><button type="button" class="btn small" id="finPriceUrlSave">Save</button></div>'+
+    '<div class="stat-sub" style="margin:0 0 6px;" id="finDailyStatus">'+escapeHtml(finDailyStatus())+'</div><div id="finDailyDetail" style="margin-bottom:8px;">'+finDailyDetail()+'</div>'+
+    '<div class="sp-add"><input type="text" id="finPriceUrl" placeholder="'+escapeHtml(finDailyUrl() || 'GitHub username/repo, e.g. ewan/home-base')+'" value="'+escapeHtml(finSettings.priceUrl || '')+'" autocomplete="off" autocapitalize="none" style="flex:1;"><button type="button" class="btn small" id="finPriceUrlSave">Save</button></div>'+
     '<details class="fin-auto"><summary>Set it up (once)</summary><ol class="sp-steps"><li>On GitHub open the repository that holds Home Base \u2192 <b>Add file \u2192 Create new file</b>.</li>'+
       '<li>Name it <b>.github/workflows/prices.yml</b> (typing the slashes makes the folders), paste this, then <b>Commit</b>.<div class="sp-btnrow"><button type="button" class="btn secondary small" id="finCopyWorkflow">Copy workflow</button></div></li>'+
       '<li>Open the <b>Actions</b> tab \u2192 <b>Update prices</b> \u2192 <b>Run workflow</b>. After that it runs by itself every weekday.</li>'+
@@ -5151,7 +5180,7 @@ function renderFinInvest(box){
     renderBudget(); finRefreshPrices(false);        // only what's missing, so lookups aren't wasted
   });
   document.getElementById('finPriceUrlSave').addEventListener('click', async ()=>{
-    finSettings = Object.assign({}, finSettings, {priceUrl: document.getElementById('finPriceUrl').value.trim()});
+    finSettings = Object.assign({}, finSettings, {priceUrl: finNormalizePriceUrl(document.getElementById('finPriceUrl').value)});
     await saveKey('fin-settings', finSettings); showToast('Saved.'); finRefreshPrices(true);
   });
   document.getElementById('finCopyWorkflow').addEventListener('click', ()=> copyText(finWorkflowText(), 'Workflow'));
