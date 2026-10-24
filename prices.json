@@ -1,10 +1,16 @@
 {
- "updated": "2026-10-24T23:19:02Z",
- "prices": {},
+ "updated": "2026-10-24T23:31:47Z",
+ "prices": {
+  "GB00B4PQW151": {
+   "price": 384.97,
+   "currency": "GBP",
+   "date": "2026-10-23",
+   "symbol": "GB00B4PQW151:GBP",
+   "name": "Vanguard LifeStrategy 80% Equity Fund A Acc",
+   "source": "FT"
+  }
+ },
  "errors": {
-  "VUAG.L": "HTTP Error 429: Too Many Requests",
-  "VUSA.L": "HTTP Error 429: Too Many Requests",
-  "CSPX.L": "HTTP Error 429: Too Many Requests",
-  "GB00B4PQW151": "could not find GB00B4PQW151 on Yahoo - add its Yahoo symbol like GB00B4PQW151=XXXX.L"
+  "VUAG.L": "Stooq: HTTP Error 404: Not Found; Yahoo: HTTP Error 429: Too Many Requests"
  }
 }
