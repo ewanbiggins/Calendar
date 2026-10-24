@@ -587,6 +587,9 @@ body[data-nav="back"] .view.active:not(#view-calendar){animation:slideInL .4s va
 .set-page:not([hidden]){animation:slideInR .3s cubic-bezier(.22,.8,.3,1) both;}
 #setRoot:not([hidden]){animation:slideInL .3s cubic-bezier(.22,.8,.3,1) both;}
 @media (prefers-reduced-motion: reduce){ .set-page:not([hidden]), #setRoot:not([hidden]){animation:none;} }
+.exp-month{display:flex;justify-content:space-between;align-items:baseline;position:sticky;top:0;z-index:2;background:var(--surface,var(--card,#fff));padding:12px 0 6px;margin-top:6px;font-weight:700;font-size:14px;border-bottom:1px solid var(--line);}
+.exp-month span:last-child{font-weight:600;font-size:12.5px;opacity:.7;}
+.exp-day{font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;font-weight:700;margin:12px 0 0;}
 </style>
 </head>
 <body>
@@ -594,7 +597,7 @@ body[data-nav="back"] .view.active:not(#view-calendar){animation:slideInL .4s va
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v15.3</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v15.5</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -2203,7 +2206,6 @@ async function toggleExpenseDone(e){
   await saveKey('expenses', expenses);
   renderExpensesTab();
 }
-let expMonth = null;     // which month of finished expenses is showing ('YYYY-MM' or 'all')
 function renderExpensesTab(){
   const pendingList = document.getElementById('list-expenses-pending');
   const doneList = document.getElementById('list-expenses-done');
@@ -2235,34 +2237,24 @@ function renderExpensesTab(){
   }
   if(done.length===0){ doneList.innerHTML = '<div class="empty">Nothing here yet.</div>'; return; }
 
-  // finished expenses: one month at a time (newest first), or all grouped by month
-  const months = Array.from(new Set(done.map(e=> e.date.slice(0,7)))).sort().reverse();
-  const count = {}, sum = {};
-  done.forEach(e=>{ const m = e.date.slice(0,7); count[m] = (count[m]||0) + 1; sum[m] = (sum[m]||0) + e.amount; });
-  let sel = expMonth;
-  if(sel !== 'all' && months.indexOf(sel) === -1) sel = months[0];
-  const idx = months.indexOf(sel);
-  const filter = document.createElement('div');
-  filter.innerHTML =
-    '<div class="exp-filter"><button type="button" class="chip-btn" id="expOlder"'+(sel === 'all' || idx >= months.length-1 ? ' disabled' : '')+'>\u2039</button>'+
-    '<select id="expMonthSel"><option value="all"'+(sel === 'all' ? ' selected' : '')+'>All months ('+done.length+')</option>'+months.map(m=> '<option value="'+m+'"'+(m === sel ? ' selected' : '')+'>'+finMonthLabel(m)+' ('+count[m]+')</option>').join('')+'</select>'+
-    '<button type="button" class="chip-btn" id="expNewer"'+(sel === 'all' || idx <= 0 ? ' disabled' : '')+'>\u203a</button></div>'+
-    '<div class="stat-sub" style="margin:0 0 6px;">'+(sel === 'all' ? done.length+' expenses \u00b7 '+money(done.reduce((a,e)=> a + e.amount, 0)) : count[sel]+' expense'+(count[sel] === 1 ? '' : 's')+' \u00b7 '+money(sum[sel]))+'</div>';
-  doneList.appendChild(filter);
-  if(sel === 'all'){
-    months.forEach(m=>{
-      const h = document.createElement('div');
-      h.className = 'sum2-h'; h.style.cssText = 'margin:12px 0 2px;';
-      h.innerHTML = '<span>'+finMonthLabel(m)+'</span><span>'+money(sum[m])+'</span>';
-      doneList.appendChild(h);
-      done.filter(e=> e.date.slice(0,7) === m).forEach(e=> doneList.appendChild(mkRow(e, true)));
+  // finished expenses: one long scroll, newest first, under month and date headings
+  const byMonth = {};
+  done.forEach(e=>{ const m = e.date.slice(0,7); (byMonth[m] = byMonth[m] || []).push(e); });
+  Object.keys(byMonth).sort().reverse().forEach(m=>{
+    const list = byMonth[m];
+    const mh = document.createElement('div');
+    mh.className = 'exp-month';
+    mh.innerHTML = '<span>'+finMonthLabel(m)+'</span><span>'+money(list.reduce((a,e)=> a + e.amount, 0))+' \u00b7 '+list.length+'</span>';
+    doneList.appendChild(mh);
+    const dates = Array.from(new Set(list.map(e=> e.date))).sort().reverse();
+    dates.forEach(dt=>{
+      const dh = document.createElement('div');
+      dh.className = 'exp-day';
+      dh.textContent = niceDate(dt);
+      doneList.appendChild(dh);
+      list.filter(e=> e.date === dt).forEach(e=> doneList.appendChild(mkRow(e, true)));
     });
-  }else{
-    done.filter(e=> e.date.slice(0,7) === sel).forEach(e=> doneList.appendChild(mkRow(e, true)));
-  }
-  doneList.querySelector('#expMonthSel').addEventListener('change', (ev)=>{ expMonth = ev.target.value; renderExpensesTab(); });
-  doneList.querySelector('#expOlder').addEventListener('click', ()=>{ if(idx < months.length-1){ expMonth = months[idx+1]; renderExpensesTab(); } });
-  doneList.querySelector('#expNewer').addEventListener('click', ()=>{ if(idx > 0){ expMonth = months[idx-1]; renderExpensesTab(); } });
+  });
 }
 function setupMileage(){
   document.getElementById('mileageDateInput').value = todayStr();
@@ -4622,13 +4614,14 @@ function renderBudget(){
   const box = document.getElementById('budgetBody');
   if(!box) return;
   const st = spendStats(spendMonth || todayStr().slice(0,7));
-  const tabs = [['overview','Overview',0],['spend','Spend',0],['invest','Invest',0],['bills','Bills',0],['income','Income',0]];
+  const tabs = [['overview','Overview',0],['spend','Spend',0],['invest','Invest',0],['income','Income',0]];
   box.innerHTML = '<div class="chip-row fin-tabs">'+tabs.map(t=> '<button type="button" class="chip-btn'+(finTab===t[0] ? ' active' : '')+'" data-fin-tab="'+t[0]+'">'+t[1]+(t[2] ? '<span class="fin-n">'+t[2]+'</span>' : '')+'</button>').join('')+'</div><div id="finBody"></div>';
   box.querySelectorAll('.fin-tabs [data-fin-tab]').forEach(b=> b.addEventListener('click', ()=>{ finTab = b.dataset.finTab; finOpenItem = null; renderBudget(); }));
   const act = box.querySelector('.fin-tabs .active');
   if(act) act.parentNode.scrollLeft = Math.max(0, act.offsetLeft - 40);
-  if(!{overview:1, spend:1, invest:1, bills:1, income:1}[finTab]) finTab = 'overview';
-  ({overview:renderFinOverview, spend:renderFinSpend, invest:renderFinInvest, bills:b=> renderFinRecurring(b,'dd'), income:b=> renderFinRecurring(b,'income')})[finTab](document.getElementById('finBody'));
+  if(finTab === 'bills') finTab = 'spend';
+  if(!{overview:1, spend:1, invest:1, income:1}[finTab]) finTab = 'overview';
+  ({overview:renderFinOverview, spend:renderFinSpend, invest:renderFinInvest, income:b=> renderFinRecurring(b,'income')})[finTab](document.getElementById('finBody'));
 }
 function finNavMonth(delta){
   const [y, m] = (spendMonth || todayStr().slice(0,7)).split('-').map(Number), d = new Date(y, m-1+delta, 1);
@@ -4642,7 +4635,7 @@ function renderFinOverview(box){
   let h = '<div class="card"><div class="sp-month"><button type="button" class="chip-btn" data-fin-m="-1">\u2039</button><b>'+finMonthLabel(ym)+'</b><button type="button" class="chip-btn" data-fin-m="1">\u203a</button></div>';
   if(inc > 0) h += '<div class="fin-big'+(left < 0 ? ' sum-over' : '')+'">'+finAmt(left)+'</div><div class="stat-sub" style="margin-bottom:6px;">left after bills and spending</div>';
   else h += '<div class="stat-sub" style="margin-bottom:6px;cursor:pointer;" data-fin-tab="income"><b>Add your income</b> to see what\u2019s left \u2192</div>';
-  h += row('Income', inc ? '+'+money(inc) : '\u2014')+row('Direct debits', dd ? '\u2212'+money(dd) : '\u2014')+row('Spending (your share)', st.spent ? '\u2212'+money(st.spent) : '\u2014')+'</div>';
+  h += row('Income', inc ? '+'+money(inc) : '\u2014')+row('Bills', dd ? '\u2212'+money(dd) : '\u2014')+row('Spending (your share)', st.spent ? '\u2212'+money(st.spent) : '\u2014')+'</div>';
   const horizon = addDays(today, 7), up = [];
   finDD.forEach(it=>{ const n = finNext(it, today); if(n && n <= horizon) up.push({d:n, name:it.name, amt:-it.amount}); });
   finIncome.forEach(it=>{ const n = finNext(it, today); if(n && n <= horizon) up.push({d:n, name:it.name, amt:it.amount}); });
@@ -4659,23 +4652,23 @@ function renderFinOverview(box){
 }
 
 // ---- bills (direct debits) and income share one screen design ----
-function renderFinRecurring(box, kind){
+function renderFinRecurring(box, kind, forYm){
   const isDD = kind === 'dd', list = isDD ? finDD : finIncome, key = isDD ? 'fin-dd' : 'fin-income';
-  const today = todayStr(), ym = today.slice(0,7);
+  const today = todayStr(), ym = forYm || today.slice(0,7);
   const monthTot = finMonthTotal(list, ym);
   const avg = list.filter(it=> it.active !== false).reduce((a,it)=> a + it.amount*(FIN_PER_MONTH[it.freq] || 0), 0);
   const rows = list.map(it=> ({it, next: finNext(it, today)})).sort((a,b)=> (a.next || '9999').localeCompare(b.next || '9999'));
   const freqOpts = sel=> FIN_FREQ.map(f=> '<option value="'+f[0]+'"'+(f[0]===sel ? ' selected' : '')+'>'+f[1]+'</option>').join('');
-  let h = '<div class="card"><div class="sum2-h"><span>'+(isDD ? 'Direct debits' : 'Income')+' this month</span></div><div class="fin-big">'+money(monthTot)+'</div>'+
-    '<div class="stat-sub" style="margin:2px 0 0;">'+(avg ? 'about '+finMoneyShort(avg)+' a month on average \u00b7 ' : '')+list.length+(isDD ? ' direct debit' : ' source')+(list.length === 1 ? '' : 's')+'</div></div>';
+  let h = '<div class="card"><div class="sum2-h"><span>'+(isDD ? 'Bills' : 'Income')+' '+(ym === today.slice(0,7) ? 'this month' : 'in '+finMonthLabel(ym))+'</span></div><div class="fin-big">'+money(monthTot)+'</div>'+
+    '<div class="stat-sub" style="margin:2px 0 0;">'+(avg ? 'about '+finMoneyShort(avg)+' a month on average \u00b7 ' : '')+list.length+(isDD ? ' bill' : ' source')+(list.length === 1 ? '' : 's')+'</div></div>';
   h += '<div class="card">'+(rows.length ? rows.map(r=>{
     const it = r.it, open = String(finOpenItem) === String(it.id);
     const sub = finFreqLabel(it.freq)+' \u00b7 '+(it.active === false ? 'paused' : (r.next ? finDateLabel(r.next) : (it.freq === 'once' ? shortDate(it.date) : 'ended')));
     return '<div class="fin-item"><div class="fin-item-top" data-fin-open="'+it.id+'"><div style="min-width:0;"><b>'+escapeHtml(it.name)+'</b><div class="stat-sub" style="margin:2px 0 0;">'+sub+'</div></div><b style="'+(it.active === false ? 'opacity:.5;' : '')+(isDD ? '' : 'color:var(--home);')+'">'+money(it.amount)+'</b></div>'+
       (open ? '<div class="fin-edit"><input type="text" data-fe="name" value="'+escapeHtml(it.name)+'"><div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" data-fe="amount" value="'+it.amount+'"><select data-fe="freq">'+freqOpts(it.freq)+'</select></div><input type="date" data-fe="date" value="'+it.date+'">'+
         '<div class="fin-edit-row"><button type="button" class="btn small" data-fe-save="'+it.id+'">Save</button><button type="button" class="btn secondary small" data-fe-pause="'+it.id+'">'+(it.active === false ? 'Resume' : 'Pause')+'</button><button type="button" class="btn secondary small" data-fe-del="'+it.id+'">Delete</button></div></div>' : '')+'</div>';
-  }).join('') : '<div class="stat-sub">'+(isDD ? 'No direct debits yet.' : 'No income added yet.')+'</div>')+'</div>';
-  h += '<button type="button" class="btn secondary block" id="frToggle">+ Add '+(isDD ? 'direct debit' : 'income')+'</button>'+
+  }).join('') : '<div class="stat-sub">'+(isDD ? 'No bills yet.' : 'No income added yet.')+'</div>')+'</div>';
+  h += '<button type="button" class="btn secondary block" id="frToggle">+ Add '+(isDD ? 'bill' : 'income')+'</button>'+
     '<div class="card" id="frForm" hidden style="margin-top:10px;"><div class="fin-edit" style="margin-top:0;"><input type="text" id="frName" placeholder="'+(isDD ? 'Name, e.g. Rent' : 'Name, e.g. Salary')+'" autocomplete="off"><div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" id="frAmt" placeholder="\u00a3"><select id="frFreq">'+freqOpts('monthly')+'</select></div>'+
     '<label class="mini-label" id="frDateLbl">Next payment date</label><input type="date" id="frDate" value="'+today+'"><button type="button" class="btn" id="frAdd">Add</button></div></div>';
   box.innerHTML = h;
@@ -4704,7 +4697,7 @@ function renderFinRecurring(box, kind){
   });
   document.getElementById('frToggle').addEventListener('click', ()=>{
     const f = document.getElementById('frForm'); f.hidden = !f.hidden;
-    document.getElementById('frToggle').textContent = f.hidden ? '+ Add '+(isDD ? 'direct debit' : 'income') : 'Close';
+    document.getElementById('frToggle').textContent = f.hidden ? '+ Add '+(isDD ? 'bill' : 'income') : 'Close';
     if(!f.hidden) document.getElementById('frName').focus();
   });
   document.getElementById('frAdd').addEventListener('click', async ()=>{
@@ -4715,6 +4708,106 @@ function renderFinRecurring(box, kind){
   });
   const fr = document.getElementById('frFreq');
   fr.addEventListener('change', ()=>{ document.getElementById('frDateLbl').textContent = fr.value === 'once' ? 'Date' : 'Next payment date'; });
+}
+
+const FIN_PRICE_PY = "import datetime\nimport json\nimport os\nimport re\nimport sys\nimport time\nimport urllib.parse\nimport urllib.request\n\nUA = {\n    \"User-Agent\": \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36\",\n    \"Accept\": \"application/json\",\n}\n\n\ndef get(url):\n    last = None\n    for i in range(3):\n        try:\n            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:\n                return json.loads(r.read().decode(\"utf-8\"))\n        except Exception as e:\n            last = e\n            time.sleep(2 + 3 * i)\n    raise last\n\n\ndef resolve(ident):\n    # a fund's ISIN is turned into the symbol Yahoo uses for it; a ticker is used as it is\n    if not re.fullmatch(r\"[A-Z]{2}[A-Z0-9]{9}[0-9]\", ident):\n        return ident\n    for host in (\"query2\", \"query1\"):\n        try:\n            j = get(\"https://%s.finance.yahoo.com/v1/finance/search?q=%s&quotesCount=6&newsCount=0\" % (host, ident))\n            for q in j.get(\"quotes\", []):\n                if q.get(\"symbol\"):\n                    return q[\"symbol\"]\n        except Exception:\n            pass\n    return None\n\n\ndef quote(sym):\n    last = None\n    for host in (\"query1\", \"query2\"):\n        try:\n            j = get(\"https://%s.finance.yahoo.com/v8/finance/chart/%s?range=10d&interval=1d\" % (host, urllib.parse.quote(sym)))\n            res = j[\"chart\"][\"result\"][0]\n            meta = res.get(\"meta\", {})\n            stamps = res.get(\"timestamp\") or []\n            closes = ((res.get(\"indicators\") or {}).get(\"quote\") or [{}])[0].get(\"close\") or []\n            pts = [(t, c) for t, c in zip(stamps, closes) if c]\n            price = meta.get(\"regularMarketPrice\") or (pts[-1][1] if pts else None)\n            when = meta.get(\"regularMarketTime\") or (pts[-1][0] if pts else None)\n            if not price:\n                raise ValueError(\"no price\")\n            cur = meta.get(\"currency\") or \"\"\n            if cur == \"GBp\":\n                cur = \"GBX\"\n            day = datetime.datetime.fromtimestamp(when, datetime.timezone.utc).strftime(\"%Y-%m-%d\") if when else \"\"\n            return {\"price\": round(float(price), 4), \"currency\": cur, \"date\": day, \"symbol\": sym, \"name\": meta.get(\"longName\") or meta.get(\"shortName\") or \"\"}\n        except Exception as e:\n            last = e\n    raise last\n\n\nold = {}\ntry:\n    old = json.load(open(\"prices.json\")).get(\"prices\", {})\nexcept Exception:\n    pass\nout, errors = {}, {}\nfor ident in [s.strip().upper() for s in os.environ.get(\"SYMBOLS\", \"\").split(\",\") if s.strip()]:\n    try:\n        sym = resolve(ident)\n        if not sym:\n            raise ValueError(\"could not find \" + ident)\n        out[ident] = quote(sym)\n    except Exception as e:\n        errors[ident] = str(e)\n        if ident in old:\n            out[ident] = dict(old[ident], stale=True)\n        print(\"FAILED\", ident, e, file=sys.stderr)\nstamp = datetime.datetime.now(datetime.timezone.utc).strftime(\"%Y-%m-%dT%H:%M:%SZ\")\njson.dump({\"updated\": stamp, \"prices\": out, \"errors\": errors}, open(\"prices.json\", \"w\"), indent=1)\nprint(json.dumps(out)[:600])\n";
+
+// ---- presets, savings accounts and the daily price file ----
+const FIN_PRESETS = [
+  ['VUAG.L', 'Vanguard S&P 500 ETF (VUAG, accumulating)', 'GBX', 'Vanguard S&P 500 (VUAG)'],
+  ['VUSA.L', 'Vanguard S&P 500 ETF (VUSA, income)', 'GBX', 'Vanguard S&P 500 (VUSA)'],
+  ['CSPX.L', 'iShares Core S&P 500 ETF (CSPX)', 'USD', 'iShares S&P 500 (CSPX)'],
+  ['GB00B4PQW151', 'Vanguard LifeStrategy 100% Equity (fund)', 'GBP', 'Vanguard LifeStrategy 100%']
+];
+const FIN_ISIN = /^[A-Z]{2}[A-Z0-9]{9}[0-9]$/;
+// A savings account grows from its payments: interest builds up each day on the balance and is added to it monthly (or yearly).
+function finSavingsValue(h, onDate){
+  const to = onDate || todayStr();
+  const ev = (h.contribs || []).filter(c=> c.date && c.date <= to).slice().sort((a,b)=> a.date.localeCompare(b.date));
+  if(!ev.length) return {value:0, interest:0};
+  const r = (h.rate || 0)/100/365, yearly = h.comp === 'yearly';
+  const start = ev[0].date, sd = parseYMD(start);
+  let bal = 0, acc = 0, i = 0, cur = start, guard = 0;
+  while(cur < to && guard++ < 20000){
+    while(i < ev.length && ev[i].date <= cur){ bal += ev[i].amount; i++; }
+    const d = parseYMD(cur), dim = new Date(d.getFullYear(), d.getMonth()+1, 0).getDate();
+    const payDay = d.getDate() === Math.min(sd.getDate(), dim) && (!yearly || d.getMonth() === sd.getMonth());
+    if(payDay && cur !== start && acc){ bal += acc; acc = 0; }
+    acc += bal*r;
+    cur = addDays(cur, 1);
+  }
+  while(i < ev.length){ bal += ev[i].amount; i++; }
+  const put = ev.reduce((a,c)=> a + c.amount, 0), value = bal + acc;
+  return {value:finR2(value), interest:finR2(value - put)};
+}
+function finSavingsRow(x){
+  const v = finSavingsValue(x), inv = finInvested(x), open = String(finOpenItem) === String(x.id), gain = inv > 0 ? v.value - inv : null;
+  const yr = finR2(finSavingsValue(x, addDays(todayStr(), 365)).value - v.value);
+  const rows = (x.contribs || []).slice().sort((p,q)=> (q.date || '').localeCompare(p.date || '')).slice(0, 8).map(c=>
+    '<div class="sum-row" style="padding:6px 0;"><span>'+(c.date ? shortDate(c.date) : '\u2014')+(c.src === 'initial' ? ' <span class="stat-sub" style="display:inline;margin:0;">start</span>' : '')+'</span><span style="display:flex;gap:8px;align-items:center;"><b>'+money(c.amount)+'</b><button type="button" class="todo-del" data-fm-del="'+x.id+'" data-cid="'+c.id+'">&times;</button></span></div>').join('');
+  return '<div class="fin-item"><div class="fin-item-top" data-fin-open="'+x.id+'"><div style="min-width:0;"><b>'+escapeHtml(x.name || 'Savings')+'</b> <span class="stat-sub" style="display:inline;margin:0;">'+(x.rate || 0)+'% a year</span><div class="stat-sub" style="margin:2px 0 0;">Savings \u00b7 interest so far '+money(v.interest)+(inv > 0 ? ' \u00b7 in '+money(inv) : '')+'</div></div>'+
+    '<div style="text-align:right;flex-shrink:0;"><b>'+money(v.value)+'</b>'+(gain !== null && inv > 0 ? '<div class="stat-sub" style="margin:2px 0 0;color:var(--home)">+'+(gain/inv*100).toFixed(1)+'%</div>' : '')+'</div></div>'+
+    (open ? '<div class="fin-edit"><div class="stat-sub" style="margin:0 0 6px;">About <b>'+money(finR2(yr/12))+'</b> a month \u00b7 <b>'+money(yr)+'</b> over the next 12 months at this rate, if you add nothing.</div>'+
+      '<div class="fin-addmoney"><div class="sum2-h" style="margin:0;"><span>Add or take out</span></div>'+
+        '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" data-fm="amount" placeholder="Amount (\u00a3)"><button type="button" class="btn small" style="flex:0 0 auto;" data-fm-add="'+x.id+'">Add</button><button type="button" class="btn secondary small" style="flex:0 0 auto;" data-fm-take="'+x.id+'">Take out</button></div>'+
+        '<div class="fin-opts"><label class="fin-check"><input type="checkbox" data-fm="spend"> Count as spending</label><a class="fin-link" data-fm-more>More</a></div>'+
+        '<div class="fin-edit" data-fm-extra hidden><input type="date" data-fm="date" value="'+todayStr()+'"></div></div>'+
+      (rows ? '<div>'+rows+'</div>' : '')+
+      '<a class="fin-link" data-fh-more>Edit details</a>'+
+      '<div class="fin-edit" data-fh-extra hidden><input type="text" data-fh="name" value="'+escapeHtml(x.name || '')+'" placeholder="Name"><div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" data-fh="rate" value="'+(x.rate || 0)+'" placeholder="Rate (% a year)"></div>'+
+        '<div class="sp-chips" style="margin-top:0;">'+[['monthly','Interest paid monthly'],['yearly','Interest paid yearly']].map(u=> '<button type="button" class="chip-btn'+((x.comp || 'monthly') === u[0] ? ' active' : '')+'" data-fh-comp="'+u[0]+'">'+u[1]+'</button>').join('')+'</div>'+
+        '<div class="fin-edit-row"><button type="button" class="btn small" data-fh-save="'+x.id+'">Save</button><button type="button" class="btn secondary small" data-fh-del="'+x.id+'">Delete</button></div></div></div>' : '')+'</div>';
+}
+function finDailyUrl(){
+  const set = (finSettings.priceUrl || '').trim();
+  if(set) return set;
+  try{
+    const m = /^([a-z0-9-]+)\.github\.io$/i.exec(location.hostname);
+    if(m){ const seg = location.pathname.split('/').filter(Boolean)[0]; const repo = (seg && !/\.html?$/i.test(seg)) ? seg : location.hostname; return 'https://raw.githubusercontent.com/'+m[1]+'/'+repo+'/main/prices.json'; }
+  }catch(e){}
+  return '';
+}
+async function finEnsureFx(){
+  if(finFx()) return;
+  try{ const j = await finFetchJson('https://api.coinbase.com/v2/exchange-rates?currency=USD'); const g = parseFloat(j.data.rates.GBP); if(g > 0) finPrices._fx = {usdgbp:g, at:Date.now()}; }catch(e){}
+}
+// the once-a-day price file written by the GitHub job
+async function finLoadDaily(){
+  const url = finDailyUrl(), used = new Set();
+  if(!url || !finHoldings.some(h=> h.type === 'stock')) return {used};
+  try{
+    const j = await finFetchJson(url+(url.indexOf('?') > -1 ? '&' : '?')+'_='+Math.floor(Date.now()/600000));
+    const P = (j && j.prices) || {}, when = Date.parse(j.updated) || Date.now();
+    const cur = e=> e.currency === 'GBp' ? 'GBX' : String(e.currency || '').toUpperCase();
+    const stocks = finHoldings.filter(h=> h.type === 'stock' && h.symbol);
+    if(stocks.some(h=>{ const e = P[h.symbol.toUpperCase()]; return e && e.price > 0 && cur(e) === 'USD'; })) await finEnsureFx();
+    stocks.forEach(h=>{
+      const sym = h.symbol.toUpperCase(), e = P[sym];
+      if(!e || !(e.price > 0)) return;
+      const c = cur(e); let gbp = 0;
+      if(c === 'GBX') gbp = e.price/100; else if(c === 'GBP') gbp = e.price; else if(c === 'USD') gbp = e.price*finFx();
+      if(!(gbp > 0)) return;
+      finPrices['stock:'+sym] = {raw:e.price, gbp, at:when, date:e.date || '', daily:true};
+      used.add(sym);
+    });
+    finPrices._daily = {at:Date.now(), updated:j.updated || '', ok:true, n:used.size, errors:j.errors || {}};
+  }catch(err){
+    finPrices._daily = {at:Date.now(), updated:(finPrices._daily || {}).updated || '', ok:false, err:String(err && err.message || err)};
+  }
+  return {used};
+}
+function finWorkflowText(){
+  const syms = Array.from(new Set(finHoldings.filter(h=> h.type === 'stock' && h.symbol).map(h=> h.symbol.toUpperCase())));
+  const py = FIN_PRICE_PY.replace(/\n$/, '').split('\n').map(l=> '          '+l).join('\n');
+  return 'name: Update prices\non:\n  schedule:\n    - cron: \'30 17 * * 1-5\'\n    - cron: \'15 7 * * 2-6\'\n  workflow_dispatch:\npermissions:\n  contents: write\njobs:\n  prices:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - name: Fetch prices\n        env:\n          SYMBOLS: \''+(syms.length ? syms : ['VUAG.L', 'GB00B4PQW151']).join(',')+'\'\n        run: |\n          python3 - <<\'PY\'\n'+py+'\n          PY\n      - name: Save\n        run: |\n          git config user.name "price-bot"\n          git config user.email "price-bot@users.noreply.github.com"\n          git add prices.json\n          git diff --cached --quiet || (git commit -m "Update prices" && git push)\n';
+}
+function finDailyStatus(){
+  const url = finDailyUrl(), d = finPrices._daily;
+  if(!url) return 'Paste the link to your price file below.';
+  if(!d) return 'Not checked yet \u2014 tap Refresh.';
+  if(!d.ok) return 'Couldn\u2019t read the price file ('+d.err+'). Has the GitHub job run yet?';
+  const u = d.updated ? new Date(d.updated) : null, bad = Object.keys(d.errors || {});
+  return 'File updated '+(u ? shortDate(fmt(u))+' '+pad(u.getHours())+':'+pad(u.getMinutes()) : '\u2014')+' \u00b7 '+d.n+' price'+(d.n === 1 ? '' : 's')+' found'+(bad.length ? ' \u00b7 couldn\u2019t get '+bad.join(', ') : '');
 }
 
 // ---- investments: live prices ----
@@ -4728,11 +4821,11 @@ function finToGbp(h, raw){
 }
 function finUnitPrice(h){
   const c = finPrices[finKey(h)];
-  if(h.type !== 'other' && c){ const v = finToGbp(h, c.raw); if(v > 0) return {p:v, at:c.at, src:'live'}; }
+  if(h.type !== 'other' && c){ const v = c.gbp > 0 ? c.gbp : finToGbp(h, c.raw); if(v > 0) return {p:v, at:c.at, src:c.daily ? 'daily' : 'live'}; }
   if(h.manualPrice > 0){ const v = finToGbp(h, h.manualPrice); if(v > 0) return {p:v, at:null, src:'manual'}; }
   return null;
 }
-function finHoldingValue(h){ const u = finUnitPrice(h); return u ? {value:h.qty*u.p, price:u.p, at:u.at, src:u.src} : null; }
+function finHoldingValue(h){ if(h.type === 'savings'){ const sv = finSavingsValue(h); return {value:sv.value, price:sv.value, at:null, src:'interest'}; } const u = finUnitPrice(h); return u ? {value:h.qty*u.p, price:u.p, at:u.at, src:u.src} : null; }
 // what you've put in = the sum of your payments (or the single figure on older holdings)
 function finInvested(h){ return (h.contribs && h.contribs.length) ? finR2(h.contribs.reduce((a,c)=> a + c.amount, 0)) : (h.invested || 0); }
 function finEnsureInvestCat(){
@@ -4744,13 +4837,14 @@ async function finAddMoney(h, o){
   if(!h.contribs.length && h.invested > 0) h.contribs.push({id:uid(), date:'', amount:h.invested, qty:0, txnId:null, src:'initial'});
   let qtyAdded = 0;
   if(h.type === 'other'){ h.manualPrice = finR2((h.manualPrice || 0) + o.amount); }
+  else if(h.type === 'savings'){ /* the balance follows from the payments themselves */ }
   else{
     qtyAdded = o.units > 0 ? o.units : 0;
     if(!qtyAdded){ const u = finUnitPrice(h); if(u && u.p > 0) qtyAdded = o.amount / u.p; }
     h.qty = +((h.qty || 0) + qtyAdded).toFixed(8);
   }
   let txnId = null;
-  if(o.spend){
+  if(o.spend && o.amount > 0){
     finEnsureInvestCat();
     const tx = {id:spendNewId('i'), date:o.date, time:(o.date === todayStr() ? nowHM() : ''), amount:o.amount, merchant:'Invest \u00b7 '+(h.name || h.symbol), card:'', src:'invest', cat:'investing'};
     spendTxns.push(tx); txnId = tx.id;
@@ -4759,7 +4853,7 @@ async function finAddMoney(h, o){
   h.contribs.push({id:uid(), date:o.date, amount:o.amount, qty:+qtyAdded.toFixed(8), txnId, src:'added'});
   h.invested = finInvested(h);
   await saveKey('fin-holdings', finHoldings);
-  return {qtyAdded, estimated: h.type !== 'other' && !(o.units > 0)};
+  return {qtyAdded, estimated: h.type !== 'other' && h.type !== 'savings' && !(o.units > 0)};
 }
 async function finDelContrib(h, cid){
   const c = (h.contribs || []).find(x=> String(x.id) === String(cid));
@@ -4818,9 +4912,14 @@ async function finRefreshPrices(force){
     }
     const coins = Array.from(new Set(finHoldings.filter(h=> h.type === 'crypto' && h.symbol).map(h=> h.symbol.toUpperCase())));
     await Promise.all(coins.map(async sym=>{ const p = await finCoinPrice(sym); if(p > 0) finPrices['crypto:'+sym] = {raw:p, at:Date.now()}; else errs.push(sym); }));
-    const syms = Array.from(new Set(finHoldings.filter(h=> h.type === 'stock' && h.symbol).map(h=> h.symbol.toUpperCase())));
+    const daily = await finLoadDaily();
+    if(finPrices._daily && finPrices._daily.ok === false && finDailyUrl() && finHoldings.some(h=> h.type === 'stock')) errs.push('the daily price file ('+finPrices._daily.err+')');
+    const allSyms = Array.from(new Set(finHoldings.filter(h=> h.type === 'stock' && h.symbol).map(h=> h.symbol.toUpperCase())));
+    const syms = allSyms.filter(sy=> !daily.used.has(sy) && !FIN_ISIN.test(sy));
+    const fundsMissing = allSyms.filter(sy=> !daily.used.has(sy) && FIN_ISIN.test(sy));
+    if(fundsMissing.length) errs.push(fundsMissing.join(', ')+' needs the daily price file (Price settings, below)');
     const key = (finSettings.avKey || '').trim();
-    if(syms.length && !key){ errs.push('add an Alpha Vantage key for ETF and share prices (Price settings, below)'); }
+    if(syms.length && !key){ errs.push('set up daily prices or add an Alpha Vantage key (Price settings, below)'); }
     else if(syms.length){
       let first = true;
       for(const sym of syms){
@@ -4830,7 +4929,7 @@ async function finRefreshPrices(force){
         if(!first) await new Promise(r=> setTimeout(r, 1300));
         first = false;
         try{
-          const j = await finFetchJson('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='+encodeURIComponent(sym)+'&apikey='+encodeURIComponent(key));
+          const j = await finFetchJson('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='+encodeURIComponent(sym.replace(/\.L$/i, '.LON'))+'&apikey='+encodeURIComponent(key));
           finPrices._av = {date: todayStr(), n: finAvUsedToday() + 1};
           const q = j && j['Global Quote'], p = q ? parseFloat(q['05. price']) : NaN;
           if(p > 0) finPrices['stock:'+sym] = {raw:p, at:Date.now()};
@@ -4861,9 +4960,10 @@ function finMaybeRefresh(){
   if(Date.now() - finLastRefresh < 60000) return;      // never re-fetch automatically more than once a minute
   const now = Date.now(), fresh = (h, ms)=>{ const c = finPrices[finKey(h)]; return c && now - c.at < ms; };
   const needCrypto = finHoldings.some(h=> h.type === 'crypto' && !fresh(h, 5*60000));
-  const needStock = !!(finSettings.avKey || '').trim() && finHoldings.some(h=> h.type === 'stock' && !fresh(h, 30*60000));
+  const needStock = !!(finSettings.avKey || '').trim() && finHoldings.some(h=>{ const c = finPrices[finKey(h)]; return h.type === 'stock' && !(c && c.daily) && !fresh(h, 30*60000) && !FIN_ISIN.test(String(h.symbol).toUpperCase()); });
+  const dl = finPrices._daily, needDaily = !!finDailyUrl() && finHoldings.some(h=> h.type === 'stock') && !(dl && now - dl.at < (dl.ok ? 6*3600000 : 30*60000));
   const needFx = finHoldings.some(h=> h.type === 'stock' && h.unit === 'USD') && !(finPrices._fx && now - finPrices._fx.at < 30*60000);
-  if(needCrypto || needStock || needFx) finRefreshPrices(false);
+  if(needCrypto || needStock || needFx || needDaily) finRefreshPrices(false);
 }
 function finRerenderIfShowing(){
   const v = document.getElementById('view-budget');
@@ -4882,23 +4982,27 @@ function finSpark(vals){
 function renderFinInvest(box){
   finMaybeRefresh();
   const pf = finPortfolio();
-  const times = finHoldings.map(h=> { const c = finPrices[finKey(h)]; return c ? c.at : 0; }).filter(Boolean);
+  const times = finHoldings.map(h=> { const c = finPrices[finKey(h)]; return (c && !c.daily) ? c.at : 0; }).filter(Boolean);
+  const dDates = finHoldings.map(h=>{ const c = finPrices[finKey(h)]; return c && c.daily ? c.date : ''; }).filter(Boolean).sort();
+  const dailyLine = dDates.length ? 'ETF and fund prices: close of '+shortDate(dDates[dDates.length-1]) : '';
   const upd = times.length ? new Date(Math.max.apply(null, times)).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) : '';
   const prev = finSnap.filter(s=> s.date < todayStr()).slice(-1)[0];
   const addedThisMonth = finR2(finHoldings.reduce((a,x)=> a + (x.contribs || []).filter(c=> c.src === 'added' && (c.date || '').slice(0,7) === todayStr().slice(0,7)).reduce((b,c)=> b + c.amount, 0), 0));
-  const needKey = finHoldings.some(x=> x.type === 'stock') && !(finSettings.avKey || '').trim();
+  const needKey = finHoldings.some(x=> x.type === 'stock') && !(finSettings.avKey || '').trim() && !(finPrices._daily && finPrices._daily.ok);
   let h = '<div class="card"><div class="sum-head"><div class="sum2-h" style="margin:0;"><span>Portfolio</span></div><button type="button" class="chip-btn" id="finRefresh"'+(finPriceBusy ? ' disabled' : '')+'>'+(finPriceBusy ? 'Updating\u2026' : 'Refresh')+'</button></div>'+
     '<div class="fin-big">'+(pf.priced ? money(pf.value) : '\u2014')+'</div>'+
     '<div class="stat-sub" style="margin:2px 0 0;">'+(pf.gain !== null ? '<b style="color:'+(pf.gain >= 0 ? 'var(--home)' : 'var(--danger)')+'">'+(pf.gain >= 0 ? '+' : '\u2212')+money(Math.abs(pf.gain))+' ('+(pf.gain >= 0 ? '+' : '\u2212')+Math.abs(pf.gain/pf.invested*100).toFixed(1)+'%)</b> on what you put in' : (pf.count ? '' : 'Add your first holding below'))+'</div>'+
     (pf.put ? '<div class="stat-sub" style="margin:2px 0 0;">Put in '+money(pf.put)+(addedThisMonth ? ' \u00b7 '+money(addedThisMonth)+' added this month' : '')+'</div>' : '')+
     (prev && pf.priced ? '<div class="stat-sub" style="margin:2px 0 0;">'+(pf.value-prev.value >= 0 ? '+' : '\u2212')+money(Math.abs(pf.value-prev.value))+' since '+shortDate(prev.date)+'</div>' : '')+
     (upd ? '<div class="stat-sub" style="margin:2px 0 0;">Prices at '+upd+'</div>' : '')+
+    (dailyLine ? '<div class="stat-sub" style="margin:2px 0 0;">'+dailyLine+'</div>' : '')+
     (finPriceMsg ? '<div class="stat-sub sum-over" style="margin-top:6px;">'+escapeHtml(finPriceMsg)+'</div>' : '')+
     finSpark(finSnap.slice(-30).map(s=> s.value))+'</div>';
   h += '<div class="card">'+(finHoldings.length ? finHoldings.map(x=>{
+    if(x.type === 'savings') return finSavingsRow(x);
     const v = finHoldingValue(x), open = String(finOpenItem) === String(x.id), inv = finInvested(x), hasC = !!(x.contribs && x.contribs.length);
     const gain = (v && inv > 0) ? v.value - inv : null;
-    const tag = x.type === 'crypto' ? 'Crypto' : (x.type === 'stock' ? 'ETF / share' : 'Other');
+    const tag = x.type === 'crypto' ? 'Crypto' : (x.type === 'stock' ? 'ETF / fund' : 'Other');
     const sub = (x.type === 'other' ? tag : (x.qty+' \u00d7 '+(v ? money(v.price) : 'no price')+(v && v.src === 'manual' ? ' (manual)' : '')))+(inv > 0 ? ' \u00b7 in '+money(inv) : '');
     const contribRows = hasC ? x.contribs.slice().sort((p,q)=> (q.date || '').localeCompare(p.date || '')).slice(0, 8).map(c=>
       '<div class="sum-row" style="padding:6px 0;"><span>'+(c.date ? shortDate(c.date) : '\u2014')+(c.src === 'initial' ? ' <span class="stat-sub" style="display:inline;margin:0;">start</span>' : '')+'</span><span style="display:flex;gap:8px;align-items:center;"><b>'+money(c.amount)+'</b>'+(c.qty ? '<span class="stat-sub" style="margin:0;">+'+Number(c.qty.toFixed(6))+'</span>' : '')+'<button type="button" class="todo-del" data-fm-del="'+x.id+'" data-cid="'+c.id+'">&times;</button></span></div>').join('') : '';
@@ -4919,16 +5023,28 @@ function renderFinInvest(box){
   }).join('') : '<div class="stat-sub">No holdings yet.</div>')+'</div>';
   h += '<button type="button" class="btn secondary block" id="fhToggle">+ Add holding</button>'+
     '<div class="card" id="fhCard" hidden style="margin-top:10px;"><div class="fin-hform" id="fhForm" data-t="crypto">'+
-    '<div class="sp-chips" style="margin:0 0 8px;"><button type="button" class="chip-btn active" data-fh-type="crypto">Crypto</button><button type="button" class="chip-btn" data-fh-type="stock">ETF / share</button><button type="button" class="chip-btn" data-fh-type="other">Other</button></div>'+
+    '<div class="sp-chips" style="margin:0 0 8px;"><button type="button" class="chip-btn active" data-fh-type="crypto">Crypto</button><button type="button" class="chip-btn" data-fh-type="stock">ETF / fund</button><button type="button" class="chip-btn" data-fh-type="savings">Savings</button><button type="button" class="chip-btn" data-fh-type="other">Other</button></div>'+
     '<div class="fin-edit" style="margin-top:0;">'+
       '<select id="fhCoin" class="f-coin">'+FIN_COINS.map(c=> '<option value="'+c[0]+'">'+c[1]+' ('+c[0]+')</option>').join('')+'<option value="__custom">Other coin\u2026</option></select>'+
+      '<select id="fhPreset" class="f-preset">'+FIN_PRESETS.map(p=> '<option value="'+p[0]+'">'+p[1]+'</option>').join('')+'<option value="__custom">Other ticker or ISIN\u2026</option></select>'+
       '<input type="text" id="fhSym" class="f-sym" placeholder="Symbol" autocomplete="off" autocapitalize="characters">'+
       '<input type="text" id="fhName" class="f-name" placeholder="Name, e.g. Pension" autocomplete="off">'+
+      '<input type="number" inputmode="decimal" step="0.01" min="0" id="fhRate" class="f-rate" placeholder="Interest rate (% a year)">'+
       '<div class="sp-chips f-unit" style="margin-top:0;" id="fhUnits"><button type="button" class="chip-btn active" data-fh-u="GBP">Price in \u00a3</button><button type="button" class="chip-btn" data-fh-u="GBX">Price in pence</button><button type="button" class="chip-btn" data-fh-u="USD">Price in $</button></div>'+
-      '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="any" min="0" id="fhQty" class="f-qty" placeholder="How many you hold"><input type="number" inputmode="decimal" step="0.01" min="0" id="fhVal" class="f-val" placeholder="Value (\u00a3)"><input type="number" inputmode="decimal" step="0.01" min="0" id="fhInv" placeholder="Invested (\u00a3)"></div>'+
+      '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="any" min="0" id="fhQty" class="f-qty" placeholder="How many you hold"><input type="number" inputmode="decimal" step="0.01" min="0" id="fhVal" class="f-val" placeholder="Value (\u00a3)"><input type="number" inputmode="decimal" step="0.01" min="0" id="fhInv" class="f-inv" placeholder="Invested (\u00a3)"></div>'+
       '<div class="fin-opts"><span class="stat-sub" style="margin:0;" id="fhDateTxt">Invested today</span><a class="fin-link" id="fhDateLink">Change date</a></div><input type="date" id="fhDate" value="'+todayStr()+'" hidden>'+
       '<button type="button" class="btn" id="fhAdd">Add</button></div></div></div>';
-  h += '<details class="card" id="finPriceSet" style="margin-top:12px;"'+(needKey ? ' open' : '')+'><summary style="cursor:pointer;font-weight:600;font-size:14px;">Price settings</summary><div class="stat-sub" style="margin:8px 0;">ETF and share prices need a free Alpha Vantage key (25 lookups a day). Crypto needs nothing.</div><div class="sp-add"><input type="text" id="finAvKey" placeholder="Alpha Vantage key" value="'+escapeHtml(finSettings.avKey || '')+'" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="finAvSave">Save</button></div><div class="stat-sub" style="margin:8px 0 0;">Lookups today: '+finAvUsedToday()+' / 25</div></details>';
+  h += '<details class="card" id="finPriceSet" style="margin-top:12px;"'+(needKey ? ' open' : '')+'><summary style="cursor:pointer;font-weight:600;font-size:14px;">Price settings</summary>'+
+    '<div class="sum2-h" style="margin:10px 0 2px;"><span>Daily prices (ETFs and funds)</span></div>'+
+    '<div class="stat-sub" style="margin:0 0 6px;">Free, no key. A small GitHub job fetches your prices once a day into a file this page reads.</div>'+
+    '<div class="stat-sub" style="margin:0 0 8px;" id="finDailyStatus">'+escapeHtml(finDailyStatus())+'</div>'+
+    '<div class="sp-add"><input type="text" id="finPriceUrl" placeholder="'+escapeHtml(finDailyUrl() || 'Link to prices.json')+'" value="'+escapeHtml(finSettings.priceUrl || '')+'" autocomplete="off" autocapitalize="none" style="flex:1;"><button type="button" class="btn small" id="finPriceUrlSave">Save</button></div>'+
+    '<details class="fin-auto"><summary>Set it up (once)</summary><ol class="sp-steps"><li>On GitHub open the repository that holds Home Base \u2192 <b>Add file \u2192 Create new file</b>.</li>'+
+      '<li>Name it <b>.github/workflows/prices.yml</b> (typing the slashes makes the folders), paste this, then <b>Commit</b>.<div class="sp-btnrow"><button type="button" class="btn secondary small" id="finCopyWorkflow">Copy workflow</button></div></li>'+
+      '<li>Open the <b>Actions</b> tab \u2192 <b>Update prices</b> \u2192 <b>Run workflow</b>. After that it runs by itself every weekday.</li>'+
+      '<li>Come back here and tap <b>Refresh</b>. If you add a new ETF or fund, copy the workflow again.</li></ol></details>'+
+    '<div class="sum2-h" style="margin:14px 0 2px;"><span>Live ETF prices (optional)</span></div>'+
+    '<div class="stat-sub" style="margin:0 0 6px;">Or use a free Alpha Vantage key (25 lookups a day). Crypto needs nothing.</div><div class="sp-add"><input type="text" id="finAvKey" placeholder="Alpha Vantage key" value="'+escapeHtml(finSettings.avKey || '')+'" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="finAvSave">Save</button></div><div class="stat-sub" style="margin:8px 0 0;">Lookups today: '+finAvUsedToday()+' / 25</div></details>';
   box.innerHTML = h;
   document.getElementById('finRefresh').addEventListener('click', ()=> finRefreshPrices(true));
   box.querySelectorAll('[data-fin-open]').forEach(el=> el.addEventListener('click', ()=>{ finOpenItem = String(finOpenItem) === el.dataset.finOpen ? null : el.dataset.finOpen; renderBudget(); }));
@@ -4937,10 +5053,19 @@ function renderFinInvest(box){
   box.querySelectorAll('[data-fm-more]').forEach(a=> a.addEventListener('click', ()=> toggle('[data-fm-extra]')));
   box.querySelectorAll('[data-fh-more]').forEach(a=> a.addEventListener('click', ()=> toggle('[data-fh-extra]')));
   box.querySelectorAll('[data-fh-unit]').forEach(b=> b.addEventListener('click', ()=>{ box.querySelectorAll('[data-fh-unit]').forEach(x=> x.classList.toggle('active', x === b)); }));
+  box.querySelectorAll('[data-fh-comp]').forEach(b=> b.addEventListener('click', ()=>{ box.querySelectorAll('[data-fh-comp]').forEach(x=> x.classList.toggle('active', x === b)); }));
+  box.querySelectorAll('[data-fm-take]').forEach(b=> b.addEventListener('click', async ()=>{
+    const x = finHoldings.find(y=> String(y.id) === b.dataset.fmTake); if(!x) return;
+    const f = k=> box.querySelector('[data-fm="'+k+'"]'), amount = parseFloat(f('amount').value), date = f('date').value || todayStr();
+    if(!(amount > 0)){ showToast('How much did you take out?'); return; }
+    await finAddMoney(x, {amount:-finR2(amount), units:0, date, spend:false});
+    showToast(money(amount)+' taken out.'); renderBudget();
+  }));
   box.querySelectorAll('[data-fh-save]').forEach(b=> b.addEventListener('click', async ()=>{
     const x = finHoldings.find(y=> String(y.id) === b.dataset.fhSave); if(!x) return;
     const g = k=>{ const e = box.querySelector('[data-fh="'+k+'"]'); return e ? e.value : ''; };
-    if(x.type !== 'other'){ const q = parseFloat(g('qty')); if(!(q > 0)){ showToast('Quantity please.'); return; } x.qty = q; }
+    if(x.type === 'crypto' || x.type === 'stock'){ const q = parseFloat(g('qty')); if(!(q > 0)){ showToast('Quantity please.'); return; } x.qty = q; }
+    if(x.type === 'savings'){ const rt = parseFloat(g('rate')); if(!isNaN(rt) && rt >= 0) x.rate = rt; const ca = box.querySelector('[data-fh-comp].active'); if(ca) x.comp = ca.dataset.fhComp; }
     x.name = g('name').trim() || x.name;
     if(box.querySelector('[data-fh="invested"]')) x.invested = Math.max(0, parseFloat(g('invested')) || 0);
     x.manualPrice = Math.max(0, parseFloat(g('manual')) || 0);
@@ -4981,14 +5106,18 @@ function renderFinInvest(box){
   const form = document.getElementById('fhForm');
   const show = (sel, on)=> form.querySelectorAll(sel).forEach(e=> e.style.display = on ? '' : 'none');
   const applyType = ()=>{
-    const t = form.dataset.t, custom = document.getElementById('fhCoin').value === '__custom';
+    const t = form.dataset.t, custom = document.getElementById('fhCoin').value === '__custom', customStock = document.getElementById('fhPreset').value === '__custom';
     form.querySelectorAll('[data-fh-type]').forEach(b=> b.classList.toggle('active', b.dataset.fhType === t));
-    show('.f-coin', t === 'crypto'); show('.f-sym', t === 'stock' || (t === 'crypto' && custom)); show('.f-name', t === 'other');
-    show('.f-qty', t !== 'other'); show('.f-val', t === 'other'); show('.f-unit', t === 'stock');
-    document.getElementById('fhSym').placeholder = t === 'stock' ? 'Ticker, e.g. VUSA.LON' : 'Coin symbol, e.g. PEPE';
+    show('.f-coin', t === 'crypto'); show('.f-preset', t === 'stock'); show('.f-sym', (t === 'stock' && customStock) || (t === 'crypto' && custom)); show('.f-name', t === 'other' || t === 'savings');
+    show('.f-qty', t === 'crypto' || t === 'stock'); show('.f-val', t === 'other' || t === 'savings'); show('.f-inv', t === 'crypto' || t === 'stock'); show('.f-rate', t === 'savings'); show('.f-unit', t === 'stock' && customStock);
+    document.getElementById('fhSym').placeholder = t === 'stock' ? 'Ticker or ISIN, e.g. VUAG.L' : 'Coin symbol, e.g. PEPE';
+    document.getElementById('fhName').placeholder = t === 'savings' ? 'Name, e.g. Marcus' : 'Name, e.g. Pension';
+    document.getElementById('fhVal').placeholder = t === 'savings' ? 'Balance now (\u00a3)' : 'Value (\u00a3)';
+    document.getElementById('fhDateTxt').textContent = t === 'savings' ? 'Balance as of today' : 'Invested today';
   };
   form.querySelectorAll('[data-fh-type]').forEach(b=> b.addEventListener('click', ()=>{ form.dataset.t = b.dataset.fhType; applyType(); }));
   document.getElementById('fhCoin').addEventListener('change', applyType);
+  document.getElementById('fhPreset').addEventListener('change', applyType);
   form.querySelectorAll('[data-fh-u]').forEach(b=> b.addEventListener('click', ()=> form.querySelectorAll('[data-fh-u]').forEach(x=> x.classList.toggle('active', x === b))));
   document.getElementById('fhDateLink').addEventListener('click', ()=>{ const d = document.getElementById('fhDate'); d.hidden = !d.hidden; });
   applyType();
@@ -5006,15 +5135,26 @@ function renderFinInvest(box){
       const known = FIN_COINS.find(c=> c[0] === sym);
       if(!sym || !(qty > 0)){ showToast(coinSel === '__custom' ? 'Coin symbol and amount please.' : 'How many do you hold?'); return; }
       hold = {id:uid(), type:'crypto', symbol:sym, name: known ? known[1] : sym, qty, invested:inv, unit:'GBP', manualPrice:0};
+    }else if(t === 'savings'){
+      const name = document.getElementById('fhName').value.trim(), rate = parseFloat(document.getElementById('fhRate').value);
+      if(!name || !(val > 0) || isNaN(rate) || rate < 0){ showToast('Name, balance and interest rate please.'); return; }
+      hold = {id:uid(), type:'savings', symbol:'', name, qty:1, rate, comp:'monthly', invested:finR2(val), unit:'GBP', manualPrice:0};
+      hold.contribs = [{id:uid(), date:when, amount:finR2(val), qty:0, txnId:null, src:'initial'}];
     }else{
-      const sym = document.getElementById('fhSym').value.trim().toUpperCase();
-      if(!sym || !(qty > 0)){ showToast('Ticker and how many please.'); return; }
-      hold = {id:uid(), type:'stock', symbol:sym, name:'', qty, invested:inv, unit, manualPrice:0};
+      const pv = document.getElementById('fhPreset').value, pr = FIN_PRESETS.find(x=> x[0] === pv);
+      const sym = pr ? pr[0] : document.getElementById('fhSym').value.trim().toUpperCase();
+      if(!sym || !(qty > 0)){ showToast(pr ? 'How many units do you hold?' : 'Ticker and how many please.'); return; }
+      hold = {id:uid(), type:'stock', symbol:sym, name: pr ? pr[3] : '', qty, invested:inv, unit: pr ? pr[2] : unit, manualPrice:0};
     }
-    if(inv > 0) hold.contribs = [{id:uid(), date:when, amount:inv, qty: hold.type === 'other' ? 0 : hold.qty, txnId:null, src:'initial'}];
+    if(hold.type !== 'savings' && inv > 0) hold.contribs = [{id:uid(), date:when, amount:inv, qty: hold.type === 'other' ? 0 : hold.qty, txnId:null, src:'initial'}];
     finHoldings.push(hold); await saveKey('fin-holdings', finHoldings);
     renderBudget(); finRefreshPrices(false);        // only what's missing, so lookups aren't wasted
   });
+  document.getElementById('finPriceUrlSave').addEventListener('click', async ()=>{
+    finSettings = Object.assign({}, finSettings, {priceUrl: document.getElementById('finPriceUrl').value.trim()});
+    await saveKey('fin-settings', finSettings); showToast('Saved.'); finRefreshPrices(true);
+  });
+  document.getElementById('finCopyWorkflow').addEventListener('click', ()=> copyText(finWorkflowText(), 'Workflow'));
   document.getElementById('finAvSave').addEventListener('click', async ()=>{
     finSettings = Object.assign({}, finSettings, {avKey: document.getElementById('finAvKey').value.trim()});
     await saveKey('fin-settings', finSettings); showToast('Saved.'); finRefreshPrices(false);
@@ -5070,10 +5210,12 @@ function renderFinSpend(box){
     return '<div class="sp-txn tap" data-sp-txn="'+t.id+'"><div style="min-width:0;flex:1;"><div style="font-size:14px;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(t.merchant)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+shortDate(t.date)+(t.time ? ' '+t.time : '')+' \u00b7 '+pillOf(spendCatById(t.cat))+(o ? ' \u00b7 split' : '')+'</div></div>'+
       '<div style="text-align:right;flex-shrink:0;">'+(o ? '<b>'+amt(t.amount - o)+'</b><div class="stat-sub" style="margin:0;">of '+amt(t.amount)+'</div>' : '<b>'+amt(t.amount)+'</b>')+'</div></div>';
   };
+  h += '<div id="finBillsBox"></div>';
   h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Transactions</h2>'+(spendFilter ? '<span data-sp-filter-clear style="cursor:pointer;">'+(fc ? escapeHtml(fc.name) : 'Sort')+' \u00d7</span>' : '<span>'+list.length+'</span>')+'</div>'+
     (rows.length ? rows.map(txnRow).join('') : '<div class="empty">Nothing this month.</div>')+
     (list.length > 25 && !spendShowAll ? '<button type="button" class="btn secondary small block" id="spMore" style="margin-top:8px;">Show all '+list.length+'</button>' : '')+'</div>';
   box.innerHTML = h;
+  renderFinRecurring(document.getElementById('finBillsBox'), 'dd', spendMonth || todayStr().slice(0,7));
   if(keepAmt && document.getElementById('spAmt')) document.getElementById('spAmt').value = keepAmt;
   if(keepMer && document.getElementById('spMer')) document.getElementById('spMer').value = keepMer;
   box.querySelectorAll('[data-sp-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.spGo)));
