@@ -1,0 +1,10 @@
+{
+ "updated": "2026-10-24T22:52:38Z",
+ "prices": {},
+ "errors": {
+  "VUAG.L": "HTTP Error 429: Too Many Requests",
+  "VUSA.L": "HTTP Error 429: Too Many Requests",
+  "CSPX.L": "HTTP Error 429: Too Many Requests",
+  "GB00B4PQW151": "could not find GB00B4PQW151"
+ }
+}
