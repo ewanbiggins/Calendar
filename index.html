@@ -523,6 +523,54 @@ body[data-nav="back"] .view.active:not(#view-calendar){animation:slideInL .4s va
 .gym-bar,.sp-fill{transition:width .5s var(--ease), background-color .3s ease;}
 .switch-slider,.switch-slider::before{transition-duration:.25s;transition-timing-function:var(--ease);}
 @media (prefers-reduced-motion: reduce){ *,*::before,*::after{animation-duration:.01ms !important;animation-delay:0s !important;transition-duration:.01ms !important;} }
+
+/* ---------- calendar header ---------- */
+.cal-header-bar{gap:6px;}
+.cal-header-left{justify-content:flex-start;gap:2px;}
+.cal-header-left .cal-back-btn{font-size:17px;padding:4px 4px 4px 2px;}
+.cal-header-left .cal-back-btn svg{width:16px;height:16px;}
+.cal-header-right{gap:5px;}
+.cal-header-right .btn.small{padding:8px 10px;font-size:12.5px;}
+.cal-title{font-family:'Fraunces',serif;font-weight:600;font-size:15px;white-space:nowrap;flex-shrink:0;letter-spacing:.01em;}
+#view-calendar,#view-summary{touch-action:pan-y;}
+@media (max-width:370px){ .cal-title{font-size:13.5px;} .cal-header-right{gap:4px;} .cal-header-right .btn.small{padding:8px 8px;font-size:12px;} .cal-header-left .cal-back-btn{font-size:16px;} }
+
+/* ---------- finance ---------- */
+.fin-tabs{margin-bottom:10px;}
+.fin-n{display:inline-block;min-width:16px;padding:0 5px;margin-left:5px;border-radius:9px;background:var(--danger);color:#fff;font-size:10px;line-height:16px;text-align:center;}
+.chip-btn.active .fin-n{background:#fff;color:var(--home);}
+.fin-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.fin-two .card{margin:0;padding:12px;}
+.fin-big{font-family:'Fraunces',serif;font-size:26px;font-weight:600;line-height:1.1;}
+.fin-item{padding:10px 0;border-bottom:1px solid var(--line);}
+.fin-item:last-child{border-bottom:none;}
+.fin-item-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;cursor:pointer;}
+.fin-edit{margin-top:10px;display:grid;gap:8px;}
+.fin-edit input,.fin-edit select{width:100%;min-width:0;}
+.fin-edit-row{display:flex;gap:8px;}
+.fin-edit-row>*{min-width:0;flex:1;}
+.fin-split{margin-top:8px;padding:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;}
+.fin-srow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;font-size:14px;}
+.fin-srow input{width:96px;flex-shrink:0;}
+.fin-spark{width:100%;height:56px;margin-top:10px;display:block;}
+.fresh #finBody>.card,.fresh #finBody>.fin-two{animation:cardIn .5s var(--ease) both;}
+.fresh #finBody>*:nth-child(2){animation-delay:60ms;} .fresh #finBody>*:nth-child(3){animation-delay:120ms;} .fresh #finBody>*:nth-child(4){animation-delay:180ms;}
+.fin-addmoney{padding:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;display:grid;gap:8px;}
+.fin-check{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-soft);white-space:nowrap;flex:0 0 auto !important;}
+.fin-check input{width:auto !important;flex:none;}
+
+/* ---------- finance v2 ---------- */
+[hidden]{display:none !important;}
+.fin-step{display:inline-flex;align-items:center;gap:8px;}
+.fin-step button{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:16px;line-height:1;padding:0;}
+.fin-step b{min-width:18px;text-align:center;}
+.fin-link{color:var(--home);font-size:12.5px;font-weight:600;cursor:pointer;text-decoration:none;}
+.fin-opts{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+.fin-owegroup{margin-bottom:14px;}
+.sp-txn.tap{cursor:pointer;}
+.sp-txn.tap:active{background:var(--surface-2);}
+#sheetBody .fin-split{margin-top:0;}
+#sheetBody select{max-width:150px;}
 </style>
 </head>
 <body>
@@ -530,7 +578,7 @@ body[data-nav="back"] .view.active:not(#view-calendar){animation:slideInL .4s va
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v13.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v14.5</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -545,16 +593,18 @@ body[data-nav="back"] .view.active:not(#view-calendar){animation:slideInL .4s va
   <div class="view active" id="view-calendar">
     <div class="cal-fade cal-fade-top"></div>
     <div class="cal-header-bar">
-      <div class="cal-header-side">
+      <div class="cal-header-side cal-header-left">
         <button class="round-btn" id="calOverviewBtn" title="Menu"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg><span class="cal-overview-badge" id="calOverviewBadge"></span></button>
-      </div>
-      <button class="cal-back-btn" id="yearToggleBtn">
+        <button class="cal-back-btn" id="yearToggleBtn">
         <svg id="yearToggleIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         <span id="yearToggleLabel">2026</span>
       </button>
+      </div>
+      <div class="cal-title">Home Base</div>
       <div class="cal-header-side cal-header-right">
         <button class="round-btn" id="searchBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
         <button class="btn secondary small" id="jumpTodayBtn">Today</button>
+        <button class="round-btn" id="calSummaryBtn" title="Summary"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></button>
       </div>
     </div>
     <div class="legend" id="calLegend"></div>
@@ -1124,7 +1174,7 @@ async function saveKey(key, value, attempt){
 }
 
 // ---------- cloud sync ----------
-const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','gym-log','gym-custom','gym-bw','gym-bw-asked','spend-txns','spend-cats','spend-rules','spend-meta','clock-in-state','dark-mode','rent-rate-home','rent-rate-away'];
+const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','gym-log','gym-custom','gym-bw','gym-bw-asked','spend-txns','spend-cats','spend-rules','spend-meta','fin-holdings','fin-dd','fin-income','fin-owed','fin-people','fin-settings','clock-in-state','dark-mode','rent-rate-home','rent-rate-away'];
 let firebaseApp = null, firestoreDb = null, firestoreDoc = null, syncUnsub = null;
 let syncEnabled = false, syncFailed = false, syncStatusText = '', lastSyncToast = 0;
 function notifySyncFail(){
@@ -1133,18 +1183,129 @@ function notifySyncFail(){
   const v = document.getElementById('view-summary');
   if(v && v.classList.contains('active')) renderSummary();
 }
-async function pushToCloud(key, value){
-  if(!syncEnabled || !firestoreDb || SYNC_KEYS.indexOf(key)===-1) return;
-  try{
-    await firestoreDoc.set({[key]: JSON.stringify(value)}, {merge:true});
-    syncFailed = false;
-    setSyncStatus('Synced just now');
-  }catch(e){
-    console.error('cloud push failed', key, e);
-    setSyncStatus('Sync error \u2014 '+(e && e.code==='permission-denied' ? 'Firebase rules are blocking writes (test rules expire after 30 days)' : 'will retry on next change'));
-    notifySyncFail();
+// ---- sync: never overwrite newer work; merge lists by id (3-way against the last synced copy) ----
+const SYNC_LISTS = ['rent-history','todos','toil-payouts','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','gym-log','gym-custom','gym-bw','spend-txns','spend-cats','fin-holdings','fin-dd','fin-income','fin-owed','fin-people'];
+const SYNC_MAPS = ['calendar-data','spend-rules','fin-settings'];
+let syncBase = {}, syncBusy = false, syncLastPull = 0, syncTimer = null, syncBaseT = null, syncRefreshT = null;
+const syncPushing = {}, syncPushAgain = {};
+try{ syncBase = JSON.parse(localStorage.getItem('homebase:sync-base') || '{}') || {}; }catch(e){ syncBase = {}; }
+function syncSaveBase(){ clearTimeout(syncBaseT); syncBaseT = setTimeout(()=>{ try{ localStorage.setItem('homebase:sync-base', JSON.stringify(syncBase)); }catch(e){} }, 250); }
+function syncRefreshSoon(){ clearTimeout(syncRefreshT); syncRefreshT = setTimeout(()=>{ refreshAllViews(); }, 60); }
+function syncLocalValue(key){
+  switch(key){
+    case 'calendar-data': return calendarData; case 'tag-defs': return tagDefs; case 'rent-meta': return rentMeta; case 'rent-history': return rentHistory;
+    case 'todos': return todos; case 'toil-payouts': return toilPayouts; case 'toil-adjustment': return toilAdjustment; case 'mileage-trips': return mileageTrips;
+    case 'mileage-favorites': return mileageFavorites; case 'expenses': return expenses; case 'travel-places': return travelPlaces; case 'travel-countries': return travelCountries;
+    case 'van-odometer': return vanOdometer; case 'gym-log': return gymLog; case 'gym-custom': return gymCustom; case 'gym-bw': return gymBw; case 'gym-bw-asked': return gymBwAsked;
+    case 'spend-txns': return spendTxns; case 'spend-cats': return spendCats; case 'spend-rules': return spendRules; case 'spend-meta': return spendMeta;
+    case 'fin-holdings': return finHoldings; case 'fin-dd': return finDD; case 'fin-income': return finIncome; case 'fin-owed': return finOwed; case 'fin-people': return finPeople; case 'fin-settings': return finSettings;
+    case 'clock-in-state': return clockInState; case 'dark-mode': return darkModeOn; case 'rent-rate-home': return RATE_HOME; case 'rent-rate-away': return RATE_AWAY;
   }
+  return null;
 }
+function syncIdOf(x){ if(x && typeof x === 'object') return String(x.id !== undefined ? x.id : (x.date !== undefined && x.kg !== undefined ? x.date : JSON.stringify(x))); return String(x); }
+// B = last synced copy, L = this device now, R = the cloud now.  Adds, edits and deletes from both sides survive.
+function syncMergeList(B, L, R){
+  B = Array.isArray(B) ? B : []; L = Array.isArray(L) ? L : []; R = Array.isArray(R) ? R : [];
+  const bm = new Map(B.map(x=> [syncIdOf(x), x])), lm = new Map(L.map(x=> [syncIdOf(x), x]));
+  const out = new Map(R.map(x=> [syncIdOf(x), x]));
+  lm.forEach((x, id)=>{ if(!bm.has(id) || JSON.stringify(x) !== JSON.stringify(bm.get(id))) out.set(id, x); });
+  bm.forEach((x, id)=>{ if(!lm.has(id)) out.delete(id); });
+  return Array.from(out.values());
+}
+function syncMergeMap(B, L, R){
+  const o = v=> (v && typeof v === 'object' && !Array.isArray(v)) ? v : {};
+  B = o(B); L = o(L); R = o(R);
+  const out = Object.assign({}, R);
+  Object.keys(L).forEach(k=>{ if(!(k in B) || JSON.stringify(L[k]) !== JSON.stringify(B[k])) out[k] = L[k]; });
+  Object.keys(B).forEach(k=>{ if(!(k in L)) delete out[k]; });
+  return out;
+}
+function syncMerger(key){ return SYNC_LISTS.indexOf(key) > -1 ? syncMergeList : (SYNC_MAPS.indexOf(key) > -1 ? syncMergeMap : null); }
+async function syncProcessIncoming(data){
+  let changed = false; const toPush = [];
+  for(const key of SYNC_KEYS){
+    const raw = data[key];
+    if(raw === undefined || syncBase[key] === raw) continue;            // the cloud hasn't moved since we last synced this key
+    let R; try{ R = JSON.parse(raw); }catch(e){ continue; }
+    const Lj = JSON.stringify(syncLocalValue(key)), Bj = syncBase[key], merge = syncMerger(key);
+    if(Lj === raw){ syncBase[key] = raw; continue; }
+    if(Bj !== undefined && Lj === Bj){ await applyRemoteValue(key, R); syncBase[key] = raw; changed = true; continue; }   // nothing unsent here: just take the cloud's
+    if(merge){
+      const B = Bj !== undefined ? JSON.parse(Bj) : (merge === syncMergeList ? [] : {});
+      const M = merge(B, syncLocalValue(key), R);
+      await applyRemoteValue(key, M); changed = true;
+      syncBase[key] = raw;
+      if(JSON.stringify(M) !== raw) toPush.push(key);                  // we hold things the cloud doesn't: send them
+    }else{
+      await applyRemoteValue(key, R); syncBase[key] = raw; changed = true;
+    }
+  }
+  syncSaveBase();
+  return {changed, toPush};
+}
+async function syncPushOnce(key){
+  const merge = syncMerger(key);
+  if(!merge || typeof firestoreDb.runTransaction !== 'function'){
+    const j = JSON.stringify(syncLocalValue(key));
+    await firestoreDoc.set({[key]: j}, {merge:true});
+    syncBase[key] = j; syncSaveBase();
+    return;
+  }
+  let finalJson = null;
+  await firestoreDb.runTransaction(async (tx)=>{
+    const snap = await tx.get(firestoreDoc);
+    const raw = snap.exists ? snap.data()[key] : undefined;
+    const L = syncLocalValue(key);
+    let M = L;
+    if(raw !== undefined){
+      const Bj = syncBase[key];
+      const B = Bj !== undefined ? JSON.parse(Bj) : (merge === syncMergeList ? [] : {});
+      M = merge(B, L, JSON.parse(raw));
+    }
+    finalJson = JSON.stringify(M);
+    tx.set(firestoreDoc, {[key]: finalJson}, {merge:true});
+  });
+  syncBase[key] = finalJson; syncSaveBase();
+  if(finalJson !== JSON.stringify(syncLocalValue(key))){ await applyRemoteValue(key, JSON.parse(finalJson)); syncRefreshSoon(); }
+}
+function pushToCloud(key){
+  if(!syncEnabled || !firestoreDb || SYNC_KEYS.indexOf(key) === -1) return Promise.resolve();
+  if(syncPushing[key]){ syncPushAgain[key] = true; return syncPushing[key]; }
+  syncPushing[key] = (async ()=>{
+    try{
+      do{ syncPushAgain[key] = false; await syncPushOnce(key); }while(syncPushAgain[key]);
+      syncFailed = false;
+      setSyncStatus('Synced just now');
+    }catch(e){
+      console.error('cloud push failed', key, e);
+      setSyncStatus('Sync error \u2014 '+(e && e.code==='permission-denied' ? 'Firebase rules are blocking writes (test rules expire after 30 days)' : 'will retry on next change'));
+      notifySyncFail();
+    }finally{ syncPushing[key] = null; }
+  })();
+  return syncPushing[key];
+}
+// pull the latest from the cloud (on opening the app, coming back online, and every so often) and send anything unsent
+async function syncNow(force){
+  if(!syncEnabled || !firestoreDoc || syncBusy) return;
+  if(!force && Date.now() - syncLastPull < 4000) return;
+  syncBusy = true; syncLastPull = Date.now();
+  try{
+    let snap; try{ snap = await firestoreDoc.get({source:'server'}); }catch(e){ snap = await firestoreDoc.get(); }
+    if(snap.exists){
+      const r = await syncProcessIncoming(snap.data());
+      if(r.changed){ await enforceTagScheme(); refreshAllViews(); }
+      for(const k of r.toPush) await pushToCloud(k);
+    }
+    for(const key of SYNC_KEYS){
+      const Lj = JSON.stringify(syncLocalValue(key));
+      const empty = (Lj === '[]' || Lj === '{}' || Lj === 'null' || Lj === undefined);
+      if(syncBase[key] !== Lj && !(syncBase[key] === undefined && empty)) await pushToCloud(key);
+    }
+  }catch(e){ console.error('sync pull failed', e); }
+  finally{ syncBusy = false; }
+}
+
 function setSyncStatus(text){
   syncStatusText = text;
   const el = document.getElementById('syncStatus');
@@ -1173,6 +1334,12 @@ async function applyRemoteValue(key, value){
     case 'spend-cats': spendCats = value || null; break;
     case 'spend-rules': spendRules = value || {}; break;
     case 'spend-meta': spendMeta = Object.assign({secret:'', seen:[], last:null}, value || {}); break;
+    case 'fin-holdings': finHoldings = value || []; break;
+    case 'fin-dd': finDD = value || []; break;
+    case 'fin-income': finIncome = value || []; break;
+    case 'fin-owed': finOwed = value || []; break;
+    case 'fin-people': finPeople = value || []; break;
+    case 'fin-settings': finSettings = Object.assign({avKey:''}, value || {}); break;
     case 'clock-in-state': clockInState = value; updateClockInBtn(); break;
     case 'dark-mode': darkModeOn = value; applyDarkMode(darkModeOn); break;
     case 'rent-rate-home': RATE_HOME = value; break;
@@ -1196,8 +1363,11 @@ function refreshAllViews(){
   }
   if(document.getElementById('view-trends').classList.contains('active')) renderTrends();
   if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
-  if(document.getElementById('view-budget').classList.contains('active')) renderBudget();
-  if(document.getElementById('view-gym').classList.contains('active') && !(document.activeElement && document.activeElement.closest && document.activeElement.closest('#view-gym'))) renderGym();
+  if(document.getElementById('view-budget').classList.contains('active') && !(document.activeElement && document.activeElement.closest && document.activeElement.closest('#budgetBody') && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))) renderBudget();
+  if(document.getElementById('view-gym').classList.contains('active')){
+    if(!(document.activeElement && document.activeElement.closest && document.activeElement.closest('#view-gym'))) renderGym();
+    else renderGymSession();
+  }
 }
 function parseFirebaseConfig(text){
   try{
@@ -1262,12 +1432,10 @@ async function connectSync(config, isInitialSetup){
     syncEnabled = true;
 
     const snap = await firestoreDoc.get();
+    let pendingPush = [];
     if(snap.exists){
-      const data = snap.data();
-      for(const key of SYNC_KEYS){
-        if(data[key]===undefined) continue;
-        await applyRemoteValue(key, JSON.parse(data[key]));
-      }
+      const r = await syncProcessIncoming(snap.data());
+      pendingPush = r.toPush;
       await enforceTagScheme();
       refreshAllViews();
     }else{
@@ -1275,11 +1443,12 @@ async function connectSync(config, isInitialSetup){
       const currentValues = {
         'calendar-data':calendarData,'tag-defs':tagDefs,'rent-meta':rentMeta,'rent-history':rentHistory,
         'todos':todos,'toil-payouts':toilPayouts,'toil-adjustment':toilAdjustment,'mileage-trips':mileageTrips,
-        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,'gym-log':gymLog,'gym-custom':gymCustom,'gym-bw':gymBw,'gym-bw-asked':gymBwAsked,'spend-txns':spendTxns,'spend-cats':spendCats,'spend-rules':spendRules,'spend-meta':spendMeta,'clock-in-state':clockInState,
+        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,'gym-log':gymLog,'gym-custom':gymCustom,'gym-bw':gymBw,'gym-bw-asked':gymBwAsked,'spend-txns':spendTxns,'spend-cats':spendCats,'spend-rules':spendRules,'spend-meta':spendMeta,'fin-holdings':finHoldings,'fin-dd':finDD,'fin-income':finIncome,'fin-owed':finOwed,'fin-people':finPeople,'fin-settings':finSettings,'clock-in-state':clockInState,
         'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY
       };
       SYNC_KEYS.forEach(key=>{ initial[key] = JSON.stringify(currentValues[key]); });
       await firestoreDoc.set(initial, {merge:true});
+      SYNC_KEYS.forEach(k=>{ syncBase[k] = initial[k]; }); syncSaveBase();
       showToast('This device is now the starting point — connect your other device next.');
     }
 
@@ -1287,15 +1456,11 @@ async function connectSync(config, isInitialSetup){
     syncUnsub = firestoreDoc.onSnapshot({includeMetadataChanges:true}, async (docSnap)=>{
       if(docSnap.metadata.hasPendingWrites) return;
       if(!docSnap.exists) return;
-      const data = docSnap.data();
-      for(const key of SYNC_KEYS){
-        if(data[key]===undefined) continue;
-        await applyRemoteValue(key, JSON.parse(data[key]));
-      }
-      await enforceTagScheme();
+      const r = await syncProcessIncoming(docSnap.data());
+      if(r.changed){ await enforceTagScheme(); refreshAllViews(); }
       syncFailed = false;
-      refreshAllViews();
       setSyncStatus('Synced just now');
+      r.toPush.forEach(k=> pushToCloud(k));
     }, (err)=>{
       console.error('cloud listener failed', err);
       setSyncStatus('Sync error \u2014 '+(err && err.code==='permission-denied' ? 'Firebase rules are blocking reads (test rules expire after 30 days)' : (err && err.message) || 'listener stopped'));
@@ -1303,6 +1468,9 @@ async function connectSync(config, isInitialSetup){
     });
 
     setSyncStatus('Connected');
+    pendingPush.forEach(k=> pushToCloud(k));
+    clearInterval(syncTimer); syncTimer = setInterval(()=>{ if(document.visibilityState==='visible') syncNow(); }, 45000);
+    syncNow(true);
     importInbox();
     renderApplePaySetup();
     document.getElementById('syncConnectBtn').style.display = 'none';
@@ -1317,7 +1485,7 @@ async function connectSync(config, isInitialSetup){
 async function disconnectSync(){
   if(syncUnsub){ syncUnsub(); syncUnsub = null; }
   syncEnabled = false;
-  firestoreDb = null; firestoreDoc = null; syncConfig = null;
+  firestoreDb = null; firestoreDoc = null; syncConfig = null; clearInterval(syncTimer);
   await saveKey('firebase-config', null);
   setSyncStatus('Not connected');
   document.getElementById('syncConnectBtn').style.display = 'block';
@@ -1343,6 +1511,8 @@ async function initSyncFromSaved(){
 
 // ---------- helpers ----------
 function pad(n){return n<10?'0'+n:''+n;}
+// record ids: clock + a random part, so two devices logging in the same millisecond can't collide (still numeric and time-ordered)
+function uid(){ return Date.now()*1000 + Math.floor(Math.random()*1000); }
 function fmt(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
 function todayStr(){return fmt(new Date());}
 function parseYMD(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
@@ -1383,7 +1553,7 @@ async function init(){
   mileageTrips = await loadKey('mileage-trips', []);
   mileageFavorites = await loadKey('mileage-favorites', []);
   if(mileageFavorites.some(f=> typeof f === 'string')){
-    mileageFavorites = mileageFavorites.map(f=> typeof f==='string' ? {id:'fav_'+Date.now()+Math.random(), address:f, nickname:f} : f);
+    mileageFavorites = mileageFavorites.map(f=> typeof f==='string' ? {id:'fav_'+uid(), address:f, nickname:f} : f);
     await saveKey('mileage-favorites', mileageFavorites);
   }
   toilAdjustment = await loadKey('toil-adjustment', 0);
@@ -1425,6 +1595,14 @@ async function init(){
   spendCats = await loadKey('spend-cats', null);
   spendRules = await loadKey('spend-rules', {});
   spendMeta = Object.assign({secret:'', seen:[], last:null}, await loadKey('spend-meta', {}));
+  finHoldings = await loadKey('fin-holdings', []);
+  finDD = await loadKey('fin-dd', []);
+  finIncome = await loadKey('fin-income', []);
+  finOwed = await loadKey('fin-owed', []);
+  finPeople = await loadKey('fin-people', []);
+  finSettings = Object.assign({avKey:''}, await loadKey('fin-settings', {}));
+  finPrices = await loadKey('fin-prices', {});
+  finSnap = await loadKey('fin-snap', []);
   syncAuth = await loadKey('sync-auth', null);
   Object.assign(geoCache, await loadKey('geocache', {}));
   applyDarkMode(darkModeOn);
@@ -1478,13 +1656,14 @@ function normalizeRange(){
 
 let savedCalendarScrollY = 0;
 function goToCalendarDate(dateStr){
-  goToView('calendar');
+  const wasCal = document.getElementById('view-calendar').classList.contains('active');
+  goToView('calendar', undefined, {noRestore:true});
   exitYearView();
   const d = parseYMD(dateStr);
-  scrollToMonth(d.getFullYear(), d.getMonth(), true);
+  scrollToMonth(d.getFullYear(), d.getMonth(), wasCal);      // glide only when you're already on the calendar
   openDayModal(dateStr);
 }
-function goToView(viewName, dir){
+function goToView(viewName, dir, opts){
   document.body.dataset.nav = dir || '';
   acCloseAll();
   const wasCalendar = document.getElementById('view-calendar').classList.contains('active');
@@ -1494,7 +1673,7 @@ function goToView(viewName, dir){
   document.getElementById('returnCalBar').style.display = viewName==='calendar' ? 'none' : 'flex';
   document.getElementById('returnCalFade').style.display = viewName==='calendar' ? 'none' : 'block';
   if(viewName==='calendar'){
-    requestAnimationFrame(()=> window.scrollTo(0, savedCalendarScrollY));
+    if(!(opts && opts.noRestore)) requestAnimationFrame(()=> window.scrollTo(0, savedCalendarScrollY));
   }else{
     requestAnimationFrame(()=> window.scrollTo(0, 0));
   }
@@ -1502,7 +1681,7 @@ function goToView(viewName, dir){
   if(viewName==='gym'){ gymAutoPick = true; renderGym(); }
   { const vEl = document.getElementById('view-'+viewName); vEl.classList.add('fresh'); clearTimeout(vEl._fresh); vEl._fresh = setTimeout(()=>{ vEl.classList.remove('fresh'); document.body.dataset.nav = ''; }, 950); }
   if(viewName==='summary') renderSummary();
-  if(viewName==='budget'){ renderBudget(); importInbox(); }
+  if(viewName==='budget'){ renderBudget(); importInbox(); finMaybeRefresh(); }
   if(viewName==='settings'){ renderApplePaySetup(); importInbox(); }
 }
 function setupTabs(){
@@ -1510,6 +1689,7 @@ function setupTabs(){
   document.getElementById('returnCalBtn').addEventListener('click', ()=> goToView('calendar'));
   document.getElementById('returnBarMenuBtn').addEventListener('click', openMenuSheet);
   document.getElementById('calOverviewBtn').addEventListener('click', openMenuSheet);   // top-left on the calendar = menu
+  document.getElementById('calSummaryBtn').addEventListener('click', ()=> goToView('summary', 'fwd'));
   document.getElementById('calTodoBtn').addEventListener('click', openQuickAddTodoForm);
   document.getElementById('calExpenseBtn').addEventListener('click', openQuickAddExpenseForm);
   document.getElementById('calMileageBtn').addEventListener('click', openQuickAddMileageForm);
@@ -1525,7 +1705,9 @@ function setupTabs(){
       if(sx === null) return;
       const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy, dt = Date.now() - st;
       sx = null;
-      if(sx0 > 24 && Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)*1.8 && dt < 800 && document.body.style.overflow !== 'hidden') onSwipe(dx < 0 ? 'left' : 'right');
+      const quick = Math.abs(dx) > 20 && Math.abs(dx)/Math.max(1, dt) > 0.18;    // a short flick counts
+      const long = Math.abs(dx) > 34;                                           // so does a deliberate drag
+      if(sx0 > 36 && (quick || long) && Math.abs(dx) > Math.abs(dy)*1.15 && dt < 1100 && document.body.style.overflow !== 'hidden') onSwipe(dx < 0 ? 'left' : 'right');
     }, {passive:true});
   };
   swipe(document.getElementById('view-calendar'), (dir)=>{ if(dir==='left' && !yearViewActive) goToView('summary', 'fwd'); });
@@ -1553,13 +1735,12 @@ function buildMenuBody(){
   };
   const items = [
     ['calendar','Calendar',0],
-    ['summary','Summary',0],
     ['todo','To-Do',urgentCount],
     ['rent','Rent',0],
     ['toil','TOIL',0],
     ['mileage','Mileage',0],
     ['expenses','Expenses',pendingExpenses],
-    ['budget','Budget',spendStats(todayStr().slice(0,7)).uncat],
+    ['budget','Finance',spendStats(todayStr().slice(0,7)).uncat],
     ['gym','Gym',0]
   ];
   if(travelEnabled) items.push(['travel','Travel',0]);
@@ -1594,8 +1775,8 @@ function setupDrawerGestures(){
     if(!mode) return;
     const t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
     if(!active){
-      if(Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
-      if(Math.abs(dy) > Math.abs(dx)*0.8 || (mode==='open' && dx < 0) || (mode==='close' && dx > 0)){ mode = null; return; }
+      if(Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
+      if(Math.abs(dy) > Math.abs(dx)*1.3 || (mode==='open' && dx < 0) || (mode==='close' && dx > 0)){ mode = null; return; }
       active = true;
       if(mode==='open'){ buildMenuBody(); ov.classList.add('show'); pn.classList.add('show'); }
       pn.style.transition = 'none'; ov.style.transition = 'none';
@@ -1611,7 +1792,7 @@ function setupDrawerGestures(){
   const end = ()=>{
     document.removeEventListener('touchmove', onMove);
     if(!mode || !active){ mode = null; return; }
-    const open = mode==='open' ? (cur > -w*0.55 || vx > 0.45) : (cur > -w*0.35 && vx > -0.45);
+    const open = mode==='open' ? (cur > -w*0.8 || vx > 0.15) : (cur > -w*0.2 && vx > -0.15);     // opens from a 20% drag or a gentle flick; closes the same way
     mode = null; active = false;
     pn.style.transition = ''; ov.style.transition = '';
     void pn.offsetWidth;
@@ -1624,7 +1805,7 @@ function setupDrawerGestures(){
     if(e.touches.length !== 1) return;
     const t = e.touches[0];
     if(pn.classList.contains('show')) mode = 'close';
-    else if(t.clientX <= 24 && !blocked()) mode = 'open';
+    else if(t.clientX <= 36 && !blocked()) mode = 'open';
     else { mode = null; return; }
     x0 = lastX = t.clientX; y0 = t.clientY; lastT = Date.now(); vx = 0; active = false; cur = mode==='open' ? -w : 0;
     w = pn.offsetWidth || 300;
@@ -1825,7 +2006,7 @@ async function addTravelCountry(){
     showToast(name+' is already on your list.');
     return;
   }
-  travelCountries.push({id:Date.now(), name});
+  travelCountries.push({id:uid(), name});
   await saveKey('travel-countries', travelCountries);
   input.value = '';
   travelPickedCountry = null;
@@ -1837,7 +2018,7 @@ async function addTravelPlaceToCountry(countryName, text){
     showToast("That's the country itself — add a city or specific place instead.");
     return;
   }
-  travelPlaces.push({id:Date.now(), date:todayStr(), name:text, country:countryName});
+  travelPlaces.push({id:uid(), date:todayStr(), name:text, country:countryName});
   await saveKey('travel-places', travelPlaces);
   renderTravelTab();
 }
@@ -1929,7 +2110,7 @@ async function addExpense(){
   const amount = parseFloat(amountInput.value);
   const note = noteInput.value.trim();
   if(isNaN(amount) || amount<=0){ showToast('Enter an amount.'); return; }
-  expenses.push({id:Date.now(), date:todayStr(), amount, note, done:false});
+  expenses.push({id:uid(), date:todayStr(), amount, note, done:false});
   await saveKey('expenses', expenses);
   amountInput.value = '';
   expenseAmountWasEmpty = true;
@@ -2037,7 +2218,7 @@ let mileageFavorites = []; // {id, address, nickname}
 let expenses = []; // {id, date, amount, note, done}
 let travelPlaces = []; // {id, date, name, country}
 function addMileageStopRow(prefillText, prefillCoord){
-  const id = 'stop_'+Date.now();
+  const id = 'stop_'+uid();
   mileageStops.push({id, coord:prefillCoord||null});
   const wrap = document.createElement('div');
   wrap.className = 'autocomplete-wrap';
@@ -2126,7 +2307,7 @@ function renderMileagePlacesDropdown(list, input, onPick){
       star.style.cssText = 'cursor:pointer;color:var(--ink-soft);flex-shrink:0;padding:0 4px 0 10px;font-size:16px;';
       star.addEventListener('click', async (e)=>{
         e.stopPropagation();
-        mileageFavorites.push({id:'fav_'+Date.now(), address:addr, nickname:addr});
+        mileageFavorites.push({id:'fav_'+uid(), address:addr, nickname:addr});
         await saveKey('mileage-favorites', mileageFavorites);
         renderMileagePlacesDropdown(list, input, onPick);
         renderSavedPlaces();
@@ -2188,7 +2369,7 @@ async function ensureAddressLabelled(address){
   if(mileageFavorites.some(f=>f.address===address)) return;
   const label = await promptForAddressLabel(address);
   const nickname = label || address;
-  mileageFavorites.push({id:'fav_'+Date.now()+Math.random(), address, nickname});
+  mileageFavorites.push({id:'fav_'+uid(), address, nickname});
   await saveKey('mileage-favorites', mileageFavorites);
 }
 function mileageAddressUsage(){
@@ -2480,7 +2661,7 @@ function setupMileageExtras(){
     const nickname = nameInput.value.trim() || address.split(',')[0].trim();
     if(!address){ showToast('Search for a place first.'); return; }
     if(mileageFavorites.some(f=>f.address === address)){ showToast('That place is already saved.'); return; }
-    mileageFavorites.push({id:'fav_'+Date.now(), address, nickname});
+    mileageFavorites.push({id:'fav_'+uid(), address, nickname});
     await saveKey('mileage-favorites', mileageFavorites);
     addrInput.value = '';
     nameInput.value = '';
@@ -2540,7 +2721,7 @@ async function addTrip(from, to, miles, stops){
   const category = document.getElementById('mileageCategorySeg').dataset.selected || 'business';
   const dateInput = document.getElementById('mileageDateInput');
   const date = dateInput.value || todayStr();
-  mileageTrips.push({id:Date.now(), date, from, to, category, miles, stops: stops||[]});
+  mileageTrips.push({id:uid(), date, from, to, category, miles, stops: stops||[]});
   await saveKey('mileage-trips', mileageTrips);
   document.getElementById('mileageFromInput').value = '';
   document.getElementById('mileageToInput').value = '';
@@ -2608,7 +2789,7 @@ function setupRentActions(){
     const {total, count} = computeOwed();
     if(count===0) return;
     const today = todayStr();
-    rentHistory.push({id:Date.now(), paidDate:today, through:today, amount:total});
+    rentHistory.push({id:uid(), paidDate:today, through:today, amount:total});
     rentMeta.lastPaidThrough = today;
     await saveKey('rent-history', rentHistory);
     await saveKey('rent-meta', rentMeta);
@@ -2730,7 +2911,7 @@ function setupToilPayouts(){
   document.getElementById('toilPayoutBtn').addEventListener('click', async ()=>{
     const val = parseFloat(document.getElementById('toilPayoutInput').value);
     if(isNaN(val) || val<=0){ showToast('Enter how many hours were paid out.'); return; }
-    toilPayouts.push({id:Date.now(), date:todayStr(), amount:val});
+    toilPayouts.push({id:uid(), date:todayStr(), amount:val});
     await saveKey('toil-payouts', toilPayouts);
     renderToilTab();
     showToast('Recorded '+val.toFixed(1)+'h TOIL payout.');
@@ -2780,33 +2961,37 @@ function ensureRangeCovers(y,m){
   while(target > rangeEndYM.y*12+rangeEndYM.m){ rangeEndYM.m++; normalizeRange(); changed = true; }
   if(changed) renderCalendarAll();
 }
+let progScrollUntil = 0;
 function scrollToMonth(y,m,smooth){
   ensureRangeCovers(y,m);
+  progScrollUntil = smooth ? Date.now() + 1000 : 0;
   updateYearToggleLabel(y);
   const el = document.getElementById('month-'+monthKey(y,m));
   if(el) el.scrollIntoView({behavior: smooth?'smooth':'auto', block:'start'});
 }
 
 let _loadingMonth = false;
-function prependMonth(){
+function prependMonths(n){
   if(_loadingMonth) return;
   _loadingMonth = true;
-  rangeStartYM.m--; normalizeRange();
   const container = document.getElementById('monthsContainer');
-  const oldHeight = document.documentElement.scrollHeight;
-  const block = buildMonthBlock(rangeStartYM.y, rangeStartYM.m);
-  container.insertBefore(block, container.firstChild);
-  const newHeight = document.documentElement.scrollHeight;
-  window.scrollBy(0, newHeight - oldHeight);
-  setTimeout(()=>{ _loadingMonth = false; }, 150);
+  const anchor = container.firstElementChild;
+  const before = anchor ? anchor.getBoundingClientRect().top : 0;
+  const blocks = [];
+  for(let i=0;i<n;i++){ rangeStartYM.m--; normalizeRange(); blocks.unshift(buildMonthBlock(rangeStartYM.y, rangeStartYM.m)); }
+  const frag = document.createDocumentFragment();
+  blocks.forEach(b=> frag.appendChild(b));
+  container.insertBefore(frag, container.firstChild);
+  if(anchor){ const dy = anchor.getBoundingClientRect().top - before; if(Math.abs(dy) > 0.5) window.scrollBy(0, dy); }
+  setTimeout(()=>{ _loadingMonth = false; }, 120);
 }
-function appendMonth(){
+function appendMonths(n){
   if(_loadingMonth) return;
   _loadingMonth = true;
-  rangeEndYM.m++; normalizeRange();
-  const container = document.getElementById('monthsContainer');
-  container.appendChild(buildMonthBlock(rangeEndYM.y, rangeEndYM.m));
-  setTimeout(()=>{ _loadingMonth = false; }, 150);
+  const frag = document.createDocumentFragment();
+  for(let i=0;i<n;i++){ rangeEndYM.m++; normalizeRange(); frag.appendChild(buildMonthBlock(rangeEndYM.y, rangeEndYM.m)); }
+  document.getElementById('monthsContainer').appendChild(frag);
+  setTimeout(()=>{ _loadingMonth = false; }, 120);
 }
 
 // ---------- year view (mini-month grid, infinite scroll through years) ----------
@@ -2872,6 +3057,7 @@ function renderYearGridAll(){
   for(let y=yvRangeStart; y<=yvRangeEnd; y++){ container.appendChild(buildYearBlock(y)); }
 }
 function scrollToYear(year, smooth){
+  progScrollUntil = smooth ? Date.now() + 1000 : 0;
   if(year < yvRangeStart || year > yvRangeEnd){
     yvRangeStart = Math.min(yvRangeStart, year);
     yvRangeEnd = Math.max(yvRangeEnd, year);
@@ -2886,10 +3072,10 @@ function prependYearBlock(){
   _loadingYear = true;
   yvRangeStart--;
   const container = document.getElementById('yearGridContainer');
-  const oldHeight = document.documentElement.scrollHeight;
+  const anchor = container.firstElementChild;
+  const before = anchor ? anchor.getBoundingClientRect().top : 0;
   container.insertBefore(buildYearBlock(yvRangeStart), container.firstChild);
-  const newHeight = document.documentElement.scrollHeight;
-  window.scrollBy(0, newHeight - oldHeight);
+  if(anchor){ const dy = anchor.getBoundingClientRect().top - before; if(Math.abs(dy) > 0.5) window.scrollBy(0, dy); }
   setTimeout(()=>{ _loadingYear = false; }, 150);
 }
 function appendYearBlock(){
@@ -2899,18 +3085,40 @@ function appendYearBlock(){
   document.getElementById('yearGridContainer').appendChild(buildYearBlock(yvRangeEnd));
   setTimeout(()=>{ _loadingYear = false; }, 150);
 }
+let calTouching = false, calTouchT = 0, calIdleT = null;
+function updateYearLabelFromScroll(){
+  if(yearViewActive) return;
+  const cards = document.querySelectorAll('.month-card');
+  for(let i=0;i<cards.length;i++){
+    const r = cards[i].getBoundingClientRect();
+    if(r.height > 0 && r.bottom > 140){ const m = /^month-(\d{4})-/.exec(cards[i].id); if(m) updateYearToggleLabel(m[1]); return; }
+  }
+}
 function setupInfiniteScroll(){
-  window.addEventListener('scroll', ()=>{
-    if(document.body.style.overflow==='hidden') return;
+  const nearBottom = n=> window.innerHeight + window.scrollY > document.documentElement.scrollHeight - n;
+  const extend = (urgent)=>{
+    if(document.body.style.overflow === 'hidden') return;
     if(!document.getElementById('view-calendar').classList.contains('active')) return;
+    if(Date.now() < progScrollUntil) return;
+    if(calTouching && Date.now() - calTouchT > 3000) calTouching = false;
+    if(calTouching && !urgent) return;
     if(yearViewActive){
-      if(window.scrollY < 500) prependYearBlock();
-      if(window.innerHeight + window.scrollY > document.documentElement.scrollHeight - 700) appendYearBlock();
+      if(window.scrollY < (urgent ? 60 : 900)) prependYearBlock();
+      if(nearBottom(urgent ? 200 : 900)) appendYearBlock();
     }else{
-      if(window.scrollY < 500) prependMonth();
-      if(window.innerHeight + window.scrollY > document.documentElement.scrollHeight - 700) appendMonth();
+      if(window.scrollY < (urgent ? 60 : 1400)) prependMonths(urgent ? 2 : 3);
+      if(nearBottom(urgent ? 200 : 1400)) appendMonths(urgent ? 2 : 3);
     }
+  };
+  window.addEventListener('scroll', ()=>{
+    clearTimeout(calIdleT);
+    calIdleT = setTimeout(()=>{ extend(false); updateYearLabelFromScroll(); }, 140);
+    if(window.scrollY < 60 || nearBottom(200)) extend(true);
   }, {passive:true});
+  document.addEventListener('touchstart', ()=>{ calTouching = true; calTouchT = Date.now(); }, {passive:true});
+  const rel = ()=>{ calTouching = false; clearTimeout(calIdleT); calIdleT = setTimeout(()=>{ extend(false); updateYearLabelFromScroll(); }, 160); };
+  document.addEventListener('touchend', rel, {passive:true});
+  document.addEventListener('touchcancel', rel, {passive:true});
 }
 // ---------- recurring events (bank holidays, observances, user events) ----------
 function computeEaster(year){
@@ -3159,22 +3367,24 @@ function buildMonthBlock(year, month){
 }
 function renderCalendarAll(targetDate){
   renderCalHeaderAlert();
-  let anchorId = null;
+  let anchorId = null, anchorTop = 0;
   if(!targetDate){
-    document.querySelectorAll('.month-card').forEach(c=>{
-      if(anchorId) return;
-      const rect = c.getBoundingClientRect();
-      if(rect.bottom > 90) anchorId = c.id;
-    });
+    const cards = document.querySelectorAll('.month-card');
+    for(let i=0;i<cards.length;i++){
+      const rect = cards[i].getBoundingClientRect();
+      if(rect.height > 0 && rect.bottom > 90){ anchorId = cards[i].id; anchorTop = rect.top; break; }
+    }
   }
   const container = document.getElementById('monthsContainer');
-  container.innerHTML = '';
+  const frag = document.createDocumentFragment();
   let y = rangeStartYM.y, m = rangeStartYM.m;
   while(y < rangeEndYM.y || (y===rangeEndYM.y && m<=rangeEndYM.m)){
-    container.appendChild(buildMonthBlock(y,m));
+    frag.appendChild(buildMonthBlock(y,m));
     m++;
     if(m>11){ m=0; y++; }
   }
+  container.innerHTML = '';
+  container.appendChild(frag);
   document.getElementById('calLegend').innerHTML = '<span><i style="background:var(--away-tint);border:1px solid #e6cd9d;"></i>Away</span><span><i style="background:#9AA39C;border-radius:50%;"></i>To-do</span><span>'+ICON_FLAG+' Event</span><span>'+ICON_AL+' Annual Leave</span>';
   if(targetDate){
     const d = parseYMD(targetDate);
@@ -3182,7 +3392,7 @@ function renderCalendarAll(targetDate){
     if(el) el.scrollIntoView({behavior:'auto', block:'start'});
   }else if(anchorId){
     const el = document.getElementById(anchorId);
-    if(el) el.scrollIntoView({behavior:'auto', block:'start'});
+    if(el){ const dy = el.getBoundingClientRect().top - anchorTop; if(Math.abs(dy) > 0.5) window.scrollBy(0, dy); }
   }
 }
 
@@ -3384,7 +3594,7 @@ async function addDayWhatsOn(){
     const endVal = document.getElementById('dayModalEndDate').value;
     if(rangeRow.classList.contains('show') && endVal && endVal > selectedDate) rangeEnd = endVal;
   }
-  todos.push({id:Date.now(), text, tagId, urgent:false, done:false, doneAt:null, kind:'whatson', scope:'day', dueDate:selectedDate, rangeStart:selectedDate, rangeEnd, repeat});
+  todos.push({id:uid(), text, tagId, urgent:false, done:false, doneAt:null, kind:'whatson', scope:'day', dueDate:selectedDate, rangeStart:selectedDate, rangeEnd, repeat});
   await saveKey('todos', todos);
   input.value = '';
   document.getElementById('dayTodoRepeatSelect').value = 'none';
@@ -3533,15 +3743,17 @@ function loadDayIntoForm(dateStr){
   renderDayHappeningList(dateStr);
 }
 
-let modalScrollY = 0;
-let modalAnchorMonthId = null;
+let modalScrollY = 0, scrollLocked = false;
 function lockBodyScroll(){
+  // a fresh lock (no popup showing) always records where you are now, so a stale position can never be restored later
+  if(!scrollLocked || !document.querySelector('.overlay:not(.hidden)')){ modalScrollY = window.scrollY; scrollLocked = true; }
   document.documentElement.style.overflow = 'hidden';
   document.body.style.overflow = 'hidden';
 }
 function unlockBodyScroll(){
   document.documentElement.style.overflow = '';
   document.body.style.overflow = '';
+  if(scrollLocked){ scrollLocked = false; if(Math.abs(window.scrollY - modalScrollY) > 1) window.scrollTo(0, modalScrollY); }
 }
 function openDayModal(dateStr){
   document.getElementById('dayModalDateInput').value = dateStr;
@@ -3707,7 +3919,7 @@ async function addNewTodo(){
   const text = input.value.trim();
   if(!text) return;
   const date = dateInput.value || null;
-  const t = {id:Date.now(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope: date?'day':'urgent', dueDate:date, rangeStart:date, rangeEnd:date, repeat:'none'};
+  const t = {id:uid(), text, tagId:null, urgent:false, done:false, doneAt:null, kind:'task', scope: date?'day':'urgent', dueDate:date, rangeStart:date, rangeEnd:date, repeat:'none'};
   todos.push(t);
   await saveKey('todos', todos);
   input.value = '';
@@ -3851,7 +4063,8 @@ function spendRandom(n){
 function spendStats(ym){
   const tx = spendTxns.filter(t=> t.date && t.date.slice(0,7)===ym);
   const by = {}; let spent = 0, uncat = 0;
-  tx.forEach(t=>{ spent += t.amount; const k = t.cat || '_'; by[k] = (by[k]||0) + t.amount; if(!t.cat) uncat++; });
+  const om = finOthersMap();                      // what other people owe on split purchases isn't your spending
+  tx.forEach(t=>{ const net = t.amount - (om[t.id] || 0); spent += net; const k = t.cat || '_'; by[k] = (by[k]||0) + net; if(!t.cat) uncat++; });
   const budget = spendCatList().reduce((a,c)=> a + (c.budget||0), 0);
   const [y, m] = ym.split('-').map(Number);
   const dim = new Date(y, m, 0).getDate();
@@ -3885,11 +4098,20 @@ function spendFromInbox(d, id){
   const dm = /^(\d{4}-\d{2}-\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(String(d.d || ''));
   return {id:'ap_'+id, date: dm ? dm[1] : todayStr(), time: dm && dm[2] ? dm[2] : '', amount: spendParseAmount(d.a), merchant, card: String(d.c || ''), src:'applepay', cat: spendGuess(merchant)};
 }
+// business cards (default: any card with "aqua" in its name) go to your Expenses list, everything else to Finance spending
+function spendCardRoute(card){
+  const c = String(card || '').trim();
+  if(!c) return 'personal';
+  const ov = (spendMeta.cardRoute || {})[c];
+  if(ov) return ov;
+  const words = String(spendMeta.bizWords === undefined ? 'aqua' : spendMeta.bizWords).toLowerCase().split(',').map(w=> w.trim()).filter(Boolean);
+  return words.some(w=> c.toLowerCase().indexOf(w) > -1) ? 'business' : 'personal';
+}
 let inboxBusy = false;
 async function importInbox(){
   if(inboxBusy || !syncEnabled || !firestoreDb || !spendMeta.secret) return 0;
   inboxBusy = true;
-  let added = 0, sawTest = false;
+  let added = 0, bizAdded = 0, sawTest = false;
   try{
     const snap = await firestoreDb.collection('inbox').get();
     for(const doc of snap.docs){
@@ -3900,25 +4122,35 @@ async function importInbox(){
           if(d.m === 'Test payment' && d.c === 'Test'){ sawTest = true; }
           else{
             const t = spendFromInbox(d, doc.id);
-            if(t){ spendTxns.push(t); added++; spendMeta.last = {merchant:t.merchant, amount:t.amount, date:t.date, time:t.time}; }
+            if(t){
+              const route = spendCardRoute(t.card);
+              if(route === 'business'){ expenses.push({id:uid(), date:t.date, amount:t.amount, note:t.merchant, done:false, src:'applepay'}); bizAdded++; }
+              else{ spendTxns.push(t); added++; }
+              spendMeta.last = {merchant:t.merchant, amount:t.amount, date:t.date, time:t.time, card:t.card, route};
+              if(t.card){ spendMeta.cards = spendMeta.cards || []; if(spendMeta.cards.indexOf(t.card) === -1) spendMeta.cards.push(t.card); if(spendMeta.cards.length > 12) spendMeta.cards.shift(); }
+            }
           }
         }
       }
       try{ await doc.ref.delete(); }catch(e){}
     }
     if(spendMeta.seen.length > 300) spendMeta.seen = spendMeta.seen.slice(-300);
-    if(added || sawTest){
-      if(sawTest && !added) spendMeta.last = {merchant:'Test payment', amount:0.01, date:todayStr(), time:''};
+    if(added || bizAdded || sawTest){
+      if(sawTest && !added && !bizAdded) spendMeta.last = {merchant:'Test payment', amount:0.01, date:todayStr(), time:''};
       await saveKey('spend-txns', spendTxns);
+      if(bizAdded){ await saveKey('expenses', expenses); renderExpensesTab(); }
       await saveKey('spend-meta', spendMeta);
       if(document.getElementById('view-budget').classList.contains('active')) renderBudget();
       if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
       if(document.getElementById('view-settings').classList.contains('active')) renderApplePaySetup();
-      showToast(added ? added+' Apple Pay payment'+(added===1 ? '' : 's')+' added.' : 'Test received \u2014 Apple Pay capture works.');
+      const parts = [];
+      if(added) parts.push(added+' payment'+(added === 1 ? '' : 's'));
+      if(bizAdded) parts.push(bizAdded+' business expense'+(bizAdded === 1 ? '' : 's'));
+      showToast(parts.length ? parts.join(' and ')+' added from Apple Pay.' : 'Test received \u2014 Apple Pay capture works.');
     }
   }catch(e){ console.error('inbox import failed', e); }
   finally{ inboxBusy = false; }
-  return added;
+  return added + bizAdded;
 }
 function spendEndpoint(){
   return 'https://firestore.googleapis.com/v1/projects/'+syncConfig.projectId+'/databases/(default)/documents/inbox?key='+syncConfig.apiKey;
@@ -3971,10 +4203,15 @@ function renderApplePaySetup(){
   if(!spendMeta.secret){ spendMeta.secret = spendRandom(24); saveKey('spend-meta', spendMeta); }
   if(!syncConfig){ box.innerHTML = '<div class="stat-sub">Connect sync above first.</div>'; return; }
   const l = spendMeta.last;
-  const lastTxt = l ? escapeHtml(l.merchant)+' \u00b7 '+money(l.amount)+' \u00b7 '+shortDate(l.date)+(l.time ? ' '+l.time : '') : 'Nothing received yet';
+  const lastTxt = l ? escapeHtml(l.merchant)+' \u00b7 '+money(l.amount)+' \u00b7 '+shortDate(l.date)+(l.time ? ' '+l.time : '')+(l.route === 'business' ? ' \u00b7 Expenses' : '') : 'Nothing received yet';
   const authOn = !!(syncAuth && syncAuth.email);
+  const cards = spendMeta.cards || [];
+  const cardRows = cards.length ? cards.map(c=>{ const r = spendCardRoute(c); return '<div class="sum-row"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(c)+'</span><button type="button" class="chip-btn'+(r === 'business' ? ' active' : '')+'" data-ap-card="'+escapeHtml(c)+'">'+(r === 'business' ? 'Business \u2192 Expenses' : 'Personal \u2192 Finance')+'</button></div>'; }).join('')
+    : '<div class="stat-sub" style="margin:0 0 4px;">Your cards show up here after their first tap.</div>';
   box.innerHTML =
     '<div class="sum-row" style="padding-top:0;"><span class="sum-k">Last tap</span><span class="sum-v">'+lastTxt+'</span></div>'+
+    '<div class="sum2-h" style="margin:10px 0 2px;"><span>Where each card goes</span></div>'+cardRows+
+    '<div class="fin-opts" style="margin:6px 0 10px;"><span class="stat-sub" style="margin:0;">Business if the card name has</span><input type="text" id="apBiz" value="'+escapeHtml(spendMeta.bizWords === undefined ? 'aqua' : spendMeta.bizWords)+'" style="width:120px;" autocomplete="off" autocapitalize="none"></div>'+
     '<ol class="sp-steps">'+
       '<li><b>Firebase \u2192 Firestore \u2192 Rules.</b> Paste these and Publish.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="rulesLocked">Copy rules (locked)</button><button type="button" class="btn secondary small" data-ap-copy="rulesOpen">Copy rules (open)</button></div></li>'+
       '<li><b>Shortcuts \u2192 Automation \u2192 +  \u2192 Transaction.</b> Pick your cards, <b>Run Immediately</b>, Notify off, New Blank Automation.</li>'+
@@ -3991,14 +4228,641 @@ function renderApplePaySetup(){
     '</details>';
   const texts = {rulesLocked: ()=> spendRulesText(true), rulesOpen: ()=> spendRulesText(false), body: spendBodyTemplate, url: spendEndpoint};
   box.querySelectorAll('[data-ap-copy]').forEach(b=> b.addEventListener('click', ()=> copyText(texts[b.dataset.apCopy](), {rulesLocked:'Locked rules', rulesOpen:'Open rules', body:'Text', url:'URL'}[b.dataset.apCopy])));
+  box.querySelectorAll('[data-ap-card]').forEach(b=> b.addEventListener('click', async ()=>{
+    const c = b.dataset.apCard;
+    spendMeta.cardRoute = spendMeta.cardRoute || {};
+    spendMeta.cardRoute[c] = spendCardRoute(c) === 'business' ? 'personal' : 'business';
+    await saveKey('spend-meta', spendMeta); renderApplePaySetup();
+  }));
+  document.getElementById('apBiz').addEventListener('change', async (e)=>{
+    spendMeta.bizWords = e.target.value.trim(); await saveKey('spend-meta', spendMeta); renderApplePaySetup();
+  });
   document.getElementById('apTestBtn').addEventListener('click', spendSendTest);
   document.getElementById('apCheckBtn').addEventListener('click', async ()=>{ const n = await importInbox(); if(!n) showToast('Nothing new in the inbox.'); });
   document.getElementById('spAuthBtn').addEventListener('click', syncSignIn);
 }
 
+// ---------- finance: bills, income, owed, investments ----------
+const FIN_FREQ = [['monthly','Monthly'],['weekly','Weekly'],['fortnightly','Fortnightly'],['fourweekly','Every 4 weeks'],['yearly','Yearly'],['once','One-off']];
+const FIN_PER_MONTH = {monthly:1, weekly:52/12, fortnightly:26/12, fourweekly:13/12, yearly:1/12, once:0};
+const FIN_COINS = [['BTC','Bitcoin'],['ETH','Ethereum'],['USDT','Tether'],['XRP','XRP'],['SOL','Solana'],['USDC','USD Coin'],['DOGE','Dogecoin'],['ADA','Cardano'],['AVAX','Avalanche'],['LINK','Chainlink'],['DOT','Polkadot'],['LTC','Litecoin'],['BCH','Bitcoin Cash'],['XLM','Stellar'],['SHIB','Shiba Inu'],['UNI','Uniswap'],['ATOM','Cosmos'],['AAVE','Aave'],['NEAR','NEAR Protocol'],['ALGO','Algorand'],['HBAR','Hedera']];
+function finFreqLabel(f){ const r = FIN_FREQ.find(x=> x[0]===f); return r ? r[1] : f; }
+function finMonthLabel(ym){ const [y, m] = ym.split('-').map(Number); return new Date(y, m-1, 1).toLocaleDateString('en-GB', {month:'long', year:'numeric'}); }
+const finAmt = n=> (n < 0 ? '\u2212' : '')+money(Math.abs(n));
+const finR2 = n=> Math.round(n*100)/100;
+function finMoneyShort(n){ return '\u00a3'+Math.round(n).toLocaleString('en-GB'); }
+
+// ---- when does a bill / payment land? ----
+function finOccurrences(it, ym){
+  if(!it || it.active === false || !it.date) return [];
+  const [y, m] = ym.split('-').map(Number), dim = new Date(y, m, 0).getDate();
+  const a = it.date, ay = +a.slice(0,4), am = +a.slice(5,7), ad = +a.slice(8,10);
+  const first = ym+'-01', last = ym+'-'+pad(dim);
+  if(it.freq === 'once') return a.slice(0,7) === ym ? [a] : [];
+  if(it.freq === 'monthly'){ if(ym < a.slice(0,7)) return []; return [ym+'-'+pad(Math.min(ad, dim))]; }
+  if(it.freq === 'yearly'){ if(m !== am || y < ay) return []; return [ym+'-'+pad(Math.min(ad, dim))]; }
+  const step = {weekly:7, fortnightly:14, fourweekly:28}[it.freq];
+  if(!step) return [];
+  const out = []; let d = a;
+  if(d < first){ const diff = Math.round((parseYMD(first) - parseYMD(a))/86400000); d = addDays(a, Math.ceil(diff/step)*step); }
+  while(d <= last){ out.push(d); d = addDays(d, step); }
+  return out;
+}
+function finNext(it, from){
+  if(!it || it.active === false) return null;
+  const f = parseYMD(from);
+  for(let i=0; i<26; i++){
+    const d = new Date(f.getFullYear(), f.getMonth()+i, 1), ym = d.getFullYear()+'-'+pad(d.getMonth()+1);
+    const o = finOccurrences(it, ym).find(x=> x >= from);
+    if(o) return o;
+    if(it.freq === 'once' && i > 0) break;
+  }
+  return null;
+}
+const finMonthTotal = (list, ym)=> list.reduce((a,it)=> a + it.amount*finOccurrences(it, ym).length, 0);
+function finDateLabel(d){
+  if(!d) return '';
+  const n = daysBetween(todayStr(), d);
+  if(n === 0) return 'Today';
+  if(n === 1) return 'Tomorrow';
+  return niceDate(d)+(n > 1 && n < 15 ? ' \u00b7 in '+n+' days' : '');
+}
+
+// ---- who owes what ----
+function finOthersMap(){
+  const m = {};
+  finOwed.forEach(o=>{ if(o.txnId) m[o.txnId] = (m[o.txnId]||0) + o.people.reduce((a,p)=> a + p.share, 0); });
+  return m;
+}
+function finOwedUnpaid(){ let t = 0; finOwed.forEach(o=> o.people.forEach(p=>{ if(!p.paid) t += p.share; })); return finR2(t); }
+async function finAddOwed(o){
+  const people = Object.keys(o.shares).filter(n=> o.shares[n] > 0).map(n=>({name:n, share:o.shares[n], paid:false, paidDate:null}));
+  if(!people.length) return null;
+  const e = {id:uid(), date:o.date || todayStr(), desc:o.desc || 'Split', total:o.total, txnId:o.txnId || null, people};
+  finOwed.push(e);
+  await saveKey('fin-owed', finOwed);
+  return e;
+}
+async function finDeleteTxn(id){
+  // a split someone has already paid stays on the owed list; an unpaid one goes with the purchase
+  finOwed.forEach(o=>{ if(o.txnId === id && o.people.some(p=> p.paid)) o.txnId = null; });
+  finOwed = finOwed.filter(o=> o.txnId !== id);
+  spendTxns = spendTxns.filter(t=> t.id !== id);
+  await saveKey('spend-txns', spendTxns); await saveKey('fin-owed', finOwed);
+}
+const finBack = ()=>{ const v = document.getElementById('view-budget'); if(v && v.classList.contains('active')) renderBudget(); };
+
+// ---- the owed list: a popup, opened from Overview, Spend or a transaction ----
+function finOpenOwedSheet(){ openSheet('Owed to you'); finRenderOwedSheet(); }
+function finRenderOwedSheet(){
+  const body = document.getElementById('sheetBody');
+  if(!body) return;
+  const by = {};
+  finOwed.forEach(o=> o.people.forEach(p=>{
+    const r = by[p.name] || (by[p.name] = {name:p.name, unpaid:0, rows:[]});
+    if(!p.paid) r.unpaid += p.share;
+    r.rows.push({o, p});
+  }));
+  const names = Object.keys(by).sort((a,b)=> by[b].unpaid - by[a].unpaid || a.localeCompare(b));
+  const paidCount = finOwed.reduce((a,o)=> a + o.people.filter(p=> p.paid).length, 0);
+  let h = '<div class="fin-big">'+money(finOwedUnpaid())+'</div><div class="stat-sub" style="margin:2px 0 8px;">'+(finOwedUnpaid() ? 'still to come in' : 'all settled')+'</div>';
+  names.forEach(n=>{
+    const r = by[n], shown = r.rows.filter(x=> finShowPaid || !x.p.paid).sort((a,b)=> b.o.date.localeCompare(a.o.date));
+    if(!shown.length) return;
+    h += '<div class="fin-owegroup"><div class="sum-head"><h2 style="font-size:15px;">'+escapeHtml(n)+'</h2><span'+(r.unpaid ? ' style="color:var(--ink);font-weight:600;"' : '')+'>'+(r.unpaid ? money(finR2(r.unpaid))+' owed' : 'settled')+'</span></div>'+
+      shown.map(x=> '<div class="sum-row"><span style="min-width:0;">'+escapeHtml(x.o.desc)+'<span class="stat-sub" style="display:block;margin:0;">'+shortDate(x.o.date)+(x.o.total ? ' \u00b7 of '+money(x.o.total) : '')+'</span></span><span style="display:flex;align-items:center;gap:8px;flex-shrink:0;"><b>'+money(x.p.share)+'</b><button type="button" class="chip-btn'+(x.p.paid ? ' active' : '')+'" data-fo-pay="'+x.o.id+'" data-who="'+escapeHtml(n)+'">'+(x.p.paid ? 'Paid' : 'Unpaid')+'</button></span></div>').join('')+
+      (r.unpaid ? '<button type="button" class="btn secondary small block" data-fo-all="'+escapeHtml(n)+'" style="margin-top:8px;">Mark all paid</button>' : '')+'</div>';
+  });
+  if(!names.length) h += '<div class="stat-sub">Nobody owes you anything. Open a transaction and tap Split to share a cost.</div>';
+  if(paidCount) h += '<div class="chip-row" style="margin-top:10px;"><button type="button" class="chip-btn'+(finShowPaid ? ' active' : '')+'" id="foShowPaid">'+(finShowPaid ? 'Hide' : 'Show')+' paid ('+paidCount+')</button></div>';
+  body.innerHTML = h;
+  const persist = async ()=>{ await saveKey('fin-owed', finOwed); finRenderOwedSheet(); finBack(); };
+  body.querySelectorAll('[data-fo-pay]').forEach(b=> b.addEventListener('click', async ()=>{
+    const o = finOwed.find(x=> String(x.id) === b.dataset.foPay); if(!o) return;
+    const p = o.people.find(x=> x.name === b.dataset.who); if(!p) return;
+    p.paid = !p.paid; p.paidDate = p.paid ? todayStr() : null; await persist();
+  }));
+  body.querySelectorAll('[data-fo-all]').forEach(b=> b.addEventListener('click', async ()=>{
+    finOwed.forEach(o=> o.people.forEach(p=>{ if(p.name === b.dataset.foAll && !p.paid){ p.paid = true; p.paidDate = todayStr(); } }));
+    await persist(); showToast(b.dataset.foAll+' is all settled.');
+  }));
+  const sp = body.querySelector('#foShowPaid'); if(sp) sp.addEventListener('click', ()=>{ finShowPaid = !finShowPaid; finRenderOwedSheet(); });
+}
+
+// ---- a transaction: its details, its budget, and splitting it ----
+let finTxnSplit = null;
+function finSplitShares(total, S){
+  const w = S.custom ? S.weights : S.weights.map(()=> 1);
+  const sum = w.reduce((a,b)=> a + b, 0) || 1;
+  const shares = w.map(x=> finR2(total*x/sum));
+  shares[0] = Math.max(0, finR2(total - shares.slice(1).reduce((a,b)=> a + b, 0)));
+  return shares;
+}
+function finOpenTxnSheet(id){
+  const t = spendTxns.find(x=> x.id === id);
+  if(!t) return;
+  finTxnSplit = null;
+  openSheet(t.merchant);
+  finRenderTxnSheet(id);
+}
+function finRenderTxnSheet(id){
+  const t = spendTxns.find(x=> x.id === id), body = document.getElementById('sheetBody');
+  if(!t || !body) return;
+  const ents = finOwed.filter(o=> o.txnId === id), cats = spendCatList(), S = (finTxnSplit && finTxnSplit.id === id) ? finTxnSplit : null;
+  const src = t.src === 'applepay' ? 'Apple Pay' : (t.src === 'invest' ? 'Investment' : 'Added by hand');
+  const row = (k, v)=> '<div class="sum-row"><span class="sum-k">'+k+'</span><span class="sum-v">'+v+'</span></div>';
+  let h = '<div class="fin-big" style="margin-bottom:4px;">'+finAmt(t.amount)+'</div>'+
+    row('Date', niceDate(t.date)+(t.time ? ' \u00b7 '+t.time : ''))+row('How', src+(t.card ? ' \u00b7 '+escapeHtml(t.card) : ''))+
+    '<div class="sum2-h" style="margin-top:12px;"><span>Budget</span></div><div class="sp-chips" style="margin-top:0;">'+cats.map(c=> '<button type="button" class="chip-btn'+(t.cat === c.id ? ' active' : '')+'" data-ft-cat="'+c.id+'">'+escapeHtml(c.name)+'</button>').join('')+'</div>'+
+    '<div class="sum2-h" style="margin-top:14px;"><span>Split</span></div>';
+  if(ents.length){
+    const others = ents.reduce((a,e)=> a + e.people.reduce((b,p)=> b + p.share, 0), 0);
+    h += '<div class="fin-split">'+ents.map(e=> e.people.map(p=> '<div class="fin-srow"><span>'+escapeHtml(p.name)+'</span><span style="display:flex;align-items:center;gap:8px;"><b>'+money(p.share)+'</b><button type="button" class="chip-btn'+(p.paid ? ' active' : '')+'" data-ft-pay="'+e.id+'" data-who="'+escapeHtml(p.name)+'">'+(p.paid ? 'Paid' : 'Unpaid')+'</button></span></div>').join('')).join('')+
+      '<div class="stat-sub" style="margin-top:8px;">Your share <b>'+money(t.amount - others)+'</b></div></div><div class="sp-btnrow"><button type="button" class="btn secondary small" id="ftUnsplit">Remove split</button></div>';
+  }else if(S){
+    const shares = finSplitShares(t.amount, S);
+    const used = S.names.filter(Boolean);
+    h += '<div class="fin-split"><div class="fin-srow"><span>People splitting it</span><span class="fin-step"><button type="button" data-fs-n="-1">\u2212</button><b>'+S.n+'</b><button type="button" data-fs-n="1">+</button></span></div>'+
+      '<div class="sp-chips"><button type="button" class="chip-btn'+(!S.custom ? ' active' : '')+'" data-fs-mode="equal">Equal</button><button type="button" class="chip-btn'+(S.custom ? ' active' : '')+'" data-fs-mode="custom">Custom ratio</button></div>';
+    for(let i=0; i<S.n; i++){
+      const label = i === 0 ? '<b>You</b>' : '<select data-fs-name="'+i+'">'+'<option value="">Person '+(i+1)+'</option>'+finPeople.filter(n=> n === S.names[i] || used.indexOf(n) === -1).map(n=> '<option value="'+escapeHtml(n)+'"'+(S.names[i] === n ? ' selected' : '')+'>'+escapeHtml(n)+'</option>').join('')+'<option value="__new">New name\u2026</option></select>';
+      h += '<div class="fin-srow">'+label+'<span style="display:flex;align-items:center;gap:10px;">'+(S.custom ? '<span class="fin-step"><button type="button" data-fs-w="'+i+'" data-d="-1">\u2212</button><b>'+S.weights[i]+'</b><button type="button" data-fs-w="'+i+'" data-d="1">+</button></span>' : '')+'<b style="min-width:62px;text-align:right;">'+money(shares[i])+'</b></span></div>';
+    }
+    if(S.newFor !== null && S.newFor !== undefined) h += '<div class="sp-add" style="margin-top:8px;"><input type="text" id="fsNewName" placeholder="Name" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="fsNewBtn">Add</button></div>';
+    h += '</div><div class="sp-btnrow"><button type="button" class="btn small" id="ftSplitSave">Save split</button><button type="button" class="btn secondary small" id="ftSplitCancel">Cancel</button></div>';
+  }else{
+    h += '<div class="sp-btnrow" style="margin-top:0;"><button type="button" class="btn secondary small" id="ftSplitStart">Split this cost</button></div>';
+  }
+  h += '<div class="sp-btnrow" style="margin-top:16px;"><button type="button" class="btn secondary small" id="ftDelete">Delete transaction</button></div>';
+  body.innerHTML = h;
+  const redo = ()=> finRenderTxnSheet(id);
+  body.querySelectorAll('[data-ft-cat]').forEach(b=> b.addEventListener('click', async ()=>{ await spendSetCat(t.id, b.dataset.ftCat); redo(); }));
+  body.querySelectorAll('[data-ft-pay]').forEach(b=> b.addEventListener('click', async ()=>{
+    const o = finOwed.find(x=> String(x.id) === b.dataset.ftPay); if(!o) return;
+    const p = o.people.find(x=> x.name === b.dataset.who); if(!p) return;
+    p.paid = !p.paid; p.paidDate = p.paid ? todayStr() : null;
+    await saveKey('fin-owed', finOwed); redo(); finBack();
+  }));
+  const start = body.querySelector('#ftSplitStart');
+  if(start) start.addEventListener('click', ()=>{ finTxnSplit = {id, n:2, custom:false, weights:[1,1], names:[null,null], newFor:null}; redo(); });
+  body.querySelectorAll('[data-fs-n]').forEach(b=> b.addEventListener('click', ()=>{
+    const n = Math.max(2, Math.min(8, S.n + Number(b.dataset.fsN)));
+    while(S.weights.length < n){ S.weights.push(1); S.names.push(null); }
+    S.weights.length = n; S.names.length = n; S.n = n; S.newFor = null; redo();
+  }));
+  body.querySelectorAll('[data-fs-mode]').forEach(b=> b.addEventListener('click', ()=>{ S.custom = b.dataset.fsMode === 'custom'; redo(); }));
+  body.querySelectorAll('[data-fs-w]').forEach(b=> b.addEventListener('click', ()=>{ const i = Number(b.dataset.fsW); S.weights[i] = Math.max(1, Math.min(20, S.weights[i] + Number(b.dataset.d))); redo(); }));
+  body.querySelectorAll('[data-fs-name]').forEach(sel=> sel.addEventListener('change', ()=>{
+    const i = Number(sel.dataset.fsName);
+    if(sel.value === '__new'){ S.newFor = i; redo(); const inp = document.getElementById('fsNewName'); if(inp) inp.focus(); }
+    else{ S.names[i] = sel.value || null; S.newFor = null; redo(); }
+  }));
+  const nb = body.querySelector('#fsNewBtn'), ni = body.querySelector('#fsNewName');
+  const addPerson = async ()=>{
+    const n = (ni.value || '').trim();
+    if(!n) return;
+    if(finPeople.indexOf(n) === -1){ finPeople.push(n); await saveKey('fin-people', finPeople); }
+    if(S.names.indexOf(n) === -1) S.names[S.newFor] = n;
+    S.newFor = null; redo();
+  };
+  if(nb) nb.addEventListener('click', addPerson);
+  if(ni) ni.addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); addPerson(); } });
+  const cancel = body.querySelector('#ftSplitCancel'); if(cancel) cancel.addEventListener('click', ()=>{ finTxnSplit = null; redo(); });
+  const save = body.querySelector('#ftSplitSave');
+  if(save) save.addEventListener('click', async ()=>{
+    const shares = finSplitShares(t.amount, S), out = {}, taken = {};
+    for(let i=1; i<S.n; i++){
+      let nm = S.names[i] || ('Person '+(i+1));
+      while(taken[nm]) nm += ' ('+(i+1)+')';
+      taken[nm] = true; out[nm] = shares[i];
+    }
+    await finAddOwed({txnId:t.id, desc:t.merchant, total:t.amount, shares:out, date:t.date});
+    finTxnSplit = null; redo(); finBack();
+  });
+  const unsplit = body.querySelector('#ftUnsplit');
+  if(unsplit){
+    let armed = false, tm = null;
+    unsplit.addEventListener('click', async ()=>{
+      if(!armed){ armed = true; unsplit.textContent = 'Tap again'; tm = setTimeout(()=>{ armed = false; unsplit.textContent = 'Remove split'; }, 3000); return; }
+      clearTimeout(tm); finOwed = finOwed.filter(o=> o.txnId !== id); await saveKey('fin-owed', finOwed); redo(); finBack();
+    });
+  }
+  const del = body.querySelector('#ftDelete');
+  let armedD = false, tmD = null;
+  del.addEventListener('click', async ()=>{
+    if(!armedD){ armedD = true; del.textContent = 'Tap again to delete'; tmD = setTimeout(()=>{ armedD = false; del.textContent = 'Delete transaction'; }, 3000); return; }
+    clearTimeout(tmD); await finDeleteTxn(id); closeSheet(); finBack();
+  });
+}
+
+// ---- the page: tabs ----
 function renderBudget(){
   const box = document.getElementById('budgetBody');
   if(!box) return;
+  const st = spendStats(spendMonth || todayStr().slice(0,7));
+  const tabs = [['overview','Overview',0],['spend','Spend',st.uncat],['invest','Invest',0],['bills','Bills',0],['income','Income',0]];
+  box.innerHTML = '<div class="chip-row fin-tabs">'+tabs.map(t=> '<button type="button" class="chip-btn'+(finTab===t[0] ? ' active' : '')+'" data-fin-tab="'+t[0]+'">'+t[1]+(t[2] ? '<span class="fin-n">'+t[2]+'</span>' : '')+'</button>').join('')+'</div><div id="finBody"></div>';
+  box.querySelectorAll('.fin-tabs [data-fin-tab]').forEach(b=> b.addEventListener('click', ()=>{ finTab = b.dataset.finTab; finOpenItem = null; renderBudget(); }));
+  const act = box.querySelector('.fin-tabs .active');
+  if(act) act.parentNode.scrollLeft = Math.max(0, act.offsetLeft - 40);
+  if(!{overview:1, spend:1, invest:1, bills:1, income:1}[finTab]) finTab = 'overview';
+  ({overview:renderFinOverview, spend:renderFinSpend, invest:renderFinInvest, bills:b=> renderFinRecurring(b,'dd'), income:b=> renderFinRecurring(b,'income')})[finTab](document.getElementById('finBody'));
+}
+function finNavMonth(delta){
+  const [y, m] = (spendMonth || todayStr().slice(0,7)).split('-').map(Number), d = new Date(y, m-1+delta, 1);
+  spendMonth = d.getFullYear()+'-'+pad(d.getMonth()+1); spendFilter = null; spendShowAll = false;
+  renderBudget();
+}
+function renderFinOverview(box){
+  const ym = spendMonth || (spendMonth = todayStr().slice(0,7)), today = todayStr(), st = spendStats(ym);
+  const inc = finMonthTotal(finIncome, ym), dd = finMonthTotal(finDD, ym), left = inc - dd - st.spent;
+  const row = (k, v)=> '<div class="sum-row"><span class="sum-k">'+k+'</span><span class="sum-v">'+v+'</span></div>';
+  let h = '<div class="card"><div class="sp-month"><button type="button" class="chip-btn" data-fin-m="-1">\u2039</button><b>'+finMonthLabel(ym)+'</b><button type="button" class="chip-btn" data-fin-m="1">\u203a</button></div>';
+  if(inc > 0) h += '<div class="fin-big'+(left < 0 ? ' sum-over' : '')+'">'+finAmt(left)+'</div><div class="stat-sub" style="margin-bottom:6px;">left after bills and spending</div>';
+  else h += '<div class="stat-sub" style="margin-bottom:6px;cursor:pointer;" data-fin-tab="income"><b>Add your income</b> to see what\u2019s left \u2192</div>';
+  h += row('Income', inc ? '+'+money(inc) : '\u2014')+row('Direct debits', dd ? '\u2212'+money(dd) : '\u2014')+row('Spending (your share)', st.spent ? '\u2212'+money(st.spent) : '\u2014')+'</div>';
+  const horizon = addDays(today, 7), up = [];
+  finDD.forEach(it=>{ const n = finNext(it, today); if(n && n <= horizon) up.push({d:n, name:it.name, amt:-it.amount}); });
+  finIncome.forEach(it=>{ const n = finNext(it, today); if(n && n <= horizon) up.push({d:n, name:it.name, amt:it.amount}); });
+  up.sort((a,b)=> a.d.localeCompare(b.d));
+  if(up.length) h += '<div class="card"><h2 style="font-size:15px;margin-bottom:4px;">Next 7 days</h2>'+up.map(u=> '<div class="sum-row"><span>'+escapeHtml(u.name)+'<span class="stat-sub" style="display:block;margin:0;">'+finDateLabel(u.d)+'</span></span><span class="sum-v"'+(u.amt > 0 ? ' style="color:var(--home);font-weight:600;"' : '')+'>'+(u.amt > 0 ? '+' : '\u2212')+money(Math.abs(u.amt))+'</span></div>').join('')+'</div>';
+  if(st.uncat) h += '<div class="card tap" data-fin-tab="spend"><div class="sum-row" style="padding:0;border:none;"><span><b>'+st.uncat+' to sort</b></span><span class="sum-k">Spend \u2192</span></div></div>';
+  const pf = finPortfolio(), owedNow = finOwedUnpaid(), people = new Set();
+  finOwed.forEach(o=> o.people.forEach(p=>{ if(!p.paid) people.add(p.name); }));
+  h += '<div class="fin-two"><div class="card tap" data-fin-owed><div class="sum2-h"><span>Owed to you</span></div><div class="fin-big">'+money(owedNow)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+(people.size ? people.size+' '+(people.size === 1 ? 'person' : 'people') : 'all settled')+'</div></div>'+
+    '<div class="card tap" data-fin-tab="invest"><div class="sum2-h"><span>Invested</span></div><div class="fin-big">'+(pf.priced ? finMoneyShort(pf.value) : '\u2014')+'</div><div class="stat-sub" style="margin:2px 0 0;'+(pf.gain !== null && pf.gain < 0 ? 'color:var(--danger);' : '')+'">'+(pf.gain !== null ? (pf.gain >= 0 ? '+' : '\u2212')+finMoneyShort(Math.abs(pf.gain)) : (pf.count ? 'prices pending' : 'add holdings'))+'</div></div></div>';
+  box.innerHTML = h;
+  box.querySelectorAll('[data-fin-m]').forEach(b=> b.addEventListener('click', ()=> finNavMonth(Number(b.dataset.finM))));
+  box.querySelectorAll('[data-fin-tab]').forEach(el=> el.addEventListener('click', ()=>{ finTab = el.dataset.finTab; renderBudget(); }));
+  box.querySelectorAll('[data-fin-owed]').forEach(el=> el.addEventListener('click', finOpenOwedSheet));
+}
+
+// ---- bills (direct debits) and income share one screen design ----
+function renderFinRecurring(box, kind){
+  const isDD = kind === 'dd', list = isDD ? finDD : finIncome, key = isDD ? 'fin-dd' : 'fin-income';
+  const today = todayStr(), ym = today.slice(0,7);
+  const monthTot = finMonthTotal(list, ym);
+  const avg = list.filter(it=> it.active !== false).reduce((a,it)=> a + it.amount*(FIN_PER_MONTH[it.freq] || 0), 0);
+  const rows = list.map(it=> ({it, next: finNext(it, today)})).sort((a,b)=> (a.next || '9999').localeCompare(b.next || '9999'));
+  const freqOpts = sel=> FIN_FREQ.map(f=> '<option value="'+f[0]+'"'+(f[0]===sel ? ' selected' : '')+'>'+f[1]+'</option>').join('');
+  let h = '<div class="card"><div class="sum2-h"><span>'+(isDD ? 'Direct debits' : 'Income')+' this month</span></div><div class="fin-big">'+money(monthTot)+'</div>'+
+    '<div class="stat-sub" style="margin:2px 0 0;">'+(avg ? 'about '+finMoneyShort(avg)+' a month on average \u00b7 ' : '')+list.length+(isDD ? ' direct debit' : ' source')+(list.length === 1 ? '' : 's')+'</div></div>';
+  h += '<div class="card">'+(rows.length ? rows.map(r=>{
+    const it = r.it, open = String(finOpenItem) === String(it.id);
+    const sub = finFreqLabel(it.freq)+' \u00b7 '+(it.active === false ? 'paused' : (r.next ? finDateLabel(r.next) : (it.freq === 'once' ? shortDate(it.date) : 'ended')));
+    return '<div class="fin-item"><div class="fin-item-top" data-fin-open="'+it.id+'"><div style="min-width:0;"><b>'+escapeHtml(it.name)+'</b><div class="stat-sub" style="margin:2px 0 0;">'+sub+'</div></div><b style="'+(it.active === false ? 'opacity:.5;' : '')+(isDD ? '' : 'color:var(--home);')+'">'+money(it.amount)+'</b></div>'+
+      (open ? '<div class="fin-edit"><input type="text" data-fe="name" value="'+escapeHtml(it.name)+'"><div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" data-fe="amount" value="'+it.amount+'"><select data-fe="freq">'+freqOpts(it.freq)+'</select></div><input type="date" data-fe="date" value="'+it.date+'">'+
+        '<div class="fin-edit-row"><button type="button" class="btn small" data-fe-save="'+it.id+'">Save</button><button type="button" class="btn secondary small" data-fe-pause="'+it.id+'">'+(it.active === false ? 'Resume' : 'Pause')+'</button><button type="button" class="btn secondary small" data-fe-del="'+it.id+'">Delete</button></div></div>' : '')+'</div>';
+  }).join('') : '<div class="stat-sub">'+(isDD ? 'No direct debits yet.' : 'No income added yet.')+'</div>')+'</div>';
+  h += '<button type="button" class="btn secondary block" id="frToggle">+ Add '+(isDD ? 'direct debit' : 'income')+'</button>'+
+    '<div class="card" id="frForm" hidden style="margin-top:10px;"><div class="fin-edit" style="margin-top:0;"><input type="text" id="frName" placeholder="'+(isDD ? 'Name, e.g. Rent' : 'Name, e.g. Salary')+'" autocomplete="off"><div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" id="frAmt" placeholder="\u00a3"><select id="frFreq">'+freqOpts('monthly')+'</select></div>'+
+    '<label class="mini-label" id="frDateLbl">Next payment date</label><input type="date" id="frDate" value="'+today+'"><button type="button" class="btn" id="frAdd">Add</button></div></div>';
+  box.innerHTML = h;
+  const save = async ()=>{ await saveKey(key, list); renderBudget(); };
+  box.querySelectorAll('[data-fin-open]').forEach(el=> el.addEventListener('click', ()=>{ finOpenItem = String(finOpenItem) === el.dataset.finOpen ? null : el.dataset.finOpen; renderBudget(); }));
+  box.querySelectorAll('[data-fe-save]').forEach(b=> b.addEventListener('click', async ()=>{
+    const it = list.find(x=> String(x.id) === b.dataset.feSave); if(!it) return;
+    const g = k=> box.querySelector('[data-fe="'+k+'"]').value;
+    const amt = parseFloat(g('amount'));
+    if(!g('name').trim() || isNaN(amt) || !g('date')){ showToast('Name, amount and date please.'); return; }
+    it.name = g('name').trim(); it.amount = finR2(amt); it.freq = g('freq'); it.date = g('date');
+    finOpenItem = null; await save();
+  }));
+  box.querySelectorAll('[data-fe-pause]').forEach(b=> b.addEventListener('click', async ()=>{
+    const it = list.find(x=> String(x.id) === b.dataset.fePause); if(!it) return;
+    it.active = it.active === false ? true : false; finOpenItem = null; await save();
+  }));
+  box.querySelectorAll('[data-fe-del]').forEach(b=>{
+    let armed = false, t = null;
+    b.addEventListener('click', async ()=>{
+      if(!armed){ armed = true; b.textContent = 'Tap again'; t = setTimeout(()=>{ armed = false; b.textContent = 'Delete'; }, 3000); return; }
+      clearTimeout(t);
+      const i = list.findIndex(x=> String(x.id) === b.dataset.feDel); if(i > -1) list.splice(i, 1);
+      finOpenItem = null; await save();
+    });
+  });
+  document.getElementById('frToggle').addEventListener('click', ()=>{
+    const f = document.getElementById('frForm'); f.hidden = !f.hidden;
+    document.getElementById('frToggle').textContent = f.hidden ? '+ Add '+(isDD ? 'direct debit' : 'income') : 'Close';
+    if(!f.hidden) document.getElementById('frName').focus();
+  });
+  document.getElementById('frAdd').addEventListener('click', async ()=>{
+    const name = document.getElementById('frName').value.trim(), amt = parseFloat(document.getElementById('frAmt').value), date = document.getElementById('frDate').value;
+    if(!name || isNaN(amt) || amt <= 0 || !date){ showToast('Name, amount and date please.'); return; }
+    list.push({id:uid(), name, amount:finR2(amt), freq:document.getElementById('frFreq').value, date, active:true});
+    await save();
+  });
+  const fr = document.getElementById('frFreq');
+  fr.addEventListener('change', ()=>{ document.getElementById('frDateLbl').textContent = fr.value === 'once' ? 'Date' : 'Next payment date'; });
+}
+
+// ---- investments: live prices ----
+function finKey(h){ return h.type+':'+String(h.symbol || h.id).toUpperCase(); }
+function finFx(){ return (finPrices._fx && finPrices._fx.usdgbp) || 0; }
+function finToGbp(h, raw){
+  if(h.type !== 'stock') return raw;
+  if(h.unit === 'GBX') return raw/100;
+  if(h.unit === 'USD') return raw*finFx();
+  return raw;
+}
+function finUnitPrice(h){
+  const c = finPrices[finKey(h)];
+  if(h.type !== 'other' && c){ const v = finToGbp(h, c.raw); if(v > 0) return {p:v, at:c.at, src:'live'}; }
+  if(h.manualPrice > 0){ const v = finToGbp(h, h.manualPrice); if(v > 0) return {p:v, at:null, src:'manual'}; }
+  return null;
+}
+function finHoldingValue(h){ const u = finUnitPrice(h); return u ? {value:h.qty*u.p, price:u.p, at:u.at, src:u.src} : null; }
+// what you've put in = the sum of your payments (or the single figure on older holdings)
+function finInvested(h){ return (h.contribs && h.contribs.length) ? finR2(h.contribs.reduce((a,c)=> a + c.amount, 0)) : (h.invested || 0); }
+function finEnsureInvestCat(){
+  spendEnsureCats();
+  if(!spendCats.some(c=> c.id === 'investing')){ spendCats.push({id:'investing', name:'Investing', budget:0, color:'#3E8E8E'}); saveKey('spend-cats', spendCats); }
+}
+async function finAddMoney(h, o){
+  h.contribs = h.contribs || [];
+  if(!h.contribs.length && h.invested > 0) h.contribs.push({id:uid(), date:'', amount:h.invested, qty:0, txnId:null, src:'initial'});
+  let qtyAdded = 0;
+  if(h.type === 'other'){ h.manualPrice = finR2((h.manualPrice || 0) + o.amount); }
+  else{
+    qtyAdded = o.units > 0 ? o.units : 0;
+    if(!qtyAdded){ const u = finUnitPrice(h); if(u && u.p > 0) qtyAdded = o.amount / u.p; }
+    h.qty = +((h.qty || 0) + qtyAdded).toFixed(8);
+  }
+  let txnId = null;
+  if(o.spend){
+    finEnsureInvestCat();
+    const tx = {id:spendNewId('i'), date:o.date, time:'', amount:o.amount, merchant:'Invest \u00b7 '+(h.name || h.symbol), card:'', src:'invest', cat:'investing'};
+    spendTxns.push(tx); txnId = tx.id;
+    await saveKey('spend-txns', spendTxns);
+  }
+  h.contribs.push({id:uid(), date:o.date, amount:o.amount, qty:+qtyAdded.toFixed(8), txnId, src:'added'});
+  h.invested = finInvested(h);
+  await saveKey('fin-holdings', finHoldings);
+  return {qtyAdded, estimated: h.type !== 'other' && !(o.units > 0)};
+}
+async function finDelContrib(h, cid){
+  const c = (h.contribs || []).find(x=> String(x.id) === String(cid));
+  if(!c) return;
+  h.contribs = h.contribs.filter(x=> x !== c);
+  if(h.type === 'other'){ if(c.src === 'added') h.manualPrice = Math.max(0, finR2((h.manualPrice || 0) - c.amount)); }
+  else if(c.qty){ h.qty = Math.max(0, +((h.qty || 0) - c.qty).toFixed(8)); }
+  h.invested = finInvested(h);
+  if(c.txnId){ spendTxns = spendTxns.filter(t=> t.id !== c.txnId); await saveKey('spend-txns', spendTxns); }
+  await saveKey('fin-holdings', finHoldings);
+}
+function finPortfolio(){
+  let value = 0, invested = 0, base = 0, priced = 0, put = 0;
+  finHoldings.forEach(h=>{
+    const inv = finInvested(h); put += inv;
+    const v = finHoldingValue(h);
+    if(!v) return;
+    value += v.value; priced++;
+    if(inv > 0){ invested += inv; base += v.value; }
+  });
+  return {value, invested, put, gain: invested ? base - invested : null, priced, count: finHoldings.length};
+}
+function finAvUsedToday(){ const a = finPrices._av; return a && a.date === todayStr() ? a.n : 0; }
+async function finFetchJson(url){
+  const ctl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  const t = ctl ? setTimeout(()=> ctl.abort(), 9000) : null;
+  try{
+    const r = await fetch(url, ctl ? {signal: ctl.signal} : undefined);
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return await r.json();
+  }finally{ if(t) clearTimeout(t); }
+}
+// a coin's price in pounds: Coinbase's £ price, or its $ price converted if there is no £ pair
+async function finCoinPrice(sym){
+  const enc = encodeURIComponent(sym);
+  try{ const j = await finFetchJson('https://api.coinbase.com/v2/prices/'+enc+'-GBP/spot'); const p = parseFloat(j.data.amount); if(p > 0) return p; }catch(e){}
+  try{
+    const j = await finFetchJson('https://api.coinbase.com/v2/prices/'+enc+'-USD/spot'), u = parseFloat(j.data.amount);
+    let fx = finFx();
+    if(!fx){ const r = await finFetchJson('https://api.coinbase.com/v2/exchange-rates?currency=USD'); fx = parseFloat(r.data.rates.GBP); if(fx > 0) finPrices._fx = {usdgbp:fx, at:Date.now()}; }
+    if(u > 0 && fx > 0) return u*fx;
+  }catch(e){}
+  return 0;
+}
+let finLastRefresh = 0, finRefreshQueued = null;
+async function finRefreshPrices(force){
+  if(!finHoldings.length) return;
+  if(finPriceBusy){ finRefreshQueued = (force || finRefreshQueued === 'force') ? 'force' : 'soft'; return; }
+  finPriceBusy = true; finPriceMsg = ''; finLastRefresh = Date.now();
+  finRerenderIfShowing();
+  const errs = [], now = Date.now();
+  try{
+    if(finHoldings.some(h=> h.type === 'stock' && h.unit === 'USD')){
+      try{ const j = await finFetchJson('https://api.coinbase.com/v2/exchange-rates?currency=USD'); const g = parseFloat(j.data.rates.GBP); if(g > 0) finPrices._fx = {usdgbp:g, at:now}; else throw new Error('x'); }
+      catch(e){ errs.push('USD rate'); }
+    }
+    const coins = Array.from(new Set(finHoldings.filter(h=> h.type === 'crypto' && h.symbol).map(h=> h.symbol.toUpperCase())));
+    await Promise.all(coins.map(async sym=>{ const p = await finCoinPrice(sym); if(p > 0) finPrices['crypto:'+sym] = {raw:p, at:Date.now()}; else errs.push(sym); }));
+    const syms = Array.from(new Set(finHoldings.filter(h=> h.type === 'stock' && h.symbol).map(h=> h.symbol.toUpperCase())));
+    const key = (finSettings.avKey || '').trim();
+    if(syms.length && !key){ errs.push('add an Alpha Vantage key for ETF and share prices (Price settings, below)'); }
+    else if(syms.length){
+      let first = true;
+      for(const sym of syms){
+        const c = finPrices['stock:'+sym];
+        if(!force && c && Date.now() - c.at < 30*60000) continue;
+        if(finAvUsedToday() >= 25){ errs.push('daily limit of 25 lookups reached'); break; }
+        if(!first) await new Promise(r=> setTimeout(r, 1300));
+        first = false;
+        try{
+          const j = await finFetchJson('https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol='+encodeURIComponent(sym)+'&apikey='+encodeURIComponent(key));
+          finPrices._av = {date: todayStr(), n: finAvUsedToday() + 1};
+          const q = j && j['Global Quote'], p = q ? parseFloat(q['05. price']) : NaN;
+          if(p > 0) finPrices['stock:'+sym] = {raw:p, at:Date.now()};
+          else if(j && (j.Note || j.Information)){ errs.push('Alpha Vantage limit hit \u2014 try later'); break; }
+          else errs.push(sym+' not found');
+        }catch(e){ errs.push(sym+' (no connection?)'); }
+      }
+    }
+    await saveKey('fin-prices', finPrices);
+    finSnapshot();
+  }finally{
+    finPriceBusy = false; finLastRefresh = Date.now();
+    finPriceMsg = errs.length ? 'Couldn\u2019t update: '+errs.join(', ')+'. Showing the last prices.' : '';
+    finRerenderIfShowing();
+    if(finRefreshQueued){ const q = finRefreshQueued; finRefreshQueued = null; setTimeout(()=> finRefreshPrices(q === 'force'), 60); }
+  }
+}
+function finSnapshot(){
+  const pf = finPortfolio();
+  if(!pf.priced) return;
+  const today = todayStr();
+  finSnap = finSnap.filter(s=> s.date !== today); finSnap.push({date:today, value:finR2(pf.value)});
+  finSnap = finSnap.slice(-120);
+  saveKey('fin-snap', finSnap);
+}
+function finMaybeRefresh(){
+  if(!finHoldings.length || finPriceBusy) return;
+  if(Date.now() - finLastRefresh < 60000) return;      // never re-fetch automatically more than once a minute
+  const now = Date.now(), fresh = (h, ms)=>{ const c = finPrices[finKey(h)]; return c && now - c.at < ms; };
+  const needCrypto = finHoldings.some(h=> h.type === 'crypto' && !fresh(h, 5*60000));
+  const needStock = !!(finSettings.avKey || '').trim() && finHoldings.some(h=> h.type === 'stock' && !fresh(h, 30*60000));
+  const needFx = finHoldings.some(h=> h.type === 'stock' && h.unit === 'USD') && !(finPrices._fx && now - finPrices._fx.at < 30*60000);
+  if(needCrypto || needStock || needFx) finRefreshPrices(false);
+}
+function finRerenderIfShowing(){
+  const v = document.getElementById('view-budget');
+  if(v && v.classList.contains('active') && (finTab === 'invest' || finTab === 'overview')){
+    const a = document.activeElement;
+    if(a && a.closest && a.closest('#budgetBody') && /INPUT|SELECT|TEXTAREA/.test(a.tagName)) return;
+    renderBudget();
+  }
+}
+function finSpark(vals){
+  if(vals.length < 2) return '';
+  const w = 300, h = 56, p = 4, mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals), rng = (mx - mn) || 1;
+  const pts = vals.map((v,i)=> (p + i*(w-2*p)/(vals.length-1)).toFixed(1)+','+(h - p - (v-mn)/rng*(h-2*p)).toFixed(1)).join(' ');
+  return '<svg viewBox="0 0 '+w+' '+h+'" class="fin-spark" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="var(--home)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+}
+function renderFinInvest(box){
+  finMaybeRefresh();
+  const pf = finPortfolio();
+  const times = finHoldings.map(h=> { const c = finPrices[finKey(h)]; return c ? c.at : 0; }).filter(Boolean);
+  const upd = times.length ? new Date(Math.max.apply(null, times)).toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'}) : '';
+  const prev = finSnap.filter(s=> s.date < todayStr()).slice(-1)[0];
+  const addedThisMonth = finR2(finHoldings.reduce((a,x)=> a + (x.contribs || []).filter(c=> c.src === 'added' && (c.date || '').slice(0,7) === todayStr().slice(0,7)).reduce((b,c)=> b + c.amount, 0), 0));
+  const needKey = finHoldings.some(x=> x.type === 'stock') && !(finSettings.avKey || '').trim();
+  let h = '<div class="card"><div class="sum-head"><div class="sum2-h" style="margin:0;"><span>Portfolio</span></div><button type="button" class="chip-btn" id="finRefresh"'+(finPriceBusy ? ' disabled' : '')+'>'+(finPriceBusy ? 'Updating\u2026' : 'Refresh')+'</button></div>'+
+    '<div class="fin-big">'+(pf.priced ? money(pf.value) : '\u2014')+'</div>'+
+    '<div class="stat-sub" style="margin:2px 0 0;">'+(pf.gain !== null ? '<b style="color:'+(pf.gain >= 0 ? 'var(--home)' : 'var(--danger)')+'">'+(pf.gain >= 0 ? '+' : '\u2212')+money(Math.abs(pf.gain))+' ('+(pf.gain >= 0 ? '+' : '\u2212')+Math.abs(pf.gain/pf.invested*100).toFixed(1)+'%)</b> on what you put in' : (pf.count ? '' : 'Add your first holding below'))+'</div>'+
+    (pf.put ? '<div class="stat-sub" style="margin:2px 0 0;">Put in '+money(pf.put)+(addedThisMonth ? ' \u00b7 '+money(addedThisMonth)+' added this month' : '')+'</div>' : '')+
+    (prev && pf.priced ? '<div class="stat-sub" style="margin:2px 0 0;">'+(pf.value-prev.value >= 0 ? '+' : '\u2212')+money(Math.abs(pf.value-prev.value))+' since '+shortDate(prev.date)+'</div>' : '')+
+    (upd ? '<div class="stat-sub" style="margin:2px 0 0;">Prices at '+upd+'</div>' : '')+
+    (finPriceMsg ? '<div class="stat-sub sum-over" style="margin-top:6px;">'+escapeHtml(finPriceMsg)+'</div>' : '')+
+    finSpark(finSnap.slice(-30).map(s=> s.value))+'</div>';
+  h += '<div class="card">'+(finHoldings.length ? finHoldings.map(x=>{
+    const v = finHoldingValue(x), open = String(finOpenItem) === String(x.id), inv = finInvested(x), hasC = !!(x.contribs && x.contribs.length);
+    const gain = (v && inv > 0) ? v.value - inv : null;
+    const tag = x.type === 'crypto' ? 'Crypto' : (x.type === 'stock' ? 'ETF / share' : 'Other');
+    const sub = (x.type === 'other' ? tag : (x.qty+' \u00d7 '+(v ? money(v.price) : 'no price')+(v && v.src === 'manual' ? ' (manual)' : '')))+(inv > 0 ? ' \u00b7 in '+money(inv) : '');
+    const contribRows = hasC ? x.contribs.slice().sort((p,q)=> (q.date || '').localeCompare(p.date || '')).slice(0, 8).map(c=>
+      '<div class="sum-row" style="padding:6px 0;"><span>'+(c.date ? shortDate(c.date) : '\u2014')+(c.src === 'initial' ? ' <span class="stat-sub" style="display:inline;margin:0;">start</span>' : '')+'</span><span style="display:flex;gap:8px;align-items:center;"><b>'+money(c.amount)+'</b>'+(c.qty ? '<span class="stat-sub" style="margin:0;">+'+Number(c.qty.toFixed(6))+'</span>' : '')+'<button type="button" class="todo-del" data-fm-del="'+x.id+'" data-cid="'+c.id+'">&times;</button></span></div>').join('') : '';
+    return '<div class="fin-item"><div class="fin-item-top" data-fin-open="'+x.id+'"><div style="min-width:0;"><b>'+escapeHtml(x.name || x.symbol)+'</b>'+(x.type !== 'other' ? ' <span class="stat-sub" style="display:inline;margin:0;">'+escapeHtml(String(x.symbol).toUpperCase())+'</span>' : '')+'<div class="stat-sub" style="margin:2px 0 0;">'+sub+'</div></div>'+
+      '<div style="text-align:right;flex-shrink:0;"><b>'+(v ? money(v.value) : '\u2014')+'</b>'+(gain !== null ? '<div class="stat-sub" style="margin:2px 0 0;color:'+(gain >= 0 ? 'var(--home)' : 'var(--danger)')+'">'+(gain >= 0 ? '+' : '\u2212')+Math.abs(gain/inv*100).toFixed(1)+'%</div>' : '')+'</div></div>'+
+      (open ? '<div class="fin-edit"><div class="fin-addmoney"><div class="sum2-h" style="margin:0;"><span>Invest more</span></div>'+
+          '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" data-fm="amount" placeholder="Amount (\u00a3)"><button type="button" class="btn small" style="flex:0 0 auto;" data-fm-add="'+x.id+'">Add</button></div>'+
+          '<div class="fin-opts"><label class="fin-check"><input type="checkbox" data-fm="spend" checked> Count as spending</label><a class="fin-link" data-fm-more>More</a></div>'+
+          '<div class="fin-edit" data-fm-extra hidden>'+(x.type === 'other' ? '' : '<input type="number" inputmode="decimal" step="any" min="0" data-fm="units" placeholder="Units bought (if you know)">')+'<input type="date" data-fm="date" value="'+todayStr()+'"></div></div>'+
+        (hasC ? '<div>'+contribRows+'</div>' : '')+
+        '<a class="fin-link" data-fh-more>Edit details</a>'+
+        '<div class="fin-edit" data-fh-extra hidden><input type="text" data-fh="name" value="'+escapeHtml(x.name || '')+'" placeholder="Name">'+
+          (x.type === 'other' ? '' : '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="any" min="0" data-fh="qty" value="'+x.qty+'" placeholder="How many"></div>')+
+          '<div class="fin-edit-row">'+(hasC ? '' : '<input type="number" inputmode="decimal" step="0.01" min="0" data-fh="invested" value="'+(x.invested || '')+'" placeholder="Put in (\u00a3)">')+(x.type === 'other' ? '' : '<input type="number" inputmode="decimal" step="any" min="0" data-fh="manual" value="'+(x.manualPrice || '')+'" placeholder="Manual price">')+'</div>'+
+          (x.type === 'other' ? '<input type="number" inputmode="decimal" step="0.01" min="0" data-fh="manual" value="'+(x.manualPrice || '')+'" placeholder="Current value (\u00a3)">' : '')+
+          (x.type === 'stock' ? '<div class="sp-chips" style="margin-top:0;">'+[['GBP','Price in \u00a3'],['GBX','Price in pence'],['USD','Price in $']].map(u=> '<button type="button" class="chip-btn'+(x.unit === u[0] ? ' active' : '')+'" data-fh-unit="'+u[0]+'">'+u[1]+'</button>').join('')+'</div>' : '')+
+          '<div class="fin-edit-row"><button type="button" class="btn small" data-fh-save="'+x.id+'">Save</button><button type="button" class="btn secondary small" data-fh-del="'+x.id+'">Delete</button></div></div></div>' : '')+'</div>';
+  }).join('') : '<div class="stat-sub">No holdings yet.</div>')+'</div>';
+  h += '<button type="button" class="btn secondary block" id="fhToggle">+ Add holding</button>'+
+    '<div class="card" id="fhCard" hidden style="margin-top:10px;"><div class="fin-hform" id="fhForm" data-t="crypto">'+
+    '<div class="sp-chips" style="margin:0 0 8px;"><button type="button" class="chip-btn active" data-fh-type="crypto">Crypto</button><button type="button" class="chip-btn" data-fh-type="stock">ETF / share</button><button type="button" class="chip-btn" data-fh-type="other">Other</button></div>'+
+    '<div class="fin-edit" style="margin-top:0;">'+
+      '<select id="fhCoin" class="f-coin">'+FIN_COINS.map(c=> '<option value="'+c[0]+'">'+c[1]+' ('+c[0]+')</option>').join('')+'<option value="__custom">Other coin\u2026</option></select>'+
+      '<input type="text" id="fhSym" class="f-sym" placeholder="Symbol" autocomplete="off" autocapitalize="characters">'+
+      '<input type="text" id="fhName" class="f-name" placeholder="Name, e.g. Pension" autocomplete="off">'+
+      '<div class="sp-chips f-unit" style="margin-top:0;" id="fhUnits"><button type="button" class="chip-btn active" data-fh-u="GBP">Price in \u00a3</button><button type="button" class="chip-btn" data-fh-u="GBX">Price in pence</button><button type="button" class="chip-btn" data-fh-u="USD">Price in $</button></div>'+
+      '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="any" min="0" id="fhQty" class="f-qty" placeholder="How many you hold"><input type="number" inputmode="decimal" step="0.01" min="0" id="fhVal" class="f-val" placeholder="Value (\u00a3)"><input type="number" inputmode="decimal" step="0.01" min="0" id="fhInv" placeholder="Invested (\u00a3)"></div>'+
+      '<div class="fin-opts"><span class="stat-sub" style="margin:0;" id="fhDateTxt">Invested today</span><a class="fin-link" id="fhDateLink">Change date</a></div><input type="date" id="fhDate" value="'+todayStr()+'" hidden>'+
+      '<button type="button" class="btn" id="fhAdd">Add</button></div></div></div>';
+  h += '<details class="card" id="finPriceSet" style="margin-top:12px;"'+(needKey ? ' open' : '')+'><summary style="cursor:pointer;font-weight:600;font-size:14px;">Price settings</summary><div class="stat-sub" style="margin:8px 0;">ETF and share prices need a free Alpha Vantage key (25 lookups a day). Crypto needs nothing.</div><div class="sp-add"><input type="text" id="finAvKey" placeholder="Alpha Vantage key" value="'+escapeHtml(finSettings.avKey || '')+'" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="finAvSave">Save</button></div><div class="stat-sub" style="margin:8px 0 0;">Lookups today: '+finAvUsedToday()+' / 25</div></details>';
+  box.innerHTML = h;
+  document.getElementById('finRefresh').addEventListener('click', ()=> finRefreshPrices(true));
+  box.querySelectorAll('[data-fin-open]').forEach(el=> el.addEventListener('click', ()=>{ finOpenItem = String(finOpenItem) === el.dataset.finOpen ? null : el.dataset.finOpen; renderBudget(); }));
+  const persist = async ()=>{ await saveKey('fin-holdings', finHoldings); renderBudget(); };
+  const toggle = (sel)=>{ const e = box.querySelector(sel); if(e) e.hidden = !e.hidden; };
+  box.querySelectorAll('[data-fm-more]').forEach(a=> a.addEventListener('click', ()=> toggle('[data-fm-extra]')));
+  box.querySelectorAll('[data-fh-more]').forEach(a=> a.addEventListener('click', ()=> toggle('[data-fh-extra]')));
+  box.querySelectorAll('[data-fh-unit]').forEach(b=> b.addEventListener('click', ()=>{ box.querySelectorAll('[data-fh-unit]').forEach(x=> x.classList.toggle('active', x === b)); }));
+  box.querySelectorAll('[data-fh-save]').forEach(b=> b.addEventListener('click', async ()=>{
+    const x = finHoldings.find(y=> String(y.id) === b.dataset.fhSave); if(!x) return;
+    const g = k=>{ const e = box.querySelector('[data-fh="'+k+'"]'); return e ? e.value : ''; };
+    if(x.type !== 'other'){ const q = parseFloat(g('qty')); if(!(q > 0)){ showToast('Quantity please.'); return; } x.qty = q; }
+    x.name = g('name').trim() || x.name;
+    if(box.querySelector('[data-fh="invested"]')) x.invested = Math.max(0, parseFloat(g('invested')) || 0);
+    x.manualPrice = Math.max(0, parseFloat(g('manual')) || 0);
+    const ua = box.querySelector('[data-fh-unit].active'); if(x.type === 'stock' && ua) x.unit = ua.dataset.fhUnit;
+    finOpenItem = null; await persist(); finMaybeRefresh();
+  }));
+  box.querySelectorAll('[data-fm-add]').forEach(b=> b.addEventListener('click', async ()=>{
+    const x = finHoldings.find(y=> String(y.id) === b.dataset.fmAdd); if(!x) return;
+    const f = k=> box.querySelector('[data-fm="'+k+'"]');
+    const amount = parseFloat(f('amount').value), units = f('units') ? parseFloat(f('units').value) : 0, date = f('date').value || todayStr(), spend = f('spend').checked;
+    if(!(amount > 0)){ showToast('How much did you put in?'); return; }
+    const r = await finAddMoney(x, {amount:finR2(amount), units: units > 0 ? units : 0, date, spend});
+    showToast(money(amount)+' added'+(spend ? ' and put on your spending' : '')+(r.estimated ? (r.qtyAdded ? ' (units worked out from the live price)' : ' \u2014 add the units so the value updates') : '')+'.');
+    renderBudget(); finRefreshPrices(false);
+  }));
+  box.querySelectorAll('[data-fm-del]').forEach(b=>{
+    let armed = false, t = null;
+    b.addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      if(!armed){ armed = true; b.innerHTML = 'Sure?'; b.style.fontSize = '11px'; t = setTimeout(()=>{ armed = false; b.innerHTML = '&times;'; b.style.fontSize = ''; }, 3000); return; }
+      clearTimeout(t);
+      const x = finHoldings.find(y=> String(y.id) === b.dataset.fmDel); if(!x) return;
+      await finDelContrib(x, b.dataset.cid); renderBudget();
+    });
+  });
+  box.querySelectorAll('[data-fh-del]').forEach(b=>{
+    let armed = false, t = null;
+    b.addEventListener('click', async ()=>{
+      if(!armed){ armed = true; b.textContent = 'Tap again'; t = setTimeout(()=>{ armed = false; b.textContent = 'Delete'; }, 3000); return; }
+      clearTimeout(t); finHoldings = finHoldings.filter(y=> String(y.id) !== b.dataset.fhDel); finOpenItem = null; await persist();
+    });
+  });
+  // ---- add a holding: a short form that only shows what the type needs ----
+  document.getElementById('fhToggle').addEventListener('click', ()=>{
+    const c = document.getElementById('fhCard'); c.hidden = !c.hidden;
+    document.getElementById('fhToggle').textContent = c.hidden ? '+ Add holding' : 'Close';
+  });
+  const form = document.getElementById('fhForm');
+  const show = (sel, on)=> form.querySelectorAll(sel).forEach(e=> e.style.display = on ? '' : 'none');
+  const applyType = ()=>{
+    const t = form.dataset.t, custom = document.getElementById('fhCoin').value === '__custom';
+    form.querySelectorAll('[data-fh-type]').forEach(b=> b.classList.toggle('active', b.dataset.fhType === t));
+    show('.f-coin', t === 'crypto'); show('.f-sym', t === 'stock' || (t === 'crypto' && custom)); show('.f-name', t === 'other');
+    show('.f-qty', t !== 'other'); show('.f-val', t === 'other'); show('.f-unit', t === 'stock');
+    document.getElementById('fhSym').placeholder = t === 'stock' ? 'Ticker, e.g. VUSA.LON' : 'Coin symbol, e.g. PEPE';
+  };
+  form.querySelectorAll('[data-fh-type]').forEach(b=> b.addEventListener('click', ()=>{ form.dataset.t = b.dataset.fhType; applyType(); }));
+  document.getElementById('fhCoin').addEventListener('change', applyType);
+  form.querySelectorAll('[data-fh-u]').forEach(b=> b.addEventListener('click', ()=> form.querySelectorAll('[data-fh-u]').forEach(x=> x.classList.toggle('active', x === b))));
+  document.getElementById('fhDateLink').addEventListener('click', ()=>{ const d = document.getElementById('fhDate'); d.hidden = !d.hidden; });
+  applyType();
+  document.getElementById('fhAdd').addEventListener('click', async ()=>{
+    const t = form.dataset.t, coinSel = document.getElementById('fhCoin').value;
+    const qty = parseFloat(document.getElementById('fhQty').value), inv = Math.max(0, parseFloat(document.getElementById('fhInv').value) || 0), val = parseFloat(document.getElementById('fhVal').value);
+    const unit = (form.querySelector('[data-fh-u].active') || {dataset:{fhU:'GBP'}}).dataset.fhU, when = document.getElementById('fhDate').value || todayStr();
+    let hold;
+    if(t === 'other'){
+      const name = document.getElementById('fhName').value.trim();
+      if(!name || !(val > 0)){ showToast('Name and current value please.'); return; }
+      hold = {id:uid(), type:'other', symbol:'', name, qty:1, invested:inv, unit:'GBP', manualPrice:val};
+    }else if(t === 'crypto'){
+      const sym = (coinSel === '__custom' ? document.getElementById('fhSym').value.trim() : coinSel).toUpperCase();
+      const known = FIN_COINS.find(c=> c[0] === sym);
+      if(!sym || !(qty > 0)){ showToast(coinSel === '__custom' ? 'Coin symbol and amount please.' : 'How many do you hold?'); return; }
+      hold = {id:uid(), type:'crypto', symbol:sym, name: known ? known[1] : sym, qty, invested:inv, unit:'GBP', manualPrice:0};
+    }else{
+      const sym = document.getElementById('fhSym').value.trim().toUpperCase();
+      if(!sym || !(qty > 0)){ showToast('Ticker and how many please.'); return; }
+      hold = {id:uid(), type:'stock', symbol:sym, name:'', qty, invested:inv, unit, manualPrice:0};
+    }
+    if(inv > 0) hold.contribs = [{id:uid(), date:when, amount:inv, qty: hold.type === 'other' ? 0 : hold.qty, txnId:null, src:'initial'}];
+    finHoldings.push(hold); await saveKey('fin-holdings', finHoldings);
+    renderBudget(); finRefreshPrices(false);        // only what's missing, so lookups aren't wasted
+  });
+  document.getElementById('finAvSave').addEventListener('click', async ()=>{
+    finSettings = Object.assign({}, finSettings, {avKey: document.getElementById('finAvKey').value.trim()});
+    await saveKey('fin-settings', finSettings); showToast('Saved.'); finRefreshPrices(false);
+  });
+}
+
+// ---- the Spend tab: tap any transaction for its details and to split it ----
+function renderFinSpend(box){
+  const keepAmt = document.getElementById('spAmt') ? document.getElementById('spAmt').value : '', keepMer = document.getElementById('spMer') ? document.getElementById('spMer').value : '';
   if(!spendMonth) spendMonth = todayStr().slice(0,7);
   const ym = spendMonth, st = spendStats(ym), cats = spendCatList();
   const [yy, mm] = ym.split('-').map(Number);
@@ -4010,62 +4874,61 @@ function renderBudget(){
   if(!spendMeta.last && !spendTxns.length){
     h += '<div class="card tap" data-sp-go="settings"><div class="sum-row" style="padding:0;border:none;"><span><b>Capture Apple Pay taps automatically</b></span><span class="sum-k">Set up</span></div></div>';
   }
-  // ---- month ----
   const pct = st.budget ? st.spent/st.budget : 0;
   h += '<div class="card"><div class="sp-month"><button type="button" class="chip-btn" data-sp-m="-1">\u2039</button><b>'+label+'</b><button type="button" class="chip-btn" data-sp-m="1">\u203a</button></div>'+
     '<div class="sp-big">'+amt(st.spent)+'</div>'+
-    '<div class="stat-sub">'+(st.budget ? 'of '+money(st.budget)+' \u00b7 '+(st.left >= 0 ? money(st.left)+' left' : '<b class="sum-over">'+money(-st.left)+' over</b>')+(st.perDay ? ' \u00b7 '+money(st.perDay)+'/day' : '') : 'Set budgets below to see what\u2019s left')+'</div>'+
+    '<div class="stat-sub">'+(st.budget ? 'of '+money(st.budget)+' \u00b7 '+(st.left >= 0 ? money(st.left)+' left' : '<b class="sum-over">'+money(-st.left)+' over</b>')+(st.perDay ? ' \u00b7 '+money(st.perDay)+'/day' : '') : 'Set your budgets below to see what\u2019s left')+'</div>'+
     (st.budget ? '<div class="sp-bar"><div class="sp-fill'+(pct > 1 ? ' over' : (pct > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pct*100)+'%"></div></div>' : '')+'</div>';
-  // ---- to sort ----
+  const owedNow = finOwedUnpaid();
+  if(owedNow > 0) h += '<div class="card tap" data-sp-owed><div class="sum-row" style="padding:0;border:none;"><span><b>Owed to you</b></span><span class="sum-v"><b>'+money(owedNow)+'</b> <span class="sum-k">\u203a</span></span></div></div>';
   const unc = st.tx.filter(t=> !t.cat).sort((a,b)=> (b.date+(b.time||'')).localeCompare(a.date+(a.time||'')));
   if(unc.length){
     h += '<div class="card"><h2 style="font-size:15px;margin-bottom:4px;">To sort</h2>'+unc.slice(0,6).map(t=>
       '<div class="sp-sort"><div style="display:flex;justify-content:space-between;gap:10px;"><b>'+escapeHtml(t.merchant)+'</b><b>'+amt(t.amount)+'</b></div><div class="stat-sub" style="margin:0;">'+shortDate(t.date)+'</div>'+chipRow(t.id)+'</div>').join('')+
       (unc.length > 6 ? '<div class="stat-sub" style="margin-top:6px;">+ '+(unc.length-6)+' more</div>' : '')+'</div>';
   }
-  // ---- quick add ----
   const since = addDays(todayStr(), -120), freq = {};
-  spendTxns.forEach(t=>{ if(t.date >= since){ freq[t.merchant] = (freq[t.merchant]||0) + 1; } });
+  spendTxns.forEach(t=>{ if(t.date >= since && t.src !== 'invest'){ freq[t.merchant] = (freq[t.merchant]||0) + 1; } });
   const top = Object.keys(freq).sort((a,b)=> freq[b]-freq[a]).slice(0,6);
   h += '<div class="card"><h2 style="font-size:15px;margin-bottom:8px;">Add spend</h2><div class="sp-add"><input type="text" id="spAmt" inputmode="decimal" placeholder="\u00a3" style="width:84px;flex-shrink:0;"><input type="text" id="spMer" placeholder="Where?" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="spAddBtn">Add</button></div>'+
     (top.length ? '<div class="sp-chips">'+top.map(m=> '<button type="button" class="chip-btn" data-sp-mer="'+escapeHtml(m)+'">'+escapeHtml(m)+'</button>').join('')+'</div>' : '')+'</div>';
-  // ---- categories ----
   if(spendEditing){
-    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budgets</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Done</span></div>'+
+    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budget</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Done</span></div>'+
       cats.map(c=> '<div class="sp-edit-row" data-cat-row="'+c.id+'"><input type="text" value="'+escapeHtml(c.name)+'" data-sp-name="'+c.id+'" style="flex:1;min-width:0;"><input type="number" inputmode="decimal" min="0" step="1" placeholder="\u00a3/mo" value="'+(c.budget || '')+'" data-sp-bud="'+c.id+'"><button type="button" class="todo-del" data-sp-delcat="'+c.id+'">&times;</button></div>').join('')+
-      '<button type="button" class="btn secondary small" id="spAddCat" style="margin-top:4px;">+ Category</button></div>';
+      '<button type="button" class="btn secondary small" id="spAddCat" style="margin-top:4px;">+ Budget</button></div>';
   }else{
     const shown = cats.filter(c=> c.budget > 0 || (st.by[c.id] || 0) !== 0);
-    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Categories</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Budgets</span></div>'+
+    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budget</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Edit</span></div>'+
       (shown.length ? shown.map(c=>{
         const sp = st.by[c.id] || 0, p = c.budget ? sp/c.budget : 0;
         return '<div class="sp-cat" data-sp-filter="'+c.id+'"><div class="sp-catrow"><span><span class="sp-pill" style="background:'+c.color+';padding:0;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;"></span>'+escapeHtml(c.name)+(spendFilter===c.id ? ' \u2713' : '')+'</span><span>'+amt(sp)+(c.budget ? ' <span class="sum-k">/ '+money(c.budget)+'</span>' : '')+'</span></div>'+
           (c.budget ? '<div class="sp-bar thin"><div class="sp-fill'+(p > 1 ? ' over' : (p > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, p*100)+'%"></div></div>' : '')+'</div>';
-      }).join('') : '<div class="stat-sub">Nothing yet \u2014 tap Budgets to set monthly limits.</div>')+'</div>';
+      }).join('') : '<div class="stat-sub">Nothing yet \u2014 tap Edit to set monthly limits.</div>')+'</div>';
   }
-  // ---- transactions ----
   let list = st.tx.slice().sort((a,b)=> (b.date+(b.time||'')+b.id).localeCompare(a.date+(a.time||'')+a.id));
   if(spendFilter) list = list.filter(t=> (t.cat || '_') === spendFilter);
   const fc = spendFilter ? spendCatById(spendFilter) : null;
   const rows = spendShowAll ? list : list.slice(0, 25);
+  const oth = finOthersMap();
+  const txnRow = t=>{
+    const o = oth[t.id] || 0;
+    return '<div class="sp-txn tap" data-sp-txn="'+t.id+'"><div style="min-width:0;flex:1;"><div style="font-size:14px;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(t.merchant)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+shortDate(t.date)+(t.time ? ' '+t.time : '')+' \u00b7 '+pillOf(spendCatById(t.cat))+(o ? ' \u00b7 split' : '')+'</div></div>'+
+      '<div style="text-align:right;flex-shrink:0;">'+(o ? '<b>'+amt(t.amount - o)+'</b><div class="stat-sub" style="margin:0;">of '+amt(t.amount)+'</div>' : '<b>'+amt(t.amount)+'</b>')+'</div></div>';
+  };
   h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Transactions</h2>'+(spendFilter ? '<span data-sp-filter-clear style="cursor:pointer;">'+(fc ? escapeHtml(fc.name) : 'Sort')+' \u00d7</span>' : '<span>'+list.length+'</span>')+'</div>'+
-    (rows.length ? rows.map(t=>
-      '<div class="sp-txn"><div style="min-width:0;"><div style="font-size:14px;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(t.merchant)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+shortDate(t.date)+(t.time ? ' '+t.time : '')+' \u00b7 <span data-sp-open="'+t.id+'">'+pillOf(spendCatById(t.cat))+'</span></div>'+(spendOpen===t.id ? chipRow(t.id) : '')+'</div>'+
-      '<div style="text-align:right;flex-shrink:0;"><b>'+amt(t.amount)+'</b><br><button type="button" class="todo-del" data-sp-del="'+t.id+'">&times;</button></div></div>').join('') : '<div class="empty">Nothing this month.</div>')+
+    (rows.length ? rows.map(txnRow).join('') : '<div class="empty">Nothing this month.</div>')+
     (list.length > 25 && !spendShowAll ? '<button type="button" class="btn secondary small block" id="spMore" style="margin-top:8px;">Show all '+list.length+'</button>' : '')+'</div>';
   box.innerHTML = h;
-  // ---- events ----
+  if(keepAmt && document.getElementById('spAmt')) document.getElementById('spAmt').value = keepAmt;
+  if(keepMer && document.getElementById('spMer')) document.getElementById('spMer').value = keepMer;
   box.querySelectorAll('[data-sp-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.spGo)));
+  box.querySelectorAll('[data-sp-owed]').forEach(el=> el.addEventListener('click', finOpenOwedSheet));
+  box.querySelectorAll('[data-sp-txn]').forEach(el=> el.addEventListener('click', ()=> finOpenTxnSheet(el.dataset.spTxn)));
   box.querySelectorAll('[data-sp-m]').forEach(b=> b.addEventListener('click', ()=>{
     const d = new Date(yy, mm-1+Number(b.dataset.spM), 1);
     spendMonth = d.getFullYear()+'-'+pad(d.getMonth()+1); spendFilter = null; spendShowAll = false; renderBudget();
   }));
   box.querySelectorAll('[data-sp-set]').forEach(b=> b.addEventListener('click', ()=> spendSetCat(b.dataset.spSet, b.dataset.cat)));
-  box.querySelectorAll('[data-sp-open]').forEach(el=> el.addEventListener('click', ()=>{ spendOpen = spendOpen===el.dataset.spOpen ? null : el.dataset.spOpen; renderBudget(); }));
-  box.querySelectorAll('[data-sp-del]').forEach(b=> b.addEventListener('click', async ()=>{
-    spendTxns = spendTxns.filter(t=> t.id !== b.dataset.spDel);
-    await saveKey('spend-txns', spendTxns); renderBudget();
-  }));
   box.querySelectorAll('[data-sp-filter]').forEach(el=> el.addEventListener('click', ()=>{ spendFilter = spendFilter===el.dataset.spFilter ? null : el.dataset.spFilter; renderBudget(); }));
   const fcl = box.querySelector('[data-sp-filter-clear]'); if(fcl) fcl.addEventListener('click', ()=>{ spendFilter = null; renderBudget(); });
   const more = document.getElementById('spMore'); if(more) more.addEventListener('click', ()=>{ spendShowAll = true; renderBudget(); });
@@ -4104,10 +4967,11 @@ function renderBudget(){
   const ac = document.getElementById('spAddCat');
   if(ac) ac.addEventListener('click', async ()=>{
     spendEnsureCats();
-    spendCats.push({id:spendNewId('c'), name:'New category', budget:0, color:SPEND_COLOURS[spendCats.length % SPEND_COLOURS.length]});
+    spendCats.push({id:spendNewId('c'), name:'New budget', budget:0, color:SPEND_COLOURS[spendCats.length % SPEND_COLOURS.length]});
     await spendSaveCats(); renderBudget();
   });
 }
+
 
 function renderTodosTab(){
   const datedContainer = document.getElementById('list-dated');
@@ -5192,6 +6056,9 @@ let gymSort = 'need';
 let gymBw = [];          // {date, kg}
 let spendTxns = [], spendCats = null, spendRules = {}, spendMeta = {secret:'', seen:[], last:null};
 let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = null, spendShowAll = false;
+let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
+let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
+let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
 let gymAutoPick = true, gymHistOpen = null, gymBwAsked = '';
 let gymLog = [];     // {id, date, ex, w, r, wu}
@@ -5297,16 +6164,21 @@ function gymSessions(exId, beforeDate){
 }
 // ----- search -----
 function gymLev(a, b){
+  // edit distance where swapping two neighbouring letters ("bnech" for "bench") counts as one slip
   if(a === b) return 0;
   const m = a.length, n = b.length;
   if(!m) return n;
   if(!n) return m;
-  let prev = [], cur;
+  let pp = null, prev = [], cur;
   for(let j=0; j<=n; j++) prev[j] = j;
   for(let i=1; i<=m; i++){
     cur = [i];
-    for(let j=1; j<=n; j++) cur[j] = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1] + (a[i-1]===b[j-1] ? 0 : 1));
-    prev = cur;
+    for(let j=1; j<=n; j++){
+      let v = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1] + (a[i-1]===b[j-1] ? 0 : 1));
+      if(pp && i>1 && j>1 && a[i-1]===b[j-2] && a[i-2]===b[j-1]) v = Math.min(v, pp[j-2]+1);
+      cur[j] = v;
+    }
+    pp = prev; prev = cur;
   }
   return prev[n];
 }
@@ -5365,6 +6237,27 @@ function gymSearch(q){
     fz.sort((a,b)=> b.score - a.score || a.ex.name.localeCompare(b.ex.name));
     fz.slice(0, 12 - out.length).forEach(r=> out.push(r));
   }
+  // run-together words ("benchpress", "shoulderpress"): compare with the names squashed up too
+  if(!out.length){
+    const qc = toks.join('');
+    if(qc.length >= 6){
+      const hit = [];
+      gymAll().forEach(ex=>{
+        const names = [ex.name.toLowerCase()].concat(ex.al);
+        let best = 99, via = null;
+        names.forEach(nm=>{
+          const c = nm.replace(/[\s-]+/g,'');
+          let d = 99;
+          if(c.indexOf(qc) > -1) d = 0;
+          else for(let i=0; i+qc.length <= c.length && d > 1; i++){ const dd = gymLev(qc, c.slice(i, i+qc.length)); if(dd < d) d = dd; }
+          if(d < best){ best = d; via = nm === ex.name.toLowerCase() ? null : nm; }
+        });
+        if(best <= (qc.length >= 9 ? 2 : 1)) hit.push({ex, via, fuzzy:false, score: -best + Math.min(3,(counts[ex.id]||0)*0.2)});
+      });
+      hit.sort((a,b)=> b.score - a.score || a.ex.name.length - b.ex.name.length || a.ex.name.localeCompare(b.ex.name));
+      hit.slice(0, 12).forEach(r=> out.push(r));
+    }
+  }
   return out;
 }
 
@@ -5404,7 +6297,7 @@ function renderGymResults(){
   if(res.length){
     html += '<div class="gym-results">'+res.map(r=>
       '<div class="gym-result" data-gym-pick="'+r.ex.id+'"><span>'+escapeHtml(r.ex.name)+
-        (r.via ? '<span class="ac-sub">also called \u201c'+escapeHtml(r.via)+'\u201d</span>' : (r.fuzzy ? '<span class="ac-sub">close match</span>' : ''))+
+        (r.via ? '<span class="ac-sub">'+escapeHtml(r.via)+'</span>' : '')+
       '</span><small>'+r.ex.p.map(m=>GYM_M[m].n).join(', ')+'</small></div>'
     ).join('')+'</div>';
   }
@@ -5419,19 +6312,32 @@ function renderGymResults(){
 }
 function showGymCustomForm(name){
   const box = gid('gymSearchResults');
+  const chips = grp=> GYM_MUSCLES.map(m=> '<button type="button" class="chip-btn" data-cx-'+grp+'="'+m.k+'">'+m.n+'</button>').join('');
   box.innerHTML =
     '<div class="gym-results" style="padding:12px;">'+
-      '<label class="mini-label">Name</label><input type="text" id="gymCustomName" value="'+escapeHtml(name)+'">'+
-      '<label class="mini-label" style="display:block;margin-top:8px;">Main muscle</label>'+
-      '<select id="gymCustomMuscle">'+GYM_MUSCLES.map(m=>'<option value="'+m.k+'">'+m.n+'</option>').join('')+'</select>'+
-      '<label class="mini-label" style="display:block;margin-top:8px;">Type</label>'+
+      '<label class="mini-label">Name</label><input type="text" id="gymCustomName" value="'+escapeHtml(name)+'" style="width:100%;">'+
+      '<label class="mini-label" style="display:block;margin-top:10px;">Main muscles</label><div class="sp-chips" id="cxMain">'+chips('p')+'</div>'+
+      '<label class="mini-label" style="display:block;margin-top:10px;">Helper muscles</label><div class="sp-chips" id="cxHelp">'+chips('s')+'</div>'+
+      '<label class="mini-label" style="display:block;margin-top:10px;">Type</label>'+
       '<select id="gymCustomKind"><option value="bbu">Barbell</option><option value="dbc">Dumbbell</option><option value="mac">Machine / cable</option><option value="bw">Bodyweight</option><option value="time">Timed (seconds)</option></select>'+
-      '<button type="button" class="btn block" id="gymCustomSave" style="margin-top:10px;">Add exercise</button>'+
+      '<button type="button" class="btn block" id="gymCustomSave" style="margin-top:12px;">Add exercise</button>'+
     '</div>';
+  const main = new Set(), help = new Set();
+  const paint = ()=>{
+    box.querySelectorAll('[data-cx-p]').forEach(b=> b.classList.toggle('active', main.has(b.dataset.cxP)));
+    box.querySelectorAll('[data-cx-s]').forEach(b=> b.classList.toggle('active', help.has(b.dataset.cxS)));
+  };
+  box.querySelectorAll('[data-cx-p]').forEach(b=> b.addEventListener('click', ()=>{
+    const k = b.dataset.cxP; if(main.has(k)) main.delete(k); else { main.add(k); help.delete(k); } paint();
+  }));
+  box.querySelectorAll('[data-cx-s]').forEach(b=> b.addEventListener('click', ()=>{
+    const k = b.dataset.cxS; if(help.has(k)) help.delete(k); else { help.add(k); main.delete(k); } paint();
+  }));
   gid('gymCustomSave').addEventListener('click', async ()=>{
     const nm = gid('gymCustomName').value.trim();
     if(!nm){ showToast('Give it a name.'); return; }
-    const ex = {id:'c_'+Date.now(), name:nm, p:[gid('gymCustomMuscle').value], s:[], kind:gid('gymCustomKind').value};
+    if(!main.size){ showToast('Pick at least one main muscle.'); return; }
+    const ex = {id:'c_'+uid(), name:nm, p:Array.from(main), s:Array.from(help), kind:gid('gymCustomKind').value};
     gymCustom.push(ex);
     await saveKey('gym-custom', gymCustom);
     gymSelect(ex.id);
@@ -5541,7 +6447,7 @@ async function gymAddSet(){
   const r = parseInt(gid('gymRepsInput').value, 10);
   const wu = gid('gymWarmupChk').checked;
   if(isNaN(r) || r <= 0 || (!ex.bw && (isNaN(w) || w <= 0))){ showToast(ex.bw ? 'Enter the reps.' : 'Enter the weight and reps.'); return; }
-  const entry = {id:Date.now(), date:gymDate(), ex:ex.id, w: isNaN(w) ? 0 : w, r, wu};
+  const entry = {id:uid(), date:gymDate(), ex:ex.id, w: isNaN(w) ? 0 : w, r, wu};
   const prevBest = Math.max.apply(null, [0].concat(gymWorking(ex.id).map(s=> gymMetric(ex, s))));
   const dayBefore = gymDayStats(entry.date);
   gymLog.push(entry);
@@ -5929,7 +6835,7 @@ function setupGym(){
 function exportData(){
   const payload = {
     exportedAt: new Date().toISOString(),
-    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries, vanOdometer, gymLog, gymCustom, gymBw, spendTxns, spendCats, spendRules, spendMeta,
+    calendarData, tagDefs, rentMeta, rentHistory, todos, toilPayouts, toilAdjustment, mileageTrips, mileageFavorites, expenses, travelPlaces, travelCountries, vanOdometer, gymLog, gymCustom, gymBw, spendTxns, spendCats, spendRules, spendMeta, finHoldings, finDD, finIncome, finOwed, finPeople, finSettings,
     rentRateHome: RATE_HOME, rentRateAway: RATE_AWAY
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
@@ -5983,6 +6889,7 @@ function handleImportClick(){
       spendCats = data.spendCats || null;
       spendRules = data.spendRules || {};
       spendMeta = Object.assign({secret:'', seen:[], last:null}, data.spendMeta || {});
+      finHoldings = data.finHoldings || []; finDD = data.finDD || []; finIncome = data.finIncome || []; finOwed = data.finOwed || []; finPeople = data.finPeople || []; finSettings = Object.assign({avKey:''}, data.finSettings || {});
       RATE_HOME = (typeof data.rentRateHome === 'number') ? data.rentRateHome : 0;
       RATE_AWAY = (typeof data.rentRateAway === 'number') ? data.rentRateAway : 0;
       await saveKey('calendar-data', calendarData);
@@ -6005,6 +6912,7 @@ function handleImportClick(){
       await saveKey('spend-cats', spendCats);
       await saveKey('spend-rules', spendRules);
       await saveKey('spend-meta', spendMeta);
+      await saveKey('fin-holdings', finHoldings); await saveKey('fin-dd', finDD); await saveKey('fin-income', finIncome); await saveKey('fin-owed', finOwed); await saveKey('fin-people', finPeople); await saveKey('fin-settings', finSettings);
       await saveKey('rent-rate-home', RATE_HOME);
       await saveKey('rent-rate-away', RATE_AWAY);
       renderCalendarAll(); renderRentTab(); renderToilTab(); renderTodosTab(); renderMileageTab(); renderExpensesTab(); renderTravelTab();
@@ -6034,15 +6942,16 @@ document.addEventListener('visibilitychange', ()=>{
   }else if(document.visibilityState==='visible'){
     if(lastHiddenAt && (Date.now()-lastHiddenAt) > 20*60*1000){
       const now = new Date();
-      goToView('calendar');
-      scrollToMonth(now.getFullYear(), now.getMonth(), false);
+      if(document.getElementById('view-calendar').classList.contains('active') && !yearViewActive) scrollToMonth(now.getFullYear(), now.getMonth(), false);
     }
     lastHiddenAt = null;
     updateClockInBtn();
+    syncNow(true);
     importInbox();
     setTimeout(maybeAskBodyweight, 700);
   }
 });
+window.addEventListener('online', ()=> syncNow(true));
 init();
 })();
 </script>
