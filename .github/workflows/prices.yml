@@ -43,18 +43,43 @@ jobs:
               raise last
           
           
+          # funds Yahoo may not find by ISIN: the name to search for, and words the right result must contain
+          NAMES = {"GB00B4PQW151": ("Vanguard LifeStrategy 100% Equity", ["lifestrategy", "100"])}
+          
+          
+          def search(q):
+              for host in ("query2", "query1"):
+                  try:
+                      j = get("https://%s.finance.yahoo.com/v1/finance/search?q=%s&quotesCount=10&newsCount=0" % (host, urllib.parse.quote(q)))
+                      if j.get("quotes"):
+                          return j["quotes"]
+                  except Exception:
+                      pass
+              return []
+          
+          
+          def pick(quotes, words):
+              # the accumulation unit class if there is one, otherwise the first match
+              found = [q for q in quotes if q.get("symbol") and all(w in ((q.get("longname") or "") + " " + (q.get("shortname") or "")).lower() for w in words)]
+              for q in found:
+                  if "acc" in ((q.get("longname") or "") + " " + (q.get("shortname") or "")).lower():
+                      return q["symbol"]
+              return found[0]["symbol"] if found else None
+          
+          
           def resolve(ident):
+              # SYMBOLS can say  CODE=YAHOOSYMBOL  to name the Yahoo symbol yourself
+              if "=" in ident:
+                  return ident.split("=", 1)[1].strip()
               # a fund's ISIN is turned into the symbol Yahoo uses for it; a ticker is used as it is
               if not re.fullmatch(r"[A-Z]{2}[A-Z0-9]{9}[0-9]", ident):
                   return ident
-              for host in ("query2", "query1"):
-                  try:
-                      j = get("https://%s.finance.yahoo.com/v1/finance/search?q=%s&quotesCount=6&newsCount=0" % (host, ident))
-                      for q in j.get("quotes", []):
-                          if q.get("symbol"):
-                              return q["symbol"]
-                  except Exception:
-                      pass
+              for q in search(ident):
+                  if q.get("symbol"):
+                      return q["symbol"]
+              if ident in NAMES:
+                  name, words = NAMES[ident]
+                  return pick(search(name), words)
               return None
           
           
@@ -89,16 +114,17 @@ jobs:
               pass
           out, errors = {}, {}
           for ident in [s.strip().upper() for s in os.environ.get("SYMBOLS", "").split(",") if s.strip()]:
+              key = ident.split("=", 1)[0].strip()
               try:
                   sym = resolve(ident)
                   if not sym:
-                      raise ValueError("could not find " + ident)
-                  out[ident] = quote(sym)
+                      raise ValueError("could not find " + key + " on Yahoo - add its Yahoo symbol like " + key + "=XXXX.L")
+                  out[key] = quote(sym)
               except Exception as e:
-                  errors[ident] = str(e)
-                  if ident in old:
-                      out[ident] = dict(old[ident], stale=True)
-                  print("FAILED", ident, e, file=sys.stderr)
+                  errors[key] = str(e)
+                  if key in old:
+                      out[key] = dict(old[key], stale=True)
+                  print("FAILED", key, e, file=sys.stderr)
           stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
           json.dump({"updated": stamp, "prices": out, "errors": errors}, open("prices.json", "w"), indent=1)
           print(json.dumps(out)[:600])
