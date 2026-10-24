@@ -13,10 +13,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Fetch prices
         env:
-          SYMBOLS: 'VUAG.L,VUSA.L,CSPX.L,GB00B4PQW151'
+          SYMBOLS: 'VUAG.L,GB00B4PQW151'
         run: |
           python3 - <<'PY'
+          import csv
           import datetime
+          import io
           import json
           import os
           import re
@@ -27,26 +29,77 @@ jobs:
           
           UA = {
               "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
-              "Accept": "application/json",
+              "Accept": "application/json,text/csv,text/html;q=0.9,*/*;q=0.8",
+              "Accept-Language": "en-GB,en;q=0.9",
           }
-          
-          
-          def get(url):
-              last = None
-              for i in range(3):
-                  try:
-                      with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
-                          return json.loads(r.read().decode("utf-8"))
-                  except Exception as e:
-                      last = e
-                      time.sleep(2 + 3 * i)
-              raise last
-          
-          
+          ISIN = re.compile(r"^[A-Z]{2}[A-Z0-9]{9}[0-9]$")
           # funds Yahoo may not find by ISIN: the name to search for, and words the right result must contain
           NAMES = {"GB00B4PQW151": ("Vanguard LifeStrategy 100% Equity", ["lifestrategy", "100"])}
           
           
+          def fetch(url, tries=2):
+              last = None
+              for i in range(tries):
+                  try:
+                      with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:
+                          return r.read().decode("utf-8", "replace")
+                  except Exception as e:
+                      last = e
+                      time.sleep(3 + 3 * i)
+              raise last
+          
+          
+          def get(url):
+              return json.loads(fetch(url))
+          
+          
+          def num(text):
+              return round(float(str(text).replace(",", "").strip()), 4)
+          
+          
+          # ---- source 1 for ETFs and shares: Stooq (plain CSV, friendly to scripts) ----
+          def from_stooq(ident):
+              if ISIN.match(ident):
+                  raise ValueError("stooq has no funds")
+              t = ident.lower()
+              if t.endswith(".lon"):
+                  t = t[:-4] + ".l"
+              s = t[:-2] + ".uk" if t.endswith(".l") else (t if "." in t else t + ".us")
+              rows = list(csv.reader(io.StringIO(fetch("https://stooq.com/q/l/?s=%s&f=sd2t2ohlcv&h&e=csv" % urllib.parse.quote(s)).strip())))
+              if len(rows) < 2:
+                  raise ValueError("empty answer")
+              d = dict(zip(rows[0], rows[1]))
+              close = d.get("Close", "")
+              if not close or close.upper() == "N/D":
+                  raise ValueError("no data for " + s)
+              day = d.get("Date", "")
+              # Stooq does not say which currency: the app uses the unit you chose for the holding
+              return {"price": num(close), "currency": "", "date": day if re.fullmatch(r"\d{4}-\d\d-\d\d", day or "") else "", "symbol": s.upper(), "name": ident, "source": "Stooq"}
+          
+          
+          # ---- source 1 for funds: the Financial Times page for the fund's ISIN ----
+          def from_ft(ident):
+              if not ISIN.match(ident):
+                  raise ValueError("ft lookup needs an ISIN")
+              html = fetch("https://markets.ft.com/data/funds/tearsheet/summary?s=%s:GBP" % ident)
+              m = re.search(r"Price \(([A-Za-z]{3})\).{0,300}?([0-9][0-9,]*\.[0-9]+)", html, re.S)
+              if not m:
+                  raise ValueError("no price on the page")
+              day = ""
+              d = re.search(r"as of ([A-Za-z]{3,9}) (\d{1,2}) (\d{4})", html)
+              if d:
+                  for fmt in ("%b %d %Y", "%B %d %Y"):
+                      try:
+                          day = datetime.datetime.strptime("%s %s %s" % d.groups(), fmt).strftime("%Y-%m-%d")
+                          break
+                      except ValueError:
+                          pass
+              t = re.search(r"<title>(.*?)</title>", html, re.S)
+              name = re.split(r",| - ", t.group(1).strip())[0].strip() if t else ""
+              return {"price": num(m.group(2)), "currency": m.group(1).upper(), "date": day, "symbol": ident + ":GBP", "name": name or ident, "source": "FT"}
+          
+          
+          # ---- last resort: Yahoo (often refuses GitHub's servers with a 429) ----
           def search(q):
               for host in ("query2", "query1"):
                   try:
@@ -67,12 +120,10 @@ jobs:
               return found[0]["symbol"] if found else None
           
           
-          def resolve(ident):
-              # SYMBOLS can say  CODE=YAHOOSYMBOL  to name the Yahoo symbol yourself
+          def yahoo_symbol(ident):
               if "=" in ident:
                   return ident.split("=", 1)[1].strip()
-              # a fund's ISIN is turned into the symbol Yahoo uses for it; a ticker is used as it is
-              if not re.fullmatch(r"[A-Z]{2}[A-Z0-9]{9}[0-9]", ident):
+              if not ISIN.match(ident):
                   return ident
               for q in search(ident):
                   if q.get("symbol"):
@@ -83,7 +134,10 @@ jobs:
               return None
           
           
-          def quote(sym):
+          def from_yahoo(ident):
+              sym = yahoo_symbol(ident)
+              if not sym:
+                  raise ValueError("not found")
               last = None
               for host in ("query1", "query2"):
                   try:
@@ -101,7 +155,7 @@ jobs:
                       if cur == "GBp":
                           cur = "GBX"
                       day = datetime.datetime.fromtimestamp(when, datetime.timezone.utc).strftime("%Y-%m-%d") if when else ""
-                      return {"price": round(float(price), 4), "currency": cur, "date": day, "symbol": sym, "name": meta.get("longName") or meta.get("shortName") or ""}
+                      return {"price": round(float(price), 4), "currency": cur, "date": day, "symbol": sym, "name": meta.get("longName") or meta.get("shortName") or "", "source": "Yahoo"}
                   except Exception as e:
                       last = e
               raise last
@@ -115,19 +169,27 @@ jobs:
           out, errors = {}, {}
           for ident in [s.strip().upper() for s in os.environ.get("SYMBOLS", "").split(",") if s.strip()]:
               key = ident.split("=", 1)[0].strip()
-              try:
-                  sym = resolve(ident)
-                  if not sym:
-                      raise ValueError("could not find " + key + " on Yahoo - add its Yahoo symbol like " + key + "=XXXX.L")
-                  out[key] = quote(sym)
-              except Exception as e:
-                  errors[key] = str(e)
+              if "=" in ident:
+                  order = [("Yahoo", from_yahoo)]
+              elif ISIN.match(ident):
+                  order = [("FT", from_ft), ("Yahoo", from_yahoo)]
+              else:
+                  order = [("Stooq", from_stooq), ("Yahoo", from_yahoo)]
+              why = []
+              for name, fn in order:
+                  try:
+                      out[key] = fn(ident)
+                      break
+                  except Exception as e:
+                      why.append("%s: %s" % (name, e))
+              if key not in out:
+                  errors[key] = "; ".join(why) + (" - if you know its Yahoo symbol, write " + key + "=SYMBOL in SYMBOLS" if ISIN.match(ident) else "")
                   if key in old:
                       out[key] = dict(old[key], stale=True)
-                  print("FAILED", key, e, file=sys.stderr)
+                  print("FAILED", key, errors[key], file=sys.stderr)
           stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
           json.dump({"updated": stamp, "prices": out, "errors": errors}, open("prices.json", "w"), indent=1)
-          print(json.dumps(out)[:600])
+          print(json.dumps(out)[:900])
           PY
       - name: Save
         run: |
