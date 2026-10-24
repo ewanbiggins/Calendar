@@ -1,10 +1,10 @@
 {
- "updated": "2026-10-24T22:52:38Z",
+ "updated": "2026-10-24T23:19:02Z",
  "prices": {},
  "errors": {
   "VUAG.L": "HTTP Error 429: Too Many Requests",
   "VUSA.L": "HTTP Error 429: Too Many Requests",
   "CSPX.L": "HTTP Error 429: Too Many Requests",
-  "GB00B4PQW151": "could not find GB00B4PQW151"
+  "GB00B4PQW151": "could not find GB00B4PQW151 on Yahoo - add its Yahoo symbol like GB00B4PQW151=XXXX.L"
  }
 }
