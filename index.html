@@ -590,6 +590,31 @@ body[data-nav="back"] .view.active:not(#view-calendar){animation:slideInL .4s va
 .exp-month{display:flex;justify-content:space-between;align-items:baseline;position:sticky;top:0;z-index:2;background:var(--surface,var(--card,#fff));padding:12px 0 6px;margin-top:6px;font-weight:700;font-size:14px;border-bottom:1px solid var(--line);}
 .exp-month span:last-child{font-weight:600;font-size:12.5px;opacity:.7;}
 .exp-day{font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.6;font-weight:700;margin:12px 0 0;}
+.fin-monthbar{margin:2px 0 10px;}
+.fin-pcts{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:12px;}
+.fin-pc{text-align:center;background:var(--surface-2,rgba(0,0,0,.04));border-radius:10px;padding:6px 1px 5px;min-width:0;}
+.fin-pc span{display:block;font-size:9.5px;opacity:.6;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+.fin-pc b{font-size:12.5px;white-space:nowrap;}
+.fin-pc b.up{color:var(--home);}
+.fin-head{margin:0 0 8px;}
+/* ---------- finance forms: compact, labelled ---------- */
+#view-budget input[type=text],#view-budget input[type=number],#view-budget input[type=date],#view-budget input[type=time],#view-budget select,#sheetBody input[type=text],#sheetBody input[type=number],#sheetBody input[type=date],#sheetBody select{
+  font-size:16px;line-height:1.2;padding:6px 10px;min-height:38px;border-radius:10px;box-sizing:border-box;}
+#view-budget select,#sheetBody select{-webkit-appearance:none;appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%237a857e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;}
+#view-budget input:focus,#view-budget select:focus,#sheetBody input:focus,#sheetBody select:focus{outline:none;border-color:var(--home);box-shadow:0 0 0 3px rgba(42,111,99,.16);}
+#view-budget input::placeholder,#sheetBody input::placeholder{color:var(--ink-soft);opacity:.55;}
+.ff-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 10px;}
+.ff{display:grid;gap:4px;min-width:0;align-content:start;}
+.ff>span{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);}
+.ff input,.ff select{width:100%;min-width:0;}
+.ff-wide{grid-column:1 / -1;}
+.fin-edit>.ff-grid+.sp-chips,.fin-edit>.sp-chips+.ff-grid,.fin-form>.ff-grid+label{margin-top:2px;}
+.fin-form{display:grid;gap:10px;margin-top:8px;}
+.fin-recur .fin-edit-row{margin-bottom:2px;}
+#view-budget .sp-add input{min-height:38px;}
+.auto-before{margin:0 0 8px;padding-left:18px;font-size:12.5px;color:var(--ink-soft);display:grid;gap:4px;}
+.auto-state{font-size:11.5px;font-weight:500;color:var(--ink-soft);margin-left:6px;}
+.auto-state.ok{color:var(--home);font-weight:600;}
 </style>
 </head>
 <body>
@@ -597,7 +622,7 @@ body[data-nav="back"] .view.active:not(#view-calendar){animation:slideInL .4s va
 <div id="app">
   <div class="top">
     <button class="round-btn" id="menuTopBtn"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-    <div><h1>Home Base <span class="app-version">v15.8</span></h1><div class="date" id="todayLabel"></div></div>
+    <div><h1>Home Base <span class="app-version">v16.5</span></h1><div class="date" id="todayLabel"></div></div>
     <div style="width:34px;"></div>
   </div>
 
@@ -1669,6 +1694,7 @@ async function init(){
   mileageDrafts = await loadKey('mileage-drafts', []);
   sleepLog = await loadKey('sleep-log', []);
   await spendMigrate();
+  setTimeout(()=>{ if(finHoldings.some(h=> h.recur)) finApplyRecurring(); }, 2500);
   syncAuth = await loadKey('sync-auth', null);
   Object.assign(geoCache, await loadKey('geocache', {}));
   applyDarkMode(darkModeOn);
@@ -1749,7 +1775,7 @@ function goToView(viewName, dir, opts){
   if(viewName==='gym'){ gymAutoPick = true; renderGym(); }
   { const vEl = document.getElementById('view-'+viewName); vEl.classList.add('fresh'); clearTimeout(vEl._fresh); vEl._fresh = setTimeout(()=>{ vEl.classList.remove('fresh'); document.body.dataset.nav = ''; }, 950); }
   if(viewName==='summary') renderSummary();
-  if(viewName==='budget'){ renderBudget(); importInbox(); finMaybeRefresh(); }
+  if(viewName==='budget'){ finTab = setPage || 'overview'; finOpenItem = null; renderBudget(); importInbox(); finMaybeRefresh(); }
   if(viewName==='settings'){ settingsPage = setPage; applySettingsPage(); renderApplePaySetup(); renderAutoSetup(); importInbox(); }
 }
 function setupTabs(){
@@ -4219,7 +4245,8 @@ function spendFromInbox(d, id){
   if(spendTxns.some(x=> x.id === 'ap_'+id)) return null;
   const merchant = String(d.m || '').trim() || 'Unknown';
   const dm = /^(\d{4}-\d{2}-\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(String(d.d || ''));
-  return {id:'ap_'+id, date: dm ? dm[1] : todayStr(), time: dm && dm[2] ? dm[2] : '', amount: spendParseAmount(d.a), merchant, card: String(d.c || ''), src:'applepay', cat: spendGuess(merchant)};
+  const pm = dm ? null : autoParseTime(d.d);
+  return {id:'ap_'+id, date: dm ? dm[1] : (pm ? fmt(new Date(pm)) : todayStr()), time: dm && dm[2] ? dm[2] : (pm ? autoHM(pm) : ''), amount: spendParseAmount(d.a), merchant, card: String(d.c || ''), src:'applepay', cat: spendGuess(merchant)};
 }
 // business cards (default: any card with "aqua" in its name) go to your Expenses list, everything else to Finance spending
 function spendCardRoute(card){
@@ -4296,10 +4323,13 @@ async function importInbox(){
 function spendEndpoint(){
   return 'https://firestore.googleapis.com/v1/projects/'+syncConfig.projectId+'/databases/(default)/documents/inbox?key='+syncConfig.apiKey;
 }
+function spendEnsureSecret(){ if(!spendMeta.secret){ spendMeta.secret = spendRandom(24); saveKey('spend-meta', spendMeta); } return spendMeta.secret; }
 function spendBodyTemplate(){
+  spendEnsureSecret();
   return '{"fields":{"k":{"stringValue":"'+spendMeta.secret+'"},"a":{"stringValue":"AMOUNT"},"m":{"stringValue":"MERCHANT"},"c":{"stringValue":"CARD"},"d":{"stringValue":"DATE"}}}';
 }
 function spendRulesText(locked){
+  spendEnsureSecret();
   const email = (syncAuth && syncAuth.email) || 'you@example.com';
   const who = locked ? "request.auth != null && request.auth.token.email == '"+email+"'" : 'true';
   return "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /homebase/{doc} {\n      allow read, write: if "+who+";\n    }\n    match /inbox/{id} {\n      allow create: if request.resource.data.k == '"+spendMeta.secret+"'\n        && request.resource.data.keys().hasOnly(['k','a','m','c','d'])\n        && request.resource.data.m.size() < 120;\n      allow read, delete: if "+who+";\n    }\n  }\n}";
@@ -4356,10 +4386,12 @@ function renderApplePaySetup(){
     '<div class="sum2-h" style="margin:10px 0 2px;"><span>Where each card goes</span></div>'+cardRows+
     '<div class="fin-opts" style="margin:6px 0 10px;"><span class="stat-sub" style="margin:0;">Business if the card name has</span><input type="text" id="apBiz" value="'+escapeHtml(spendMeta.bizWords === undefined ? 'aqua' : spendMeta.bizWords)+'" style="width:120px;" autocomplete="off" autocapitalize="none"></div>'+
     '<details class="fin-auto"'+(spendMeta.last ? '' : ' open')+'><summary>Set up the Shortcut</summary><ol class="sp-steps">'+
-      '<li><b>Firebase \u2192 Firestore \u2192 Rules.</b> Paste these and Publish.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="rulesLocked">Copy rules (locked)</button><button type="button" class="btn secondary small" data-ap-copy="rulesOpen">Copy rules (open)</button></div></li>'+
-      '<li><b>Shortcuts \u2192 Automation \u2192 +  \u2192 Transaction.</b> On newer iPhones it\u2019s listed under <b>Wallet</b> (\u201cWhen I pay with a card\u201d). Pick both cards, <b>Run Immediately</b>, Notify off, New Blank Automation. It needs iOS 17 or later, a card in Wallet, and Wallet allowed mobile data (Settings \u2192 Apps \u2192 Wallet).</li>'+
-      '<li>Add a <b>Text</b> action and paste this. Replace AMOUNT, MERCHANT, CARD, DATE with Shortcut Input\u2019s Amount, Merchant, Card or Pass, and Current Date.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="body">Copy text</button></div></li>'+
-      '<li>Add <b>Get Contents of URL</b>. Paste the URL, Method <b>POST</b>, header <b>Content-Type</b> = <b>application/json</b>, Request Body <b>File</b> = the Text.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="url">Copy URL</button></div></li>'+
+      '<li><b>Firebase \u2192 Firestore \u2192 Rules.</b> Paste these over what\u2019s there and tap Publish.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="rulesOpen">Copy rules (open)</button><button type="button" class="btn secondary small" data-ap-copy="rulesLocked">Copy rules (locked)</button></div></li>'+
+      '<li>On the phone you pay with: Shortcuts \u2192 <b>Automation</b> tab \u2192 <b>+</b> \u2192 search <b>Wallet</b> and choose <b>When any card is tapped</b> (older iPhones call it <b>Transaction</b>). Pick your cards. Choose <b>Run Immediately</b>, turn <b>Notify When Run</b> off, tap <b>Next</b>, then <b>New Blank Automation</b>. It needs iOS 17 or later and Wallet allowed mobile data (Settings \u2192 Apps \u2192 Wallet).</li>'+
+      '<li>Tap <b>Add Action</b>, search <b>Text</b> and add it. Paste this in.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="body">Copy text</button></div></li>'+
+      '<li>Turn the capital words into blue pills. Tap the word, delete it, tap <b>Shortcut Input</b> in the bar above the keyboard, tap the blue pill that appears, and choose <b>Amount</b>. Do the same for MERCHANT \u2192 <b>Merchant</b> and CARD \u2192 <b>Card</b>. For DATE use <b>Current Date</b> instead: tap its pill, <b>Date Format</b>, <b>ISO 8601</b>.</li>'+
+      '<li>Add <b>Get Contents of URL</b>. Paste the URL, tap the small arrow to expand it, set <b>Method</b> to <b>POST</b>, add a header <b>Content-Type</b> = <b>application/json</b>, and set <b>Request Body</b> to <b>File</b> and choose the <b>Text</b>.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="url">Copy URL</button></div></li>'+
+      '<li>Tap <b>Done</b>, then make a small real tap. The first time, the iPhone asks to send data to firestore.googleapis.com: choose <b>Always Allow</b>. Don\u2019t test with \u25b6, because with no real payment behind it the details come through blank.</li>'+
       '<li>Check it end to end.<div class="sp-btnrow"><button type="button" class="btn small" id="apTestBtn">Send test</button><button type="button" class="btn secondary small" id="apCheckBtn">Check inbox</button></div></li>'+
     '</ol></details>'+
     '<details class="fin-auto"'+(authOn || syncNeedsSignIn ? ' open' : '')+'><summary>Lock it down with a sign-in (recommended)</summary>'+
@@ -4386,8 +4418,8 @@ function renderApplePaySetup(){
 }
 
 // ---------- finance: bills, income, owed, investments ----------
-const FIN_FREQ = [['monthly','Monthly'],['weekly','Weekly'],['fortnightly','Fortnightly'],['fourweekly','Every 4 weeks'],['yearly','Yearly'],['once','One-off']];
-const FIN_PER_MONTH = {monthly:1, weekly:52/12, fortnightly:26/12, fourweekly:13/12, yearly:1/12, once:0};
+const FIN_FREQ = [['monthly','Monthly'],['lastfri','Last Friday of the month'],['lastwd','Last working day of the month'],['weekly','Weekly'],['fortnightly','Fortnightly'],['fourweekly','Every 4 weeks'],['yearly','Yearly'],['once','One-off']];
+const FIN_PER_MONTH = {monthly:1, lastfri:1, lastwd:1, weekly:52/12, fortnightly:26/12, fourweekly:13/12, yearly:1/12, once:0};
 const FIN_COINS = [['BTC','Bitcoin'],['ETH','Ethereum'],['USDT','Tether'],['XRP','XRP'],['SOL','Solana'],['USDC','USD Coin'],['DOGE','Dogecoin'],['ADA','Cardano'],['AVAX','Avalanche'],['LINK','Chainlink'],['DOT','Polkadot'],['LTC','Litecoin'],['BCH','Bitcoin Cash'],['XLM','Stellar'],['SHIB','Shiba Inu'],['UNI','Uniswap'],['ATOM','Cosmos'],['AAVE','Aave'],['NEAR','NEAR Protocol'],['ALGO','Algorand'],['HBAR','Hedera']];
 function finFreqLabel(f){ const r = FIN_FREQ.find(x=> x[0]===f); return r ? r[1] : f; }
 function finMonthLabel(ym){ const [y, m] = ym.split('-').map(Number); return new Date(y, m-1, 1).toLocaleDateString('en-GB', {month:'long', year:'numeric'}); }
@@ -4403,6 +4435,14 @@ function finOccurrences(it, ym){
   const first = ym+'-01', last = ym+'-'+pad(dim);
   if(it.freq === 'once') return a.slice(0,7) === ym ? [a] : [];
   if(it.freq === 'monthly'){ if(ym < a.slice(0,7)) return []; return [ym+'-'+pad(Math.min(ad, dim))]; }
+  if(it.freq === 'lastfri' || it.freq === 'lastwd'){
+    if(ym < a.slice(0,7)) return [];
+    const ld = new Date(y, m, 0);
+    if(it.freq === 'lastfri'){ while(ld.getDay() !== 5) ld.setDate(ld.getDate()-1); }
+    else{ while(ld.getDay() === 0 || ld.getDay() === 6) ld.setDate(ld.getDate()-1); }
+    const o = fmt(ld);
+    return o >= a ? [o] : [];
+  }
   if(it.freq === 'yearly'){ if(m !== am || y < ay) return []; return [ym+'-'+pad(Math.min(ad, dim))]; }
   const step = {weekly:7, fortnightly:14, fourweekly:28}[it.freq];
   if(!step) return [];
@@ -4613,41 +4653,128 @@ function finRenderTxnSheet(id){
 function renderBudget(){
   const box = document.getElementById('budgetBody');
   if(!box) return;
-  const st = spendStats(spendMonth || todayStr().slice(0,7));
-  const tabs = [['overview','Overview',0],['spend','Spend',0],['invest','Invest',0],['income','Income',0]];
-  box.innerHTML = '<div class="chip-row fin-tabs">'+tabs.map(t=> '<button type="button" class="chip-btn'+(finTab===t[0] ? ' active' : '')+'" data-fin-tab="'+t[0]+'">'+t[1]+(t[2] ? '<span class="fin-n">'+t[2]+'</span>' : '')+'</button>').join('')+'</div><div id="finBody"></div>';
-  box.querySelectorAll('.fin-tabs [data-fin-tab]').forEach(b=> b.addEventListener('click', ()=>{ finTab = b.dataset.finTab; finOpenItem = null; renderBudget(); }));
-  const act = box.querySelector('.fin-tabs .active');
-  if(act) act.parentNode.scrollLeft = Math.max(0, act.offsetLeft - 40);
+  if(!finRecurBusy && finHoldings.some(h=> h.recur)) setTimeout(finApplyRecurring, 0);
   if(finTab === 'bills') finTab = 'spend';
   if(!{overview:1, spend:1, invest:1, income:1}[finTab]) finTab = 'overview';
-  ({overview:renderFinOverview, spend:renderFinSpend, invest:renderFinInvest, income:b=> renderFinRecurring(b,'income')})[finTab](document.getElementById('finBody'));
+  const titles = {spend:'Spending', invest:'Portfolio', income:'Income'};
+  box.innerHTML = (finTab !== 'overview' ? '<div class="set-head fin-head"><button type="button" class="chip-btn" data-fin-back>&lsaquo; Finance</button><h2>'+titles[finTab]+'</h2></div>' : '')+'<div id="finBody"></div>';
+  const back = box.querySelector('[data-fin-back]');
+  if(back) back.addEventListener('click', ()=>{ finTab = 'overview'; finOpenItem = null; renderBudget(); window.scrollTo(0, 0); });
+  ({overview:renderFinDashboard, spend:renderFinSpend, invest:renderFinInvest, income:b=> renderFinRecurring(b,'income')})[finTab](document.getElementById('finBody'));
+  box.querySelectorAll('[data-fin-acct]').forEach(el=> el.addEventListener('click', finOpenAcctSheet));
 }
 function finNavMonth(delta){
   const [y, m] = (spendMonth || todayStr().slice(0,7)).split('-').map(Number), d = new Date(y, m-1+delta, 1);
   spendMonth = d.getFullYear()+'-'+pad(d.getMonth()+1); spendFilter = null; spendShowAll = false;
   renderBudget();
 }
-function renderFinOverview(box){
-  const ym = spendMonth || (spendMonth = todayStr().slice(0,7)), today = todayStr(), st = spendStats(ym);
-  const inc = finMonthTotal(finIncome, ym), dd = finMonthTotal(finDD, ym), left = inc - dd - st.spent;
+// everything about one month in one place: what comes in, what goes out, what's left
+function finMonthPlan(ym){
+  const today = todayStr(), st = spendStats(ym);
+  const income = finMonthTotal(finIncome, ym), bills = finMonthTotal(finDD, ym);
+  let incomeSoFar = 0, billsPaid = 0;
+  finIncome.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d <= today) incomeSoFar += it.amount; }));
+  finDD.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d <= today) billsPaid += it.amount; }));
+  const [y, m] = ym.split('-').map(Number), dim = new Date(y, m, 0).getDate();
+  const rentEst = RATE_HOME > 0 ? finR2(dim*RATE_HOME) : 0;                      // budget the whole month at home
+  const rentPaid = finR2(st.tx.filter(t=> t.src === 'rent').reduce((a,t)=> a + t.amount, 0));
+  const rent = Math.max(rentEst, rentPaid), spent = finR2(st.spent - rentPaid);
+  const out = finR2(bills + rent + spent);
+  const budgetVar = spendCatList().filter(c=> c.id !== 'bills').reduce((a,c)=> a + (c.budget || 0), 0);
+  const billsPlanned = finR2(bills + rentEst);
+  return {ym, income:finR2(income), incomeSoFar:finR2(incomeSoFar), bills:finR2(bills), billsPaid:finR2(billsPaid), rentEst, rentPaid, rent, spent, out, left:finR2(income - out),
+    budgetVar, billsPlanned, budget:finR2(budgetVar + billsPlanned), spentAll:finR2(st.spent + billsPaid), billsSpent:finR2(billsPaid + (st.by.bills || 0)), st};
+}
+// the spending account: what you tell it, then income, bills and spending move it
+const finMonthsFrom = (a, b)=>{ const out = []; let ym = a, g = 0; while(ym <= b && g++ < 600){ out.push(ym); const [y, m] = ym.split('-').map(Number), d = new Date(y, m, 1); ym = d.getFullYear()+'-'+pad(d.getMonth()+1); } return out; };
+function finAccount(){
+  const a = finSettings.acct;
+  if(!a || typeof a.bal !== 'number' || !a.date) return null;
+  const today = todayStr(), stamp = a.date+' '+(a.time || '00:00');
+  let inn = 0, out = 0;
+  finMonthsFrom(a.date.slice(0,7), today.slice(0,7)).forEach(ym=>{
+    finIncome.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d > a.date && d <= today) inn += it.amount; }));
+    finDD.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d > a.date && d <= today) out += it.amount; }));
+  });
+  spendTxns.forEach(t=>{ if(t.date && t.date <= today && (t.date+' '+(t.time || '23:59')) > stamp) out += t.amount; });
+  return {value:finR2(a.bal + inn - out), set:a.bal, since:a.date, inn:finR2(inn), out:finR2(out)};
+}
+function finOpenAcctSheet(){
+  openSheet('Spending account');
+  const a = finAccount(), body = document.getElementById('sheetBody');
+  body.innerHTML = '<div class="stat-sub" style="margin:0 0 10px;">Type what the account shows right now. From then on your income, bills and spending move it automatically \u2014 re-enter it any time to tidy up.</div>'+
+    '<label class="ff"><span>Balance now (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" id="acctBal" value="'+(a ? a.value : '')+'"></label>'+
+    (a ? '<div class="stat-sub" style="margin:8px 0 0;">Since '+niceDate(a.since)+': in '+money(a.inn)+', out '+money(a.out)+'.</div>' : '')+
+    '<div class="fin-edit-row" style="margin-top:12px;"><button type="button" class="btn small" id="acctSave">Save</button>'+(a ? '<button type="button" class="btn secondary small" id="acctClear">Remove</button>' : '')+'</div>';
+  document.getElementById('acctSave').addEventListener('click', async ()=>{
+    const v = parseFloat(document.getElementById('acctBal').value);
+    if(isNaN(v)){ showToast('Type the balance.'); return; }
+    finSettings = Object.assign({}, finSettings, {acct:{bal:finR2(v), date:todayStr(), time:nowHM()}});
+    await saveKey('fin-settings', finSettings); closeSheet(); renderBudget(); showToast('Balance saved.');
+  });
+  const clr = document.getElementById('acctClear');
+  if(clr) clr.addEventListener('click', async ()=>{ const f = Object.assign({}, finSettings); delete f.acct; finSettings = f; await saveKey('fin-settings', finSettings); closeSheet(); renderBudget(); });
+}
+// how the investments have moved over each period, ignoring money you paid in (the spending account is not in these)
+function finChanges(){
+  const pf = finPortfolio(), today = todayStr();
+  if(!pf.priced) return null;
+  const out = [];
+  [['Day',1],['Week',7],['Month',30],['3 mths',91],['Year',365]].forEach(([label, days])=>{
+    const target = addDays(today, -days);
+    const snap = finSnap.slice().sort((x,y)=> x.date.localeCompare(y.date)).filter(sn=> sn.date <= target).slice(-1)[0];
+    if(!snap || snap.date < addDays(target, -Math.max(3, Math.round(days*0.25))) || !(snap.value > 0)){ out.push({label, pct:null}); return; }
+    const T = Math.max(1, daysBetween(snap.date, today));
+    let C = 0, w = 0;
+    finHoldings.forEach(h=> (h.contribs || []).forEach(c=>{ if(c.date && c.date > snap.date && c.date <= today){ C += c.amount; w += c.amount*(T - daysBetween(snap.date, c.date))/T; } }));
+    const den = snap.value + w;
+    out.push({label, pct: den > 0 ? (pf.value - snap.value - C)/den*100 : null});
+  });
+  out.push({label:'All', pct: (pf.gain !== null && pf.invested > 0) ? pf.gain/pf.invested*100 : null});
+  return out;
+}
+function renderFinDashboard(box){
+  const today = todayStr(), ym = spendMonth || (spendMonth = today.slice(0,7)), mp = finMonthPlan(ym);
+  const pf = finPortfolio(), acct = finAccount(), total = pf.value + (acct ? acct.value : 0), ch = finChanges();
+  if(pf.priced && !finSnap.some(x=> x.date === today)) finSnapshot();
   const row = (k, v)=> '<div class="sum-row"><span class="sum-k">'+k+'</span><span class="sum-v">'+v+'</span></div>';
-  let h = '<div class="card"><div class="sp-month"><button type="button" class="chip-btn" data-fin-m="-1">\u2039</button><b>'+finMonthLabel(ym)+'</b><button type="button" class="chip-btn" data-fin-m="1">\u203a</button></div>';
-  if(inc > 0) h += '<div class="fin-big'+(left < 0 ? ' sum-over' : '')+'">'+finAmt(left)+'</div><div class="stat-sub" style="margin-bottom:6px;">left after bills and spending</div>';
-  else h += '<div class="stat-sub" style="margin-bottom:6px;cursor:pointer;" data-fin-tab="income"><b>Add your income</b> to see what\u2019s left \u2192</div>';
-  h += row('Income', inc ? '+'+money(inc) : '\u2014')+row('Bills', dd ? '\u2212'+money(dd) : '\u2014')+row('Spending (your share)', st.spent ? '\u2212'+money(st.spent) : '\u2014')+'</div>';
+  let h = '<div class="sp-month fin-monthbar"><button type="button" class="chip-btn" data-fin-m="-1">\u2039</button><b>'+finMonthLabel(ym)+'</b><button type="button" class="chip-btn" data-fin-m="1">\u203a</button></div>';
+  // this month
+  const pctOut = mp.income > 0 ? Math.min(100, mp.out/mp.income*100) : 0;
+  h += '<div class="card tap" data-fin-tab="spend"><div class="sum2-h"><span>This month</span><span class="sum-k">\u203a</span></div>';
+  if(mp.income > 0) h += '<div class="fin-big'+(mp.left < 0 ? ' sum-over' : '')+'">'+finAmt(mp.left)+'</div><div class="stat-sub" style="margin-bottom:6px;">left after bills and spending</div>';
+  else h += '<div class="stat-sub" style="margin-bottom:6px;"><span data-fin-tab="income"><b>Add your income</b> to see what\u2019s left \u2192</span></div>';
+  h += row('Income', mp.income ? '+'+money(mp.income) : '\u2014')+row('Bills', mp.bills ? '\u2212'+money(mp.bills) : '\u2014')+
+    (mp.rent ? row('Rent'+(mp.rentPaid ? '' : ' (full month at home)'), '\u2212'+money(mp.rent)) : '')+
+    row('Spending (your share)', mp.spent ? '\u2212'+money(mp.spent) : '\u2014')+
+    (mp.income > 0 ? '<div class="sp-bar"><div class="sp-fill'+(pctOut > 100 ? ' over' : (pctOut > 85 ? ' warn' : ''))+'" style="width:'+pctOut+'%"></div></div>' : '')+'</div>';
+  // portfolio
+  h += '<div class="card tap" data-fin-tab="invest"><div class="sum2-h"><span>Portfolio</span><span class="sum-k">\u203a</span></div>';
+  if(pf.priced || acct){
+    h += '<div class="fin-big">'+money(total)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+
+      [pf.priced ? 'Investments '+money(pf.value - pf.sav) : '', pf.sav > 0 ? 'Savings '+money(pf.sav) : '', acct ? 'Spending account '+money(acct.value) : ''].filter(Boolean).join(' \u00b7 ')+'</div>';
+    if(ch) h += '<div class="fin-pcts">'+ch.map(c=> '<div class="fin-pc"><span>'+c.label+'</span><b class="'+(c.pct == null ? '' : (c.pct >= 0 ? 'up' : 'sum-over'))+'">'+(c.pct == null ? '\u2014' : (c.pct >= 0 ? '+' : '\u2212')+Math.abs(c.pct).toFixed(1)+'%')+'</b></div>').join('')+'</div>'+
+      '<div class="stat-sub" style="margin:8px 0 0;font-size:11px;">Changes ignore money you paid in and your spending account.</div>';
+  }else h += '<div class="stat-sub" style="margin-top:4px;"><b>Add your first holding</b> or set your spending account \u2192</div>';
+  h += '</div>';
+  // tiles
+  const nextIn = finIncome.map(it=> finNext(it, today)).filter(Boolean).sort()[0];
+  const owedNow = finOwedUnpaid(), people = new Set();
+  finOwed.forEach(o=> o.people.forEach(p=>{ if(!p.paid) people.add(p.name); }));
+  const pctB = mp.budget > 0 ? mp.spentAll/mp.budget : 0;
+  h += '<div class="fin-two"><div class="card tap" data-fin-tab="income"><div class="sum2-h"><span>Income</span></div><div class="fin-big">'+(mp.income ? finMoneyShort(mp.income) : '\u2014')+'</div><div class="stat-sub" style="margin:2px 0 0;">'+(nextIn ? 'next '+finDateLabel(nextIn) : 'none set yet')+'</div></div>'+
+    '<div class="card tap" data-fin-acct><div class="sum2-h"><span>Spending account</span></div><div class="fin-big">'+(acct ? finMoneyShort(acct.value) : '\u2014')+'</div><div class="stat-sub" style="margin:2px 0 0;">'+(acct ? 'in '+finMoneyShort(acct.inn)+' \u00b7 out '+finMoneyShort(acct.out) : 'tap to set it')+'</div></div></div>';
+  h += '<div class="fin-two"><div class="card tap" data-fin-tab="spend"><div class="sum2-h"><span>Budget</span></div><div class="fin-big'+(pctB > 1 ? ' sum-over' : '')+'">'+(mp.budget > 0 ? finMoneyShort(mp.spentAll) : '\u2014')+'</div><div class="stat-sub" style="margin:2px 0 0;">'+(mp.budget > 0 ? 'of '+finMoneyShort(mp.budget) : 'set your limits')+'</div>'+(mp.budget > 0 ? '<div class="sp-bar thin"><div class="sp-fill'+(pctB > 1 ? ' over' : (pctB > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pctB*100)+'%"></div></div>' : '')+'</div>'+
+    '<div class="card tap" data-fin-owed><div class="sum2-h"><span>Owed to you</span></div><div class="fin-big">'+money(owedNow)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+(people.size ? people.size+' '+(people.size === 1 ? 'person' : 'people') : 'all square')+'</div></div></div>';
+  // the next week
   const horizon = addDays(today, 7), up = [];
   finDD.forEach(it=>{ const n = finNext(it, today); if(n && n <= horizon) up.push({d:n, name:it.name, amt:-it.amount}); });
   finIncome.forEach(it=>{ const n = finNext(it, today); if(n && n <= horizon) up.push({d:n, name:it.name, amt:it.amount}); });
   up.sort((a,b)=> a.d.localeCompare(b.d));
-  if(up.length) h += '<div class="card"><h2 style="font-size:15px;margin-bottom:4px;">Next 7 days</h2>'+up.map(u=> '<div class="sum-row"><span>'+escapeHtml(u.name)+'<span class="stat-sub" style="display:block;margin:0;">'+finDateLabel(u.d)+'</span></span><span class="sum-v"'+(u.amt > 0 ? ' style="color:var(--home);font-weight:600;"' : '')+'>'+(u.amt > 0 ? '+' : '\u2212')+money(Math.abs(u.amt))+'</span></div>').join('')+'</div>';
-  const pf = finPortfolio(), owedNow = finOwedUnpaid(), people = new Set();
-  finOwed.forEach(o=> o.people.forEach(p=>{ if(!p.paid) people.add(p.name); }));
-  h += '<div class="fin-two"><div class="card tap" data-fin-owed><div class="sum2-h"><span>Owed to you</span></div><div class="fin-big">'+money(owedNow)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+(people.size ? people.size+' '+(people.size === 1 ? 'person' : 'people') : 'all settled')+'</div></div>'+
-    '<div class="card tap" data-fin-tab="invest"><div class="sum2-h"><span>Invested</span></div><div class="fin-big">'+(pf.priced ? finMoneyShort(pf.value) : '\u2014')+'</div><div class="stat-sub" style="margin:2px 0 0;'+(pf.gain !== null && pf.gain < 0 ? 'color:var(--danger);' : '')+'">'+(pf.gain !== null ? (pf.gain >= 0 ? '+' : '\u2212')+finMoneyShort(Math.abs(pf.gain)) : (pf.count ? 'prices pending' : 'add holdings'))+'</div></div></div>';
+  if(up.length) h += '<div class="card"><h2 style="font-size:15px;margin-bottom:4px;">Next 7 days</h2>'+up.map(u=> '<div class="sum-row"><span>'+escapeHtml(u.name)+'<span class="stat-sub" style="display:block;margin:0;">'+finDateLabel(u.d)+'</span></span><span class="sum-v" style="'+(u.amt > 0 ? 'color:var(--home);' : '')+'">'+finAmt(u.amt)+'</span></div>').join('')+'</div>';
   box.innerHTML = h;
   box.querySelectorAll('[data-fin-m]').forEach(b=> b.addEventListener('click', ()=> finNavMonth(Number(b.dataset.finM))));
-  box.querySelectorAll('[data-fin-tab]').forEach(el=> el.addEventListener('click', ()=>{ finTab = el.dataset.finTab; renderBudget(); }));
+  box.querySelectorAll('[data-fin-tab]').forEach(el=> el.addEventListener('click', (e)=>{ e.stopPropagation(); finTab = el.dataset.finTab; finOpenItem = null; renderBudget(); window.scrollTo(0, 0); }));
   box.querySelectorAll('[data-fin-owed]').forEach(el=> el.addEventListener('click', finOpenOwedSheet));
 }
 
@@ -4665,12 +4792,20 @@ function renderFinRecurring(box, kind, forYm){
     const it = r.it, open = String(finOpenItem) === String(it.id);
     const sub = finFreqLabel(it.freq)+' \u00b7 '+(it.active === false ? 'paused' : (r.next ? finDateLabel(r.next) : (it.freq === 'once' ? shortDate(it.date) : 'ended')));
     return '<div class="fin-item"><div class="fin-item-top" data-fin-open="'+it.id+'"><div style="min-width:0;"><b>'+escapeHtml(it.name)+'</b><div class="stat-sub" style="margin:2px 0 0;">'+sub+'</div></div><b style="'+(it.active === false ? 'opacity:.5;' : '')+(isDD ? '' : 'color:var(--home);')+'">'+money(it.amount)+'</b></div>'+
-      (open ? '<div class="fin-edit"><input type="text" data-fe="name" value="'+escapeHtml(it.name)+'"><div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" data-fe="amount" value="'+it.amount+'"><select data-fe="freq">'+freqOpts(it.freq)+'</select></div><input type="date" data-fe="date" value="'+it.date+'">'+
+      (open ? '<div class="fin-edit"><div class="ff-grid">'+
+        '<label class="ff ff-wide"><span>Name</span><input type="text" data-fe="name" value="'+escapeHtml(it.name)+'"></label>'+
+        '<label class="ff"><span>Amount (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" data-fe="amount" value="'+it.amount+'"></label>'+
+        '<label class="ff"><span>'+(it.freq === 'once' ? 'Date' : ((it.freq === 'lastfri' || it.freq === 'lastwd') ? 'Starting from' : 'Next payment date'))+'</span><input type="date" data-fe="date" value="'+it.date+'"></label>'+
+        '<label class="ff ff-wide"><span>How often</span><select data-fe="freq">'+freqOpts(it.freq)+'</select></label></div>'+
         '<div class="fin-edit-row"><button type="button" class="btn small" data-fe-save="'+it.id+'">Save</button><button type="button" class="btn secondary small" data-fe-pause="'+it.id+'">'+(it.active === false ? 'Resume' : 'Pause')+'</button><button type="button" class="btn secondary small" data-fe-del="'+it.id+'">Delete</button></div></div>' : '')+'</div>';
   }).join('') : '<div class="stat-sub">'+(isDD ? 'No bills yet.' : 'No income added yet.')+'</div>')+'</div>';
   h += '<button type="button" class="btn secondary block" id="frToggle">+ Add '+(isDD ? 'bill' : 'income')+'</button>'+
-    '<div class="card" id="frForm" hidden style="margin-top:10px;"><div class="fin-edit" style="margin-top:0;"><input type="text" id="frName" placeholder="'+(isDD ? 'Name, e.g. Rent' : 'Name, e.g. Salary')+'" autocomplete="off"><div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" id="frAmt" placeholder="\u00a3"><select id="frFreq">'+freqOpts('monthly')+'</select></div>'+
-    '<label class="mini-label" id="frDateLbl">Next payment date</label><input type="date" id="frDate" value="'+today+'"><button type="button" class="btn" id="frAdd">Add</button></div></div>';
+    '<div class="card" id="frForm" hidden style="margin-top:10px;"><div class="ff-grid">'+
+    '<label class="ff ff-wide"><span>Name</span><input type="text" id="frName" placeholder="'+(isDD ? 'e.g. Rent' : 'e.g. Salary')+'" autocomplete="off"></label>'+
+    '<label class="ff"><span>Amount (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" id="frAmt"></label>'+
+    '<label class="ff"><span id="frDateLbl">Next payment date</span><input type="date" id="frDate" value="'+today+'"></label>'+
+    '<label class="ff ff-wide"><span>How often</span><select id="frFreq">'+freqOpts('monthly')+'</select></label></div>'+
+    '<button type="button" class="btn block" id="frAdd" style="margin-top:12px;">Add</button></div>';
   box.innerHTML = h;
   const save = async ()=>{ await saveKey(key, list); renderBudget(); };
   box.querySelectorAll('[data-fin-open]').forEach(el=> el.addEventListener('click', ()=>{ finOpenItem = String(finOpenItem) === el.dataset.finOpen ? null : el.dataset.finOpen; renderBudget(); }));
@@ -4707,7 +4842,7 @@ function renderFinRecurring(box, kind, forYm){
     await save();
   });
   const fr = document.getElementById('frFreq');
-  fr.addEventListener('change', ()=>{ document.getElementById('frDateLbl').textContent = fr.value === 'once' ? 'Date' : 'Next payment date'; });
+  fr.addEventListener('change', ()=>{ document.getElementById('frDateLbl').textContent = fr.value === 'once' ? 'Date' : ((fr.value === 'lastfri' || fr.value === 'lastwd') ? 'Starting from' : 'Next payment date'); });
 }
 
 const FIN_PRICE_PY = "import csv\nimport datetime\nimport io\nimport json\nimport os\nimport re\nimport sys\nimport time\nimport urllib.parse\nimport urllib.request\n\nUA = {\n    \"User-Agent\": \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36\",\n    \"Accept\": \"application/json,text/csv,text/html;q=0.9,*/*;q=0.8\",\n    \"Accept-Language\": \"en-GB,en;q=0.9\",\n}\nISIN = re.compile(r\"^[A-Z]{2}[A-Z0-9]{9}[0-9]$\")\n\n\ndef fetch(url, tries=2):\n    last = None\n    for i in range(tries):\n        try:\n            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=25) as r:\n                return r.read().decode(\"utf-8\", \"replace\")\n        except Exception as e:\n            last = e\n            if i + 1 < tries:\n                time.sleep(3 + 3 * i)\n    raise last\n\n\ndef get(url):\n    return json.loads(fetch(url))\n\n\ndef num(text):\n    return round(float(str(text).replace(\",\", \"\").strip()), 4)\n\n\n# ---- source 1 for ETFs and shares: Stooq (plain CSV, friendly to scripts) ----\ndef from_stooq(ident):\n    if ISIN.match(ident):\n        raise ValueError(\"stooq has no funds\")\n    t = ident.lower()\n    if t.endswith(\".lon\"):\n        t = t[:-4] + \".l\"\n    s = t[:-2] + \".uk\" if t.endswith(\".l\") else (t if \".\" in t else t + \".us\")\n    rows = list(csv.reader(io.StringIO(fetch(\"https://stooq.com/q/l/?s=%s&f=sd2t2ohlcv&h&e=csv\" % urllib.parse.quote(s)).strip())))\n    if len(rows) < 2:\n        raise ValueError(\"empty answer\")\n    d = dict(zip(rows[0], rows[1]))\n    close = d.get(\"Close\", \"\")\n    if not close or close.upper() == \"N/D\":\n        raise ValueError(\"no data for \" + s)\n    day = d.get(\"Date\", \"\")\n    # Stooq does not say which currency: the app uses the unit you chose for the holding\n    return {\"price\": num(close), \"currency\": \"\", \"date\": day if re.fullmatch(r\"\\d{4}-\\d\\d-\\d\\d\", day or \"\") else \"\", \"symbol\": s.upper(), \"name\": ident, \"source\": \"Stooq\"}\n\n\n# ---- source 1 for funds and ETFs given by ISIN: the Financial Times ----\ndef ft_parse(html, ident, url):\n    m = re.search(r\"Price \\(([A-Za-z]{3})\\).{0,300}?([0-9][0-9,]*\\.[0-9]+)\", html, re.S)\n    if not m:\n        raise ValueError(\"no price on the page\")\n    day = \"\"\n    d = re.search(r\"as of ([A-Za-z]{3,9}) (\\d{1,2}) (\\d{4})\", html)\n    if d:\n        for fmt in (\"%b %d %Y\", \"%B %d %Y\"):\n            try:\n                day = datetime.datetime.strptime(\"%s %s %s\" % d.groups(), fmt).strftime(\"%Y-%m-%d\")\n                break\n            except ValueError:\n                pass\n    t = re.search(r\"<title>(.*?)</title>\", html, re.S)\n    name = re.split(r\",| - \", t.group(1).strip())[0].strip() if t else \"\"\n    sym = re.search(r\"[?&]s=([^&]+)\", url)\n    return {\"price\": num(m.group(2)), \"currency\": m.group(1).upper(), \"date\": day, \"symbol\": sym.group(1) if sym else ident, \"name\": name or ident, \"source\": \"FT\"}\n\n\ndef from_ft(ident):\n    if not ISIN.match(ident):\n        raise ValueError(\"ft lookup needs an ISIN\")\n    seen = []\n    urls = [\"https://markets.ft.com/data/%s/tearsheet/summary?s=%s:%s\" % (kind, ident, cur) for kind in (\"funds\", \"etfs\") for cur in (\"GBP\", \"USD\", \"EUR\")]\n    for u in urls:\n        try:\n            return ft_parse(fetch(u, tries=1), ident, u)\n        except Exception as e:\n            seen.append(str(e))\n    # FT's own search: follow the first result for this ISIN\n    try:\n        html = fetch(\"https://markets.ft.com/data/search?query=\" + ident, tries=1)\n        for link in re.findall(r'href=\"(/data/(?:funds|etfs|equities)/tearsheet/summary\\?s=[^\"]+)\"', html)[:3]:\n            u = \"https://markets.ft.com\" + link.replace(\"&amp;\", \"&\")\n            try:\n                return ft_parse(fetch(u, tries=1), ident, u)\n            except Exception as e:\n                seen.append(str(e))\n    except Exception as e:\n        seen.append(\"search: \" + str(e))\n    raise ValueError(\"no page worked (\" + \"; \".join(sorted(set(seen)))[:160] + \")\")\n\n\n# ---- last resort: Yahoo (often refuses GitHub's servers with a 429) ----\ndef yahoo_symbol(ident):\n    if \"=\" in ident:\n        return ident.split(\"=\", 1)[1].strip()\n    if not ISIN.match(ident):\n        return ident\n    for host in (\"query2\", \"query1\"):\n        try:\n            for q in get(\"https://%s.finance.yahoo.com/v1/finance/search?q=%s&quotesCount=10&newsCount=0\" % (host, ident)).get(\"quotes\", []):\n                if q.get(\"symbol\"):\n                    return q[\"symbol\"]\n        except Exception:\n            pass\n    return None\n\n\ndef from_yahoo(ident):\n    sym = yahoo_symbol(ident)\n    if not sym:\n        raise ValueError(\"not found\")\n    last = None\n    for host in (\"query1\", \"query2\"):\n        try:\n            j = get(\"https://%s.finance.yahoo.com/v8/finance/chart/%s?range=10d&interval=1d\" % (host, urllib.parse.quote(sym)))\n            res = j[\"chart\"][\"result\"][0]\n            meta = res.get(\"meta\", {})\n            stamps = res.get(\"timestamp\") or []\n            closes = ((res.get(\"indicators\") or {}).get(\"quote\") or [{}])[0].get(\"close\") or []\n            pts = [(t, c) for t, c in zip(stamps, closes) if c]\n            price = meta.get(\"regularMarketPrice\") or (pts[-1][1] if pts else None)\n            when = meta.get(\"regularMarketTime\") or (pts[-1][0] if pts else None)\n            if not price:\n                raise ValueError(\"no price\")\n            cur = meta.get(\"currency\") or \"\"\n            if cur == \"GBp\":\n                cur = \"GBX\"\n            day = datetime.datetime.fromtimestamp(when, datetime.timezone.utc).strftime(\"%Y-%m-%d\") if when else \"\"\n            return {\"price\": round(float(price), 4), \"currency\": cur, \"date\": day, \"symbol\": sym, \"name\": meta.get(\"longName\") or meta.get(\"shortName\") or \"\", \"source\": \"Yahoo\"}\n        except Exception as e:\n            last = e\n    raise last\n\n\nold = {}\ntry:\n    old = json.load(open(\"prices.json\")).get(\"prices\", {})\nexcept Exception:\n    pass\nout, errors = {}, {}\nfor ident in [s.strip().upper() for s in os.environ.get(\"SYMBOLS\", \"\").split(\",\") if s.strip()]:\n    key = ident.split(\"=\", 1)[0].strip()\n    if \"=\" in ident:\n        order = [(\"Yahoo\", from_yahoo)]\n    elif ISIN.match(ident):\n        order = [(\"FT\", from_ft), (\"Yahoo\", from_yahoo)]\n    else:\n        order = [(\"Stooq\", from_stooq), (\"Yahoo\", from_yahoo)]\n    why = []\n    for name, fn in order:\n        try:\n            out[key] = fn(ident)\n            break\n        except Exception as e:\n            why.append(\"%s: %s\" % (name, e))\n    if key not in out:\n        errors[key] = \"; \".join(why) + (\" - if you know its Yahoo symbol, write \" + key + \"=SYMBOL in SYMBOLS\" if ISIN.match(ident) else \"\")\n        if key in old:\n            out[key] = dict(old[key], stale=True)\n        print(\"FAILED\", key, errors[key], file=sys.stderr)\nstamp = datetime.datetime.now(datetime.timezone.utc).strftime(\"%Y-%m-%dT%H:%M:%SZ\")\njson.dump({\"updated\": stamp, \"prices\": out, \"errors\": errors}, open(\"prices.json\", \"w\"), indent=1)\nprint(json.dumps(out)[:900])\n";
@@ -4739,6 +4874,55 @@ function finSavingsValue(h, onDate){
   const put = ev.reduce((a,c)=> a + c.amount, 0), value = bal + acc;
   return {value:finR2(value), interest:finR2(value - put)};
 }
+// a regular buy is added on its dates by itself (once per date, whichever device sees it first)
+let finRecurBusy = false;
+async function finApplyRecurring(){
+  if(finRecurBusy) return;
+  finRecurBusy = true;
+  try{
+    const today = todayStr(); let changed = false;
+    for(const h of finHoldings){
+      const r = h.recur;
+      if(!r || r.active === false || !(r.amount > 0) || !r.date) continue;
+      const from = r.last ? addDays(r.last, 1) : r.date, due = [];
+      finMonthsFrom(from.slice(0,7), today.slice(0,7)).forEach(ym=> finOccurrences(r, ym).forEach(d=>{ if(d >= from && d <= today) due.push(d); }));
+      due.sort();
+      for(const d of due){
+        if(h.type === 'crypto' || h.type === 'stock'){ const u = finUnitPrice(h); if(!(u && u.p > 0)) break; }      // wait for a price so the units are worked out
+        await finAddMoney(h, {amount:r.amount, units:0, date:d, spend:!!r.spend, cid:'rb_'+h.id+'_'+d});
+        r.last = d; changed = true;
+      }
+    }
+    if(changed){ await saveKey('fin-holdings', finHoldings); finBack(); }
+  }finally{ finRecurBusy = false; }
+}
+function finRecurHtml(x){
+  const r = x.recur, has = r && r.amount > 0, nxt = has ? finNext(r, todayStr()) : null;
+  const opts = FIN_FREQ.filter(f=> f[0] !== 'once').map(f=> '<option value="'+f[0]+'"'+((has ? r.freq : 'monthly') === f[0] ? ' selected' : '')+'>'+f[1]+'</option>').join('');
+  return '<div class="fin-recur">'+
+    (has ? '<div class="sum2-h" style="margin:8px 0 2px;"><span>Regular buy</span></div><div class="stat-sub" style="margin:0 0 6px;"><b>'+money(r.amount)+'</b> \u00b7 '+finFreqLabel(r.freq)+(r.active === false ? ' \u00b7 paused' : (nxt ? ' \u00b7 next '+finDateLabel(nxt) : ''))+(r.spend ? ' \u00b7 counts as spending' : '')+'</div>'+
+      '<div class="fin-edit-row"><button type="button" class="btn secondary small" data-rb-pause="'+x.id+'">'+(r.active === false ? 'Resume' : 'Pause')+'</button><button type="button" class="btn secondary small" data-rb-more>Change</button><button type="button" class="btn secondary small" data-rb-stop="'+x.id+'">Stop</button></div>'
+         : '<a class="fin-link" data-rb-more>Set up a regular buy</a>')+
+    '<div class="fin-form" data-rb-form hidden><div class="ff-grid"><label class="ff"><span>Amount (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" data-rb="amount" value="'+(has ? r.amount : '')+'"></label>'+
+      '<label class="ff"><span>First buy on</span><input type="date" data-rb="date" value="'+(has ? r.date : todayStr())+'"></label>'+
+      '<label class="ff ff-wide"><span>How often</span><select data-rb="freq">'+opts+'</select></label></div>'+
+      '<label class="fin-check"><input type="checkbox" data-rb="spend"'+(!has || r.spend ? ' checked' : '')+'> Count as spending (comes out of your account)</label>'+
+      '<div class="fin-edit-row"><button type="button" class="btn small" data-rb-save="'+x.id+'">Save</button></div></div></div>';
+}
+function finBindRecur(box){
+  const find = id=> finHoldings.find(y=> String(y.id) === String(id));
+  const done = async ()=>{ await saveKey('fin-holdings', finHoldings); renderBudget(); finApplyRecurring(); };
+  box.querySelectorAll('[data-rb-more]').forEach(a=> a.addEventListener('click', ()=>{ const f = a.closest('.fin-recur').querySelector('[data-rb-form]'); f.hidden = !f.hidden; }));
+  box.querySelectorAll('[data-rb-save]').forEach(b=> b.addEventListener('click', async ()=>{
+    const x = find(b.dataset.rbSave); if(!x) return;
+    const g = k=> b.closest('.fin-recur').querySelector('[data-rb="'+k+'"]'), amount = parseFloat(g('amount').value), date = g('date').value;
+    if(!(amount > 0) || !date){ showToast('Amount and first date please.'); return; }
+    x.recur = {amount:finR2(amount), freq:g('freq').value, date, spend:g('spend').checked, active:true, last:null};
+    await done();
+  }));
+  box.querySelectorAll('[data-rb-pause]').forEach(b=> b.addEventListener('click', async ()=>{ const x = find(b.dataset.rbPause); if(!x || !x.recur) return; x.recur.active = x.recur.active === false ? true : false; await done(); }));
+  box.querySelectorAll('[data-rb-stop]').forEach(b=> b.addEventListener('click', async ()=>{ const x = find(b.dataset.rbStop); if(!x) return; delete x.recur; await done(); }));
+}
 function finDisplayName(x){ const c = finPrices[finKey(x)]; return x.name || (c && c.fname) || x.symbol; }
 function finSavingsRow(x){
   const v = finSavingsValue(x), inv = finInvested(x), open = String(finOpenItem) === String(x.id), gain = inv > 0 ? v.value - inv : null;
@@ -4751,10 +4935,12 @@ function finSavingsRow(x){
       '<div class="fin-addmoney"><div class="sum2-h" style="margin:0;"><span>Add or take out</span></div>'+
         '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" data-fm="amount" placeholder="Amount (\u00a3)"><button type="button" class="btn small" style="flex:0 0 auto;" data-fm-add="'+x.id+'">Add</button><button type="button" class="btn secondary small" style="flex:0 0 auto;" data-fm-take="'+x.id+'">Take out</button></div>'+
         '<div class="fin-opts"><label class="fin-check"><input type="checkbox" data-fm="spend"> Count as spending</label><a class="fin-link" data-fm-more>More</a></div>'+
-        '<div class="fin-edit" data-fm-extra hidden><input type="date" data-fm="date" value="'+todayStr()+'"></div></div>'+
+        '<div class="fin-edit" data-fm-extra hidden><label class="ff"><span>Date</span><input type="date" data-fm="date" value="'+todayStr()+'"></label></div></div>'+
       (rows ? '<div>'+rows+'</div>' : '')+
+      finRecurHtml(x)+
       '<a class="fin-link" data-fh-more>Edit details</a>'+
-      '<div class="fin-edit" data-fh-extra hidden><input type="text" data-fh="name" value="'+escapeHtml(x.name || '')+'" placeholder="Name"><div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" data-fh="rate" value="'+(x.rate || 0)+'" placeholder="Rate (% a year)"></div>'+
+      '<div class="fin-edit" data-fh-extra hidden><div class="ff-grid"><label class="ff ff-wide"><span>Name</span><input type="text" data-fh="name" value="'+escapeHtml(x.name || '')+'"></label>'+
+        '<label class="ff"><span>Interest rate (% a year)</span><input type="number" inputmode="decimal" step="0.01" min="0" data-fh="rate" value="'+(x.rate || 0)+'"></label></div>'+
         '<div class="sp-chips" style="margin-top:0;">'+[['monthly','Interest paid monthly'],['yearly','Interest paid yearly']].map(u=> '<button type="button" class="chip-btn'+((x.comp || 'monthly') === u[0] ? ' active' : '')+'" data-fh-comp="'+u[0]+'">'+u[1]+'</button>').join('')+'</div>'+
         '<div class="fin-edit-row"><button type="button" class="btn small" data-fh-save="'+x.id+'">Save</button><button type="button" class="btn secondary small" data-fh-del="'+x.id+'">Delete</button></div></div></div>' : '')+'</div>';
 }
@@ -4858,6 +5044,7 @@ function finEnsureInvestCat(){
 }
 async function finAddMoney(h, o){
   h.contribs = h.contribs || [];
+  if(o.cid && h.contribs.some(c=> String(c.id) === String(o.cid))) return {qtyAdded:0, estimated:false, skipped:true};
   if(!h.contribs.length && h.invested > 0) h.contribs.push({id:uid(), date:'', amount:h.invested, qty:0, txnId:null, src:'initial'});
   let qtyAdded = 0;
   if(h.type === 'other'){ h.manualPrice = finR2((h.manualPrice || 0) + o.amount); }
@@ -4870,11 +5057,11 @@ async function finAddMoney(h, o){
   let txnId = null;
   if(o.spend && o.amount > 0){
     finEnsureInvestCat();
-    const tx = {id:spendNewId('i'), date:o.date, time:(o.date === todayStr() ? nowHM() : ''), amount:o.amount, merchant:'Invest \u00b7 '+(h.name || h.symbol), card:'', src:'invest', cat:'investing'};
+    const tx = {id:o.cid ? 'i_'+o.cid : spendNewId('i'), date:o.date, time:(o.date === todayStr() ? nowHM() : ''), amount:o.amount, merchant:'Invest \u00b7 '+(h.name || h.symbol), card:'', src:'invest', cat:'investing'};
     spendTxns.push(tx); txnId = tx.id;
     await saveKey('spend-txns', spendTxns);
   }
-  h.contribs.push({id:uid(), date:o.date, amount:o.amount, qty:+qtyAdded.toFixed(8), txnId, src:'added'});
+  h.contribs.push({id:o.cid || uid(), date:o.date, amount:o.amount, qty:+qtyAdded.toFixed(8), txnId, src:o.cid ? 'regular' : 'added'});
   h.invested = finInvested(h);
   await saveKey('fin-holdings', finHoldings);
   return {qtyAdded, estimated: h.type !== 'other' && h.type !== 'savings' && !(o.units > 0)};
@@ -4890,15 +5077,15 @@ async function finDelContrib(h, cid){
   await saveKey('fin-holdings', finHoldings);
 }
 function finPortfolio(){
-  let value = 0, invested = 0, base = 0, priced = 0, put = 0;
+  let value = 0, invested = 0, base = 0, priced = 0, put = 0, sav = 0;
   finHoldings.forEach(h=>{
     const inv = finInvested(h); put += inv;
     const v = finHoldingValue(h);
     if(!v) return;
-    value += v.value; priced++;
+    value += v.value; priced++; if(h.type === 'savings') sav += v.value;
     if(inv > 0){ invested += inv; base += v.value; }
   });
-  return {value, invested, put, gain: invested ? base - invested : null, priced, count: finHoldings.length};
+  return {value, invested, put, sav, gain: invested ? base - invested : null, priced, count: finHoldings.length};
 }
 function finAvUsedToday(){ const a = finPrices._av; return a && a.date === todayStr() ? a.n : 0; }
 async function finFetchJson(url){
@@ -4968,6 +5155,7 @@ async function finRefreshPrices(force){
     }
     await saveKey('fin-prices', finPrices);
     finSnapshot();
+    finApplyRecurring();
   }finally{
     finPriceBusy = false; finLastRefresh = Date.now();
     finPriceMsg = errs.length ? 'Couldn\u2019t update: '+errs.join(', ')+'. Showing the last prices.' : '';
@@ -4980,7 +5168,7 @@ function finSnapshot(){
   if(!pf.priced) return;
   const today = todayStr();
   finSnap = finSnap.filter(s=> s.date !== today); finSnap.push({date:today, value:finR2(pf.value)});
-  finSnap = finSnap.slice(-120);
+  finSnap = finSnap.slice(-800);
   saveKey('fin-snap', finSnap);
 }
 function finMaybeRefresh(){
@@ -5024,6 +5212,7 @@ function renderFinInvest(box){
     (prev && pf.priced ? '<div class="stat-sub" style="margin:2px 0 0;">'+(pf.value-prev.value >= 0 ? '+' : '\u2212')+money(Math.abs(pf.value-prev.value))+' since '+shortDate(prev.date)+'</div>' : '')+
     (upd ? '<div class="stat-sub" style="margin:2px 0 0;">Prices at '+upd+'</div>' : '')+
     (dailyLine ? '<div class="stat-sub" style="margin:2px 0 0;">'+dailyLine+'</div>' : '')+
+    (finAccount() ? '<div class="stat-sub" data-fin-acct style="margin:8px 0 0;cursor:pointer;"><b>Spending account '+money(finAccount().value)+'</b> \u00b7 counted in your portfolio total, not in the changes \u203a</div>' : '')+
     (finPriceMsg ? '<div class="stat-sub sum-over" style="margin-top:6px;">'+escapeHtml(finPriceMsg)+'</div>' : '')+
     (!finPriceMsg && finHoldings.some(x=> x.type === 'stock') && !finDailyUrl() && !(finSettings.avKey || '').trim() ? '<div class="stat-sub sum-over" style="margin-top:6px;">No price file linked yet \u2014 type your GitHub username/repository in Price settings (below).</div>' : '')+
     finSpark(finSnap.slice(-30).map(s=> s.value))+'</div>';
@@ -5040,30 +5229,35 @@ function renderFinInvest(box){
       (open ? '<div class="fin-edit"><div class="fin-addmoney"><div class="sum2-h" style="margin:0;"><span>Invest more</span></div>'+
           '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="0.01" min="0" data-fm="amount" placeholder="Amount (\u00a3)"><button type="button" class="btn small" style="flex:0 0 auto;" data-fm-add="'+x.id+'">Add</button></div>'+
           '<div class="fin-opts"><label class="fin-check"><input type="checkbox" data-fm="spend" checked> Count as spending</label><a class="fin-link" data-fm-more>More</a></div>'+
-          '<div class="fin-edit" data-fm-extra hidden>'+(x.type === 'other' ? '' : '<input type="number" inputmode="decimal" step="any" min="0" data-fm="units" placeholder="Units bought (if you know)">')+'<input type="date" data-fm="date" value="'+todayStr()+'"></div></div>'+
+          '<div class="fin-edit" data-fm-extra hidden><div class="ff-grid">'+(x.type === 'other' ? '' : '<label class="ff"><span>Units bought</span><input type="number" inputmode="decimal" step="any" min="0" data-fm="units" placeholder="if you know"></label>')+'<label class="ff"><span>Date</span><input type="date" data-fm="date" value="'+todayStr()+'"></label></div></div></div>'+
         (hasC ? '<div>'+contribRows+'</div>' : '')+
+        finRecurHtml(x)+
         '<a class="fin-link" data-fh-more>Edit details</a>'+
-        '<div class="fin-edit" data-fh-extra hidden><input type="text" data-fh="name" value="'+escapeHtml(x.name || '')+'" placeholder="Name">'+
-          (x.type === 'stock' ? '<input type="text" data-fh="symbol" value="'+escapeHtml(x.symbol || '')+'" placeholder="Ticker or ISIN" autocapitalize="characters" autocomplete="off">' : '')+
-          (x.type === 'other' ? '' : '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="any" min="0" data-fh="qty" value="'+x.qty+'" placeholder="How many"></div>')+
-          '<div class="fin-edit-row">'+(hasC ? '' : '<input type="number" inputmode="decimal" step="0.01" min="0" data-fh="invested" value="'+(x.invested || '')+'" placeholder="Put in (\u00a3)">')+(x.type === 'other' ? '' : '<input type="number" inputmode="decimal" step="any" min="0" data-fh="manual" value="'+(x.manualPrice || '')+'" placeholder="Manual price">')+'</div>'+
-          (x.type === 'other' ? '<input type="number" inputmode="decimal" step="0.01" min="0" data-fh="manual" value="'+(x.manualPrice || '')+'" placeholder="Current value (\u00a3)">' : '')+
+        '<div class="fin-edit" data-fh-extra hidden><div class="ff-grid">'+
+          '<label class="ff ff-wide"><span>Name</span><input type="text" data-fh="name" value="'+escapeHtml(x.name || '')+'"></label>'+
+          (x.type === 'stock' ? '<label class="ff ff-wide"><span>Ticker or ISIN</span><input type="text" data-fh="symbol" value="'+escapeHtml(x.symbol || '')+'" autocapitalize="characters" autocomplete="off"></label>' : '')+
+          (x.type === 'other' ? '' : '<label class="ff"><span>How many</span><input type="number" inputmode="decimal" step="any" min="0" data-fh="qty" value="'+x.qty+'"></label>')+
+          (hasC ? '' : '<label class="ff"><span>Put in (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" data-fh="invested" value="'+(x.invested || '')+'"></label>')+
+          (x.type === 'other' ? '<label class="ff"><span>Current value (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" data-fh="manual" value="'+(x.manualPrice || '')+'"></label>' : '<label class="ff"><span>Manual price</span><input type="number" inputmode="decimal" step="any" min="0" data-fh="manual" value="'+(x.manualPrice || '')+'"></label>')+'</div>'+
           (x.type === 'stock' ? '<div class="sp-chips" style="margin-top:0;">'+[['GBP','Price in \u00a3'],['GBX','Price in pence'],['USD','Price in $']].map(u=> '<button type="button" class="chip-btn'+(x.unit === u[0] ? ' active' : '')+'" data-fh-unit="'+u[0]+'">'+u[1]+'</button>').join('')+'</div>' : '')+
           '<div class="fin-edit-row"><button type="button" class="btn small" data-fh-save="'+x.id+'">Save</button><button type="button" class="btn secondary small" data-fh-del="'+x.id+'">Delete</button></div></div></div>' : '')+'</div>';
   }).join('') : '<div class="stat-sub">No holdings yet.</div>')+'</div>';
   h += '<button type="button" class="btn secondary block" id="fhToggle">+ Add holding</button>'+
     '<div class="card" id="fhCard" hidden style="margin-top:10px;"><div class="fin-hform" id="fhForm" data-t="crypto">'+
     '<div class="sp-chips" style="margin:0 0 8px;"><button type="button" class="chip-btn active" data-fh-type="crypto">Crypto</button><button type="button" class="chip-btn" data-fh-type="stock">ETF / fund</button><button type="button" class="chip-btn" data-fh-type="savings">Savings</button><button type="button" class="chip-btn" data-fh-type="other">Other</button></div>'+
-    '<div class="fin-edit" style="margin-top:0;">'+
-      '<select id="fhCoin" class="f-coin">'+FIN_COINS.map(c=> '<option value="'+c[0]+'">'+c[1]+' ('+c[0]+')</option>').join('')+'<option value="__custom">Other coin\u2026</option></select>'+
-      '<select id="fhPreset" class="f-preset">'+FIN_PRESETS.map(p=> '<option value="'+p[0]+'">'+p[1]+'</option>').join('')+'<option value="__custom">Other ticker or ISIN\u2026</option></select>'+
-      '<input type="text" id="fhSym" class="f-sym" placeholder="Symbol" autocomplete="off" autocapitalize="characters">'+
-      '<input type="text" id="fhName" class="f-name" placeholder="Name, e.g. Pension" autocomplete="off">'+
-      '<input type="number" inputmode="decimal" step="0.01" min="0" id="fhRate" class="f-rate" placeholder="Interest rate (% a year)">'+
+    '<div class="fin-edit" style="margin-top:0;"><div class="ff-grid">'+
+      '<label class="ff ff-wide"><span>Coin</span><select id="fhCoin" class="f-coin">'+FIN_COINS.map(c=> '<option value="'+c[0]+'">'+c[1]+' ('+c[0]+')</option>').join('')+'<option value="__custom">Other coin\u2026</option></select></label>'+
+      '<label class="ff ff-wide"><span>Fund or ETF</span><select id="fhPreset" class="f-preset">'+FIN_PRESETS.map(p=> '<option value="'+p[0]+'">'+p[1]+'</option>').join('')+'<option value="__custom">Other ticker or ISIN\u2026</option></select></label>'+
+      '<label class="ff ff-wide"><span id="fhLblSym">Symbol</span><input type="text" id="fhSym" class="f-sym" placeholder="Symbol" autocomplete="off" autocapitalize="characters"></label>'+
+      '<label class="ff ff-wide"><span>Name</span><input type="text" id="fhName" class="f-name" placeholder="e.g. Pension" autocomplete="off"></label></div>'+
       '<div class="sp-chips f-unit" style="margin-top:0;" id="fhUnits"><button type="button" class="chip-btn active" data-fh-u="GBP">Price in \u00a3</button><button type="button" class="chip-btn" data-fh-u="GBX">Price in pence</button><button type="button" class="chip-btn" data-fh-u="USD">Price in $</button></div>'+
-      '<div class="fin-edit-row"><input type="number" inputmode="decimal" step="any" min="0" id="fhQty" class="f-qty" placeholder="How many you hold"><input type="number" inputmode="decimal" step="0.01" min="0" id="fhVal" class="f-val" placeholder="Value (\u00a3)"><input type="number" inputmode="decimal" step="0.01" min="0" id="fhInv" class="f-inv" placeholder="Invested (\u00a3)"></div>'+
+      '<div class="ff-grid">'+
+      '<label class="ff"><span>How many you hold</span><input type="number" inputmode="decimal" step="any" min="0" id="fhQty" class="f-qty"></label>'+
+      '<label class="ff"><span>Put in (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" id="fhInv" class="f-inv"></label>'+
+      '<label class="ff"><span id="fhLblVal">Value (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" id="fhVal" class="f-val"></label>'+
+      '<label class="ff"><span>Interest rate (% a year)</span><input type="number" inputmode="decimal" step="0.01" min="0" id="fhRate" class="f-rate" placeholder="e.g. 4.5"></label></div>'+
       '<div class="fin-opts"><span class="stat-sub" style="margin:0;" id="fhDateTxt">Invested today</span><a class="fin-link" id="fhDateLink">Change date</a></div><input type="date" id="fhDate" value="'+todayStr()+'" hidden>'+
-      '<button type="button" class="btn" id="fhAdd">Add</button></div></div></div>';
+      '<button type="button" class="btn block" id="fhAdd">Add</button></div></div></div>';
   h += '<details class="card" id="finPriceSet" style="margin-top:12px;"'+(needKey ? ' open' : '')+'><summary style="cursor:pointer;font-weight:600;font-size:14px;">Price settings</summary>'+
     '<div class="sum2-h" style="margin:10px 0 2px;"><span>Daily prices (ETFs and funds)</span></div>'+
     '<div class="stat-sub" style="margin:0 0 6px;">Free, no key. A small GitHub job fetches your prices once a day into a file this page reads.</div>'+
@@ -5083,6 +5277,7 @@ function renderFinInvest(box){
   box.querySelectorAll('[data-fm-more]').forEach(a=> a.addEventListener('click', ()=> toggle('[data-fm-extra]')));
   box.querySelectorAll('[data-fh-more]').forEach(a=> a.addEventListener('click', ()=> toggle('[data-fh-extra]')));
   box.querySelectorAll('[data-fh-unit]').forEach(b=> b.addEventListener('click', ()=>{ box.querySelectorAll('[data-fh-unit]').forEach(x=> x.classList.toggle('active', x === b)); }));
+  finBindRecur(box);
   box.querySelectorAll('[data-fh-comp]').forEach(b=> b.addEventListener('click', ()=>{ box.querySelectorAll('[data-fh-comp]').forEach(x=> x.classList.toggle('active', x === b)); }));
   box.querySelectorAll('[data-fm-take]').forEach(b=> b.addEventListener('click', async ()=>{
     const x = finHoldings.find(y=> String(y.id) === b.dataset.fmTake); if(!x) return;
@@ -5136,15 +5331,17 @@ function renderFinInvest(box){
     document.getElementById('fhToggle').textContent = c.hidden ? '+ Add holding' : 'Close';
   });
   const form = document.getElementById('fhForm');
-  const show = (sel, on)=> form.querySelectorAll(sel).forEach(e=> e.style.display = on ? '' : 'none');
+  const show = (sel, on)=> form.querySelectorAll(sel).forEach(e=>{ e.style.display = on ? '' : 'none'; const w = e.closest('.ff'); if(w) w.style.display = on ? '' : 'none'; });
   const applyType = ()=>{
     const t = form.dataset.t, custom = document.getElementById('fhCoin').value === '__custom', customStock = document.getElementById('fhPreset').value === '__custom';
     form.querySelectorAll('[data-fh-type]').forEach(b=> b.classList.toggle('active', b.dataset.fhType === t));
     show('.f-coin', t === 'crypto'); show('.f-preset', t === 'stock'); show('.f-sym', (t === 'stock' && customStock) || (t === 'crypto' && custom)); show('.f-name', t === 'other' || t === 'savings');
     show('.f-qty', t === 'crypto' || t === 'stock'); show('.f-val', t === 'other' || t === 'savings'); show('.f-inv', t === 'crypto' || t === 'stock'); show('.f-rate', t === 'savings'); show('.f-unit', t === 'stock' && customStock);
-    document.getElementById('fhSym').placeholder = t === 'stock' ? 'Ticker or ISIN, e.g. VUAG.L' : 'Coin symbol, e.g. PEPE';
-    document.getElementById('fhName').placeholder = t === 'savings' ? 'Name, e.g. Marcus' : 'Name, e.g. Pension';
-    document.getElementById('fhVal').placeholder = t === 'savings' ? 'Balance now (\u00a3)' : 'Value (\u00a3)';
+    document.getElementById('fhSym').placeholder = t === 'stock' ? 'e.g. IE00BFMXXD54 or VUAG.L' : 'e.g. PEPE';
+    document.getElementById('fhLblSym').textContent = t === 'stock' ? 'Ticker or ISIN' : 'Coin symbol';
+    document.getElementById('fhName').placeholder = t === 'savings' ? 'e.g. Marcus' : 'e.g. Pension';
+    document.getElementById('fhVal').placeholder = '';
+    document.getElementById('fhLblVal').textContent = t === 'savings' ? 'Balance now (\u00a3)' : 'Value now (\u00a3)';
     document.getElementById('fhDateTxt').textContent = t === 'savings' ? 'Balance as of today' : 'Invested today';
   };
   form.querySelectorAll('[data-fh-type]').forEach(b=> b.addEventListener('click', ()=>{ form.dataset.t = b.dataset.fhType; applyType(); }));
@@ -5207,11 +5404,17 @@ function renderFinSpend(box){
   if(!spendMeta.last && !spendTxns.length){
     h += '<div class="card tap" data-sp-go="settings"><div class="sum-row" style="padding:0;border:none;"><span><b>Capture Apple Pay taps automatically</b></span><span class="sum-k">Set up</span></div></div>';
   }
-  const pct = st.budget ? st.spent/st.budget : 0;
+  const mp = finMonthPlan(ym), bud = mp.budget, leftAll = bud ? finR2(bud - mp.spentAll) : null;
+  const dimM = new Date(yy, mm, 0).getDate(), daysLeftM = ym === todayStr().slice(0,7) ? dimM - new Date().getDate() + 1 : 0;
+  const perDay = (leftAll != null && leftAll > 0 && daysLeftM > 0) ? leftAll/daysLeftM : null;
+  const pct = bud ? mp.spentAll/bud : 0;
   h += '<div class="card"><div class="sp-month"><button type="button" class="chip-btn" data-sp-m="-1">\u2039</button><b>'+label+'</b><button type="button" class="chip-btn" data-sp-m="1">\u203a</button></div>'+
-    '<div class="sp-big">'+amt(st.spent)+'</div>'+
-    '<div class="stat-sub">'+(st.budget ? 'of '+money(st.budget)+' \u00b7 '+(st.left >= 0 ? money(st.left)+' left' : '<b class="sum-over">'+money(-st.left)+' over</b>')+(st.perDay ? ' \u00b7 '+money(st.perDay)+'/day' : '') : 'Set your budgets below to see what\u2019s left')+'</div>'+
-    (st.budget ? '<div class="sp-bar"><div class="sp-fill'+(pct > 1 ? ' over' : (pct > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pct*100)+'%"></div></div>' : '')+'</div>';
+    '<div class="sp-big">'+amt(mp.spentAll)+'</div>'+
+    '<div class="stat-sub">'+(bud ? 'of '+money(bud)+' \u00b7 '+(leftAll >= 0 ? money(leftAll)+' left' : '<b class="sum-over">'+money(-leftAll)+' over</b>')+(perDay ? ' \u00b7 '+money(perDay)+'/day' : '') : 'Set your budgets below to see what\u2019s left')+'</div>'+
+    (bud ? '<div class="sp-bar"><div class="sp-fill'+(pct > 1 ? ' over' : (pct > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pct*100)+'%"></div></div>' : '')+'</div>';
+  // money coming in this month
+  const ins = []; finIncome.forEach(it=> finOccurrences(it, ym).forEach(d=> ins.push({d, name:it.name, amt:it.amount}))); ins.sort((x,y)=> x.d.localeCompare(y.d));
+  if(ins.length) h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Money in</h2><span class="sum-k">'+money(mp.income)+'</span></div>'+ins.map(i=> '<div class="sum-row"><span>'+escapeHtml(i.name)+'<span class="stat-sub" style="display:block;margin:0;">'+niceDate(i.d)+' \u00b7 '+(i.d <= todayStr() ? 'received' : 'due')+'</span></span><span class="sum-v" style="color:var(--home);">+'+money(i.amt)+'</span></div>').join('')+'</div>';
   const owedNow = finOwedUnpaid();
   if(owedNow > 0) h += '<div class="card tap" data-sp-owed><div class="sum-row" style="padding:0;border:none;"><span><b>Owed to you</b></span><span class="sum-v"><b>'+money(owedNow)+'</b> <span class="sum-k">\u203a</span></span></div></div>';
   const since = addDays(todayStr(), -120), freq = {};
@@ -5221,12 +5424,16 @@ function renderFinSpend(box){
     (top.length ? '<div class="sp-chips">'+top.map(m=> '<button type="button" class="chip-btn" data-sp-mer="'+escapeHtml(m)+'">'+escapeHtml(m)+'</button>').join('')+'</div>' : '')+'</div>';
   if(spendEditing){
     h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budget</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Done</span></div>'+
-      cats.map(c=> '<div class="sp-edit-row" data-cat-row="'+c.id+'"><input type="text" value="'+escapeHtml(c.name)+'" data-sp-name="'+c.id+'" style="flex:1;min-width:0;"><input type="number" inputmode="decimal" min="0" step="1" placeholder="\u00a3/mo" value="'+(c.budget || '')+'" data-sp-bud="'+c.id+'"><button type="button" class="todo-del" data-sp-delcat="'+c.id+'">&times;</button></div>').join('')+
+      cats.map(c=> c.id === 'bills' ? '<div class="sp-edit-row" data-cat-row="bills"><input type="text" value="'+escapeHtml(c.name)+'" data-sp-name="bills" style="flex:1;min-width:0;"><span class="stat-sub" style="margin:0;white-space:nowrap;">worked out from your bills</span></div>' : '<div class="sp-edit-row" data-cat-row="'+c.id+'"><input type="text" value="'+escapeHtml(c.name)+'" data-sp-name="'+c.id+'" style="flex:1;min-width:0;"><input type="number" inputmode="decimal" min="0" step="1" placeholder="\u00a3/mo" value="'+(c.budget || '')+'" data-sp-bud="'+c.id+'"><button type="button" class="todo-del" data-sp-delcat="'+c.id+'">&times;</button></div>').join('')+
       '<button type="button" class="btn secondary small" id="spAddCat" style="margin-top:4px;">+ Budget</button></div>';
   }else{
-    const shown = cats.filter(c=> c.budget > 0 || (st.by[c.id] || 0) !== 0);
-    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budget</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Edit</span></div>'+
-      (shown.length ? shown.map(c=>{
+    const shown = cats.filter(c=> c.id !== 'bills' && (c.budget > 0 || (st.by[c.id] || 0) !== 0));
+    const bc = spendCatById('bills'), bp = mp.billsPlanned ? mp.billsSpent/mp.billsPlanned : 0;
+    const billsRow = (mp.billsPlanned > 0 || mp.billsSpent > 0) ? '<div class="sp-cat" data-sp-filter="bills"><div class="sp-catrow"><span><span class="sp-pill" style="background:'+(bc ? bc.color : '#8A6FB3')+';padding:0;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;"></span>'+escapeHtml(bc ? bc.name : 'Bills')+(spendFilter === 'bills' ? ' \u2713' : '')+'</span><span>'+amt(mp.billsSpent)+(mp.billsPlanned ? ' <span class="sum-k">/ '+money(mp.billsPlanned)+'</span>' : '')+'</span></div>'+
+      (mp.billsPlanned ? '<div class="sp-bar thin"><div class="sp-fill'+(bp > 1 ? ' over' : (bp > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, bp*100)+'%"></div></div>' : '')+
+      (mp.rentEst ? '<div class="stat-sub" style="margin:3px 0 0;font-size:11.5px;">includes rent for the whole month at home ('+dimM+' \u00d7 '+money(RATE_HOME)+')</div>' : '')+'</div>' : '';
+    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budget</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Edit</span></div>'+billsRow+
+      (shown.length || billsRow ? shown.map(c=>{
         const sp = st.by[c.id] || 0, p = c.budget ? sp/c.budget : 0;
         return '<div class="sp-cat" data-sp-filter="'+c.id+'"><div class="sp-catrow"><span><span class="sp-pill" style="background:'+c.color+';padding:0;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;"></span>'+escapeHtml(c.name)+(spendFilter===c.id ? ' \u2713' : '')+'</span><span>'+amt(sp)+(c.budget ? ' <span class="sum-k">/ '+money(c.budget)+'</span>' : '')+'</span></div>'+
           (c.budget ? '<div class="sp-bar thin"><div class="sp-fill'+(p > 1 ? ' over' : (p > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, p*100)+'%"></div></div>' : '')+'</div>';
@@ -5304,13 +5511,27 @@ function renderFinSpend(box){
 
 // ---------- automations: signals from your iPhone (away check, CarPlay drives, time in bed) ----------
 const AUTO_EVENTS = [
-  {id:'away', title:'Away check', trigger:'Time of Day \u2192 04:30 \u2192 Daily', loc:true, what:'Marks last night as away if your phone isn\u2019t at home.'},
-  {id:'trip-start', title:'CarPlay connects', trigger:'CarPlay \u2192 Connects', loc:true, what:'Notes where the drive started.'},
-  {id:'trip-end', title:'CarPlay disconnects', trigger:'CarPlay \u2192 Disconnects', loc:true, what:'Turns the drive into a draft trip.'},
-  {id:'sleep-on', title:'Bed: on', trigger:'Focus \u2192 Sleep (or Do Not Disturb) \u2192 Turns On', loc:false, what:'Starts the time-in-bed clock.'},
-  {id:'sleep-off', title:'Bed: off', trigger:'Focus \u2192 Sleep (or Do Not Disturb) \u2192 Turns Off', loc:false, what:'Stops it and records the night.'},
-  {id:'work-open', title:'Connecteam opened', trigger:'App \u2192 Connecteam \u2192 Is Opened', loc:false, note:'Work phone only. Clocks you in at the time you opened it.'},
-  {id:'work-close', title:'Connecteam closed', trigger:'App \u2192 Connecteam \u2192 Is Closed', loc:false, note:'Work phone only. Fires every time you leave the app, so it only counts once you\u2019ve been in for a few hours.'}
+  {id:'away', title:'Away check', phone:'Your phone', loc:true, what:'Marks last night as away if your phone isn\u2019t at home.',
+   trigger:'<b>Time of Day</b>, set it to <b>04:30</b> and <b>Daily</b>',
+   test:'Press \u25b6 in the afternoon. The status above should then say \u201cignored (only early-morning checks count)\u201d. (Pressing it before noon while away from home would really mark last night away.)'},
+  {id:'trip-start', title:'CarPlay connects', phone:'Your phone', loc:true, what:'Notes where the drive started.',
+   trigger:'<b>CarPlay</b>, then <b>Connects</b>',
+   test:'Press \u25b6 once. It\u2019s harmless: it just notes where you are.'},
+  {id:'trip-end', title:'CarPlay disconnects', phone:'Your phone', loc:true, what:'Turns the drive into a draft trip.',
+   trigger:'<b>CarPlay</b>, then <b>Disconnects</b>',
+   test:'Press \u25b6 once. It\u2019s harmless: a drive that starts and ends in the same place within 5 minutes is ignored.'},
+  {id:'sleep-on', title:'Bed: on', phone:'Your phone', loc:false, what:'Starts the time-in-bed clock.',
+   trigger:'<b>Focus</b>, pick <b>Sleep</b> (or the Focus you use at night), then <b>Is Turned On</b>',
+   test:'Press \u25b6 once. It\u2019s harmless.'},
+  {id:'sleep-off', title:'Bed: off', phone:'Your phone', loc:false, what:'Stops it and records the night.',
+   trigger:'<b>Focus</b>, pick the same Focus, then <b>Is Turned Off</b>',
+   test:'Press \u25b6 once. It\u2019s harmless: anything under 2 hours isn\u2019t counted as a night.'},
+  {id:'work-open', title:'Connecteam opened', phone:'Work phone only', loc:false, what:'Clocks you in at the time you opened it.',
+   trigger:'<b>App</b>, tick <b>Connecteam</b>, then <b>Is Opened</b>',
+   test:'Careful: pressing \u25b6 during your clock-in hours really clocks you in. Test it by opening Connecteam on a working day.'},
+  {id:'work-close', title:'Connecteam closed', phone:'Work phone only', loc:false, what:'Clocks you out after a few hours (or asks you first).',
+   trigger:'<b>App</b>, tick <b>Connecteam</b>, then <b>Is Closed</b>',
+   test:'Press \u25b6 once. It\u2019s harmless: it only counts after you\u2019ve been clocked in for several hours.'}
 ];
 const autoMins = m=> Math.floor(m/60)+'h '+pad(m%60)+'m';
 function autoDistM(lat1, lon1, lat2, lon2){
@@ -5319,12 +5540,29 @@ function autoDistM(lat1, lon1, lat2, lon2){
   const a = Math.sin(dLat/2)*Math.sin(dLat/2) + Math.cos(rad(lat1))*Math.cos(rad(lat2))*Math.sin(dLon/2)*Math.sin(dLon/2);
   return 2*R*Math.asin(Math.sqrt(a));
 }
+const AUTO_MONTHS = {jan:0, feb:1, mar:2, apr:3, may:4, jun:5, jul:6, aug:7, sep:8, oct:9, nov:10, dec:11};
 function autoParseTime(s){
   const str = String(s == null ? '' : s).trim();
   if(!str) return null;
-  let t = Date.parse(str);
-  if(isNaN(t)) t = Date.parse(str.replace(' ', 'T'));
-  return isNaN(t) ? null : t;
+  if(/^\d{4}-\d{2}-\d{2}/.test(str)){
+    let t = Date.parse(str);
+    if(isNaN(t)) t = Date.parse(str.replace(' ', 'T'));
+    return isNaN(t) ? null : t;
+  }
+  const mk = (y, mo, d, h, mi, se, ap)=>{
+    h = +h;
+    if(ap){ ap = ap.toLowerCase(); if(ap === 'pm' && h < 12) h += 12; if(ap === 'am' && h === 12) h = 0; }
+    if(y < 100) y += 2000;
+    const dt = new Date(y, mo, +d, h, +mi, +(se || 0));
+    return isNaN(dt.getTime()) ? null : dt.getTime();
+  };
+  let m = /^(?:[A-Za-z]{3,9},?\s+)?(\d{1,2})[\/.](\d{1,2})[\/.](\d{2,4}),?(?:\s+at)?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp][Mm])?/.exec(str);          // 25/10/2026, 04:30 (day first)
+  if(m) return mk(+m[3], +m[2]-1, m[1], m[4], m[5], m[6], m[7]);
+  m = /^(?:[A-Za-z]{3,9},?\s+)?(\d{1,2})\s+([A-Za-z]{3,9})\.?,?\s+(\d{4})(?:,?\s+at)?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp][Mm])?/.exec(str);   // 25 Oct 2026 at 04:30
+  if(m && AUTO_MONTHS[m[2].slice(0,3).toLowerCase()] != null) return mk(+m[3], AUTO_MONTHS[m[2].slice(0,3).toLowerCase()], m[1], m[4], m[5], m[6], m[7]);
+  m = /^(?:[A-Za-z]{3,9},?\s+)?([A-Za-z]{3,9})\.?\s+(\d{1,2}),?\s+(\d{4})(?:,?\s+at)?\s+(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp][Mm])?/.exec(str);                     // Oct 25, 2026 at 4:30 AM
+  if(m && AUTO_MONTHS[m[1].slice(0,3).toLowerCase()] != null) return mk(+m[3], AUTO_MONTHS[m[1].slice(0,3).toLowerCase()], m[2], m[4], m[5], m[6], m[7]);
+  return null;
 }
 async function autoSaveMeta(){ await saveKey('auto-meta', autoMeta); }
 async function autoSetHome(addr){
@@ -5388,6 +5626,8 @@ async function autoHandleEvent(d){
   const ev = String(d.m).slice(3).trim().toLowerCase();
   const t = autoParseTime(d.d), lat = parseFloat(d.a), lon = parseFloat(d.c);
   const hasLoc = isFinite(lat) && isFinite(lon) && !(lat === 0 && lon === 0);
+  autoMeta.seen = Object.assign({}, autoMeta.seen, {[ev]: t || Date.now()});
+  await autoSaveMeta();
   if(ev === 'work-open') return await autoWorkOpen(t || Date.now());
   if(ev === 'work-close') return await autoWorkClose(t || Date.now());
   if(ev === 'trip-start'){
@@ -5603,6 +5843,7 @@ function gymDayLine(date){
 
 // ---- Settings: build the automations ----
 function autoBody(ev){
+  spendEnsureSecret();
   const e = AUTO_EVENTS.find(x=> x.id === ev);
   return '{"fields":{"k":{"stringValue":"'+spendMeta.secret+'"},"a":{"stringValue":"'+(e.loc ? 'LAT' : '')+'"},"m":{"stringValue":"ev:'+ev+'"},"c":{"stringValue":"'+(e.loc ? 'LON' : '')+'"},"d":{"stringValue":"DATE"}}}';
 }
@@ -5610,6 +5851,7 @@ function renderAutoSetup(){
   const box = document.getElementById('autoBody');
   if(!box) return;
   if(!syncConfig){ box.innerHTML = '<div class="stat-sub">Connect sync and set up Apple Pay capture first \u2014 these use the same link.</div>'; return; }
+  spendEnsureSecret();
   const h = autoMeta.home, la = autoMeta.lastAway, lt = autoMeta.lastTrip, ls = autoMeta.lastSleep;
   const when = ms=> { const x = new Date(ms); return shortDate(fmt(x))+' '+pad(x.getHours())+':'+pad(x.getMinutes()); };
   const row = (k, v)=> '<div class="sum-row"><span class="sum-k">'+k+'</span><span class="sum-v">'+v+'</span></div>';
@@ -5626,12 +5868,22 @@ function renderAutoSetup(){
       '<div class="sp-chips" style="margin-top:0;"><button type="button" class="chip-btn'+(w.mode === 'ask' ? ' active' : '')+'" data-work-mode="ask">Ask me first</button><button type="button" class="chip-btn'+(w.mode === 'auto' ? ' active' : '')+'" data-work-mode="auto">Clock out automatically</button></div>'+
       '<div class="fin-srow" style="margin-top:8px;"><span>Count a close after at least</span><span class="fin-step"><button type="button" data-work-h="-1">\u2212</button><b>'+w.minH+' h</b><button type="button" data-work-h="1">+</button></span></div>'+
       '<details class="fin-auto"><summary>Fine-tune</summary><div class="fin-opts" style="margin:6px 0;"><span class="stat-sub" style="margin:0;">Only clock in between</span><input type="time" id="workFrom" value="'+w.from+'"><input type="time" id="workTo" value="'+w.to+'"></div><div class="stat-sub" style="margin:0 0 6px;">Stops a quick look at the schedule on an evening off clocking you in.</div></details>'; })()+
-    '<div class="stat-sub" style="margin:10px 0 6px;">Each one is a Shortcuts automation like your Apple Pay one: trigger \u2192 (location) \u2192 Text \u2192 Get Contents of URL. Use the same URL, POST, header and File body. <a class="fin-link" id="autoCopyUrl">Copy URL</a></div>'+
-    AUTO_EVENTS.map(e=>
-      '<details class="fin-auto"><summary>'+escapeHtml(e.title)+'</summary>'+(e.note ? '<div class="stat-sub" style="margin:6px 0 0;">'+escapeHtml(e.note)+'</div>' : '')+'<ol class="sp-steps"><li><b>'+escapeHtml(e.trigger)+'</b>, Run Immediately, Notify off.</li>'+
-      (e.loc ? '<li>Add <b>Get Current Location</b>.</li>' : '')+
-      '<li>Add <b>Text</b>, paste this, then swap the capital words for blue pills: '+(e.loc ? '<b>LAT</b> \u2192 Current Location \u203a Latitude, <b>LON</b> \u2192 Current Location \u203a Longitude, ' : '')+'<b>DATE</b> \u2192 Current Date (tap it, set the format to <b>ISO 8601</b>).<div class="sp-btnrow"><button type="button" class="btn secondary small" data-auto-copy="'+e.id+'">Copy text</button></div></li>'+
-      '<li>Add <b>Get Contents of URL</b> (URL, POST, <code>Content-Type: application/json</code>, Request Body File = Text).</li></ol></details>').join('');
+    '<div class="sum2-h" style="margin:16px 0 4px;"><span>Set up on your iPhone</span></div>'+
+    '<div class="stat-sub" style="margin:0 0 6px;">These send a small message to Home Base through the same link as Apple Pay capture, so get that working first. Each takes about three minutes. Open one below and follow it from the top.</div>'+
+    '<ul class="auto-before"><li>Location ones: the first run asks to use your location. Say <b>Allow</b>, and in Settings \u2192 Privacy &amp; Security \u2192 Location Services \u2192 Shortcuts choose <b>Always</b> if it\u2019s offered.</li><li>The first run also asks to send data to <b>firestore.googleapis.com</b>. Choose <b>Always Allow</b>.</li></ul>'+
+    '<div class="sp-btnrow" style="margin-bottom:6px;"><button type="button" class="btn secondary small" id="autoCopyUrlBtn">Copy URL</button><button type="button" class="btn secondary small" id="autoCheckBtn">Check for new signals</button></div>'+
+    AUTO_EVENTS.map(e=>{
+      const seen = (autoMeta.seen || {})[e.id];
+      const rest = e.loc ? 'LAT \u2192 <b>Current Location</b>, tap the pill, <b>Latitude</b>. LON \u2192 <b>Current Location</b>, <b>Longitude</b>. ' : '';
+      return '<details class="fin-auto"><summary>'+escapeHtml(e.title)+' <span class="auto-state'+(seen ? ' ok' : '')+'">'+(seen ? '\u2713 heard '+when(seen) : 'not heard yet')+'</span></summary>'+
+      '<div class="stat-sub" style="margin:6px 0 0;"><b>'+e.phone+'.</b> '+escapeHtml(e.what)+'</div><ol class="sp-steps">'+
+      '<li>Shortcuts \u2192 <b>Automation</b> tab \u2192 <b>+</b> \u2192 '+e.trigger+'. Choose <b>Run Immediately</b>, turn <b>Notify When Run</b> off, tap <b>Next</b>, then <b>New Blank Automation</b>.</li>'+
+      (e.loc ? '<li>Tap <b>Add Action</b>, search <b>Get Current Location</b> and add it.</li>' : '')+
+      '<li>Add another action, <b>Text</b>. Paste this in.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-auto-copy="'+e.id+'">Copy text</button></div></li>'+
+      '<li>Turn the capital words into blue pills. Tap the word, delete it, then tap the variable in the bar above the keyboard. '+rest+'DATE \u2192 <b>Current Date</b>, tap its pill, <b>Date Format</b>, <b>ISO 8601</b>.</li>'+
+      '<li>Add <b>Get Contents of URL</b>. Paste the URL, tap the small arrow to expand it, set <b>Method</b> to <b>POST</b>, add a header <b>Content-Type</b> = <b>application/json</b>, and set <b>Request Body</b> to <b>File</b> and choose the <b>Text</b>.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-auto-url>Copy URL</button></div></li>'+
+      '<li>Tap <b>Done</b>. <b>Test:</b> '+e.test+' Then come back here and tap Check for new signals: the tick above should appear.</li></ol></details>';
+    }).join('');
   document.getElementById('autoHomeSave').addEventListener('click', async ()=>{
     const b = document.getElementById('autoHomeSave'); b.disabled = true; b.textContent = 'Finding\u2026';
     const ok = await autoSetHome(document.getElementById('autoHome').value);
@@ -5642,7 +5894,9 @@ function renderAutoSetup(){
   box.querySelectorAll('[data-work-mode]').forEach(b=> b.addEventListener('click', ()=> saveWork({mode:b.dataset.workMode})));
   box.querySelectorAll('[data-work-h]').forEach(b=> b.addEventListener('click', ()=> saveWork({minH:Math.max(1, Math.min(14, autoWork().minH + parseInt(b.dataset.workH, 10)))})));
   ['workFrom','workTo'].forEach(id=>{ const el = document.getElementById(id); if(el) el.addEventListener('change', ()=>{ if(el.value) saveWork(id === 'workFrom' ? {from:el.value} : {to:el.value}); }); });
-  document.getElementById('autoCopyUrl').addEventListener('click', ()=> copyText(spendEndpoint(), 'URL'));
+  document.getElementById('autoCopyUrlBtn').addEventListener('click', ()=> copyText(spendEndpoint(), 'URL'));
+  box.querySelectorAll('[data-auto-url]').forEach(b=> b.addEventListener('click', ()=> copyText(spendEndpoint(), 'URL')));
+  document.getElementById('autoCheckBtn').addEventListener('click', async ()=>{ const n = await importInbox(); if(!n) showToast('Nothing new yet.'); renderAutoSetup(); });
   box.querySelectorAll('[data-auto-copy]').forEach(b=> b.addEventListener('click', ()=> copyText(autoBody(b.dataset.autoCopy), 'Text')));
 }
 
