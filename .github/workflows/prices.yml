@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Fetch prices
         env:
-          SYMBOLS: 'VUAG.L,GB00B4PQW151'
+          SYMBOLS: 'GB00BVPLDL62,IE00BFMXXD54'
         run: |
           python3 - <<'PY'
           import csv
@@ -33,8 +33,6 @@ jobs:
               "Accept-Language": "en-GB,en;q=0.9",
           }
           ISIN = re.compile(r"^[A-Z]{2}[A-Z0-9]{9}[0-9]$")
-          # funds Yahoo may not find by ISIN: the name to search for, and words the right result must contain
-          NAMES = {"GB00B4PQW151": ("Vanguard LifeStrategy 100% Equity", ["lifestrategy", "100"])}
           
           
           def fetch(url, tries=2):
@@ -45,7 +43,8 @@ jobs:
                           return r.read().decode("utf-8", "replace")
                   except Exception as e:
                       last = e
-                      time.sleep(3 + 3 * i)
+                      if i + 1 < tries:
+                          time.sleep(3 + 3 * i)
               raise last
           
           
@@ -77,11 +76,8 @@ jobs:
               return {"price": num(close), "currency": "", "date": day if re.fullmatch(r"\d{4}-\d\d-\d\d", day or "") else "", "symbol": s.upper(), "name": ident, "source": "Stooq"}
           
           
-          # ---- source 1 for funds: the Financial Times page for the fund's ISIN ----
-          def from_ft(ident):
-              if not ISIN.match(ident):
-                  raise ValueError("ft lookup needs an ISIN")
-              html = fetch("https://markets.ft.com/data/funds/tearsheet/summary?s=%s:GBP" % ident)
+          # ---- source 1 for funds and ETFs given by ISIN: the Financial Times ----
+          def ft_parse(html, ident, url):
               m = re.search(r"Price \(([A-Za-z]{3})\).{0,300}?([0-9][0-9,]*\.[0-9]+)", html, re.S)
               if not m:
                   raise ValueError("no price on the page")
@@ -96,41 +92,47 @@ jobs:
                           pass
               t = re.search(r"<title>(.*?)</title>", html, re.S)
               name = re.split(r",| - ", t.group(1).strip())[0].strip() if t else ""
-              return {"price": num(m.group(2)), "currency": m.group(1).upper(), "date": day, "symbol": ident + ":GBP", "name": name or ident, "source": "FT"}
+              sym = re.search(r"[?&]s=([^&]+)", url)
+              return {"price": num(m.group(2)), "currency": m.group(1).upper(), "date": day, "symbol": sym.group(1) if sym else ident, "name": name or ident, "source": "FT"}
+          
+          
+          def from_ft(ident):
+              if not ISIN.match(ident):
+                  raise ValueError("ft lookup needs an ISIN")
+              seen = []
+              urls = ["https://markets.ft.com/data/%s/tearsheet/summary?s=%s:%s" % (kind, ident, cur) for kind in ("funds", "etfs") for cur in ("GBP", "USD", "EUR")]
+              for u in urls:
+                  try:
+                      return ft_parse(fetch(u, tries=1), ident, u)
+                  except Exception as e:
+                      seen.append(str(e))
+              # FT's own search: follow the first result for this ISIN
+              try:
+                  html = fetch("https://markets.ft.com/data/search?query=" + ident, tries=1)
+                  for link in re.findall(r'href="(/data/(?:funds|etfs|equities)/tearsheet/summary\?s=[^"]+)"', html)[:3]:
+                      u = "https://markets.ft.com" + link.replace("&amp;", "&")
+                      try:
+                          return ft_parse(fetch(u, tries=1), ident, u)
+                      except Exception as e:
+                          seen.append(str(e))
+              except Exception as e:
+                  seen.append("search: " + str(e))
+              raise ValueError("no page worked (" + "; ".join(sorted(set(seen)))[:160] + ")")
           
           
           # ---- last resort: Yahoo (often refuses GitHub's servers with a 429) ----
-          def search(q):
-              for host in ("query2", "query1"):
-                  try:
-                      j = get("https://%s.finance.yahoo.com/v1/finance/search?q=%s&quotesCount=10&newsCount=0" % (host, urllib.parse.quote(q)))
-                      if j.get("quotes"):
-                          return j["quotes"]
-                  except Exception:
-                      pass
-              return []
-          
-          
-          def pick(quotes, words):
-              # the accumulation unit class if there is one, otherwise the first match
-              found = [q for q in quotes if q.get("symbol") and all(w in ((q.get("longname") or "") + " " + (q.get("shortname") or "")).lower() for w in words)]
-              for q in found:
-                  if "acc" in ((q.get("longname") or "") + " " + (q.get("shortname") or "")).lower():
-                      return q["symbol"]
-              return found[0]["symbol"] if found else None
-          
-          
           def yahoo_symbol(ident):
               if "=" in ident:
                   return ident.split("=", 1)[1].strip()
               if not ISIN.match(ident):
                   return ident
-              for q in search(ident):
-                  if q.get("symbol"):
-                      return q["symbol"]
-              if ident in NAMES:
-                  name, words = NAMES[ident]
-                  return pick(search(name), words)
+              for host in ("query2", "query1"):
+                  try:
+                      for q in get("https://%s.finance.yahoo.com/v1/finance/search?q=%s&quotesCount=10&newsCount=0" % (host, ident)).get("quotes", []):
+                          if q.get("symbol"):
+                              return q["symbol"]
+                  except Exception:
+                      pass
               return None
           
           
