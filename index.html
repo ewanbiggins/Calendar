@@ -871,30 +871,160 @@ input::placeholder,textarea::placeholder{color:var(--ink-soft);opacity:.7;}
 
 html.dark{--bg:#0E1523;background:#0E1523;}
 .w-t > span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ---------- dashboard on one screen ---------- */
+#view-summary.active{padding-bottom:0;}
+.dash{display:flex;flex-direction:column;gap:10px;height:var(--dash-h,auto);}
+.w.w-today{flex:none;min-height:0;padding:12px 16px 14px;gap:2px;}
+.w-toprow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:6px;}
+.w-today .w-hero{font-size:31px;margin-top:0;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;}
+.w-today .w-hero.quiet{font-size:24px;}
+.w-today .w-meta{margin-top:6px;gap:2px 14px;align-items:center;}
+.w-today .w-clk{font-size:14.5px;font-weight:700;color:var(--ink);gap:7px;}
+.w-today .w-clk.late{color:var(--danger);}
+.w-today .w-line{margin-top:4px;font-size:13.5px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dash-main{flex:1;min-height:0;display:grid;grid-template-columns:5fr 6fr;gap:10px;}
+.dash-main .w-gym{min-height:0;height:100%;padding:12px 10px 10px;align-items:stretch;}
+.w-gym .w-fig{flex:1;min-height:0;margin:6px 0 0;display:flex;align-items:center;justify-content:center;}
+.w-gym .d-svg{height:100% !important;width:auto !important;max-width:100% !important;}
+.dash-list{display:flex;flex-direction:column;gap:6px;min-height:0;}
+.w.n{flex:1 1 0;min-height:44px;flex-direction:row;align-items:center;justify-content:space-between;gap:8px;padding:0 14px;border-radius:12px;}
+.n-l{font-size:14.5px;font-weight:600;color:var(--ink-soft);white-space:nowrap;}
+.n-v{font-size:21px;font-weight:800;letter-spacing:-.02em;color:var(--home);white-space:nowrap;}
+.w.n.late .n-v{color:var(--danger);}
+.w.n.dim .n-v{color:var(--ink-soft);font-weight:700;}
+.w.n.add .n-v{font-size:17px;}
+
+/* ---------- navigation: Menu | Calendar | Dashboard ---------- */
+body[data-view="calendar"] .top{display:none;}
+body[data-view="menu"] #menuTopBtn,body[data-view="summary"] #menuTopBtn{display:none;}
+body[data-view="menu"] #todayLabel{display:none;}
+#moneyEyeBtn{display:none;}
+body[data-view="summary"] #moneyEyeBtn,body[data-view="budget"] #moneyEyeBtn,body[data-view="expenses"] #moneyEyeBtn,body[data-view="rent"] #moneyEyeBtn{display:inline-flex;}
+.return-cal-bar .nav-item{max-width:none;}
+.nav-ic{position:relative;display:inline-flex;}
+.nav-dot{position:absolute;top:-2px;right:-5px;width:10px;height:10px;border-radius:50%;background:var(--danger);border:2px solid var(--bg);display:none;}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.menu-tile{position:relative;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:14px;min-height:96px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;font-size:17px;font-weight:700;letter-spacing:-.01em;-webkit-tap-highlight-color:transparent;}
+.menu-tile:active{background:var(--surface-2);}
+.menu-tile .mt-ic{color:var(--home);display:inline-flex;}
+.menu-tile .tab-badge{position:absolute;top:12px;right:12px;}
+#view-calendar{padding-bottom:84px;}
+
+/* ---------- dashboard v3: week chart back, smaller type, a tile cut to the figure, to-dos as bullets ---------- */
+.dash{gap:8px;}
+.w.w-today{padding:10px 14px 11px;}
+.w-today .w-t{font-size:12.5px;}
+.w-today .w-hero{font-size:26px;}
+.w-today .w-hero.quiet{font-size:21px;}
+.w-toprow{margin-top:2px;}
+.w-today .w-meta{margin-top:3px;font-size:13px;}
+.w-today .w-clk{font-size:13px;}
+.w-today .w-line{font-size:12.5px;margin-top:2px;}
+.w-today .btn{min-height:44px;padding:0 16px;font-size:14px;}
+.w.w-week{flex:none;min-height:0;padding:9px 12px 8px;gap:2px;}
+.w-week .w-t{font-size:12.5px;gap:8px;}
+.w-week .w-t > span:first-child{flex:none;}
+.w-wkn{font-size:16px;font-weight:800;color:var(--home);letter-spacing:-.02em;}
+.w-toil{margin-left:auto;font-size:12.5px;font-weight:600;}
+.w-week .d-bars{margin-top:2px;gap:3px;}
+.w-week .d-wk{min-height:0;padding:0;gap:2px;}
+.w-week .d-wk em{font-size:10.5px;height:12px;line-height:12px;}
+.w-week .d-bar{height:42px;max-width:34px;border-radius:6px;}
+.w-week .d-bar i{border-radius:6px;}
+.w-week .d-wk b{font-size:11.5px;}
+.dash-main{grid-template-columns:var(--fig-w,40%) minmax(0,1fr);gap:8px;}
+.dash-list,.dash-list .w{min-width:0;}
+.w-todos{overflow:hidden;}
+.dash-main .w-gym{padding:9px 10px 10px;}
+.w-gym .w-t{font-size:12.5px;}
+.w-gym .w-fig{margin:4px 0 0;}
+.w-gym .d-svg{width:100% !important;height:100% !important;max-width:none !important;}
+.dash-list{gap:5px;}
+.w.n{padding:0 12px;border-radius:11px;}
+.n-l{font-size:13px;}
+.n-v{font-size:17px;}
+.w.n.add .n-v{font-size:15px;}
+.w.w-todos{flex:1.9 1 0;min-height:0;padding:8px 12px 8px;gap:3px;justify-content:flex-start;border-radius:11px;}
+.w-todos .w-t{font-size:13px;}
+.w-todos .w-t > span:first-child{flex:none;}
+.w-todos .w-count{margin-right:auto;font-size:13px;}
+.d-bul{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;line-height:1.25;min-height:19px;}
+.d-bul i{flex:none;width:5px;height:5px;border-radius:50%;background:var(--home);}
+.d-bul span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.d-bul em{flex:none;font-style:normal;font-size:11.5px;font-weight:500;color:var(--ink-soft);}
+.d-bul em.late{color:var(--danger);}
+@media (max-height:790px){ .d-bul:nth-child(n+4){display:none;} .w-week .d-bar{height:34px;} .w-today .w-hero{font-size:24px;} }
+@media (max-height:700px){ .d-bul:nth-child(n+3){display:none;} }
+
+/* ---------- calendar: every day has the same outline; only the colour changes ---------- */
+:root{--away-line:#D9BE88;--home-line:#B8C6DC;}
+body.dark{--away-line:#6E5126;--home-line:#2F4C7A;}
+.day-cell,.day-cell.has-shift,.day-cell.away,.day-cell.today{border-width:1px;border-style:solid;}
+.day-cell{border-color:var(--line);}
+.day-cell.has-shift{background:var(--home-tint);border-color:var(--home-line);}
+.day-cell.away{background:var(--away-tint);border-color:var(--away-line);}
+.day-cell.today{border-color:var(--home);box-shadow:inset 0 0 0 1px var(--home);}
+
+/* ---------- trends ---------- */
+body[data-view="trends"] #moneyEyeBtn{display:inline-flex;}
+.tr{padding:4px 0 14px;border-bottom:1px solid var(--line);margin-bottom:10px;}
+.tr:last-child{border-bottom:0;}
+.tr-h{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;padding:0;background:none;border:0;color:var(--ink);font-size:17px;font-weight:800;letter-spacing:-.015em;text-align:left;}
+.tr-chev{width:8px;height:8px;border-right:2px solid var(--ink-soft);border-top:2px solid var(--ink-soft);transform:rotate(45deg);opacity:.55;margin-right:4px;}
+.tr-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0 0 8px;}
+.tr-head b{font-size:30px;font-weight:800;letter-spacing:-.03em;color:var(--home);line-height:1.05;}
+.tr-head span{font-size:13.5px;color:var(--ink-soft);}
+.tr-bars{display:flex;align-items:flex-end;gap:5px;}
+.tr-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.tr-v{font-size:11px;font-weight:700;color:var(--ink);height:13px;line-height:13px;white-space:nowrap;}
+.tr-plot{width:100%;height:58px;display:flex;align-items:flex-end;justify-content:center;}
+.tr-bar{display:block;width:100%;max-width:30px;background:var(--tint-2);border-radius:6px 6px 2px 2px;}
+.tr-col.hl .tr-bar{background:var(--home);}
+.tr-l{font-size:11px;color:var(--ink-soft);white-space:nowrap;}
+.tr-col.hl .tr-l{color:var(--ink);font-weight:700;}
+.tr-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+.tr-stats div{display:flex;flex-direction:column;gap:1px;min-width:0;}
+.tr-stats b{font-size:15px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tr-stats span{font-size:12px;color:var(--ink-soft);}
+.tr-none{font-size:14.5px;color:var(--ink-soft);padding:2px 0 6px;}
+
+/* ---------- guides: one accordion style, titles and status on every row ---------- */
+.acc-list{border-top:1px solid var(--line);margin:0 0 6px;}
+details.acc{border-bottom:1px solid var(--line);}
+details.acc > summary{display:flex;align-items:center;gap:10px;min-height:58px;padding:8px 0;cursor:pointer;list-style:none;}
+details.acc > summary::-webkit-details-marker{display:none;}
+details.acc > summary::after{content:'';flex:none;width:8px;height:8px;border-right:2px solid var(--ink-soft);border-bottom:2px solid var(--ink-soft);transform:rotate(45deg);margin:0 4px 3px 2px;transition:transform .2s ease;}
+details.acc[open] > summary::after{transform:rotate(-135deg);margin-bottom:-3px;}
+.acc-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;}
+.acc-t b{font-size:16px;font-weight:700;letter-spacing:-.01em;}
+.acc-t small{font-size:12.5px;color:var(--ink-soft);font-weight:500;}
+.acc-s{flex:none;font-size:12.5px;font-weight:600;color:var(--ink-soft);text-align:right;max-width:46%;}
+.acc-s.ok{color:var(--home);font-weight:700;}
+.acc-b{padding:2px 0 16px;}
+.auto-count{float:right;font-weight:600;color:var(--ink-soft);}
+.acc-b .sum-row:first-child{padding-top:0;}
+
+.set-head .chip-btn[data-set-back],.fin-head .chip-btn[data-fin-back]{display:none;}
+.set-head{margin:0;}
+.menu-grid{grid-auto-rows:minmax(96px,112px);}
 </style>
 </head>
-<body>
+<body data-view="calendar">
 
 <div id="app">
   <div class="top">
-    <button class="round-btn" id="menuTopBtn" title="Menu" aria-label="Menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+    <button class="round-btn" id="menuTopBtn" title="Back" aria-label="Back"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 5 8 12 15 19"/></svg></button>
     <h1 id="screenTitle">Home Base</h1>
     <span class="top-date" id="todayLabel"></span>
-  </div>
-
-  <div class="drawer-overlay" id="drawerOverlay"></div>
-  <div class="drawer" id="drawerPanel">
-    <h2 style="font-size:16px;margin-bottom:14px;">Menu</h2>
-    <div id="drawerBody"></div>
+    <button class="round-btn" id="moneyEyeBtn" title="Hide amounts" aria-label="Hide amounts" aria-pressed="false"></button>
   </div>
 
 
   <!-- CALENDAR -->
   <div class="view active" id="view-calendar">
-    <div class="cal-fade cal-fade-top"></div>
     <div class="cal-header-bar">
       <div class="cal-header-side cal-header-left">
-        <button class="round-btn" id="calOverviewBtn" title="Menu"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg><span class="cal-overview-badge" id="calOverviewBadge"></span></button>
         <button class="cal-back-btn" id="yearToggleBtn">
         <svg id="yearToggleIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         <span id="yearToggleLabel">2026</span>
@@ -903,20 +1033,16 @@ html.dark{--bg:#0E1523;background:#0E1523;}
       <div class="cal-header-side cal-header-right">
         <button class="round-btn" id="searchBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
         <button class="btn secondary small" id="jumpTodayBtn">Today</button>
-        <button class="round-btn" id="calSummaryBtn" title="Dashboard" aria-label="Dashboard"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></button>
       </div>
     </div>
     <div class="legend" id="calLegend"></div>
     <div id="monthsContainer" style="visibility:hidden;"></div>
     <div id="yearGridContainer" style="display:none;"></div>
-    <div class="cal-fade cal-fade-bottom"></div>
-    <div class="cal-bottom-bar" id="calBottomBar">
-      <button class="round-btn lg" id="calTodoBtn" title="Add a to-do"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l2.5 2.5L16 9"/></svg><span>To-do</span></button>
-      <button class="round-btn lg" id="calMileageBtn" title="Log mileage"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/></svg><span>Mileage</span></button>
-      <button class="round-btn lg" id="calExpenseBtn" title="Log an expense"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg><span>Expense</span></button>
-      <button class="round-btn lg" id="calClockBtn" title="Clock in"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg><span>Clock</span></button>
-      <button class="round-btn lg" id="calGymBtn" title="Gym"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11"/><path d="M17.5 6.5v11"/><path d="M3.5 9v6"/><path d="M20.5 9v6"/><path d="M6.5 12h11"/></svg><span>Gym</span></button>
-    </div>
+  </div>
+
+  <!-- MENU (left of the calendar) -->
+  <div class="view" id="view-menu">
+    <div id="drawerBody" class="menu-grid"></div>
   </div>
 
   <!-- TASKS -->
@@ -1116,25 +1242,7 @@ html.dark{--bg:#0E1523;background:#0E1523;}
 
   <!-- TRENDS -->
   <div class="view" id="view-trends">
-    <div class="card">
-      <h2 style="font-size:15px;">Trends</h2>
-      <div class="stat-sub" style="margin-bottom:8px;">Everything since 1 July 2026.</div>
-      <div class="trend-headline-grid" id="trendsHeadlineGrid"></div>
-    </div>
-    <div class="card">
-      <h2 style="font-size:15px;">Home vs Away</h2>
-      <div id="trendsSplitBar"></div>
-    </div>
-    <div class="card">
-      <h2 style="font-size:15px;">The details</h2>
-      <div id="trendsSection"></div>
-    </div>
-    <div class="card">
-      <h2 style="font-size:15px;" id="trendsChartTitle">Hours by month</h2>
-      <div class="chip-row" id="trendsChartPicker" style="margin-bottom:10px;"></div>
-      <div id="trendsClockInfo"></div>
-      <div id="trendsChartArea"></div>
-    </div>
+    <div id="trendsBody"></div>
   </div>
 
   <!-- BUDGET -->
@@ -1312,10 +1420,10 @@ html.dark{--bg:#0E1523;background:#0E1523;}
 </div>
 
 <div class="return-cal-fade" id="returnCalFade" style="display:none;"></div>
-<div class="return-cal-bar" id="returnCalBar" style="display:none;">
-  <button type="button" class="nav-item" id="returnCalBtn" data-nav="calendar" title="Calendar"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg><span>Calendar</span></button>
-  <button type="button" class="nav-item" id="returnDashBtn" data-nav="summary" title="Dashboard"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/></svg><span>Dashboard</span></button>
-  <button type="button" class="nav-item" id="returnBarMenuBtn" data-nav="menu" title="Menu"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg><span>Menu</span></button>
+<div class="return-cal-bar" id="returnCalBar">
+  <button type="button" class="nav-item" id="returnBarMenuBtn" data-nav="menu" title="Menu"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg><i class="nav-dot" id="menuNavDot"></i></span><span>Menu</span></button>
+  <button type="button" class="nav-item" id="returnCalBtn" data-nav="calendar" title="Calendar"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span>Calendar</span></button>
+  <button type="button" class="nav-item" id="returnDashBtn" data-nav="summary" title="Dashboard"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/></svg></span><span>Dashboard</span></button>
 </div>
 
 <div class="mileage-print-area" id="mileagePrintArea"></div>
@@ -1928,6 +2036,8 @@ async function init(){
   });
   if(needsResave) await saveKey('todos', todos);
   darkModeOn = await loadKey('dark-mode', false);
+  hideMoney = !!(await loadKey('hide-money', false));
+  updateEyeBtn(); if(hideMoney) maskAllMoney();
   travelEnabled = await loadKey('travel-enabled', false);
   vanOdometer = await loadKey('van-odometer', null);
   gymLog = await loadKey('gym-log', []);
@@ -2011,18 +2121,24 @@ function goToCalendarDate(dateStr){
   scrollToMonth(d.getFullYear(), d.getMonth(), wasCal);      // glide only when you're already on the calendar
   openDayModal(dateStr);
 }
+const MAIN_VIEWS = ['menu', 'calendar', 'summary'];      // left to right: Menu, Calendar, Dashboard
+let lastMainView = 'calendar';
 function goToView(viewName, dir, opts){
   let setPage = null;
   if(String(viewName).indexOf(':') > -1){ const pp = viewName.split(':'); viewName = pp[0]; setPage = pp[1]; }
+  { const cur = document.querySelector('.view.active'), from = cur ? cur.id.replace('view-', '') : null;
+    if(!dir && from && from !== viewName && MAIN_VIEWS.indexOf(from) > -1 && MAIN_VIEWS.indexOf(viewName) > -1) dir = MAIN_VIEWS.indexOf(viewName) > MAIN_VIEWS.indexOf(from) ? 'fwd' : 'back'; }
   document.body.dataset.nav = dir || '';
   acCloseAll();
   const wasCalendar = document.getElementById('view-calendar').classList.contains('active');
   if(wasCalendar) savedCalendarScrollY = window.scrollY;
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.getElementById('view-'+viewName).classList.add('active');
-  document.getElementById('returnCalBar').style.display = viewName==='calendar' ? 'none' : 'flex';
+  document.body.dataset.view = viewName;
+  if(MAIN_VIEWS.indexOf(viewName) > -1) lastMainView = viewName;
+  if(viewName === 'menu') buildMenuBody();
   document.getElementById('returnCalFade').style.display = 'none';
-  { const ttl = {summary:'Dashboard', todo:'To-dos', rent:'Rent', toil:'TOIL', mileage:'Mileage', expenses:'Expenses', gym:'Gym', budget:'Finance', settings:'Settings', trends:'Trends', travel:'Travel'}[viewName];
+  { const ttl = {menu:'Menu', summary:'Dashboard', todo:'To-dos', rent:'Rent', toil:'TOIL', mileage:'Mileage', expenses:'Expenses', gym:'Gym', budget:'Finance', settings:'Settings', trends:'Trends', travel:'Travel'}[viewName];
     const st = document.getElementById('screenTitle'); if(st) st.textContent = ttl || 'Home Base';
     const td = document.getElementById('todayLabel'); if(td) td.style.display = viewName === 'summary' ? '' : 'none';
     document.querySelectorAll('#returnCalBar [data-nav]').forEach(b=> b.classList.toggle('on', b.dataset.nav === viewName || (viewName === 'summary' && b.dataset.nav === 'summary'))); }
@@ -2039,19 +2155,17 @@ function goToView(viewName, dir, opts){
   if(viewName==='settings'){ settingsPage = setPage; applySettingsPage(); renderApplePaySetup(); renderAutoSetup(); importInbox(); }
 }
 function setupTabs(){
-  document.getElementById('menuTopBtn').addEventListener('click', openMenuSheet);
-  document.getElementById('returnCalBtn').addEventListener('click', ()=> goToView('calendar', document.getElementById('view-summary').classList.contains('active') ? 'back' : ''));
-  document.getElementById('returnBarMenuBtn').addEventListener('click', openMenuSheet);
-  document.getElementById('returnDashBtn').addEventListener('click', ()=>{ if(!document.getElementById('view-summary').classList.contains('active')) goToView('summary', 'fwd'); });
-  document.getElementById('calOverviewBtn').addEventListener('click', openMenuSheet);   // top-left on the calendar = menu
-  document.getElementById('calSummaryBtn').addEventListener('click', ()=> goToView('summary', 'fwd'));
-  document.getElementById('calTodoBtn').addEventListener('click', openQuickAddTodoForm);
-  document.getElementById('calExpenseBtn').addEventListener('click', openQuickAddExpenseForm);
-  document.getElementById('calMileageBtn').addEventListener('click', openQuickAddMileageForm);
-  document.getElementById('calClockBtn').addEventListener('click', toggleClockIn);
-  document.getElementById('calGymBtn').addEventListener('click', ()=> goToView('gym'));
-  document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
-  // swipe left on the calendar -> quick summary. Fires as soon as the swipe is clearly sideways (so a browser
+  const isOn = (v)=> document.getElementById('view-'+v).classList.contains('active');
+  document.getElementById('menuTopBtn').addEventListener('click', ()=>{                                               // one back button: up a level first, then back to where you came from
+    const v = document.body.dataset.view;
+    if(v === 'settings' && settingsPage){ settingsPage = null; applySettingsPage(); window.scrollTo(0, 0); return; }
+    if(v === 'budget' && finTab !== 'overview'){ finTab = 'overview'; finOpenItem = null; renderBudget(); window.scrollTo(0, 0); return; }
+    goToView(lastMainView || 'menu', 'back');
+  });
+  document.getElementById('returnBarMenuBtn').addEventListener('click', ()=>{ if(!isOn('menu')) goToView('menu'); });
+  document.getElementById('returnCalBtn').addEventListener('click', ()=>{ if(!isOn('calendar')) goToView('calendar'); });
+  document.getElementById('returnDashBtn').addEventListener('click', ()=>{ if(!isOn('summary')) goToView('summary'); });
+  // Menu, Calendar and Dashboard sit side by side: swipe to move between them. Fires as soon as the swipe is clearly sideways (so a browser
   // scroll taking over the touch can't swallow it), and again on release for short flicks.
   const swipe = (el, onSwipe)=>{
     let sx = null, sy = null, st = 0, sx0 = 0, fired = false;
@@ -2059,7 +2173,7 @@ function setupTabs(){
     const fire = (dx)=>{ fired = true; sx = null; onSwipe(dx < 0 ? 'left' : 'right'); };
     el.addEventListener('touchstart', (e)=>{ if(e.touches.length !== 1){ sx = null; return; } sx = sx0 = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); fired = false; }, {passive:true});
     el.addEventListener('touchmove', (e)=>{
-      if(sx === null || fired || sx0 <= 36) return;
+      if(sx === null || fired) return;
       const t = e.touches[0], dx = t.clientX - sx, dy = t.clientY - sy;
       if(Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy)*1.3 && !blocked()) fire(dx);
     }, {passive:true});
@@ -2069,14 +2183,19 @@ function setupTabs(){
       sx = null;
       const quick = Math.abs(dx) > 20 && Math.abs(dx)/Math.max(1, dt) > 0.18;    // a short flick counts
       const long = Math.abs(dx) > 34;                                           // so does a deliberate drag
-      if(sx0 > 36 && (quick || long) && Math.abs(dx) > Math.abs(dy)*1.15 && dt < 1100 && !blocked()) onSwipe(dx < 0 ? 'left' : 'right');
+      if((quick || long) && Math.abs(dx) > Math.abs(dy)*1.15 && dt < 1100 && !blocked()) onSwipe(dx < 0 ? 'left' : 'right');
     };
     el.addEventListener('touchend', end, {passive:true});
     el.addEventListener('touchcancel', end, {passive:true});
   };
-  swipe(document.getElementById('view-calendar'), (dir)=>{ if(dir==='left' && !yearViewActive) goToView('summary', 'fwd'); });
-  setupDrawerGestures();
+  swipe(document.getElementById('app'), (dir)=>{                                                                     // listens on the whole screen, margins included
+    const v = document.body.dataset.view;
+    if(v === 'calendar'){ if(!yearViewActive) goToView(dir === 'left' ? 'summary' : 'menu'); }
+    else if(v === 'menu'){ if(dir === 'left') goToView('calendar'); }
+    else if(v === 'summary'){ if(dir === 'right') goToView('calendar'); }
+  });
   setupSettingsNav();
+  setupMoneyEye();
   window.addEventListener('resize', fitSummary);
 }
 function buildMenuBody(){
@@ -2098,86 +2217,24 @@ function buildMenuBody(){
     settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>'
   };
   const items = [
-    ['calendar','Calendar',0],
-    ['todo','To-Do',urgentCount],
-    ['rent','Rent',0],
-    ['toil','TOIL',0],
+    ['todo','To-dos',urgentCount],
     ['mileage','Mileage',mileageDrafts.length],
     ['expenses','Expenses',pendingExpenses],
+    ['rent','Rent',0],
+    ['toil','TOIL',0],
     ['budget','Finance',0],
-    ['gym','Gym',0]
+    ['gym','Gym',0],
+    ['trends','Trends',0]
   ];
   if(travelEnabled) items.push(['travel','Travel',0]);
-  const itemHtml = (view,label,count,i)=>
-    '<div class="menu-item" style="--i:'+(i||0)+'" data-goto="'+view+'">'+
-      '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+icons[view]+'</svg>'+
-      '<span>'+label+'</span>'+
-      (count>0?'<span class="tab-badge" style="position:static;display:inline-block;margin-left:auto;">'+count+'</span>':'')+
-    '</div>';
-  body.innerHTML = items.map((it,i)=>itemHtml(it[0],it[1],it[2],i)).join('') + '<div class="divider"></div>' + itemHtml('settings','Settings',0,items.length+1);
-  body.querySelectorAll('[data-goto]').forEach(el=>{
-    el.addEventListener('click', ()=>{ closeDrawer(); goToView(el.dataset.goto); });
-  });
-}
-function openMenuSheet(){
-  buildMenuBody();
-  const o = document.getElementById('drawerOverlay'), pn = document.getElementById('drawerPanel');
-  pn.style.transition = o.style.transition = ''; pn.style.transform = ''; o.style.opacity = '';
-  o.classList.add('show'); pn.classList.add('show');
-}
-function closeDrawer(){
-  const o = document.getElementById('drawerOverlay'), pn = document.getElementById('drawerPanel');
-  pn.style.transition = o.style.transition = ''; pn.style.transform = ''; o.style.opacity = '';
-  o.classList.remove('show'); pn.classList.remove('show');
-}
-// drag the menu in from the left edge (or drag it away) with the finger
-function setupDrawerGestures(){
-  const pn = document.getElementById('drawerPanel'), ov = document.getElementById('drawerOverlay');
-  let mode = null, x0 = 0, y0 = 0, w = 300, active = false, cur = 0, lastX = 0, lastT = 0, vx = 0;
-  const blocked = ()=> document.body.style.overflow === 'hidden' || !!document.querySelector('.overlay:not(.hidden)');
-  const onMove = (e)=>{
-    if(!mode) return;
-    const t = e.touches[0], dx = t.clientX - x0, dy = t.clientY - y0;
-    if(!active){
-      if(Math.abs(dx) < 5 && Math.abs(dy) < 5) return;
-      if(Math.abs(dy) > Math.abs(dx)*1.3 || (mode==='open' && dx < 0) || (mode==='close' && dx > 0)){ mode = null; return; }
-      active = true;
-      if(mode==='open'){ buildMenuBody(); ov.classList.add('show'); pn.classList.add('show'); }
-      pn.style.transition = 'none'; ov.style.transition = 'none';
-    }
-    if(e.cancelable) e.preventDefault();
-    const base = mode==='open' ? -w : 0;
-    cur = Math.max(-w, Math.min(0, base + dx));
-    pn.style.transform = 'translateX('+cur+'px)';
-    ov.style.opacity = String(1 + cur/w);
-    const now = Date.now();
-    vx = (t.clientX - lastX) / Math.max(1, now - lastT); lastX = t.clientX; lastT = now;
-  };
-  const end = ()=>{
-    document.removeEventListener('touchmove', onMove);
-    if(!mode || !active){ mode = null; return; }
-    const open = mode==='open' ? (cur > -w*0.8 || vx > 0.15) : (cur > -w*0.2 && vx > -0.15);     // opens from a 20% drag or a gentle flick; closes the same way
-    mode = null; active = false;
-    pn.style.transition = ''; ov.style.transition = '';
-    void pn.offsetWidth;
-    pn.style.transform = open ? 'translateX(0px)' : 'translateX(-100%)';
-    ov.style.opacity = open ? '1' : '0';
-    pn.classList.toggle('show', open); ov.classList.toggle('show', open);
-    setTimeout(()=>{ pn.style.transform = ''; ov.style.opacity = ''; }, 420);
-  };
-  document.addEventListener('touchstart', (e)=>{
-    if(e.touches.length !== 1) return;
-    const t = e.touches[0];
-    if(pn.classList.contains('show')) mode = 'close';
-    else if((t.clientX <= 36 || document.getElementById('view-summary').classList.contains('active')) && !blocked()) mode = 'open';   // on the Summary a swipe right anywhere opens the menu
-    else { mode = null; return; }
-    x0 = lastX = t.clientX; y0 = t.clientY; lastT = Date.now(); vx = 0; active = false; cur = mode==='open' ? -w : 0;
-    w = pn.offsetWidth || 300;
-    cur = mode==='open' ? -w : 0;
-    document.addEventListener('touchmove', onMove, {passive:false});
-  }, {passive:true});
-  document.addEventListener('touchend', end, {passive:true});
-  document.addEventListener('touchcancel', end, {passive:true});
+  items.push(['settings','Settings',0]);
+  body.innerHTML = items.map(it=>
+    '<button type="button" class="menu-tile" data-goto="'+it[0]+'">'+
+      '<span class="mt-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+icons[it[0]]+'</svg></span>'+
+      '<span class="mt-l">'+it[1]+'</span>'+
+      (it[2] > 0 ? '<span class="tab-badge">'+it[2]+'</span>' : '')+
+    '</button>').join('');
+  body.querySelectorAll('[data-goto]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.goto)));
 }
 let quickAddActive = null;
 function openQuickAddMileageForm(){
@@ -4329,13 +4386,58 @@ async function addNewTodo(){
   if(selectedDate) renderDayHappeningList(selectedDate);
 }
 function renderCalHeaderAlert(){
-  const badge = document.getElementById('calOverviewBadge');
-  if(!badge) return;
+  const dot = document.getElementById('menuNavDot');
+  if(!dot) return;
   const today = todayStr();
   const hasOverdue = todos.some(t=>t.kind==='task' && !t.done && t.dueDate && t.dueDate < today);
-  badge.style.display = hasOverdue ? 'block' : 'none';
+  dot.style.display = hasOverdue ? 'block' : 'none';
 }
-function fitSummary(){}
+// ---- Hide amounts: one eye on the money screens (Dashboard, Finance, Expenses, Rent). It is remembered on this phone. ----
+let hideMoney = false;
+const MONEY_MASK_ROOTS = ['budgetBody', 'view-expenses', 'view-rent', 'trendsBody'];
+const moneyMasked = new Map();
+function maskMoneyIn(root){
+  if(!hideMoney || !root) return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {acceptNode: (n)=>{
+    const t = n.parentNode && n.parentNode.nodeName;
+    return (t === 'SCRIPT' || t === 'STYLE' || t === 'TEXTAREA' || moneyMasked.has(n) || !/\u00a3\s?\d/.test(n.nodeValue)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }});
+  const hit = []; while(w.nextNode()) hit.push(w.currentNode);
+  hit.forEach(n=>{ moneyMasked.set(n, n.nodeValue); n.nodeValue = n.nodeValue.replace(/\u00a3\s?[\d,]+(\.\d+)?/g, '\u00a3\u2022\u2022\u2022'); });
+}
+function maskAllMoney(){ MONEY_MASK_ROOTS.forEach(id=> maskMoneyIn(document.getElementById(id))); }
+function unmaskAllMoney(){ moneyMasked.forEach((orig, n)=>{ if(n.isConnected) n.nodeValue = orig; }); moneyMasked.clear(); }
+function updateEyeBtn(){
+  const b = document.getElementById('moneyEyeBtn'); if(!b) return;
+  b.innerHTML = hideMoney
+    ? '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.2A9.8 9.8 0 0112 6c5 0 8.5 4 10 6-.7 1-1.8 2.3-3.2 3.4M6.4 7.8C4.4 9.2 2.9 11 2 12c1.5 2 5 6 10 6 1.5 0 2.8-.3 4-.9"/><path d="M9.9 10a3 3 0 004.1 4.1"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+  b.title = b.ariaLabel = hideMoney ? 'Show amounts' : 'Hide amounts';
+  b.setAttribute('aria-pressed', hideMoney ? 'true' : 'false');
+}
+async function setHideMoney(on){
+  hideMoney = !!on; await saveKey('hide-money', hideMoney); updateEyeBtn();
+  if(hideMoney) maskAllMoney(); else unmaskAllMoney();
+  if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
+}
+function setupMoneyEye(){
+  document.getElementById('moneyEyeBtn').addEventListener('click', ()=> setHideMoney(!hideMoney));
+  const mo = new MutationObserver((muts)=>{ if(!hideMoney) return; muts.forEach(m=> m.addedNodes.forEach(n=>{ if(n.nodeType === 1) maskMoneyIn(n); else if(n.nodeType === 3 && n.parentNode) maskMoneyIn(n.parentNode); })); if(moneyMasked.size > 3000) moneyMasked.forEach((o, n)=>{ if(!n.isConnected) moneyMasked.delete(n); }); });
+  MONEY_MASK_ROOTS.forEach(id=>{ const el = document.getElementById(id); if(el) mo.observe(el, {childList:true, subtree:true}); });
+  updateEyeBtn();
+}
+function fitSummary(){
+  const d = document.querySelector('#summaryBody .dash');
+  if(!d || !document.getElementById('view-summary').classList.contains('active')) return;
+  const bar = document.getElementById('returnCalBar');
+  const barH = bar && bar.offsetHeight ? bar.offsetHeight : 58;
+  const absTop = d.getBoundingClientRect().top + window.scrollY;
+  d.style.setProperty('--dash-h', Math.max(470, Math.floor(window.innerHeight - absTop - barH - 12))+'px');
+  const main = d.querySelector('.dash-main');
+  if(main){
+    const figH = main.getBoundingClientRect().height - 24 - 24;                 // the tile minus its label and padding
+    main.style.setProperty('--fig-w', Math.max(92, Math.min(Math.round(figH*0.362 + 24), Math.round(d.getBoundingClientRect().width*0.42)))+'px');
+  }
+}
 function renderSummary(){
   const box = document.getElementById('summaryBody');
   if(!box) return;
@@ -4379,27 +4481,36 @@ function renderSummary(){
   const all = pf.priced && pf.gain !== null && pf.invested > 0 ? pf.gain/pf.invested*100 : null;
   const pfSub = all !== null ? (all >= 0 ? '+' : '\u2212')+Math.abs(all).toFixed(1)+'% overall' : 'Spending account';
   let fig = '';
-  try{ fig = bmBuildSvg('front', gymMuscleStats(7).pct, null, 'sm').replace('<svg class="bm-svg', '<svg class="bm-svg d-svg').replace(/ tabindex="[^"]*"/g,'').replace(/ role="[^"]*"/g,'').replace(/ aria-label="[^"]*"/g,''); }catch(err){ fig = ''; }
+  try{ fig = bmBuildSvg('front', gymMuscleStats(7).pct, null, 'sm').replace('viewBox="0 0 300 660"', 'viewBox="32 4 236 652"').replace('<svg class="bm-svg', '<svg class="bm-svg d-svg').replace(/ tabindex="[^"]*"/g,'').replace(/ role="[^"]*"/g,'').replace(/ aria-label="[^"]*"/g,''); }catch(err){ fig = ''; }
   const shiftTxt = sh && sh.start ? escapeHtml(sh.start)+'\u2013'+escapeHtml(sh.finish || '\u2026') : (e && e.isAL ? 'Annual leave' : 'No shift today');
   const meta = [hrs ? hrs+'h' : '', (e && e.status === 'away') ? 'Away' : 'Home', bedLast ? autoMins(bedLast)+' in bed' : ''].filter(Boolean).map(x=> '<span>'+x+'</span>').join('');
   const alerts =
     (autoMeta.workPending && clockInState ? '<button type="button" class="d-alert" data-sum-pend="1">Left Connecteam at '+autoHM(autoMeta.workPending.t)+' \u2014 clock out?</button>' : '')+
     (syncEnabled && syncFailed ? '<button type="button" class="d-alert warn" data-sum-go="settings:sync">Sync isn\u2019t working</button>' : '');
-  const W = (cls, attrs, inner)=> '<div class="w '+cls+'" role="button" tabindex="0" '+attrs+'>'+inner+'</div>';
+  const N = (label, val, attrs, extra)=> '<div class="w n'+(extra || '')+'" role="button" tabindex="0" '+attrs+'><span class="n-l">'+label+'</span><b class="n-v">'+val+'</b></div>';
+  const hide = (v)=> hideMoney ? '\u2022\u2022\u2022\u2022' : v;
+  const bullets = pend.slice(0, 3).map(t=>{
+    const over = t.dueDate && t.dueDate < today;
+    return '<div class="d-bul"><i></i><span>'+escapeHtml(t.text)+'</span>'+(t.dueDate ? '<em class="'+(over ? 'late' : '')+'">'+(t.dueDate === today ? 'Today' : shortDate(t.dueDate))+'</em>' : '')+'</div>';
+  }).join('');
   box.innerHTML = alerts+'<div class="dash">'+
-    W('full w-today', 'data-sum-day', '<div class="w-t"><span>Today</span></div>'+
-      '<div class="w-hero'+(sh && sh.start ? '' : ' quiet')+'">'+shiftTxt+'</div><div class="w-meta">'+meta+'</div>'+
-      events.slice(0,2).map(t=> '<div class="w-line">'+escapeHtml(t)+'</div>').join('')+
-      '<div class="w-clock"><span class="w-clk'+(stale ? ' late' : '')+'"><i class="w-dot'+(on ? ' on' : '')+'"></i>'+clockTxt+'</span><button type="button" class="btn'+(on ? ' secondary' : '')+'" id="sumClockBtn">'+(on ? 'Clock out' : 'Clock in')+'</button></div>')+
-    W('', 'data-sum-go="'+(odo ? 'mileage' : 'settings:workhome')+'"', '<div class="w-t"><span>Van</span></div>'+(odo ? '<div class="w-n">'+fmtMi(odo.estimate)+'</div><div class="w-s">miles</div>' : '<div class="w-n quiet">Not set</div><div class="w-s">Add the odometer</div>'))+
-    W('', 'data-sum-go="budget:spend"', '<div class="w-t"><span>Spending</span></div><div class="w-n">'+m0(sst.spent)+'</div><div class="w-s'+(sst.budget && sst.left < 0 ? ' late' : '')+'">'+(sst.budget ? (sst.left >= 0 ? m0(sst.left)+' left this month' : m0(-sst.left)+' over this month') : 'this month')+'</div>'+(sst.budget ? '<div class="w-meter"><i class="'+(pct > 1 ? 'over' : '')+'" style="width:'+Math.min(100, pct*100)+'%"></i></div>' : ''))+
-    W('full w-week', 'data-sum-go="toil"', '<div class="w-t"><span>This week</span></div><div class="w-row"><b class="w-n">'+(Math.round(total*10)/10)+'h</b><span class="w-s">TOIL '+(toilBal >= 0 ? '+' : '\u2212')+Math.abs(Math.round(toilBal*10)/10)+'h</span></div><div class="d-bars">'+wk+'</div>')+
-    W('', 'data-sum-go="rent"', '<div class="w-t"><span>Rent owed</span></div>'+(rentSet ? '<div class="w-n">'+m0(owed.total)+'</div><div class="w-s">'+(owed.days.length)+' night'+(owed.days.length === 1 ? '' : 's')+'</div>' : '<div class="w-n quiet">Not set</div><div class="w-s">Add your rates</div>'))+
-    W('', 'data-sum-go="expenses"', '<div class="w-t"><span>To claim</span></div>'+(claim.length ? '<div class="w-n">'+money(claimTot)+'</div><div class="w-s">'+claim.length+' expense'+(claim.length === 1 ? '' : 's')+'</div>' : '<div class="w-n quiet">None</div><div class="w-s">All claimed</div>'))+
-    W('full', 'data-sum-go="todo"', '<div class="w-t"><span>To-dos</span>'+(pend.length ? '<b class="w-count">'+pend.length+'</b>' : '')+'</div>'+(todoRows || '<div class="w-empty">No to-dos \ud83d\udc4d <button type="button" class="w-link" id="sumAddTodo">Add one</button></div>'))+
-    W('w-gym', 'data-sum-go="gym"', '<div class="w-t"><span>Gym</span></div><div class="w-fig">'+fig+'</div><div class="w-s">Last 7 days</div>')+
-    W('', 'data-sum-go="budget:invest"', '<div class="w-t"><span>Portfolio</span></div>'+(money_ !== null ? '<div class="w-n">'+m0(money_)+'</div><div class="w-s'+(all !== null && all < 0 ? ' late' : '')+'">'+pfSub+'</div>' : '<div class="w-n quiet">None yet</div><div class="w-s">Add a holding</div>'))+
-  '</div>';
+    '<div class="w w-today" role="button" tabindex="0" data-sum-day><div class="w-t"><span>Today</span></div>'+
+      '<div class="w-toprow"><div class="w-hero'+(sh && sh.start ? '' : ' quiet')+'">'+shiftTxt+'</div><button type="button" class="btn'+(on ? ' secondary' : '')+'" id="sumClockBtn">'+(on ? 'Clock out' : 'Clock in')+'</button></div>'+
+      '<div class="w-meta"><span class="w-clk'+(stale ? ' late' : '')+'"><i class="w-dot'+(on ? ' on' : '')+'"></i>'+clockTxt+'</span>'+meta+'</div>'+
+      (events.length ? '<div class="w-line">'+escapeHtml(events.slice(0,2).join('   '))+'</div>' : '')+'</div>'+
+    '<div class="w w-week" role="button" tabindex="0" data-sum-go="toil"><div class="w-t"><span>This week</span><b class="w-wkn">'+(Math.round(total*10)/10)+'h</b><span class="w-toil">TOIL '+(toilBal >= 0 ? '+' : '\u2212')+Math.abs(Math.round(toilBal*10)/10)+'h</span></div><div class="d-bars">'+wk+'</div></div>'+
+    '<div class="dash-main">'+
+      '<div class="w w-gym" role="button" tabindex="0" data-sum-go="gym" aria-label="Gym"><div class="w-t"><span>Gym</span></div><div class="w-fig">'+fig+'</div></div>'+
+      '<div class="dash-list">'+
+        N('Van', odo ? fmtMi(odo.estimate) : 'Set', 'data-sum-go="'+(odo ? 'mileage' : 'settings:workhome')+'"', odo ? '' : ' add')+
+        N('Spending', hide(m0(sst.spent)), 'data-sum-go="budget:spend"', sst.budget && sst.left < 0 && !hideMoney ? ' late' : '')+
+        N('Rent owed', rentSet ? hide(m0(owed.total)) : 'Set', 'data-sum-go="rent"', rentSet ? '' : ' add')+
+        N('To claim', claim.length ? hide(money(claimTot)) : hide('\u00a30'), 'data-sum-go="expenses"', claim.length ? '' : ' dim')+
+        N('Portfolio', money_ !== null ? hide(m0(money_)) : 'Add', 'data-sum-go="budget:invest"', money_ !== null ? '' : ' add')+
+        (pend.length
+          ? '<div class="w w-todos" role="button" tabindex="0" data-sum-go="todo"><div class="w-t"><span>To-dos</span><b class="w-count">'+pend.length+'</b></div>'+bullets+'</div>'
+          : '<div class="w n add w-todos0" role="button" tabindex="0" data-sum-add><span class="n-l">To-dos</span><b class="n-v">Add</b></div>')+
+      '</div></div></div>';
   box.querySelectorAll('[data-sum-day]').forEach(el=> el.addEventListener('click', ()=> goToCalendarDate(today)));
   box.querySelectorAll('[data-sum-date]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); goToCalendarDate(el.dataset.sumDate); }));
   box.querySelectorAll('[data-sum-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.sumGo)));
@@ -4410,7 +4521,8 @@ function renderSummary(){
     const t = todos.find(x=> String(x.id)===el.dataset.sumTodo);
     if(t && t.dueDate) goToCalendarDate(t.dueDate); else goToView('todo');
   }));
-  const at = document.getElementById('sumAddTodo'); if(at) at.addEventListener('click', (ev)=>{ ev.stopPropagation(); openQuickAddTodoForm(); });
+  box.querySelectorAll('[data-sum-add]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); openQuickAddTodoForm(); }));
+  fitSummary(); requestAnimationFrame(fitSummary); setTimeout(fitSummary, 150);
   const cb = document.getElementById('sumClockBtn');
   if(cb) cb.addEventListener('click', async (ev)=>{ ev.stopPropagation(); await toggleClockIn(); if(document.getElementById('view-summary').classList.contains('active')) renderSummary(); });
 }
@@ -4597,6 +4709,9 @@ async function importInbox(){
 function spendEndpoint(){
   return 'https://firestore.googleapis.com/v1/projects/'+syncConfig.projectId+'/databases/(default)/documents/inbox?key='+syncConfig.apiKey;
 }
+function accOpen(title, status, ok, open, sub){
+  return '<details class="acc fin-auto"'+(open ? ' open' : '')+'><summary><span class="acc-t"><b>'+title+'</b>'+(sub ? '<small>'+sub+'</small>' : '')+'</span>'+(status ? '<span class="acc-s'+(ok ? ' ok' : '')+'">'+status+'</span>' : '')+'</summary><div class="acc-b">';
+}
 function spendEnsureSecret(){ if(!spendMeta.secret){ spendMeta.secret = spendRandom(24); saveKey('spend-meta', spendMeta); } return spendMeta.secret; }
 function spendBodyTemplate(){
   spendEnsureSecret();
@@ -4654,12 +4769,12 @@ function renderApplePaySetup(){
   const cardRows = cards.length ? cards.map(c=>{ const r = spendCardRoute(c); return '<div class="sum-row"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(c)+'</span><button type="button" class="chip-btn'+(r === 'business' ? ' active' : '')+'" data-ap-card="'+escapeHtml(c)+'">'+(r === 'business' ? 'Business \u2192 Expenses' : 'Personal \u2192 Finance')+'</button></div>'; }).join('')
     : '<div class="stat-sub" style="margin:0 0 4px;">Your cards show up here after their first tap.</div>';
   box.innerHTML =
-    '<div class="sum-row" style="padding-top:0;"><span class="sum-k">Last tap</span><span class="sum-v">'+lastTxt+'</span></div>'+
+    '<div class="sum-row" style="padding-top:0;"><span class="sum-k">Latest tap</span><span class="sum-v">'+lastTxt+'</span></div>'+
     (spendMeta.lastRaw ? '<div class="stat-sub" style="margin:0 0 6px;word-break:break-word;">Received: amount \u201c'+escapeHtml(spendMeta.lastRaw.a)+'\u201d\u2003shop \u201c'+escapeHtml(spendMeta.lastRaw.m)+'\u201d\u2003card \u201c'+escapeHtml(spendMeta.lastRaw.c)+'\u201d</div>' : '')+
     (l && l.empty ? '<div class="stat-sub sum-over" style="margin:0 0 6px;">The Shortcut sent blank details. In the automation, the blue pills in the Text must be Amount, Merchant and Card \u2014 not just \u201cShortcut Input\u201d.</div>' : '')+
-    '<div class="sum2-h" style="margin:10px 0 2px;"><span>Where each card goes</span></div>'+cardRows+
-    '<div class="fin-opts" style="margin:6px 0 10px;"><span class="stat-sub" style="margin:0;">Business if the card name has</span><input type="text" id="apBiz" value="'+escapeHtml(spendMeta.bizWords === undefined ? 'aqua' : spendMeta.bizWords)+'" style="width:120px;" autocomplete="off" autocapitalize="none"></div>'+
-    '<details class="fin-auto"'+(spendMeta.last ? '' : ' open')+'><summary>Set up the Shortcut</summary><ol class="sp-steps">'+
+    '<div class="acc-list">'+accOpen('Cards', cards.length ? cards.length+' card'+(cards.length === 1 ? '' : 's') : 'None yet', cards.length > 0, false, 'Which cards go to Expenses and which to Finance')+cardRows+
+    '<div class="fin-opts" style="margin:6px 0 10px;"><span class="stat-sub" style="margin:0;">Business if the card name has</span><input type="text" id="apBiz" value="'+escapeHtml(spendMeta.bizWords === undefined ? 'aqua' : spendMeta.bizWords)+'" style="width:120px;" autocomplete="off" autocapitalize="none"></div></div></details>'+
+    accOpen('Set up the Shortcut', (spendMeta.last && !spendMeta.last.empty) ? '\u2713 Working' : 'Start here', !!(spendMeta.last && !spendMeta.last.empty), false, 'On the phone you pay with')+'<ol class="sp-steps">'+
       '<li><b>Firebase \u2192 Firestore \u2192 Rules.</b> Paste these over what\u2019s there and tap Publish.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="rulesOpen">Copy rules (open)</button><button type="button" class="btn secondary small" data-ap-copy="rulesLocked">Copy rules (locked)</button></div></li>'+
       '<li>On the phone you pay with: Shortcuts \u2192 <b>Automation</b> tab \u2192 <b>+</b> \u2192 search <b>Wallet</b> and choose <b>When any card is tapped</b> (older iPhones call it <b>Transaction</b>). Pick your cards. Choose <b>Run Immediately</b>, turn <b>Notify When Run</b> off, tap <b>Next</b>, then <b>New Blank Automation</b>. It needs iOS 17 or later and Wallet allowed mobile data (Settings \u2192 Apps \u2192 Wallet).</li>'+
       '<li>Tap <b>Add Action</b>, search <b>Text</b> and add it. Paste this in.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="body">Copy text</button></div></li>'+
@@ -4667,14 +4782,14 @@ function renderApplePaySetup(){
       '<li>Add <b>Get Contents of URL</b>. Paste the URL, tap the small arrow to expand it, set <b>Method</b> to <b>POST</b>, add a header <b>Content-Type</b> = <b>application/json</b>, and set <b>Request Body</b> to <b>File</b> and choose the <b>Text</b>.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="url">Copy URL</button></div></li>'+
       '<li>Tap <b>Done</b>, then make a small real tap. The first time, the iPhone asks to send data to firestore.googleapis.com: choose <b>Always Allow</b>. Don\u2019t test with \u25b6, because with no real payment behind it the details come through blank.</li>'+
       '<li>Check it end to end.<div class="sp-btnrow"><button type="button" class="btn small" id="apTestBtn">Send test</button><button type="button" class="btn secondary small" id="apCheckBtn">Check inbox</button></div></li>'+
-    '</ol></details>'+
-    '<details class="fin-auto"'+(authOn || syncNeedsSignIn ? ' open' : '')+'><summary>Lock it down with a sign-in (recommended)</summary>'+
+    '</ol></div></details>'+
+    accOpen('Lock it down', authOn ? '\u2713 On' : 'Recommended', authOn, authOn || syncNeedsSignIn, 'Add a sign-in so only you can use your data')+
       '<div class="stat-sub" style="margin:6px 0;">Firebase \u2192 Authentication \u2192 enable Email/Password \u2192 add yourself. Sign in here, then use the locked rules.</div>'+
       '<input type="email" id="spAuthEmail" placeholder="Email" autocomplete="username" value="'+escapeHtml(authOn ? syncAuth.email : '')+'" style="margin-bottom:6px;">'+
       '<input type="password" id="spAuthPw" placeholder="Password" autocomplete="current-password" style="margin-bottom:6px;">'+
       '<button type="button" class="btn small" id="spAuthBtn">Sign in</button>'+
       (syncNeedsSignIn ? ' <span class="sum-over" style="font-size:12.5px;">Sign in needed</span>' : '')+
-    '</details>';
+    '</div></details></div>';
   const texts = {rulesLocked: ()=> spendRulesText(true), rulesOpen: ()=> spendRulesText(false), body: spendBodyTemplate, url: spendEndpoint};
   box.querySelectorAll('[data-ap-copy]').forEach(b=> b.addEventListener('click', ()=> copyText(texts[b.dataset.apCopy](), {rulesLocked:'Locked rules', rulesOpen:'Open rules', body:'Text', url:'URL'}[b.dataset.apCopy])));
   box.querySelectorAll('[data-ap-card]').forEach(b=> b.addEventListener('click', async ()=>{
@@ -6130,35 +6245,43 @@ function renderAutoSetup(){
   const h = autoMeta.home, la = autoMeta.lastAway, lt = autoMeta.lastTrip, ls = autoMeta.lastSleep;
   const when = ms=> { const x = new Date(ms); return shortDate(fmt(x))+' '+pad(x.getHours())+':'+pad(x.getMinutes()); };
   const row = (k, v)=> '<div class="sum-row"><span class="sum-k">'+k+'</span><span class="sum-v">'+v+'</span></div>';
+  const w = autoWork();
+  const latest =
+    (la ? row('Away check', escapeHtml(when(la.at)+'\u2003'+(la.miles != null ? la.miles+' mi from home\u2003' : '')+(la.result || la.note || ''))) : '')+
+    (lt ? row('CarPlay drive', escapeHtml(when(lt.at)+'\u2003'+lt.mins+' min')) : '')+
+    (autoMeta.lastWork ? row('Connecteam', escapeHtml(when(autoMeta.lastWork.at)+'\u2003'+autoMeta.lastWork.what+'\u2003'+autoMeta.lastWork.result)) : '')+
+    (ls ? row('Time in bed', ls.ignored ? 'ignored ('+autoMins(Math.max(0, ls.mins))+' isn\u2019t a night)' : escapeHtml(shortDate(ls.night)+'\u2003'+autoMins(ls.mins))) : '');
+  const heard = AUTO_EVENTS.filter(e=> (autoMeta.seen || {})[e.id]).length;
   box.innerHTML =
-    '<div class="sum2-h" style="margin:0 0 4px;"><span>Home</span></div>'+
-    '<div class="sp-add"><input type="text" id="autoHome" value="'+escapeHtml(h ? h.addr : '57 Downsway, Shoreham-by-Sea BN43 5GN')+'" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="autoHomeSave">'+(h ? 'Update' : 'Save')+'</button></div>'+
-    '<div class="stat-sub" style="margin:6px 0 10px;">'+(h ? 'Saved \u2713 \u2014 the away check counts you as away if you\u2019re more than '+(autoMeta.radius || 400)+' m from here.' : 'Save this first so the away check knows where home is.')+'</div>'+
-    (la ? row('Last away check', escapeHtml(when(la.at)+'\u2003'+(la.miles != null ? la.miles+' mi from home\u2003' : '')+(la.result || la.note || ''))) : '')+
-    (lt ? row('Last CarPlay drive', escapeHtml(when(lt.at)+'\u2003'+lt.mins+' min')) : '')+
-    (autoMeta.lastWork ? row('Last Connecteam signal', escapeHtml(when(autoMeta.lastWork.at)+'\u2003'+autoMeta.lastWork.what+'\u2003'+autoMeta.lastWork.result)) : '')+
-    (ls ? row('Last time in bed', ls.ignored ? 'ignored ('+autoMins(Math.max(0, ls.mins))+' isn\u2019t a night)' : escapeHtml(shortDate(ls.night)+'\u2003'+autoMins(ls.mins))) : '')+
-    (()=>{ const w = autoWork(); return '<div class="sum2-h" style="margin:14px 0 4px;"><span>Work clock (Connecteam)</span></div>'+
-      '<div class="stat-sub" style="margin:0 0 6px;">Opening Connecteam clocks you in. Leaving it clocks you out only after you\u2019ve been in at least '+w.minH+' hours.</div>'+
-      '<div class="sp-chips" style="margin-top:0;"><button type="button" class="chip-btn'+(w.mode === 'ask' ? ' active' : '')+'" data-work-mode="ask">Ask me first</button><button type="button" class="chip-btn'+(w.mode === 'auto' ? ' active' : '')+'" data-work-mode="auto">Clock out automatically</button></div>'+
-      '<div class="fin-srow" style="margin-top:8px;"><span>Count a close after at least</span><span class="fin-step"><button type="button" data-work-h="-1">\u2212</button><b>'+w.minH+' h</b><button type="button" data-work-h="1">+</button></span></div>'+
-      '<details class="fin-auto"><summary>Fine-tune</summary><div class="fin-opts" style="margin:6px 0;"><span class="stat-sub" style="margin:0;">Only clock in between</span><input type="time" id="workFrom" value="'+w.from+'"><input type="time" id="workTo" value="'+w.to+'"></div><div class="stat-sub" style="margin:0 0 6px;">Stops a quick look at the schedule on an evening off clocking you in.</div></details>'; })()+
-    '<div class="sum2-h" style="margin:16px 0 4px;"><span>Set up on your iPhone</span></div>'+
-    '<div class="stat-sub" style="margin:0 0 6px;">These send a small message to Home Base through the same link as Apple Pay capture, so get that working first. Each takes about three minutes. Open one below and follow it from the top.</div>'+
-    '<ul class="auto-before"><li>Location ones: the first run asks to use your location. Say <b>Allow</b>, and in Settings \u2192 Privacy &amp; Security \u2192 Location Services \u2192 Shortcuts choose <b>Always</b> if it\u2019s offered.</li><li>The first run also asks to send data to <b>firestore.googleapis.com</b>. Choose <b>Always Allow</b>.</li></ul>'+
-    '<div class="sp-btnrow" style="margin-bottom:6px;"><button type="button" class="btn secondary small" id="autoCopyUrlBtn">Copy URL</button><button type="button" class="btn secondary small" id="autoCheckBtn">Check for new signals</button></div>'+
-    AUTO_EVENTS.map(e=>{
+    '<div class="acc-list">'+
+      accOpen('Home address', h ? '\u2713 Saved' : 'Not set', !!h, false, 'Where the away check measures from')+
+        '<div class="sp-add"><input type="text" id="autoHome" value="'+escapeHtml(h ? h.addr : '57 Downsway, Shoreham-by-Sea BN43 5GN')+'" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="autoHomeSave">'+(h ? 'Update' : 'Save')+'</button></div>'+
+        '<div class="stat-sub" style="margin:6px 0 0;">'+(h ? 'The away check counts you as away if you\u2019re more than '+(autoMeta.radius || 400)+' m from here.' : 'Save this first so the away check knows where home is.')+'</div></div></details>'+
+      accOpen('Work clock (Connecteam)', w.mode === 'ask' ? 'Asks first' : 'Automatic', true, false, 'What happens when you open or leave Connecteam')+
+        '<div class="stat-sub" style="margin:0 0 8px;">Opening Connecteam clocks you in. Leaving it clocks you out only after you\u2019ve been in at least '+w.minH+' hours.</div>'+
+        '<div class="sp-chips" style="margin-top:0;"><button type="button" class="chip-btn'+(w.mode === 'ask' ? ' active' : '')+'" data-work-mode="ask">Ask me first</button><button type="button" class="chip-btn'+(w.mode === 'auto' ? ' active' : '')+'" data-work-mode="auto">Clock out automatically</button></div>'+
+        '<div class="fin-srow" style="margin-top:8px;"><span>Count a close after at least</span><span class="fin-step"><button type="button" data-work-h="-1">\u2212</button><b>'+w.minH+' h</b><button type="button" data-work-h="1">+</button></span></div>'+
+        '<div class="fin-opts" style="margin:8px 0 4px;"><span class="stat-sub" style="margin:0;">Only clock in between</span><input type="time" id="workFrom" value="'+w.from+'"><input type="time" id="workTo" value="'+w.to+'"></div>'+
+        '<div class="stat-sub" style="margin:0;">Stops a quick look at the schedule on an evening off clocking you in.</div></div></details>'+
+      accOpen('Before you start', '', false, false, 'Two things the iPhone asks the first time')+
+        '<ul class="auto-before"><li>Location ones: the first run asks to use your location. Say <b>Allow</b>, and in Settings \u2192 Privacy &amp; Security \u2192 Location Services \u2192 Shortcuts choose <b>Always</b> if it\u2019s offered.</li><li>The first run also asks to send data to <b>firestore.googleapis.com</b>. Choose <b>Always Allow</b>.</li><li>These use the same link as Apple Pay capture, so get that working first.</li></ul></div></details>'+
+      accOpen('Latest activity', latest ? '' : 'Nothing yet', false, false, 'What Home Base last heard')+(latest || '<div class="stat-sub">Nothing has come through yet.</div>')+'</div></details>'+
+    '</div>'+
+    '<div class="set-label">The 7 automations<span class="auto-count">'+heard+' of 7 heard</span></div>'+
+    '<div class="stat-sub" style="margin:0 2px 8px;">Set them up one at a time. Open one and follow it from the top: a tick means Home Base has heard from it.</div>'+
+    '<div class="sp-btnrow" style="margin-bottom:8px;"><button type="button" class="btn secondary small" id="autoCopyUrlBtn">Copy URL</button><button type="button" class="btn secondary small" id="autoCheckBtn">Check for new signals</button></div>'+
+    '<div class="acc-list">'+AUTO_EVENTS.map(e=>{
       const seen = (autoMeta.seen || {})[e.id];
       const rest = e.loc ? 'LAT \u2192 <b>Current Location</b>, tap the pill, <b>Latitude</b>. LON \u2192 <b>Current Location</b>, <b>Longitude</b>. ' : '';
-      return '<details class="fin-auto"><summary>'+escapeHtml(e.title)+' <span class="auto-state'+(seen ? ' ok' : '')+'">'+(seen ? '\u2713 heard '+when(seen) : 'not heard yet')+'</span></summary>'+
-      '<div class="stat-sub" style="margin:6px 0 0;"><b>'+e.phone+'.</b> '+escapeHtml(e.what)+'</div><ol class="sp-steps">'+
+      return accOpen(escapeHtml(e.title), seen ? '\u2713 Heard '+when(seen) : 'Not set up', !!seen, false, e.phone)+
+      '<div class="stat-sub" style="margin:0 0 4px;">'+escapeHtml(e.what)+'</div><ol class="sp-steps">'+
       '<li>Shortcuts \u2192 <b>Automation</b> tab \u2192 <b>+</b> \u2192 '+e.trigger+'. Choose <b>Run Immediately</b>, turn <b>Notify When Run</b> off, tap <b>Next</b>, then <b>New Blank Automation</b>.</li>'+
       (e.loc ? '<li>Tap <b>Add Action</b>, search <b>Get Current Location</b> and add it.</li>' : '')+
       '<li>Add another action, <b>Text</b>. Paste this in.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-auto-copy="'+e.id+'">Copy text</button></div></li>'+
       '<li>Turn the capital words into blue pills. Tap the word, delete it, then tap the variable in the bar above the keyboard. '+rest+'DATE \u2192 <b>Current Date</b>, tap its pill, <b>Date Format</b>, <b>ISO 8601</b>.</li>'+
       '<li>Add <b>Get Contents of URL</b>. Paste the URL, tap the small arrow to expand it, set <b>Method</b> to <b>POST</b>, add a header <b>Content-Type</b> = <b>application/json</b>, and set <b>Request Body</b> to <b>File</b> and choose the <b>Text</b>.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-auto-url>Copy URL</button></div></li>'+
-      '<li>Tap <b>Done</b>. <b>Test:</b> '+e.test+' Then come back here and tap Check for new signals: the tick above should appear.</li></ol></details>';
-    }).join('');
+      '<li>Tap <b>Done</b>. <b>Test:</b> '+e.test+' Then come back here and tap Check for new signals: the tick above should appear.</li></ol></div></details>';
+    }).join('')+'</div>';
   document.getElementById('autoHomeSave').addEventListener('click', async ()=>{
     const b = document.getElementById('autoHomeSave'); b.disabled = true; b.textContent = 'Finding\u2026';
     const ok = await autoSetHome(document.getElementById('autoHome').value);
@@ -6679,8 +6802,6 @@ function renderStackedBarChart(containerId, bars, seriesColors, seriesLabels){
   '</div>';
   container.innerHTML = '<div class="chart-bars">'+barsHtml+'</div>'+legend;
 }
-let trendsData = null;
-let trendsChartType = 'hours';
 const MONTH_NAMES_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function computeTrendsData(){
   const today = todayStr();
@@ -6746,136 +6867,102 @@ function allMonthKeys(...objs){
   objs.forEach(o=> Object.keys(o).forEach(k=>set.add(k)));
   return Array.from(set).sort().slice(-12);
 }
-function renderSelectedChart(){
-  const d = trendsData;
-  document.getElementById('trendsClockInfo').innerHTML = '';
-  const titleEl = document.getElementById('trendsChartTitle');
-  if(trendsChartType==='hours'){
-    titleEl.textContent = 'Hours worked by month';
-    const keys = allMonthKeys(d.monthlyHours);
-    renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyHours[k]||0})));
-  }else if(trendsChartType==='clock'){
-    titleEl.textContent = 'Clock in / clock out';
-    const clockInfo = document.getElementById('trendsClockInfo');
-    if(d.startMins.length===0 && d.finishMins.length===0){
-      clockInfo.innerHTML = '<div class="empty">Log some shifts to see this.</div>';
-      document.getElementById('trendsChartArea').innerHTML = '';
-    }else{
-      const avgStart = d.startMins.length ? d.startMins.reduce((a,b)=>a+b,0)/d.startMins.length : null;
-      const avgFinish = d.finishMins.length ? d.finishMins.reduce((a,b)=>a+b,0)/d.finishMins.length : null;
-      clockInfo.innerHTML =
-        '<div class="trend-row"><span>Average clock in</span><strong>'+(avgStart!=null?minutesToClock(avgStart):'—')+'</strong></div>'+
-        '<div class="trend-row"><span>Average clock out</span><strong>'+(avgFinish!=null?minutesToClock(avgFinish):'—')+'</strong></div>';
-      const buckets = {};
-      d.startMins.forEach(m=>{ const hr = Math.floor(m/60); buckets[hr] = (buckets[hr]||0)+1; });
-      const hrs = Object.keys(buckets).map(Number).sort((a,b)=>a-b);
-      renderBarChart('trendsChartArea', hrs.map(hr=>({label:minutesToClock(hr*60).replace(':00',''), value:buckets[hr]})));
-    }
-  }else if(trendsChartType==='homeaway'){
-    titleEl.textContent = 'Home vs Away nights by month';
-    const keys = allMonthKeys(d.monthlyHome, d.monthlyAway);
-    renderStackedBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), values:[d.monthlyHome[k]||0, d.monthlyAway[k]||0]})), [getComputedStyle(document.documentElement).getPropertyValue('--home').trim(), getComputedStyle(document.documentElement).getPropertyValue('--away').trim()], ['Home','Away']);
-  }else if(trendsChartType==='miles'){
-    titleEl.textContent = 'Miles by month';
-    const keys = allMonthKeys(d.monthlyBizMiles, d.monthlyPersMiles);
-    renderStackedBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), values:[d.monthlyBizMiles[k]||0, d.monthlyPersMiles[k]||0]})), [getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(), getComputedStyle(document.documentElement).getPropertyValue('--gold').trim()], ['Business','Personal']);
-  }else if(trendsChartType==='toil'){
-    titleEl.textContent = 'Hours worked by week';
-    renderBarChart('trendsChartArea', d.toilWeeks.map(w=>({label:shortDate(w.weekStart), value:w.total})));
-  }else if(trendsChartType==='todos'){
-    titleEl.textContent = 'To-dos completed by month';
-    const keys = allMonthKeys(d.monthlyTodos);
-    renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyTodos[k]||0})));
-  }else if(trendsChartType==='sleep'){
-    titleEl.textContent = 'Time in bed (hours a night)';
-    const nights = Array.from(new Set(sleepLog.map(x=> x.night))).sort().slice(-14);
-    if(!nights.length) document.getElementById('trendsChartArea').innerHTML = '<div class="empty">Nothing yet \u2014 set up the bed automations in Settings.</div>';
-    else renderBarChart('trendsChartArea', nights.map(n=> ({label:shortDate(n), value:Math.round(autoBedFor(n)/6)/10})));
-  }else if(trendsChartType==='expenses'){
-    titleEl.textContent = 'Expenses logged by month (£)';
-    const keys = allMonthKeys(d.monthlyExpenses);
-    renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyExpenses[k]||0})));
-  }else if(trendsChartType==='rent'){
-    titleEl.textContent = 'Rent paid by month (£)';
-    const keys = allMonthKeys(d.monthlyRent);
-    renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyRent[k]||0})));
-  }else if(trendsChartType==='toilbalance'){
-    titleEl.textContent = 'TOIL balance over time';
-    renderBarChart('trendsChartArea', d.toilBalanceSeries.map(w=>({label:shortDate(w.weekStart), value:w.balance})));
-  }else if(trendsChartType==='al'){
-    titleEl.textContent = 'Annual Leave hours by month';
-    const keys = allMonthKeys(d.monthlyAL);
-    if(keys.length===0){ document.getElementById('trendsChartArea').innerHTML = '<div class="empty">No Annual Leave logged yet.</div>'; }
-    else renderBarChart('trendsChartArea', keys.map(k=>({label:monthLabel(k), value:d.monthlyAL[k]||0})));
-  }
+// ---------- Trends: one section for each thing the automations record ----------
+const TR_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function trBars(items, o){
+  o = o || {};
+  const max = Math.max.apply(null, items.map(i=> i.v).concat([0.0001]));
+  return '<div class="tr-bars">'+items.map(i=>
+    '<div class="tr-col'+(i.hl ? ' hl' : '')+'"><span class="tr-v">'+(i.v > 0 && (o.vals === 'all' || i.hl) ? (o.fmt ? o.fmt(i.v) : i.v) : '')+'</span>'+
+    '<div class="tr-plot"><span class="tr-bar" style="height:'+(i.v > 0 ? Math.max(4, i.v/max*100) : 0)+'%"></span></div><span class="tr-l">'+i.l+'</span></div>').join('')+'</div>';
 }
 function renderTrends(){
-  trendsData = computeTrendsData();
-  const d = trendsData;
-  const section = document.getElementById('trendsSection');
-  const weeksTracked = Math.max(1, d.totalDays/7);
-  const avgHoursPerWeek = d.hoursTotal/weeksTracked;
-  const toilBalance = computeToilWeeks().balance;
-  const rentPaid = rentHistory.reduce((s,r)=>s+r.amount,0);
-  const rentOwed = computeOwed().total;
-  const bizMilesTotal = mileageTrips.filter(t=>t.category==='business').reduce((s,t)=>s+t.miles,0);
-  const persMilesTotal = mileageTrips.filter(t=>t.category==='personal').reduce((s,t)=>s+t.miles,0);
-  const todosCompleted = todos.filter(t=>t.kind==='task' && t.done).length;
-  const totalTripCount = mileageTrips.length;
-  const avgTripMiles = totalTripCount ? (bizMilesTotal+persMilesTotal)/totalTripCount : 0;
-  const totalExpenses = expenses.reduce((s,e)=>s+e.amount,0);
-  const countriesVisited = travelCountries.length;
+  const box = document.getElementById('trendsBody');
+  if(!box) return;
+  const today = todayStr(), ym = today.slice(0,7);
+  const avg = a=> a.length ? a.reduce((x,y)=> x+y, 0)/a.length : null;
+  const r1 = n=> Math.round(n*10)/10;
+  const section = (title, goto, headline, caption, chart, stats)=>
+    '<section class="tr">'+
+      (goto ? '<button type="button" class="tr-h" data-tr-go="'+goto+'"><span>'+title+'</span><i class="tr-chev"></i></button>' : '<div class="tr-h"><span>'+title+'</span></div>')+
+      (headline ? '<div class="tr-head"><b>'+headline+'</b><span>'+caption+'</span></div>' : '')+
+      chart+
+      (stats ? '<div class="tr-stats">'+stats.map(x=> '<div><b>'+x[1]+'</b><span>'+x[0]+'</span></div>').join('')+'</div>' : '')+
+    '</section>';
+  const none = (msg, goto, btn)=> '<div class="tr-none">'+msg+(goto ? ' <button type="button" class="w-link" data-tr-go="'+goto+'">'+btn+'</button>' : '')+'</div>';
+  const out = [];
 
-  const headlineCards = [
-    ['<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>', d.hoursTotal.toFixed(0)+'h', 'Hours worked'],
-    ['<path d="M12 3a9 9 0 00-9 9h18a9 9 0 00-9-9z"/><line x1="12" y1="12" x2="12" y2="19"/>', toilBalance.toFixed(1)+'h', 'TOIL balance'],
-    ['<path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/>', (bizMilesTotal+persMilesTotal).toFixed(0), 'Miles logged'],
-    ['<path d="M3 12l18-8-7 18-3-7-8-3z"/>', countriesVisited, 'Countries visited']
-  ];
-  document.getElementById('trendsHeadlineGrid').innerHTML = headlineCards.map(c=>
-    '<div class="trend-headline-card"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+c[0]+'</svg><div class="thc-value">'+c[1]+'</div><div class="thc-label">'+c[2]+'</div></div>'
-  ).join('');
+  // ---- Work: shifts, clock in and clock out ----
+  const wk0 = mondayOf(today), weeks = [];
+  for(let i = 7; i >= 0; i--){
+    const st = addDays(wk0, -7*i); let h = 0;
+    for(let k = 0; k < 7; k++){ const d = addDays(st, k); if(d > today) break; const en = calendarData[d]; const hh = en ? shiftHours(en.shift) : null; if(hh) h += hh; }
+    weeks.push({st, h, hl: i === 0});
+  }
+  const startM = [], endM = [];
+  weeks.forEach(w=>{ for(let k = 0; k < 7; k++){ const d = addDays(w.st, k), en = calendarData[d]; if(d > today || !en || !en.shift) continue; const sh = en.shift;
+    if(sh.start){ const m = sh.start.split(':'); startM.push(+m[0]*60 + +m[1]); } if(sh.start && sh.finish){ const m = sh.finish.split(':'); endM.push(+m[0]*60 + +m[1]); } } });
+  const done = weeks.filter(w=> !w.hl && w.h > 0), avgWk = avg(done.map(w=> w.h));
+  out.push(section('Work', 'toil', avgWk !== null ? r1(avgWk)+'h' : '', 'a week, last '+done.length+' weeks',
+    weeks.some(w=> w.h > 0) ? trBars(weeks.map(w=> ({v:w.h, hl:w.hl, l:parseYMD(w.st).getDate()+'/'+(parseYMD(w.st).getMonth()+1)})), {vals:'all', fmt:v=> Math.round(v)}) : none('No shifts yet. Connecteam clock-ins land here.', 'settings:automations', 'Set up'),
+    [['Clock in', startM.length ? minutesToClock(Math.round(avg(startM))) : '\u2014'], ['Clock out', endM.length ? minutesToClock(Math.round(avg(endM))) : '\u2014'], ['TOIL', (computeToilWeeks().balance >= 0 ? '+' : '\u2212')+Math.abs(r1(computeToilWeeks().balance))+'h']]));
 
-  const homePct = d.totalDays ? Math.round((d.homeDaysTotal/d.totalDays)*100) : 0;
-  const awayPct = 100 - homePct;
-  document.getElementById('trendsSplitBar').innerHTML =
-    '<div class="trend-split-bar">'+
-      (homePct>0 ? '<div style="width:'+homePct+'%;background:var(--home);">'+(homePct>12?homePct+'%':'')+'</div>' : '')+
-      (awayPct>0 ? '<div style="width:'+awayPct+'%;background:var(--away);">'+(awayPct>12?awayPct+'%':'')+'</div>' : '')+
-    '</div>'+
-    '<div class="trend-split-legend"><span><i style="background:var(--home);"></i>Home ('+d.homeDaysTotal+')</span><span><i style="background:var(--away);"></i>Away ('+d.awayDaysTotal+')</span></div>';
+  // ---- Sleep: the Bed automations ----
+  const nights = []; for(let i = 14; i >= 1; i--){ const n = addDays(today, -i), m = autoBedFor(n); nights.push({n, m, l:['S','M','T','W','T','F','S'][parseYMD(n).getDay()], hl: i === 1}); }
+  const slept = nights.filter(x=> x.m != null);
+  out.push(section('Sleep', '', slept.length ? autoMins(Math.round(avg(slept.map(x=> x.m)))) : '', 'in bed, on average',
+    slept.length ? trBars(nights.map(x=> ({v:(x.m || 0)/60, hl:x.hl, l:x.l})), {vals:'hl', fmt:v=> r1(v)+'h'}) : none('No nights yet. The Bed automations record this.', 'settings:automations', 'Set up'),
+    slept.length ? [['Longest', autoMins(Math.max.apply(null, slept.map(x=> x.m)))], ['Shortest', autoMins(Math.min.apply(null, slept.map(x=> x.m)))], ['Tracked', slept.length+' of 14']] : null));
 
+  // ---- Driving: CarPlay ----
+  const months = []; { const d0 = parseYMD(today); for(let i = 5; i >= 0; i--){ const d = new Date(d0.getFullYear(), d0.getMonth()-i, 1); months.push({ym:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'), l:TR_MON[d.getMonth()], hl: i === 0}); } }
+  const mTrips = ym2=> mileageTrips.filter(t=> t.date && t.date.slice(0,7) === ym2);
+  const tm = mTrips(ym), tmMiles = tm.reduce((a,t)=> a + t.miles, 0), tmMins = tm.reduce((a,t)=> a + (t.mins || 0), 0);
+  const biz = tm.filter(t=> t.category === 'business').reduce((a,t)=> a + t.miles, 0);
+  out.push(section('Driving', 'mileage', mileageTrips.length ? fmtMi(tmMiles, 1)+' mi' : '', 'this month, '+tm.length+' trip'+(tm.length === 1 ? '' : 's')+(tmMins ? ', '+autoMins(tmMins)+' driving' : ''),
+    mileageTrips.length ? trBars(months.map(m=> ({v:mTrips(m.ym).reduce((a,t)=> a + t.miles, 0), hl:m.hl, l:m.l})), {vals:'all', fmt:v=> Math.round(v)}) : none('No trips yet. CarPlay drives land here as drafts.', 'settings:automations', 'Set up'),
+    mileageTrips.length ? [['Business', fmtMi(biz, 1)+' mi'], ['Personal', fmtMi(tmMiles - biz, 1)+' mi'], ['Average trip', tm.length ? fmtMi(tmMiles/tm.length, 1)+' mi' : '\u2014']] : null));
+
+  // ---- Nights away: the 4:30am check ----
+  const awayIn = ym2=> Object.keys(calendarData).filter(d=> d.slice(0,7) === ym2 && d <= today && calendarData[d].status === 'away').length;
+  const awayAll = Object.keys(calendarData).filter(d=> d <= today && calendarData[d].status === 'away').length;
+  const homeAll = Object.keys(calendarData).filter(d=> d <= today && calendarData[d].status !== 'away').length;
+  const dayNo = parseYMD(today).getDate();
+  out.push(section('Nights away', 'calendar', String(awayIn(ym)), 'this month, '+Math.max(0, dayNo - awayIn(ym))+' at home',
+    trBars(months.map(m=> ({v:awayIn(m.ym), hl:m.hl, l:m.l})), {vals:'all'}),
+    [['Away in total', String(awayAll)], ['Home in total', String(homeAll)], ['Away share', (awayAll + homeAll ? Math.round(awayAll/(awayAll + homeAll)*100) : 0)+'%']]));
+
+  // ---- Gym ----
+  const gWeeks = weeks.map(w=>{ const set = new Set(); for(let k = 0; k < 7; k++){ const d = addDays(w.st, k); if(gymLog.some(l=> l.date === d && !l.wu)) set.add(d); } return {n:set.size, dates:[...set], hl:w.hl, l:parseYMD(w.st).getDate()+'/'+(parseYMD(w.st).getMonth()+1)}; });
+  const allGymDates = [].concat.apply([], gWeeks.map(w=> w.dates)), gymMins = allGymDates.map(d=> gymTiming(d)).filter(Boolean).map(t=> t.mins);
+  const setsThisWeek = gymLog.filter(l=> !l.wu && l.date >= wk0 && l.date <= today).length;
+  const gDone = gWeeks.filter(w=> !w.hl);
+  out.push(section('Gym', 'gym', gymLog.length ? String(gWeeks[gWeeks.length-1].n) : '', 'session'+(gWeeks[gWeeks.length-1].n === 1 ? '' : 's')+' this week'+(gDone.length && gymLog.length ? ', '+r1(avg(gDone.map(w=> w.n)))+' a week on average' : ''),
+    gymLog.length ? trBars(gWeeks.map(w=> ({v:w.n, hl:w.hl, l:w.l})), {vals:'all'}) : none('No sessions yet. Log a set to start.', 'gym', 'Open Gym'),
+    gymLog.length ? [['Average session', gymMins.length ? Math.round(avg(gymMins))+' min' : '\u2014'], ['Sets this week', String(setsThisWeek)], ['Sessions, 8 weeks', String(allGymDates.length)]] : null));
+
+  // ---- Spending: Apple Pay ----
+  const sp = months.map(m=> ({...m, v:spendStats(m.ym).spent}));
+  const spNow = spendStats(ym), cats = spendCatList();
+  const topCat = Object.keys(spNow.by).filter(k=> k !== '_').sort((a,b)=> spNow.by[b] - spNow.by[a])[0];
+  const spHist = sp.filter(x=> !x.hl && x.v > 0);
+  out.push(section('Spending', 'budget:spend', spendTxns.length ? '\u00a3'+Math.round(spNow.spent).toLocaleString('en-GB') : '', 'this month'+(spHist.length ? ', \u00a3'+Math.round(avg(spHist.map(x=> x.v))).toLocaleString('en-GB')+' a month before' : ''),
+    spendTxns.length ? trBars(sp.map(x=> ({v:x.v, hl:x.hl, l:x.l})), {vals:'hl', fmt:v=> '\u00a3'+Math.round(v).toLocaleString('en-GB')}) : none('No spending yet. Apple Pay taps land here.', 'settings:applepay', 'Set up'),
+    spendTxns.length ? [['Biggest', topCat ? ((cats.find(c=> c.id === topCat) || {name:'Other'}).name+' \u00a3'+Math.round(spNow.by[topCat])) : '\u2014'], ['Payments', String(spNow.tx.length)], ['To sort', String(spNow.uncat)]] : null));
+
+  // ---- Totals ----
+  const d = computeTrendsData();
   const rows = [
-    ['Days tracked', d.totalDays],
-    ['Average hours / week', avgHoursPerWeek.toFixed(1)+'h'],
-    ['Annual Leave taken', d.alHours.toFixed(1)+'h ('+d.alDays+' day'+(d.alDays===1?'':'s')+')'],
-    ['Rent paid to date', money(rentPaid)],
-    ['Rent owed now', money(rentOwed)],
-    ['Business miles', bizMilesTotal.toFixed(1)+' mi'],
-    ['Personal miles', persMilesTotal.toFixed(1)+' mi'],
-    ['Trips logged', totalTripCount],
-    ['Average trip length', avgTripMiles.toFixed(1)+' mi'],
-    ['Expenses logged', money(totalExpenses)],
-    ['To-dos completed', todosCompleted]
+    ['Hours worked', d.hoursTotal.toFixed(0)+'h'],
+    ['Annual leave taken', d.alHours.toFixed(1)+'h ('+d.alDays+' day'+(d.alDays === 1 ? '' : 's')+')'],
+    ['Miles logged', fmtMi(mileageTrips.reduce((a,t)=> a + t.miles, 0), 1)+' mi'],
+    ['Expenses logged', money(expenses.reduce((a,e)=> a + e.amount, 0))],
+    ['To-dos completed', String(todos.filter(t=> t.kind === 'task' && t.done).length)]
   ];
-  section.innerHTML = rows.map(r=>'<div class="trend-row"><span>'+r[0]+'</span><strong>'+r[1]+'</strong></div>').join('');
+  out.push('<section class="tr"><div class="tr-h"><span>Totals since 1 July</span></div>'+rows.map(r=> '<div class="trend-row"><span>'+r[0]+'</span><strong>'+r[1]+'</strong></div>').join('')+'</section>');
 
-  const chartTypes = [
-    ['hours','Hours/month'], ['clock','Clock in/out'], ['homeaway','Home vs Away'],
-    ['miles','Miles/month'], ['toil','Hours/week'], ['toilbalance','TOIL trend'],
-    ['al','AL/month'], ['rent','Rent/month'], ['todos','To-dos done'], ['expenses','Expenses'], ['sleep','Time in bed']
-  ];
-  const picker = document.getElementById('trendsChartPicker');
-  picker.innerHTML = chartTypes.map(ct=>'<button type="button" class="chip-btn'+(ct[0]===trendsChartType?' active':'')+'" data-chart="'+ct[0]+'">'+ct[1]+'</button>').join('');
-  picker.querySelectorAll('[data-chart]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      trendsChartType = btn.dataset.chart;
-      picker.querySelectorAll('.chip-btn').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      renderSelectedChart();
-    });
-  });
-  renderSelectedChart();
+  box.innerHTML = out.join('');
+  box.querySelectorAll('[data-tr-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.trGo)));
 }
 // ---------- body map (interactive anatomy diagram) ----------
 // Geometry is drawn for the viewer's LEFT half (x < 150) and mirrored for the right half.
@@ -7302,7 +7389,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v18.0';
+const APP_VERSION = 'v18.2';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
