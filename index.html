@@ -978,7 +978,7 @@ body[data-view="trends"] #moneyEyeBtn{display:inline-flex;}
 .tr-bars{display:flex;align-items:flex-end;gap:5px;}
 .tr-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;}
 .tr-v{font-size:11px;font-weight:700;color:var(--ink);height:13px;line-height:13px;white-space:nowrap;}
-.tr-plot{width:100%;height:58px;display:flex;align-items:flex-end;justify-content:center;}
+.tr-plot{width:100%;height:112px;display:flex;align-items:flex-end;justify-content:center;}
 .tr-bar{display:block;width:100%;max-width:30px;background:var(--tint-2);border-radius:6px 6px 2px 2px;}
 .tr-col.hl .tr-bar{background:var(--home);}
 .tr-l{font-size:11px;color:var(--ink-soft);white-space:nowrap;}
@@ -1008,6 +1008,141 @@ details.acc[open] > summary::after{transform:rotate(-135deg);margin-bottom:-3px;
 .set-head .chip-btn[data-set-back],.fin-head .chip-btn[data-fin-back]{display:none;}
 .set-head{margin:0;}
 .menu-grid{grid-auto-rows:minmax(96px,112px);}
+
+/* ---------- compact lists: a few rows on the page, "View all" for the rest ---------- */
+#sheetOverlay{z-index:120;}
+.va-btn{margin-top:8px;}
+.list-sheet{display:flex;flex-direction:column;height:86vh;max-height:86vh;overflow:hidden;padding:14px 16px 0;max-width:520px;}
+.ls-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.ls-top h3{font-size:20px;font-weight:800;margin:0;letter-spacing:-.02em;}
+.ls-top .sheet-close{float:none;width:44px;height:44px;font-size:26px;}
+.ls-search{margin:6px 0 8px;width:100%;}
+.ls-filters{margin:0 0 6px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;}
+.ls-filters .chip-btn{flex:none;}
+.ls-sum{margin:0 0 4px;min-height:16px;}
+#listBody{flex:1;min-height:0;overflow-y:auto;margin:0 -16px;padding:0 16px 20px;-webkit-overflow-scrolling:touch;}
+.ls-g{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;margin-top:6px;padding:0;background:var(--surface);border:0;border-bottom:1px solid var(--line);color:var(--ink);font-size:15px;font-weight:800;position:sticky;top:0;z-index:1;}
+.ls-g span:last-child{font-size:12.5px;font-weight:600;color:var(--ink-soft);}
+.ls-g.closed span:first-child::after{content:' \203a';color:var(--ink-soft);}
+.tgl-h{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;padding:0;background:none;border:0;color:var(--ink);font-size:16px;font-weight:700;text-align:left;}
+.tgl-h i{width:8px;height:8px;border-right:2px solid var(--ink-soft);border-bottom:2px solid var(--ink-soft);transform:rotate(45deg);margin:0 4px 3px 0;transition:transform .2s ease;}
+.tgl-h[aria-expanded="true"] i{transform:rotate(-135deg);margin-bottom:-3px;}
+.tw-h{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:6px;align-items:center;width:100%;min-height:44px;padding:0;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);font-size:14px;text-align:left;}
+.tw-h span:not(:first-child){text-align:right;}
+.tw-d{padding:6px 0 10px;font-size:13px;color:var(--ink-soft);display:grid;gap:3px;}
+
+/* ---------- compact spending, odometer, one-line rows ---------- */
+.acc-row{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:58px;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer;}
+.acc-row b{font-size:16px;font-weight:700;}
+.sp-chips.nowrap{flex-wrap:nowrap;overflow-x:auto;padding-bottom:2px;}
+.sp-chips.nowrap .chip-btn{flex:none;}
+#mileageTotalsCard .big{font-size:30px;}
+#vanOdoBox .acc-s{font-size:15px;}
+
+/* ---------- gym map that fits, trends tabs, button rows ---------- */
+#gymBodyStage .bm-svg{width:auto;max-width:100%;height:min(50vh,420px);}
+.tr-tabs{flex-wrap:nowrap;overflow-x:auto;margin:0 -2px 8px;padding:0 2px 2px;}
+.tr-tabs .chip-btn{flex:none;}
+.sp-btnrow .va-btn{flex:1;width:auto;margin:0;}
+#mileageTripMore .va-btn{margin:0;}
+
+input[type=search]{font-size:16px;min-height:44px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--field);color:var(--ink);box-sizing:border-box;-webkit-appearance:none;appearance:none;}
+input[type=search]:focus{outline:none;border-color:var(--home);box-shadow:0 0 0 3px var(--home-tint);}
+input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;}
+
+/* ---------- gym targets ---------- */
+.gt-row{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:56px;border-bottom:1px solid var(--line);}
+.gt-n{display:flex;flex-direction:column;font-size:16px;font-weight:600;}
+.gt-n small{font-size:12px;font-weight:500;color:var(--ink-soft);}
+.gt-total{display:flex;justify-content:space-between;align-items:center;min-height:52px;font-size:15px;margin-bottom:6px;}
+
+.fin-step{gap:6px;}
+.fin-step button{width:44px;height:44px;font-size:20px;}
+.fin-step b{min-width:30px;font-size:16px;}
+
+/* ---------- month, then day ---------- */
+.ls-sumrow{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;}
+.ls-sumrow .ls-sum{margin:0;}
+.ls-all{flex:none;background:none;border:0;color:var(--home);font-size:14px;font-weight:700;min-height:44px;padding:0 2px 0 10px;}
+.ls-g{margin-top:0;z-index:2;}
+.ls-g::before{content:'';flex:none;width:8px;height:8px;border-right:2px solid var(--ink-soft);border-bottom:2px solid var(--ink-soft);transform:rotate(45deg);margin:0 10px 3px 2px;transition:transform .15s ease;}
+.ls-g.closed::before{transform:rotate(-45deg);margin-bottom:0;}
+.ls-g.closed span:first-child::after{content:none;}
+.ls-g span:first-of-type{flex:1;text-align:left;}
+.ls-d{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;padding:0 0 0 18px;background:var(--surface);border:0;border-bottom:1px solid var(--line);color:var(--ink-soft);font-size:13.5px;font-weight:700;position:sticky;top:45px;z-index:1;text-align:left;}
+.ls-d span:last-child{font-size:12px;font-weight:600;}
+.ls-d::before{content:'';flex:none;width:6px;height:6px;border-right:2px solid var(--ink-soft);border-bottom:2px solid var(--ink-soft);transform:rotate(45deg);margin:0 9px 2px 0;transition:transform .15s ease;}
+.ls-d.closed::before{transform:rotate(-45deg);margin-bottom:0;}
+.ls-d span:first-of-type{flex:1;}
+
+/* ---------- the account card ---------- */
+.lg-acct{padding-bottom:12px;}
+.lg-acct-top{display:flex;align-items:center;justify-content:space-between;}
+.lg-acct .sp-big{margin:2px 0 6px;}
+.lg-io{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:14px;color:var(--ink-soft);}
+.lg-io b{color:var(--ink);font-weight:700;}
+.sp-dir{width:210px;}
+.sp-dir button{min-height:44px;font-size:13.5px;}
+#lgCard .ls-search{margin:0 0 8px;width:100%;}
+#lgFilters{flex-wrap:nowrap;overflow-x:auto;}
+#lgFilters .chip-btn{flex:none;}
+
+/* ---------- the footer never moves; the dashboard is laid out, not measured ---------- */
+:root{--bar-h:calc(58px + env(safe-area-inset-bottom,0px));}
+.return-cal-bar{height:var(--bar-h);box-sizing:border-box;transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform;backface-visibility:hidden;}
+html:has(body[data-view="summary"]){overflow:hidden;}
+body[data-view="summary"]{height:100vh;height:100dvh;overflow:hidden;}
+body[data-view="summary"] #app{height:100%;box-sizing:border-box;display:flex;flex-direction:column;padding-bottom:0;overflow-y:auto;overflow-x:hidden;}
+body[data-view="summary"] .top{flex:none;}
+body[data-view="summary"] #view-summary.active{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding-bottom:calc(var(--bar-h) + 10px);}
+body[data-view="summary"] #summaryBody{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;}
+body[data-view="summary"] .dash{flex:1 1 auto;min-height:480px;height:auto;}
+
+/* ---------- budget with limits that count down; trends pie ---------- */
+.bd-card{padding-top:12px;}
+.bd-alloc{margin:2px 0 4px;}
+.bd-left{border-top:1px solid var(--line);margin-top:2px;}
+.bd-label{margin:14px 0 2px;font-size:12.5px;font-weight:700;color:var(--ink-soft);}
+.bd-row{padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;}
+.bd-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.bd-top > span{font-size:15px;font-weight:600;}
+.bd-top b{font-size:16px;font-weight:800;letter-spacing:-.01em;}
+.bd-top b.over{color:var(--danger);}
+.bd-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;vertical-align:middle;}
+.bd-sub{font-size:12.5px;color:var(--ink-soft);margin-top:4px;}
+.tr-pie{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.tr-donut{width:172px;height:172px;flex:none;}
+.tr-donut .td-l{font-size:9px;fill:var(--ink-soft);font-weight:600;}
+.tr-donut .td-v{font-size:17px;fill:var(--ink);font-weight:800;letter-spacing:-.02em;}
+.tr-legend{width:100%;}
+.tr-lg{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:0;background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink);font-size:14.5px;text-align:left;}
+.tr-lg i{flex:none;width:11px;height:11px;border-radius:50%;}
+.tr-lg span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;}
+.tr-lg b{font-weight:700;}
+.tr-lg em{flex:none;width:38px;text-align:right;font-style:normal;font-size:12.5px;color:var(--ink-soft);}
+
+/* ---------- the statement: plain rows, red minus, green plus ---------- */
+:root{--pos:#1E7A46;}
+body.dark{--pos:#5FC48B;}
+.lg-tot{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 8px;font-size:14px;color:var(--ink-soft);}
+.lg-tot .lg-a{font-size:15px;}
+.lg-row{display:flex;align-items:center;gap:10px;min-height:48px;padding:6px 0;border-bottom:1px solid var(--line);cursor:pointer;}
+.lg-row:active{background:var(--surface-2);}
+.lg-row.up{opacity:.65;}
+.lg-d{flex:none;width:44px;font-size:12px;color:var(--ink-soft);}
+.lg-m{flex:1;min-width:0;}
+.lg-t{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lg-s{font-size:12px;color:var(--ink-soft);margin-top:1px;}
+.lg-r{flex:none;display:flex;flex-direction:column;align-items:flex-end;}
+.lg-a{display:inline;font-size:14px;font-weight:700;letter-spacing:-.01em;white-space:nowrap;}
+.lg-r .lg-a{display:block;}
+.lg-a.out{color:var(--danger);}
+.lg-a.in{color:var(--pos);}
+.lg-of{font-size:11px;color:var(--ink-soft);}
+#lgBody{margin:0;}
+
+.lg-due{display:block;margin-top:2px;font-size:12px;color:var(--ink-soft);}
+.lg-tot > span:first-child{min-width:0;}
 </style>
 </head>
 <body data-view="calendar">
@@ -1079,10 +1214,12 @@ details.acc[open] > summary::after{transform:rotate(-135deg);margin-bottom:-3px;
       <h2 style="font-size:15px;">Days this covers</h2>
       <div class="stat-sub" id="rentCountsLabel" style="margin-bottom:6px;"></div>
       <div id="rentDaysList"></div>
+      <div id="rentDaysMore" style="margin-top:8px;"></div>
     </div>
     <div class="card">
       <h2 style="font-size:15px;">Payment history</h2>
       <div id="rentHistoryBody"></div>
+      <div id="rentHistMore" style="margin-top:8px;"></div>
       <button class="btn secondary small" id="undoPaymentBtn" style="margin-top:10px;">Undo last payment</button>
     </div>
   </div>
@@ -1111,19 +1248,39 @@ details.acc[open] > summary::after{transform:rotate(-135deg);margin-bottom:-3px;
     <div class="card">
       <h2 style="font-size:15px;">Week by week</h2>
       <table class="hist"><thead><tr><th>Week</th><th>Hours</th><th>&#916; TOIL</th><th>Balance</th></tr></thead><tbody id="toilWeekBody"></tbody></table>
+      <div id="toilWeekMore" style="margin-top:8px;"></div>
       <div class="empty" id="toilEmpty" style="display:none;">Log a shift on the calendar to see your weekly breakdown here.</div>
     </div>
   </div>
 
   <!-- MILEAGE -->
   <div class="view" id="view-mileage">
+    <div class="card" id="mileageTotalsCard">
+      <h2 style="font-size:15px;">Totals</h2>
+      <div class="stat-grid">
+        <div class="stat-block">
+          <div class="stat-sub">Business</div>
+          <div class="big" id="mileageBusinessTotal">0.0 mi</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-sub">Personal</div>
+          <div class="big" id="mileagePersonalTotal">0.0 mi</div>
+        </div>
+      </div>
+      <details class="acc" id="vanOdoBox" style="display:none;margin-top:10px;border-top:1px solid var(--line);">
+        <summary><span class="acc-t"><b>Van odometer</b><small>tracker estimate</small></span><span class="acc-s ok" id="vanOdoEstimate">&mdash;</span></summary>
+        <div class="acc-b"><div class="stat-sub" id="vanOdoDetail" style="margin:0;"></div>
+        <button type="button" class="btn secondary small" id="vanOdoCheckBtn" style="margin-top:8px;">Check against the van</button></div>
+      </details>
+    </div>
     <div class="card" id="mileageDraftsCard" style="display:none;">
       <h2 style="font-size:15px;margin-bottom:4px;">Drives to check</h2>
       <div class="stat-sub" style="margin:0 0 6px;">Picked up from CarPlay — choose Business or Personal.</div>
       <div id="mileageDraftsBody"></div>
     </div>
     <div class="card" id="mileageLogFormCard">
-      <h2 style="font-size:15px;">Log a trip</h2>
+      <button type="button" class="tgl-h" id="mileageLogToggle" aria-expanded="false"><span>Log a trip</span><i></i></button>
+      <div id="mileageLogBody" style="display:none;margin-top:8px;">
       <label class="mini-label">Start</label>
       <div class="autocomplete-wrap">
         <input type="text" id="mileageFromInput" placeholder="Start address or place" autocomplete="off">
@@ -1155,24 +1312,6 @@ details.acc[open] > summary::after{transform:rotate(-135deg);margin-bottom:-3px;
           <button class="btn small" id="mileageManualAddBtn">Add trip</button>
         </div>
       </div>
-    </div>
-    <div class="card">
-      <h2 style="font-size:15px;">Totals</h2>
-      <div class="stat-grid">
-        <div class="stat-block">
-          <div class="stat-sub">Business</div>
-          <div class="big" id="mileageBusinessTotal">0.0 mi</div>
-        </div>
-        <div class="stat-block">
-          <div class="stat-sub">Personal</div>
-          <div class="big" id="mileagePersonalTotal">0.0 mi</div>
-        </div>
-      </div>
-      <div id="vanOdoBox" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);">
-        <div class="stat-sub">Van odometer (tracker estimate)</div>
-        <div class="big" id="vanOdoEstimate">&mdash;</div>
-        <div class="stat-sub" id="vanOdoDetail" style="margin-top:2px;"></div>
-        <button type="button" class="btn secondary small" id="vanOdoCheckBtn" style="margin-top:8px;">Check against the van</button>
       </div>
     </div>
     <div class="card">
@@ -1194,11 +1333,10 @@ details.acc[open] > summary::after{transform:rotate(-135deg);margin-bottom:-3px;
       </div>
     </div>
     <div class="card">
-      <h2 style="font-size:15px;">Trip history</h2>
-      <button class="btn secondary block" id="mileagePdfBtn">Export PDF</button>
-      <div class="divider"></div>
+      <h2 style="font-size:15px;">Recent trips</h2>
       <div id="mileageTripList"></div>
-      <div class="empty" id="mileageEmpty" style="display:none;">No trips yet. Log one above.</div>
+      <div class="sp-btnrow" style="margin-top:8px;"><span id="mileageTripMore" style="display:contents;"></span><button class="btn secondary small" id="mileagePdfBtn">Export PDF</button></div>
+      <div class="empty" id="mileageEmpty" style="display:none;">No trips yet. Open \u201cLog a trip\u201d to add one.</div>
     </div>
   </div>
 
@@ -1364,6 +1502,13 @@ details.acc[open] > summary::after{transform:rotate(-135deg);margin-bottom:-3px;
       <div class="stat-sub" id="vanOdoInfo" style="margin-top:8px;"></div>
     </div>
 </div>
+<div class="set-page" id="setPage-gym" data-set="gym" hidden>
+<div class="set-head"><button type="button" class="chip-btn" data-set-back>&lsaquo; Settings</button><h2>Gym targets</h2></div>
+<div class="card">
+  <div class="stat-sub" style="margin:0 0 4px;">How many sets a week each muscle should get. The percentages, the body map and &ldquo;next session&rdquo; all use these.</div>
+  <div id="gymTargetsBody"></div>
+</div>
+</div>
 <div class="set-page" id="setPage-reports" data-set="reports" hidden>
 <div class="set-head"><button type="button" class="chip-btn" data-set-back>&lsaquo; Settings</button><h2>Reports & archive</h2></div>
 <div class="set-label">Reports</div>
@@ -1522,6 +1667,16 @@ details.acc[open] > summary::after{transform:rotate(-135deg);margin-bottom:-3px;
   </div>
 </div>
 
+<div class="overlay hidden" id="listOverlay" style="z-index:104;">
+  <div class="sheet list-sheet" role="dialog" aria-modal="true" aria-labelledby="listTitle">
+    <div class="ls-top"><h3 id="listTitle"></h3><button class="sheet-close" id="listClose" aria-label="Close">&times;</button></div>
+    <input type="search" id="listSearch" class="ls-search" placeholder="Search" autocomplete="off" autocapitalize="none">
+    <div class="chip-row ls-filters" id="listFilters"></div>
+    <div class="ls-sumrow"><div class="stat-sub ls-sum" id="listSum"></div><button type="button" class="ls-all" id="listToggleAll" hidden></button></div>
+    <div id="listBody"></div>
+  </div>
+</div>
+
 <div class="overlay hidden" id="labelPromptOverlay" style="z-index:110;">
   <div class="sheet">
     <h3>Name this address</h3>
@@ -1620,7 +1775,7 @@ async function saveKey(key, value, attempt){
 }
 
 // ---------- cloud sync ----------
-const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','gym-log','gym-custom','gym-bw','gym-bw-asked','spend-txns','spend-cats','spend-rules','spend-meta','fin-holdings','fin-dd','fin-income','fin-owed','fin-people','fin-settings','auto-meta','mileage-drafts','sleep-log','clock-in-state','dark-mode','rent-rate-home','rent-rate-away'];
+const SYNC_KEYS = ['calendar-data','tag-defs','rent-meta','rent-history','todos','toil-payouts','toil-adjustment','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','van-odometer','gym-log','gym-custom','gym-bw','gym-bw-asked','spend-txns','fin-in','spend-cats','spend-rules','spend-meta','fin-holdings','fin-dd','fin-income','fin-owed','fin-people','fin-settings','auto-meta','mileage-drafts','sleep-log','clock-in-state','dark-mode','rent-rate-home','rent-rate-away','gym-targets'];
 let firebaseApp = null, firestoreDb = null, firestoreDoc = null, syncUnsub = null;
 let syncEnabled = false, syncFailed = false, syncStatusText = '', lastSyncToast = 0;
 function notifySyncFail(){
@@ -1630,8 +1785,8 @@ function notifySyncFail(){
   if(v && v.classList.contains('active')) renderSummary();
 }
 // ---- sync: never overwrite newer work; merge lists by id (3-way against the last synced copy) ----
-const SYNC_LISTS = ['rent-history','todos','toil-payouts','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','gym-log','gym-custom','gym-bw','spend-txns','spend-cats','fin-holdings','fin-dd','fin-income','fin-owed','fin-people','mileage-drafts','sleep-log'];
-const SYNC_MAPS = ['calendar-data','spend-rules','fin-settings','auto-meta'];
+const SYNC_LISTS = ['rent-history','todos','toil-payouts','mileage-trips','mileage-favorites','expenses','travel-places','travel-countries','gym-log','gym-custom','gym-bw','spend-txns','fin-in','spend-cats','fin-holdings','fin-dd','fin-income','fin-owed','fin-people','mileage-drafts','sleep-log'];
+const SYNC_MAPS = ['calendar-data','spend-rules','fin-settings','auto-meta','gym-targets'];
 let syncBase = {}, syncBusy = false, syncLastPull = 0, syncTimer = null, syncBaseT = null, syncRefreshT = null;
 const syncPushing = {}, syncPushAgain = {};
 try{ syncBase = JSON.parse(localStorage.getItem('homebase:sync-base') || '{}') || {}; }catch(e){ syncBase = {}; }
@@ -1642,8 +1797,8 @@ function syncLocalValue(key){
     case 'calendar-data': return calendarData; case 'tag-defs': return tagDefs; case 'rent-meta': return rentMeta; case 'rent-history': return rentHistory;
     case 'todos': return todos; case 'toil-payouts': return toilPayouts; case 'toil-adjustment': return toilAdjustment; case 'mileage-trips': return mileageTrips;
     case 'mileage-favorites': return mileageFavorites; case 'expenses': return expenses; case 'travel-places': return travelPlaces; case 'travel-countries': return travelCountries;
-    case 'van-odometer': return vanOdometer; case 'gym-log': return gymLog; case 'gym-custom': return gymCustom; case 'gym-bw': return gymBw; case 'gym-bw-asked': return gymBwAsked;
-    case 'spend-txns': return spendTxns; case 'spend-cats': return spendCats; case 'spend-rules': return spendRules; case 'spend-meta': return spendMeta;
+    case 'van-odometer': return vanOdometer; case 'gym-log': return gymLog; case 'gym-custom': return gymCustom; case 'gym-bw': return gymBw; case 'gym-bw-asked': return gymBwAsked; case 'gym-targets': return gymTargets;
+    case 'spend-txns': return spendTxns; case 'fin-in': return finIn; case 'spend-cats': return spendCats; case 'spend-rules': return spendRules; case 'spend-meta': return spendMeta;
     case 'fin-holdings': return finHoldings; case 'fin-dd': return finDD; case 'fin-income': return finIncome; case 'fin-owed': return finOwed; case 'fin-people': return finPeople; case 'fin-settings': return finSettings;
     case 'auto-meta': return autoMeta; case 'mileage-drafts': return mileageDrafts; case 'sleep-log': return sleepLog;
     case 'clock-in-state': return clockInState; case 'dark-mode': return darkModeOn; case 'rent-rate-home': return RATE_HOME; case 'rent-rate-away': return RATE_AWAY;
@@ -1776,8 +1931,10 @@ async function applyRemoteValue(key, value){
     case 'gym-log': gymLog = value || []; break;
     case 'gym-custom': gymCustom = value || []; break;
     case 'gym-bw': gymBw = value || []; break;
+    case 'gym-targets': gymTargets = value || {}; applyGymTargets(); break;
     case 'gym-bw-asked': gymBwAsked = value || ''; break;
     case 'spend-txns': spendTxns = value || []; break;
+    case 'fin-in': finIn = value || []; break;
     case 'spend-cats': spendCats = value || null; break;
     case 'spend-rules': spendRules = value || {}; break;
     case 'spend-meta': spendMeta = Object.assign({secret:'', seen:[], last:null}, value || {}); break;
@@ -1893,8 +2050,8 @@ async function connectSync(config, isInitialSetup){
       const currentValues = {
         'calendar-data':calendarData,'tag-defs':tagDefs,'rent-meta':rentMeta,'rent-history':rentHistory,
         'todos':todos,'toil-payouts':toilPayouts,'toil-adjustment':toilAdjustment,'mileage-trips':mileageTrips,
-        'mileage-favorites':mileageFavorites,'expenses':expenses,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,'gym-log':gymLog,'gym-custom':gymCustom,'gym-bw':gymBw,'gym-bw-asked':gymBwAsked,'spend-txns':spendTxns,'spend-cats':spendCats,'spend-rules':spendRules,'spend-meta':spendMeta,'fin-holdings':finHoldings,'fin-dd':finDD,'fin-income':finIncome,'fin-owed':finOwed,'fin-people':finPeople,'fin-settings':finSettings,'auto-meta':autoMeta,'mileage-drafts':mileageDrafts,'sleep-log':sleepLog,'clock-in-state':clockInState,
-        'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY
+        'mileage-favorites':mileageFavorites,'expenses':expenses,'fin-in':finIn,'travel-places':travelPlaces,'travel-countries':travelCountries,'van-odometer':vanOdometer,'gym-log':gymLog,'gym-custom':gymCustom,'gym-bw':gymBw,'gym-bw-asked':gymBwAsked,'spend-txns':spendTxns,'spend-cats':spendCats,'spend-rules':spendRules,'spend-meta':spendMeta,'fin-holdings':finHoldings,'fin-dd':finDD,'fin-income':finIncome,'fin-owed':finOwed,'fin-people':finPeople,'fin-settings':finSettings,'auto-meta':autoMeta,'mileage-drafts':mileageDrafts,'sleep-log':sleepLog,'clock-in-state':clockInState,
+        'dark-mode':darkModeOn,'rent-rate-home':RATE_HOME,'rent-rate-away':RATE_AWAY,'gym-targets':gymTargets
       };
       SYNC_KEYS.forEach(key=>{ initial[key] = JSON.stringify(currentValues[key]); });
       await firestoreDoc.set(initial, {merge:true});
@@ -2044,7 +2201,9 @@ async function init(){
   gymCustom = await loadKey('gym-custom', []);
   gymBw = await loadKey('gym-bw', []);
   gymBwAsked = await loadKey('gym-bw-asked', '');
+  gymTargets = await loadKey('gym-targets', {}); applyGymTargets();
   spendTxns = await loadKey('spend-txns', []);
+  finIn = await loadKey('fin-in', []);
   spendCats = await loadKey('spend-cats', null);
   spendRules = await loadKey('spend-rules', {});
   spendMeta = Object.assign({secret:'', seen:[], last:null}, await loadKey('spend-meta', {}));
@@ -2152,7 +2311,7 @@ function goToView(viewName, dir, opts){
   { const vEl = document.getElementById('view-'+viewName); vEl.classList.add('fresh'); clearTimeout(vEl._fresh); vEl._fresh = setTimeout(()=>{ vEl.classList.remove('fresh'); document.body.dataset.nav = ''; }, 950); }
   if(viewName==='summary') renderSummary();
   if(viewName==='budget'){ finTab = setPage || 'overview'; finOpenItem = null; renderBudget(); importInbox(); finMaybeRefresh(); }
-  if(viewName==='settings'){ settingsPage = setPage; applySettingsPage(); renderApplePaySetup(); renderAutoSetup(); importInbox(); }
+  if(viewName==='settings'){ settingsPage = setPage; applySettingsPage(); renderApplePaySetup(); renderAutoSetup(); renderGymTargets(); importInbox(); }
 }
 function setupTabs(){
   const isOn = (v)=> document.getElementById('view-'+v).classList.contains('active');
@@ -2239,6 +2398,7 @@ function buildMenuBody(){
 let quickAddActive = null;
 function openQuickAddMileageForm(){
   goToView('mileage');
+  document.getElementById('mileageLogBody').style.display = ''; document.getElementById('mileageLogToggle').setAttribute('aria-expanded', 'true');
   const el = document.getElementById('mileageFromInput');
   if(el){ el.focus(); el.dispatchEvent(new Event('focus')); }
 }
@@ -2253,7 +2413,78 @@ function openQuickAddTodoForm(){
   if(el) el.focus();
 }
 
+// ---- "View all": a full-height list with search, filters and month headings ----
+let listCfg = null, listFilter = null, listOpen = {};
+function openListSheet(cfg){
+  listCfg = cfg; listOpen = {};
+  listFilter = cfg.filters ? (cfg.startFilter && cfg.filters.some(f=> f.id === cfg.startFilter) ? cfg.startFilter : cfg.filters[0].id) : null;
+  document.getElementById('listTitle').textContent = cfg.title;
+  const si = document.getElementById('listSearch'); si.value = ''; si.placeholder = cfg.placeholder || 'Search'; si.style.display = cfg.search === false ? 'none' : '';
+  document.getElementById('listBody').scrollTop = 0;
+  document.getElementById('listOverlay').classList.remove('hidden');
+  renderListSheet();
+}
+function closeListSheet(){ document.getElementById('listOverlay').classList.add('hidden'); listCfg = null; }
+function refreshListSheet(kind){ if(listCfg && listCfg.kind === kind) renderListSheet(); }
+function renderListSheet(){
+  if(!listCfg) return;
+  const cfg = listCfg, body = document.getElementById('listBody'), keep = body.scrollTop;
+  const q = document.getElementById('listSearch').value.trim().toLowerCase();
+  const fb = document.getElementById('listFilters');
+  if(cfg.filters){
+    fb.style.display = '';
+    fb.innerHTML = cfg.filters.map(f=> '<button type="button" class="chip-btn'+(f.id === listFilter ? ' active' : '')+'" data-lf="'+f.id+'">'+escapeHtml(f.label)+'</button>').join('');
+    fb.querySelectorAll('[data-lf]').forEach(b=> b.addEventListener('click', ()=>{ listFilter = b.dataset.lf; body.scrollTop = 0; renderListSheet(); }));
+  }else fb.style.display = 'none';
+  let items = cfg.items();
+  const f = cfg.filters ? cfg.filters.find(x=> x.id === listFilter) : null;
+  if(f && f.fn) items = items.filter(f.fn);
+  const total = items.length;
+  if(q) items = items.filter(it=> String(cfg.text(it)).toLowerCase().indexOf(q) > -1);
+  document.getElementById('listSum').textContent = (cfg.summary ? cfg.summary(items) : '')+(q ? (cfg.summary ? '\u2003' : '')+items.length+' of '+total : '');
+  body.innerHTML = '';
+  if(!items.length){ body.innerHTML = '<div class="empty">'+(q ? 'Nothing matches \u201c'+escapeHtml(q)+'\u201d.' : escapeHtml(cfg.empty || 'Nothing here.'))+'</div>'; return; }
+  const groups = [], by = {};
+  items.forEach(it=>{ const g = cfg.group ? cfg.group(it) : {key:'_', label:''}; let G = by[g.key]; if(!G){ G = by[g.key] = {key:g.key, label:g.label, items:[]}; groups.push(G); } G.items.push(it); });
+  const monthShut = (G, i)=> !q && (listOpen[G.key] === undefined ? i > 0 : !listOpen[G.key]);
+  const dayId = (G, S)=> 'd:'+G.key+'|'+S.key;
+  groups.forEach((G, gi)=>{
+    const shut = !!G.label && monthShut(G, gi);
+    if(G.label){
+      const h = document.createElement('button'); h.type = 'button'; h.className = 'ls-g'+(shut ? ' closed' : ''); h.setAttribute('aria-expanded', shut ? 'false' : 'true');
+      h.innerHTML = '<span>'+escapeHtml(G.label)+'</span><span>'+escapeHtml(cfg.groupMeta ? cfg.groupMeta(G.items) : String(G.items.length))+'</span>';
+      h.addEventListener('click', ()=>{ listOpen[G.key] = shut; renderListSheet(); });
+      body.appendChild(h);
+    }
+    if(shut) return;
+    if(!cfg.sub){ G.items.forEach(it=> body.appendChild(cfg.row(it))); return; }
+    const subs = [], sby = {};
+    G.items.forEach(it=>{ const x = cfg.sub(it), key = x ? x.key : '_'; let S = sby[key]; if(!S){ S = sby[key] = {key, label:x ? x.label : '', items:[]}; subs.push(S); } S.items.push(it); });
+    subs.forEach(S=>{
+      const dshut = !!S.label && !q && listOpen[dayId(G, S)] === false;
+      if(S.label){
+        const d = document.createElement('button'); d.type = 'button'; d.className = 'ls-d'+(dshut ? ' closed' : ''); d.setAttribute('aria-expanded', dshut ? 'false' : 'true');
+        d.innerHTML = '<span>'+escapeHtml(S.label)+'</span><span>'+escapeHtml(cfg.subMeta ? cfg.subMeta(S.items) : String(S.items.length))+'</span>';
+        d.addEventListener('click', ()=>{ listOpen[dayId(G, S)] = dshut; renderListSheet(); });
+        body.appendChild(d);
+      }
+      if(!dshut) S.items.forEach(it=> body.appendChild(cfg.row(it)));
+    });
+  });
+  const tg = document.getElementById('listToggleAll'), labelled = groups.filter(G=> G.label);
+  if(tg){
+    tg.hidden = q || labelled.length < 2;
+    const anyShut = labelled.some((G, i)=> monthShut(G, groups.indexOf(G)));
+    tg.textContent = anyShut ? 'Expand all' : 'Collapse all';
+    tg.onclick = ()=>{ labelled.forEach(G=>{ listOpen[G.key] = anyShut; }); if(anyShut) Object.keys(listOpen).forEach(k=>{ if(k.indexOf('d:') === 0) delete listOpen[k]; }); body.scrollTop = 0; renderListSheet(); };
+  }
+  body.scrollTop = keep;
+}
+const vaBtn = (id, text)=> '<button type="button" class="btn secondary block va-btn" data-va="'+id+'">'+text+'</button>';
 function setupSheet(){
+  document.getElementById('listClose').addEventListener('click', closeListSheet);
+  document.getElementById('listOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'listOverlay') closeListSheet(); });
+  document.getElementById('listSearch').addEventListener('input', ()=>{ document.getElementById('listBody').scrollTop = 0; renderListSheet(); });
   document.getElementById('sheetClose').addEventListener('click', closeSheet);
   document.getElementById('sheetOverlay').addEventListener('click', (e)=>{ if(e.target.id==='sheetOverlay') closeSheet(); });
 }
@@ -2276,6 +2507,7 @@ function openSheet(title){
 }
 function closeSheet(){
   acCloseAll();
+  if(listCfg) setTimeout(renderListSheet, 0);
   restoreRelocatedElement();
   quickAddActive = null;
   document.getElementById('sheetOverlay').classList.add('hidden');
@@ -2318,24 +2550,46 @@ function renderRentTab(){
 
   const list = document.getElementById('rentDaysList');
   list.innerHTML = '';
+  const dayRows = days.slice().reverse();
   if(days.length===0){ list.innerHTML = '<div class="empty">Nothing owed since your last payment.</div>'; }
-  else{
-    days.slice().reverse().forEach(d=>{
-      const row = document.createElement('div');
-      row.className = 'todo-item';
-      const amt = d.status==='home'? RATE_HOME : RATE_AWAY;
-      row.innerHTML = '<div style="flex:1;font-size:13.5px;">'+niceDate(d.date)+'</div>'+
-        '<div style="font-size:12px;color:'+(d.status==='home'?'var(--home)':'var(--away)')+';font-weight:600;">'+(d.status==='home'?'Home':'Away')+'</div>'+
-        '<div style="font-size:13px;width:52px;text-align:right;">'+money(amt)+'</div>';
-      list.appendChild(row);
-    });
-  }
+  else dayRows.slice(0, 5).forEach(d=> list.appendChild(rentDayRow(d)));
+  document.getElementById('rentDaysMore').innerHTML = dayRows.length > 5 ? vaBtn('nights', 'View all '+dayRows.length+' nights') : '';
   const histBody = document.getElementById('rentHistoryBody');
-  if(rentHistory.length===0){ histBody.innerHTML = '<div class="empty">No payments logged yet.</div>'; }
+  const payments = rentHistory.slice().reverse();
+  if(payments.length===0){ histBody.innerHTML = '<div class="empty">No payments logged yet.</div>'; }
   else{
-    let rows = rentHistory.slice().reverse().map(r=> '<tr><td>'+shortDate(r.paidDate)+'</td><td>'+shortDate(r.through)+'</td><td>'+money(r.amount)+'</td></tr>').join('');
+    let rows = payments.slice(0, 3).map(r=> '<tr><td>'+shortDate(r.paidDate)+'</td><td>'+shortDate(r.through)+'</td><td>'+money(r.amount)+'</td></tr>').join('');
     histBody.innerHTML = '<table class="hist"><thead><tr><th>Paid</th><th>Covers up to</th><th>Amount</th></tr></thead><tbody>'+rows+'</tbody></table>';
   }
+  document.getElementById('rentHistMore').innerHTML = payments.length > 3 ? vaBtn('payments', 'View all '+payments.length+' payments') : '';
+  document.querySelector('#rentDaysMore [data-va]') && document.querySelector('#rentDaysMore [data-va]').addEventListener('click', openRentNightsSheet);
+  document.querySelector('#rentHistMore [data-va]') && document.querySelector('#rentHistMore [data-va]').addEventListener('click', openRentPaymentsSheet);
+  refreshListSheet('nights'); refreshListSheet('payments');
+}
+function rentDayRow(d){
+  const row = document.createElement('div');
+  row.className = 'todo-item';
+  const amt = d.status==='home'? RATE_HOME : RATE_AWAY;
+  row.innerHTML = '<div style="flex:1;font-size:13.5px;">'+niceDate(d.date)+'</div>'+
+    '<div style="font-size:12px;color:'+(d.status==='home'?'var(--home)':'var(--away)')+';font-weight:600;">'+(d.status==='home'?'Home':'Away')+'</div>'+
+    '<div style="font-size:13px;width:52px;text-align:right;">'+money(amt)+'</div>';
+  return row;
+}
+function openRentNightsSheet(){
+  openListSheet({kind:'nights', title:'Nights this covers', placeholder:'Search a date, month or Away',
+    filters:[{id:'all', label:'All'}, {id:'home', label:'Home', fn:d=> d.status === 'home'}, {id:'away', label:'Away', fn:d=> d.status === 'away'}],
+    items:()=> computeOwed().days.slice().reverse(),
+    text:d=> niceDate(d.date)+' '+d.status+' '+finMonthLabel(d.date.slice(0,7)),
+    group:d=> ({key:d.date.slice(0,7), label:finMonthLabel(d.date.slice(0,7))}),
+    groupMeta:list=> money(list.reduce((a,d)=> a + (d.status === 'home' ? RATE_HOME : RATE_AWAY), 0))+'\u2003'+list.length+' night'+(list.length === 1 ? '' : 's'),
+    summary:list=> list.filter(d=> d.status === 'home').length+' home\u2003'+list.filter(d=> d.status === 'away').length+' away',
+    row:rentDayRow, empty:'Nothing owed since your last payment.'});
+}
+function openRentPaymentsSheet(){
+  openListSheet({kind:'payments', title:'Rent payments', search:false,
+    items:()=> rentHistory.slice().reverse(), text:r=> shortDate(r.paidDate),
+    row:r=>{ const row = document.createElement('div'); row.className = 'todo-item'; row.innerHTML = '<div style="flex:1;font-size:14px;">Paid '+shortDate(r.paidDate)+'<div class="todo-due">Covers up to '+shortDate(r.through)+'</div></div><div style="font-weight:700;">'+money(r.amount)+'</div>'; return row; },
+    empty:'No payments logged yet.'});
 }
 // ---------- Mileage ----------
 function photonLabel(p){
@@ -2550,6 +2804,29 @@ async function toggleExpenseDone(e){
   await saveKey('expenses', expenses);
   renderExpensesTab();
 }
+function expenseRow(e, isDone){
+  const row = document.createElement('div');
+  row.className = 'todo-item';
+  row.innerHTML =
+    '<div class="todo-check'+(isDone ? ' done' : '')+'">'+(isDone ? '&#10003;' : '')+'</div>'+
+    '<div style="flex:1;"><div class="todo-text'+(isDone ? ' done' : '')+'">'+money(e.amount)+(e.note?'&emsp;'+escapeHtml(e.note):'')+'</div>'+
+    '<div class="todo-due">'+shortDate(e.date)+(e.time ? '\u2003'+e.time : '')+'</div></div>'+
+    '<button class="todo-del">&times;</button>';
+  row.querySelector('.todo-check').addEventListener('click', ()=> toggleExpenseDone(e));
+  row.querySelector('.todo-del').addEventListener('click', async ()=>{ expenses = expenses.filter(x=>x.id!==e.id); await saveKey('expenses', expenses); renderExpensesTab(); });
+  return row;
+}
+function openExpensesSheet(start){
+  openListSheet({kind:'expenses', title:'All expenses', placeholder:'Search a note, amount or month', startFilter:start || 'all',
+    filters:[{id:'all', label:'All'}, {id:'pending', label:'To claim', fn:e=> !e.done}, {id:'done', label:'Claimed', fn:e=> e.done}],
+    items:()=> expenses.slice().sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id),
+    text:e=> (e.note || '')+' '+e.amount.toFixed(2)+' '+shortDate(e.date)+' '+finMonthLabel(e.date.slice(0,7)),
+    group:e=> ({key:e.date.slice(0,7), label:finMonthLabel(e.date.slice(0,7))}),
+    groupMeta:list=> money(list.reduce((a,e)=> a + e.amount, 0))+'\u2003'+list.length,
+    sub:e=> ({key:e.date, label:niceDate(e.date)}), subMeta:list=> money(list.reduce((a,e)=> a + e.amount, 0)),
+    summary:list=> list.length+' expense'+(list.length === 1 ? '' : 's')+'\u2003'+money(list.reduce((a,e)=> a + e.amount, 0)),
+    row:e=> expenseRow(e, e.done), empty:'No expenses yet.'});
+}
 function renderExpensesTab(){
   const pendingList = document.getElementById('list-expenses-pending');
   const doneList = document.getElementById('list-expenses-done');
@@ -2557,21 +2834,8 @@ function renderExpensesTab(){
   doneList.innerHTML = '';
   const pending = expenses.filter(e=>!e.done).sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id);
   const done = expenses.filter(e=>e.done).sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id);
-  const mkRow = (e, isDone)=>{
-    const row = document.createElement('div');
-    row.className = 'todo-item';
-    row.innerHTML =
-      '<div class="todo-check'+(isDone ? ' done' : '')+'">'+(isDone ? '&#10003;' : '')+'</div>'+
-      '<div style="flex:1;"><div class="todo-text'+(isDone ? ' done' : '')+'">'+money(e.amount)+(e.note?'&emsp;'+escapeHtml(e.note):'')+'</div>'+
-      '<div class="todo-due">'+shortDate(e.date)+(e.time ? '\u2003'+e.time : '')+'</div></div>'+
-      '<button class="todo-del">&times;</button>';
-    row.querySelector('.todo-check').addEventListener('click', ()=> toggleExpenseDone(e));
-    row.querySelector('.todo-del').addEventListener('click', async ()=>{ expenses = expenses.filter(x=>x.id!==e.id); await saveKey('expenses', expenses); renderExpensesTab(); });
-    return row;
-  };
-
   if(pending.length===0){ pendingList.innerHTML = '<div class="empty">Nothing to claim right now.</div>'; }
-  pending.forEach(e=> pendingList.appendChild(mkRow(e, false)));
+  pending.slice(0, 4).forEach(e=> pendingList.appendChild(expenseRow(e, false)));
   if(pending.length > 1){
     const tot = document.createElement('div');
     tot.className = 'stat-sub';
@@ -2579,29 +2843,18 @@ function renderExpensesTab(){
     tot.innerHTML = 'Total <b>'+money(pending.reduce((a,e)=> a + e.amount, 0))+'</b>';
     pendingList.appendChild(tot);
   }
-  if(done.length===0){ doneList.innerHTML = '<div class="empty">Claimed expenses will show here.</div>'; return; }
-
-  // finished expenses: one long scroll, newest first, under month and date headings
-  const byMonth = {};
-  done.forEach(e=>{ const m = e.date.slice(0,7); (byMonth[m] = byMonth[m] || []).push(e); });
-  Object.keys(byMonth).sort().reverse().forEach(m=>{
-    const list = byMonth[m];
-    const mh = document.createElement('div');
-    mh.className = 'exp-month';
-    mh.innerHTML = '<span>'+finMonthLabel(m)+'</span><span>'+money(list.reduce((a,e)=> a + e.amount, 0))+'\u2003'+list.length+'</span>';
-    doneList.appendChild(mh);
-    const dates = Array.from(new Set(list.map(e=> e.date))).sort().reverse();
-    dates.forEach(dt=>{
-      const dh = document.createElement('div');
-      dh.className = 'exp-day';
-      dh.textContent = niceDate(dt);
-      doneList.appendChild(dh);
-      list.filter(e=> e.date === dt).forEach(e=> doneList.appendChild(mkRow(e, true)));
-    });
-  });
+  if(pending.length > 4){ const w = document.createElement('div'); w.innerHTML = vaBtn('pending', 'View all '+pending.length+' to claim'); pendingList.appendChild(w.firstChild); }
+  if(done.length===0){ doneList.innerHTML = '<div class="empty">Claimed expenses will show here.</div>'; }
+  else{
+    done.slice(0, 2).forEach(e=> doneList.appendChild(expenseRow(e, true)));
+    const w = document.createElement('div'); w.innerHTML = vaBtn('all', 'View all expenses ('+expenses.length+')'); doneList.appendChild(w.firstChild);
+  }
+  document.querySelectorAll('#view-expenses [data-va]').forEach(b=> b.addEventListener('click', ()=> openExpensesSheet(b.dataset.va)));
+  refreshListSheet('expenses');
 }
 function setupMileage(){
   document.getElementById('mileageDateInput').value = todayStr();
+  document.getElementById('mileageLogToggle').addEventListener('click', ()=>{ const b = document.getElementById('mileageLogBody'), open = b.style.display === 'none'; b.style.display = open ? '' : 'none'; document.getElementById('mileageLogToggle').setAttribute('aria-expanded', open ? 'true' : 'false'); });
   document.getElementById('mileageCategorySeg').querySelectorAll('button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       document.getElementById('mileageCategorySeg').querySelectorAll('button').forEach(b=>b.classList.remove('sel-home','sel-away'));
@@ -3205,26 +3458,43 @@ function renderMileageTab(){
   list.innerHTML = '';
   if(mileageTrips.length===0){ empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  mileageTrips.slice().sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id).forEach(t=>{
-    const biz = t.category === 'business';
-    const points = [t.from].concat(t.stops || [], [t.to]);
-    const row = document.createElement('div');
-    row.className = 'trip';
-    row.innerHTML =
-      '<div class="trip-main" role="button" tabindex="0" aria-expanded="false"><div class="trip-top"><span class="trip-title">'+mileageTitle(t)+'</span><span class="trip-miles">'+t.miles.toFixed(1)+'<small>mi</small></span></div>'+
-      '<div class="trip-meta"><span>'+shortDate(t.date)+'</span><span class="tag '+(biz ? 'biz' : 'pers')+'">'+(biz ? 'Business' : 'Personal')+'</span>'+(t.mins ? '<span>'+t.mins+' min</span>' : '')+'</div></div>'+
-      '<div class="trip-detail" hidden>'+points.map(pt=> '<div class="trip-pt">'+escapeHtml(mileageCleanAddr(pt))+'</div>').join('')+'<button type="button" class="btn secondary small todo-del trip-del">Delete trip</button></div>';
-    const main = row.querySelector('.trip-main'), det = row.querySelector('.trip-detail');
-    const toggle = ()=>{ det.hidden = !det.hidden; main.setAttribute('aria-expanded', det.hidden ? 'false' : 'true'); row.classList.toggle('open', !det.hidden); };
-    main.addEventListener('click', toggle);
-    main.addEventListener('keydown', (ev)=>{ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); toggle(); } });
-    row.querySelector('.todo-del').addEventListener('click', async ()=>{
-      mileageTrips = mileageTrips.filter(x=>x.id!==t.id);
-      await saveKey('mileage-trips', mileageTrips);
-      renderMileageTab();
-    });
-    list.appendChild(row);
+  const sortedTrips = mileageTrips.slice().sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id);
+  sortedTrips.slice(0, 4).forEach(t=> list.appendChild(tripRowEl(t)));
+  document.getElementById('mileageTripMore').innerHTML = sortedTrips.length ? (sortedTrips.length > 4 ? vaBtn('trips', 'View all '+sortedTrips.length+' trips') : '') : '';
+  document.querySelectorAll('#mileageTripMore [data-va]').forEach(b=> b.addEventListener('click', openTripsSheet));
+  const lb = document.getElementById('mileageLogBody'); if(lb && !mileageTrips.length){ lb.style.display = ''; document.getElementById('mileageLogToggle').setAttribute('aria-expanded', 'true'); }
+  refreshListSheet('trips');
+}
+function tripRowEl(t){
+  const biz = t.category === 'business';
+  const points = [t.from].concat(t.stops || [], [t.to]);
+  const row = document.createElement('div');
+  row.className = 'trip';
+  row.innerHTML =
+    '<div class="trip-main" role="button" tabindex="0" aria-expanded="false"><div class="trip-top"><span class="trip-title">'+mileageTitle(t)+'</span><span class="trip-miles">'+t.miles.toFixed(1)+'<small>mi</small></span></div>'+
+    '<div class="trip-meta"><span>'+shortDate(t.date)+'</span><span class="tag '+(biz ? 'biz' : 'pers')+'">'+(biz ? 'Business' : 'Personal')+'</span>'+(t.mins ? '<span>'+t.mins+' min</span>' : '')+'</div></div>'+
+    '<div class="trip-detail" hidden>'+points.map(pt=> '<div class="trip-pt">'+escapeHtml(mileageCleanAddr(pt))+'</div>').join('')+'<button type="button" class="btn secondary small todo-del trip-del">Delete trip</button></div>';
+  const main = row.querySelector('.trip-main'), det = row.querySelector('.trip-detail');
+  const toggle = ()=>{ det.hidden = !det.hidden; main.setAttribute('aria-expanded', det.hidden ? 'false' : 'true'); row.classList.toggle('open', !det.hidden); };
+  main.addEventListener('click', toggle);
+  main.addEventListener('keydown', (ev)=>{ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); toggle(); } });
+  row.querySelector('.todo-del').addEventListener('click', async ()=>{
+    mileageTrips = mileageTrips.filter(x=>x.id!==t.id);
+    await saveKey('mileage-trips', mileageTrips);
+    renderMileageTab();
   });
+  return row;
+}
+function openTripsSheet(){
+  openListSheet({kind:'trips', title:'All trips', placeholder:'Search a place, date or Business',
+    filters:[{id:'all', label:'All'}, {id:'business', label:'Business', fn:t=> t.category === 'business'}, {id:'personal', label:'Personal', fn:t=> t.category !== 'business'}],
+    items:()=> mileageTrips.slice().sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id),
+    text:t=> [t.from].concat(t.stops || [], [t.to]).map(x=> mileageShortPlace(x)+' '+mileageCleanAddr(x)).join(' ')+' '+t.category+' '+shortDate(t.date)+' '+finMonthLabel(t.date.slice(0,7))+' '+t.miles,
+    group:t=> ({key:t.date.slice(0,7), label:finMonthLabel(t.date.slice(0,7))}),
+    groupMeta:list=> fmtMi(list.reduce((a,t)=> a + t.miles, 0), 1)+' mi\u2003'+list.length,
+    sub:t=> ({key:t.date, label:niceDate(t.date)}), subMeta:list=> fmtMi(list.reduce((a,t)=> a + t.miles, 0), 1)+' mi',
+    summary:list=> list.length+' trip'+(list.length === 1 ? '' : 's')+'\u2003'+fmtMi(list.reduce((a,t)=> a + t.miles, 0), 1)+' mi',
+    row:tripRowEl, empty:'No trips yet.'});
 }
 function setupRentActions(){
   document.getElementById('markPaidBtn').addEventListener('click', async ()=>{
@@ -3310,7 +3580,7 @@ function renderToilTab(){
   if(weeks.length===0){ empty.style.display='block'; }
   else{
     empty.style.display = 'none';
-    weeks.slice().reverse().forEach(w=>{
+    weeks.slice().reverse().slice(0, 6).forEach(w=>{
       const cls = w.delta>=0?'delta-pos':'delta-neg';
       const dtxt = (w.delta>=0?'+':'')+w.delta.toFixed(1)+'h';
       const label = w.isCurrent ? 'This week' : (shortDate(w.weekStart)+'–'+shortDate(w.weekEnd));
@@ -3338,13 +3608,17 @@ function renderToilTab(){
     });
   }
 
+  document.getElementById('toilWeekMore').innerHTML = weeks.length > 6 ? vaBtn('weeks', 'View all '+weeks.length+' weeks') : '';
+  const wm = document.querySelector('#toilWeekMore [data-va]'); if(wm) wm.addEventListener('click', openToilWeeksSheet);
+  refreshListSheet('weeks'); refreshListSheet('payouts');
   const histBox = document.getElementById('toilPayoutHistory');
   if(toilPayouts.length===0){ histBox.innerHTML = '<div class="empty">No payouts recorded yet.</div>'; }
   else{
-    let rows = toilPayouts.slice().reverse().map(p=>
+    let rows = toilPayouts.slice().reverse().slice(0, 3).map(p=>
       '<tr><td>'+shortDate(p.date)+'</td><td>'+p.amount.toFixed(1)+'h</td><td><button class="icon-btn" data-payout-del="'+p.id+'" style="background:none;border:none;color:var(--ink-soft);">&times;</button></td></tr>'
     ).join('');
-    histBox.innerHTML = '<table class="hist"><thead><tr><th>Date</th><th>Hours</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>';
+    histBox.innerHTML = '<table class="hist"><thead><tr><th>Date</th><th>Hours</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'+(toilPayouts.length > 3 ? '<div style="margin-top:8px;">'+vaBtn('payouts', 'View all '+toilPayouts.length+' payouts')+'</div>' : '');
+    const pm = histBox.querySelector('[data-va]'); if(pm) pm.addEventListener('click', openToilPayoutsSheet);
     histBox.querySelectorAll('[data-payout-del]').forEach(btn=>{
       btn.addEventListener('click', async ()=>{
         toilPayouts = toilPayouts.filter(p=>p.id!==Number(btn.dataset.payoutDel));
@@ -3353,6 +3627,34 @@ function renderToilTab(){
       });
     });
   }
+}
+function toilWeekRowEl(w){
+  const {shiftsByDate} = computeToilWeeks();
+  const row = document.createElement('div'); row.className = 'tw';
+  const cls = w.delta >= 0 ? 'delta-pos' : 'delta-neg';
+  let dayRows = '', cursor = w.weekStart;
+  for(let i = 0; i < 7; i++){
+    if(shiftsByDate[cursor]){ const shift = calendarData[cursor].shift; dayRows += '<div>'+niceDate(cursor)+(shift.title ? ' \u2014 '+escapeHtml(shift.title) : '')+': '+shift.start+'\u2013'+shift.finish+(shift.breakMins ? ' (\u2212'+shift.breakMins+'m break)' : '')+' = '+shiftsByDate[cursor].toFixed(2)+'h</div>'; }
+    cursor = addDays(cursor, 1);
+  }
+  row.innerHTML = '<button type="button" class="tw-h"><span>'+(w.isCurrent ? 'This week' : shortDate(w.weekStart)+'\u2013'+shortDate(w.weekEnd))+'</span><span>'+w.total.toFixed(1)+'h</span><span class="'+cls+'">'+(w.delta >= 0 ? '+' : '')+w.delta.toFixed(1)+'h</span><span>'+w.balance.toFixed(1)+'h</span></button><div class="tw-d" hidden>'+(dayRows || 'No shifts logged.')+'</div>';
+  row.querySelector('.tw-h').addEventListener('click', ()=>{ const d = row.querySelector('.tw-d'); d.hidden = !d.hidden; });
+  return row;
+}
+function openToilWeeksSheet(){
+  openListSheet({kind:'weeks', title:'Week by week', search:false,
+    items:()=> computeToilWeeks().weeks.slice().reverse(), text:w=> shortDate(w.weekStart),
+    group:w=> ({key:w.weekStart.slice(0,7), label:finMonthLabel(w.weekStart.slice(0,7))}),
+    groupMeta:list=> list.reduce((a,w)=> a + w.total, 0).toFixed(1)+'h',
+    summary:list=> 'Hours \u2003\u0394 TOIL \u2003 Balance',
+    row:toilWeekRowEl, empty:'Log a shift on the calendar to see your weekly breakdown here.'});
+}
+function openToilPayoutsSheet(){
+  openListSheet({kind:'payouts', title:'TOIL payouts', search:false,
+    items:()=> toilPayouts.slice().reverse(), text:p=> shortDate(p.date),
+    row:p=>{ const row = document.createElement('div'); row.className = 'todo-item'; row.innerHTML = '<div style="flex:1;">'+shortDate(p.date)+'</div><div style="font-weight:700;">'+p.amount.toFixed(1)+'h</div><button class="todo-del">&times;</button>';
+      row.querySelector('.todo-del').addEventListener('click', async ()=>{ toilPayouts = toilPayouts.filter(x=> x.id !== p.id); await saveKey('toil-payouts', toilPayouts); renderToilTab(); }); return row; },
+    empty:'No payouts recorded yet.'});
 }
 function setupToilPayouts(){
   document.getElementById('toilPayoutBtn').addEventListener('click', async ()=>{
@@ -4425,18 +4727,14 @@ function setupMoneyEye(){
   MONEY_MASK_ROOTS.forEach(id=>{ const el = document.getElementById(id); if(el) mo.observe(el, {childList:true, subtree:true}); });
   updateEyeBtn();
 }
+let summaryRO = null;
 function fitSummary(){
   const d = document.querySelector('#summaryBody .dash');
-  if(!d || !document.getElementById('view-summary').classList.contains('active')) return;
-  const bar = document.getElementById('returnCalBar');
-  const barH = bar && bar.offsetHeight ? bar.offsetHeight : 58;
-  const absTop = d.getBoundingClientRect().top + window.scrollY;
-  d.style.setProperty('--dash-h', Math.max(470, Math.floor(window.innerHeight - absTop - barH - 12))+'px');
+  if(!d) return;
   const main = d.querySelector('.dash-main');
-  if(main){
-    const figH = main.getBoundingClientRect().height - 24 - 24;                 // the tile minus its label and padding
-    main.style.setProperty('--fig-w', Math.max(92, Math.min(Math.round(figH*0.362 + 24), Math.round(d.getBoundingClientRect().width*0.42)))+'px');
-  }
+  if(!main) return;
+  const figH = main.getBoundingClientRect().height - 24 - 24;                 // the tile minus its label and padding
+  main.style.setProperty('--fig-w', Math.max(92, Math.min(Math.round(figH*0.362 + 24), Math.round(d.getBoundingClientRect().width*0.42)))+'px');
 }
 function renderSummary(){
   const box = document.getElementById('summaryBody');
@@ -4522,7 +4820,8 @@ function renderSummary(){
     if(t && t.dueDate) goToCalendarDate(t.dueDate); else goToView('todo');
   }));
   box.querySelectorAll('[data-sum-add]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); openQuickAddTodoForm(); }));
-  fitSummary(); requestAnimationFrame(fitSummary); setTimeout(fitSummary, 150);
+  fitSummary(); requestAnimationFrame(fitSummary);
+  if(window.ResizeObserver){ if(summaryRO) summaryRO.disconnect(); summaryRO = new ResizeObserver(fitSummary); const dm = box.querySelector('.dash-main'); if(dm) summaryRO.observe(dm); }
   const cb = document.getElementById('sumClockBtn');
   if(cb) cb.addEventListener('click', async (ev)=>{ ev.stopPropagation(); await toggleClockIn(); if(document.getElementById('view-summary').classList.contains('active')) renderSummary(); });
 }
@@ -5059,21 +5358,29 @@ function finNavMonth(delta){
   renderBudget();
 }
 // everything about one month in one place: what comes in, what goes out, what's left
+function finInvScheduled(ym){
+  let t = 0;
+  finHoldings.forEach(h=>{ const r = h.recur; if(!r || r.active === false || !(r.amount > 0) || !r.date) return; finOccurrences(r, ym).forEach(()=>{ t += r.amount; }); });
+  return finR2(t);
+}
 function finMonthPlan(ym){
   const today = todayStr(), st = spendStats(ym);
-  const income = finMonthTotal(finIncome, ym), bills = finMonthTotal(finDD, ym);
+  let income = finMonthTotal(finIncome, ym); const bills = finMonthTotal(finDD, ym);
   let incomeSoFar = 0, billsPaid = 0;
   finIncome.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d <= today) incomeSoFar += it.amount; }));
+  const oneOff = finIn.filter(i=> i.date && i.date.slice(0,7) === ym);
+  oneOff.forEach(i=>{ income += i.amount; if(i.date <= today) incomeSoFar += i.amount; });
   finDD.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d <= today) billsPaid += it.amount; }));
   const [y, m] = ym.split('-').map(Number), dim = new Date(y, m, 0).getDate();
-  const rentEst = RATE_HOME > 0 ? finR2(dim*RATE_HOME) : 0;                      // budget the whole month at home
+  const rentEst = 0;                                                              // rent is an ordinary bill now: add it to your bills
   const rentPaid = finR2(st.tx.filter(t=> t.src === 'rent').reduce((a,t)=> a + t.amount, 0));
-  const rent = Math.max(rentEst, rentPaid), spent = finR2(st.spent - rentPaid);
-  const out = finR2(bills + rent + spent);
-  const budgetVar = spendCatList().filter(c=> c.id !== 'bills').reduce((a,c)=> a + (c.budget || 0), 0);
-  const billsPlanned = finR2(bills + rentEst);
-  return {ym, income:finR2(income), incomeSoFar:finR2(incomeSoFar), bills:finR2(bills), billsPaid:finR2(billsPaid), rentEst, rentPaid, rent, spent, out, left:finR2(income - out),
-    budgetVar, billsPlanned, budget:finR2(budgetVar + billsPlanned), spentAll:finR2(st.spent + billsPaid), billsSpent:finR2(billsPaid + (st.by.bills || 0)), st};
+  const invSched = finInvScheduled(ym), invActual = finR2(st.tx.filter(t=> t.src === 'invest').reduce((a,t)=> a + t.amount, 0)), invested = finR2(Math.max(invSched, invActual));
+  const rent = Math.max(rentEst, rentPaid), spent = finR2(st.spent - rentPaid - invActual);
+  const out = finR2(bills + rent + invested + spent);
+  const budgetVar = spendCatList().filter(c=> c.id !== 'bills' && c.id !== 'investing').reduce((a,c)=> a + (c.budget || 0), 0);
+  const billsPlanned = finR2(bills + rentPaid);
+  return {ym, income:finR2(income), incomeSoFar:finR2(incomeSoFar), bills:finR2(bills), billsPaid:finR2(billsPaid), rentEst, rentPaid, rent, spent, invested, invSched, invActual, out, left:finR2(income - out),
+    budgetVar, billsPlanned, budget:finR2(budgetVar + billsPlanned + invested), spentAll:finR2(st.spent + billsPaid), billsSpent:finR2(billsPaid + (st.by.bills || 0)), st};
 }
 // the spending account: what you tell it, then income, bills and spending move it
 const finMonthsFrom = (a, b)=>{ const out = []; let ym = a, g = 0; while(ym <= b && g++ < 600){ out.push(ym); const [y, m] = ym.split('-').map(Number), d = new Date(y, m, 1); ym = d.getFullYear()+'-'+pad(d.getMonth()+1); } return out; };
@@ -5087,6 +5394,7 @@ function finAccount(){
     finDD.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d > a.date && d <= today) out += it.amount; }));
   });
   spendTxns.forEach(t=>{ if(t.date && t.date <= today && (t.date+' '+(t.time || '23:59')) > stamp) out += t.amount; });
+  finIn.forEach(i=>{ if(i.date && i.date <= today && (i.date+' '+(i.time || '00:00')) > stamp) inn += i.amount; });
   return {value:finR2(a.bal + inn - out), set:a.bal, since:a.date, inn:finR2(inn), out:finR2(out)};
 }
 function finOpenAcctSheet(){
@@ -5132,10 +5440,10 @@ function renderFinDashboard(box){
   // this month
   const pctOut = mp.income > 0 ? Math.min(100, mp.out/mp.income*100) : 0;
   h += '<div class="card tap" data-fin-tab="spend"><div class="sum2-h"><span>This month</span><span class="sum-k">\u203a</span></div>';
-  if(mp.income > 0) h += '<div class="fin-big'+(mp.left < 0 ? ' sum-over' : '')+'">'+finAmt(mp.left)+'</div><div class="stat-sub" style="margin-bottom:6px;">left after bills and spending</div>';
+  if(mp.income > 0) h += '<div class="fin-big'+(mp.left < 0 ? ' sum-over' : '')+'">'+finAmt(mp.left)+'</div><div class="stat-sub" style="margin-bottom:6px;">left after bills, investments and spending</div>';
   else h += '<div class="stat-sub" style="margin-bottom:6px;"><span data-fin-tab="income"><b>Add your income</b> to see what\u2019s left \u2192</span></div>';
-  h += row('Income', mp.income ? '+'+money(mp.income) : '\u2014')+row('Bills', mp.bills ? '\u2212'+money(mp.bills) : '\u2014')+
-    (mp.rent ? row('Rent'+(mp.rentPaid ? '' : ' (full month at home)'), '\u2212'+money(mp.rent)) : '')+
+  h += row('Income', mp.income ? '+'+money(mp.income) : '\u2014')+row('Bills', (mp.bills + mp.rent) ? '\u2212'+money(finR2(mp.bills + mp.rent)) : '\u2014')+
+    (mp.invested ? row('Investments', '\u2212'+money(mp.invested)) : '')+
     row('Spending (your share)', mp.spent ? '\u2212'+money(mp.spent) : '\u2014')+
     (mp.income > 0 ? '<div class="sp-bar"><div class="sp-fill'+(pctOut > 100 ? ' over' : (pctOut > 85 ? ' warn' : ''))+'" style="width:'+pctOut+'%"></div></div>' : '')+'</div>';
   // portfolio
@@ -5169,16 +5477,19 @@ function renderFinDashboard(box){
 }
 
 // ---- bills (direct debits) and income share one screen design ----
-function renderFinRecurring(box, kind, forYm){
+let finRecurAll = {dd:false, income:false};
+function renderFinRecurring(box, kind, forYm, compact){
   const isDD = kind === 'dd', list = isDD ? finDD : finIncome, key = isDD ? 'fin-dd' : 'fin-income';
   const today = todayStr(), ym = forYm || today.slice(0,7);
   const monthTot = finMonthTotal(list, ym);
   const avg = list.filter(it=> it.active !== false).reduce((a,it)=> a + it.amount*(FIN_PER_MONTH[it.freq] || 0), 0);
   const rows = list.map(it=> ({it, next: finNext(it, today)})).sort((a,b)=> (a.next || '9999').localeCompare(b.next || '9999'));
   const freqOpts = sel=> FIN_FREQ.map(f=> '<option value="'+f[0]+'"'+(f[0]===sel ? ' selected' : '')+'>'+f[1]+'</option>').join('');
-  let h = '<div class="card"><div class="sum2-h"><span>'+(isDD ? 'Bills' : 'Income')+' '+(ym === today.slice(0,7) ? 'this month' : 'in '+finMonthLabel(ym))+'</span></div><div class="fin-big">'+money(monthTot)+'</div>'+
+  let h = compact ? '' : '<div class="card"><div class="sum2-h"><span>'+(isDD ? 'Bills' : 'Income')+' '+(ym === today.slice(0,7) ? 'this month' : 'in '+finMonthLabel(ym))+'</span></div><div class="fin-big">'+money(monthTot)+'</div>'+
     '<div class="stat-sub" style="margin:2px 0 0;">'+(avg ? 'about '+finMoneyShort(avg)+' a month on average\u2003' : '')+list.length+(isDD ? ' bill' : ' source')+(list.length === 1 ? '' : 's')+'</div></div>';
-  h += '<div class="card">'+(rows.length ? rows.map(r=>{
+  const showAllRows = !!finRecurAll[kind] || rows.length <= 4 || rows.some(r=> String(finOpenItem) === String(r.it.id));
+  const shownRows = showAllRows ? rows : rows.slice(0, 4);
+  h += '<div class="card">'+(rows.length ? shownRows.map(r=>{
     const it = r.it, open = String(finOpenItem) === String(it.id);
     const sub = finFreqLabel(it.freq)+'\u2003'+(it.active === false ? 'paused' : (r.next ? finDateLabel(r.next) : (it.freq === 'once' ? shortDate(it.date) : 'ended')));
     return '<div class="fin-item"><div class="fin-item-top" data-fin-open="'+it.id+'"><div style="min-width:0;"><b>'+escapeHtml(it.name)+'</b><div class="stat-sub" style="margin:2px 0 0;">'+sub+'</div></div><b style="'+(it.active === false ? 'opacity:.5;' : '')+(isDD ? '' : 'color:var(--home);')+'">'+money(it.amount)+'</b></div>'+
@@ -5189,6 +5500,7 @@ function renderFinRecurring(box, kind, forYm){
         '<label class="ff ff-wide"><span>How often</span><select data-fe="freq">'+freqOpts(it.freq)+'</select></label></div>'+
         '<div class="fin-edit-row"><button type="button" class="btn small" data-fe-save="'+it.id+'">Save</button><button type="button" class="btn secondary small" data-fe-pause="'+it.id+'">'+(it.active === false ? 'Resume' : 'Pause')+'</button><button type="button" class="btn secondary small" data-fe-del="'+it.id+'">Delete</button></div></div>' : '')+'</div>';
   }).join('') : '<div class="stat-sub">'+(isDD ? 'No bills yet.' : 'No income added yet.')+'</div>')+'</div>';
+  if(rows.length > 4) h += '<button type="button" class="btn secondary small block" data-fr-all style="margin-bottom:8px;">'+(showAllRows ? 'Show fewer' : 'Show all '+rows.length)+'</button>';
   h += '<button type="button" class="btn secondary block" id="frToggle">+ Add '+(isDD ? 'bill' : 'income')+'</button>'+
     '<div class="card" id="frForm" hidden style="margin-top:10px;"><div class="ff-grid">'+
     '<label class="ff ff-wide"><span>Name</span><input type="text" id="frName" placeholder="'+(isDD ? 'e.g. Rent' : 'e.g. Salary')+'" autocomplete="off"></label>'+
@@ -5197,6 +5509,7 @@ function renderFinRecurring(box, kind, forYm){
     '<label class="ff ff-wide"><span>How often</span><select id="frFreq">'+freqOpts('monthly')+'</select></label></div>'+
     '<button type="button" class="btn block" id="frAdd" style="margin-top:12px;">Add</button></div>';
   box.innerHTML = h;
+  box.querySelectorAll('[data-fr-all]').forEach(b=> b.addEventListener('click', ()=>{ finRecurAll[kind] = !finRecurAll[kind]; renderBudget(); }));
   const save = async ()=>{ await saveKey(key, list); renderBudget(); };
   box.querySelectorAll('[data-fin-open]').forEach(el=> el.addEventListener('click', ()=>{ finOpenItem = String(finOpenItem) === el.dataset.finOpen ? null : el.dataset.finOpen; renderBudget(); }));
   box.querySelectorAll('[data-fe-save]').forEach(b=> b.addEventListener('click', async ()=>{
@@ -5279,7 +5592,7 @@ async function finApplyRecurring(){
       due.sort();
       for(const d of due){
         if(h.type === 'crypto' || h.type === 'stock'){ const u = finUnitPrice(h); if(!(u && u.p > 0)) break; }      // wait for a price so the units are worked out
-        await finAddMoney(h, {amount:r.amount, units:0, date:d, spend:!!r.spend, cid:'rb_'+h.id+'_'+d});
+        await finAddMoney(h, {amount:r.amount, units:0, date:d, spend:true, cid:'rb_'+h.id+'_'+d});
         r.last = d; changed = true;
       }
     }
@@ -5296,7 +5609,7 @@ function finRecurHtml(x){
     '<div class="fin-form" data-rb-form hidden><div class="ff-grid"><label class="ff"><span>Amount (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" data-rb="amount" value="'+(has ? r.amount : '')+'"></label>'+
       '<label class="ff"><span>First buy on</span><input type="date" data-rb="date" value="'+(has ? r.date : todayStr())+'"></label>'+
       '<label class="ff ff-wide"><span>How often</span><select data-rb="freq">'+opts+'</select></label></div>'+
-      '<label class="fin-check"><input type="checkbox" data-rb="spend"'+(!has || r.spend ? ' checked' : '')+'> Count as spending (comes out of your account)</label>'+
+      '<input type="checkbox" data-rb="spend" checked hidden><div class="stat-sub" style="margin:8px 0 0;">Comes out of your spending account on each date, and counts in your budget.</div>'+
       '<div class="fin-edit-row"><button type="button" class="btn small" data-rb-save="'+x.id+'">Save</button></div></div></div>';
 }
 function finBindRecur(box){
@@ -5781,6 +6094,100 @@ function renderFinInvest(box){
 }
 
 // ---- the Spend tab: tap any transaction for its details and to split it ----
+// ---- the ledger: everything that moves the account, newest first ----
+let spendDir = 'out', finLedgerFilter = 'all', finLedgerQ = '';
+function finLedgerItems(){
+  const today = todayStr(), rows = [];
+  spendTxns.forEach(t=>{ if(t.date) rows.push({k:'txn', id:t.id, date:t.date, time:t.time || '', amt:-t.amount, title:t.merchant, t}); });
+  finIn.forEach(i=>{ if(i.date) rows.push({k:'in', id:i.id, date:i.date, time:i.time || '', amt:i.amount, title:i.desc || 'Money in', i}); });
+  const first = rows.reduce((m, r)=> r.date < m ? r.date : m, today), a = finSettings.acct;
+  const startYm = (a && a.date && a.date < first ? a.date : first).slice(0,7), endD = addDays(today, 14);
+  const months = finMonthsFrom(startYm, endD.slice(0,7));
+  finIncome.forEach(it=> months.forEach(ym=> finOccurrences(it, ym).forEach(d=>{ if(d <= endD) rows.push({k:'sched', id:'i:'+it.id+':'+d, date:d, time:'', amt:it.amount, title:it.name, up:d > today, it, inc:true}); })));
+  finDD.forEach(it=> months.forEach(ym=> finOccurrences(it, ym).forEach(d=>{ if(d <= endD) rows.push({k:'sched', id:'b:'+it.id+':'+d, date:d, time:'', amt:-it.amount, title:it.name, up:d > today, it, inc:false}); })));
+  finHoldings.forEach(h=>{ const r = h.recur; if(!r || r.active === false || !(r.amount > 0) || !r.date) return; months.forEach(ym=> finOccurrences(r, ym).forEach(d=>{ if(d > today && d <= endD) rows.push({k:'sched', id:'v:'+h.id+':'+d, date:d, time:'', amt:-r.amount, title:'Invest '+finDisplayName(h), up:true, it:r, inv:true}); })); });
+  return rows.sort((x, y)=> (y.date+(y.time || '')).localeCompare(x.date+(x.time || '')));
+}
+function finLedgerRowEl(r, oth){
+  const d = parseYMD(r.date), day = d.getDate()+' '+TR_MON[d.getMonth()];
+  const amt = (neg, v)=> '<span class="lg-a '+(neg ? 'out' : 'in')+'">'+(neg ? '\u2212' : '+')+money(v)+'</span>';
+  const w = document.createElement('div'); let html;
+  if(r.k === 'txn'){
+    const t = r.t, o = oth[t.id] || 0, c = t.cat ? spendCatById(t.cat) : null, net = t.amount - o;
+    html = '<div class="sp-txn lg-row tap" data-sp-txn="'+t.id+'"><span class="lg-d">'+day+'</span><div class="lg-m"><div class="lg-t">'+escapeHtml(t.merchant)+'</div><div class="lg-s">'+escapeHtml(c ? c.name : 'To sort')+(t.time ? '\u2003'+t.time : '')+(o ? '\u2003split' : '')+'</div></div>'+
+      '<div class="lg-r">'+amt(true, net)+(o ? '<span class="lg-of">of '+money(t.amount)+'</span>' : '')+'</div></div>';
+  }else if(r.k === 'in'){
+    html = '<div class="lg-row tap" data-lg-in="'+r.id+'"><span class="lg-d">'+day+'</span><div class="lg-m"><div class="lg-t">'+escapeHtml(r.title)+'</div><div class="lg-s">Money in'+(r.time ? '\u2003'+r.time : '')+'</div></div><div class="lg-r">'+amt(false, Math.abs(r.amt))+'</div></div>';
+  }else{
+    html = '<div class="lg-row tap'+(r.up ? ' up' : '')+'" data-lg-sched="'+escapeHtml(r.id)+'"><span class="lg-d">'+day+'</span><div class="lg-m"><div class="lg-t">'+escapeHtml(r.title)+'</div><div class="lg-s">'+(r.inc ? 'Income' : (r.inv ? 'Investment' : 'Bill'))+(r.up ? ', due' : '')+'</div></div><div class="lg-r">'+amt(!r.inc, Math.abs(r.amt))+'</div></div>';
+  }
+  w.innerHTML = html; const el = w.firstElementChild;
+  if(r.k === 'txn') el.addEventListener('click', ()=> finOpenTxnSheet(r.t.id));
+  else if(r.k === 'in') el.addEventListener('click', ()=> finOpenInSheet(r.id));
+  else el.addEventListener('click', ()=> finOpenSchedSheet(r));
+  return el;
+}
+function renderLedger(){
+  const body = document.getElementById('lgBody'); if(!body) return;
+  const q = finLedgerQ.trim().toLowerCase(), oth = finOthersMap(), ym = spendMonth || todayStr().slice(0,7);
+  let rows = finLedgerItems().filter(r=> r.date.slice(0,7) === ym);
+  if(spendFilter) rows = rows.filter(r=> r.k === 'txn' && (r.t.cat || '_') === spendFilter);
+  if(finLedgerFilter === 'in') rows = rows.filter(r=> r.amt > 0); else if(finLedgerFilter === 'out') rows = rows.filter(r=> r.amt < 0);
+  const all = rows.length;
+  if(q) rows = rows.filter(r=> (r.title+' '+(r.k === 'txn' ? (spendCatById(r.t.cat) || {name:''}).name : (r.k === 'in' ? 'money in' : (r.inc ? 'income' : (r.inv ? 'investment' : 'bill'))))+' '+Math.abs(r.amt).toFixed(2)+' '+shortDate(r.date)+' '+finMonthLabel(r.date.slice(0,7))).toLowerCase().indexOf(q) > -1);
+  document.querySelectorAll('#lgFilters [data-lg-f]').forEach(b=> b.classList.toggle('active', b.dataset.lgF === finLedgerFilter));
+  const posted = rows.filter(r=> !r.up), due = rows.filter(r=> r.up);
+  const inn = finR2(posted.filter(r=> r.amt > 0).reduce((a, r)=> a + r.amt, 0)), outt = finR2(posted.filter(r=> r.amt < 0).reduce((a, r)=> a - r.amt, 0));
+  const dIn = finR2(due.filter(r=> r.amt > 0).reduce((a, r)=> a + r.amt, 0)), dOut = finR2(due.filter(r=> r.amt < 0).reduce((a, r)=> a - r.amt, 0));
+  const tot = document.getElementById('lgTot'); if(tot) tot.innerHTML = '<span class="lg-a in">+'+money(inn)+'</span> in\u2003<span class="lg-a out">\u2212'+money(outt)+'</span> out'+(due.length ? '<span class="lg-due">still due '+(dIn ? '+'+money(dIn) : '')+(dIn && dOut ? ' ' : '')+(dOut ? '\u2212'+money(dOut) : '')+'</span>' : '');
+  const sum = document.getElementById('lgSum'); if(sum) sum.textContent = q ? rows.length+' of '+all : rows.length+' item'+(rows.length === 1 ? '' : 's');
+  body.innerHTML = '';
+  if(!rows.length){ body.innerHTML = '<div class="empty">'+(q ? 'Nothing matches \u201c'+escapeHtml(finLedgerQ.trim())+'\u201d.' : 'Nothing in '+finMonthLabel(ym)+'.')+'</div>'; return; }
+  rows.forEach(r=> body.appendChild(finLedgerRowEl(r, oth)));
+}
+function finOpenInSheet(id){
+  const i = finIn.find(x=> x.id === id); if(!i) return;
+  openSheet('Money in');
+  const body = document.getElementById('sheetBody');
+  body.innerHTML = '<label class="ff"><span>Amount (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" id="inAmt" value="'+i.amount+'"></label>'+
+    '<label class="ff"><span>From</span><input type="text" id="inDesc" value="'+escapeHtml(i.desc || '')+'" autocomplete="off"></label>'+
+    '<label class="ff"><span>Date</span><input type="date" id="inDate" value="'+i.date+'"></label>'+
+    '<div class="fin-edit-row" style="margin-top:12px;"><button type="button" class="btn small" id="inSave">Save</button><button type="button" class="btn danger small" id="inDel">Delete</button></div>';
+  document.getElementById('inSave').addEventListener('click', async ()=>{
+    const v = parseFloat(document.getElementById('inAmt').value), d = document.getElementById('inDate').value;
+    if(!(v > 0) || !d){ showToast('Enter an amount and a date.'); return; }
+    i.amount = finR2(v); i.desc = document.getElementById('inDesc').value.trim() || 'Money in'; i.date = d;
+    await saveKey('fin-in', finIn); closeSheet(); renderBudget(); showToast('Saved.');
+  });
+  let armed = false, timer = null; const del = document.getElementById('inDel');
+  del.addEventListener('click', async ()=>{
+    if(!armed){ armed = true; del.textContent = 'Tap again to delete'; timer = setTimeout(()=>{ armed = false; del.textContent = 'Delete'; }, 3000); return; }
+    clearTimeout(timer); finIn = finIn.filter(x=> x.id !== id); await saveKey('fin-in', finIn); closeSheet(); renderBudget();
+  });
+}
+function finOpenSchedSheet(r){
+  openSheet(r.title);
+  const body = document.getElementById('sheetBody'), it = r.it;
+  body.innerHTML = '<div class="sum-row"><span class="sum-k">'+(r.inc ? 'Income' : (r.inv ? 'Investment' : 'Bill'))+'</span><span class="sum-v">'+(r.inc ? '+' : '\u2212')+money(Math.abs(r.amt))+'</span></div>'+
+    '<div class="sum-row"><span class="sum-k">'+(r.up ? 'Due' : (r.inc ? 'Received' : 'Paid'))+'</span><span class="sum-v">'+niceDate(r.date)+'</span></div>'+
+    '<div class="sum-row"><span class="sum-k">Repeats</span><span class="sum-v">'+escapeHtml(finFreqLabel(it.freq))+'</span></div>'+
+    '<div class="stat-sub" style="margin:10px 0;">This comes from your '+(r.inc ? 'income' : (r.inv ? 'regular buys' : 'bills'))+' schedule, so it moves the balance on its own.</div>'+
+    '<button type="button" class="btn secondary block" id="schedManage">'+(r.inc ? 'Manage income' : (r.inv ? 'Manage investments' : 'Manage bills'))+'</button>';
+  document.getElementById('schedManage').addEventListener('click', ()=>{
+    closeSheet();
+    if(r.inc){ goToView('budget:income'); return; }
+    if(r.inv){ goToView('budget:invest'); return; }
+    const d = document.getElementById('finBillsBox'); const det = d && d.closest('details'); if(det){ det.open = true; det.scrollIntoView({block:'start'}); }
+  });
+}
+function spendTxnRowHtml(t, oth){
+  oth = oth || finOthersMap();
+  const amt = n=> (n < 0 ? '\u2212' : '')+money(Math.abs(n));
+  const pillOf = c=> c ? '<span class="sp-pill" style="background:'+c.color+'">'+escapeHtml(c.name)+'</span>' : '<span class="sp-pill" style="background:var(--ink-soft)">Sort</span>';
+  const o = oth[t.id] || 0;
+  return '<div class="sp-txn tap" data-sp-txn="'+t.id+'"><div style="min-width:0;flex:1;"><div style="font-size:14px;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(t.merchant)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+shortDate(t.date)+(t.time ? ' '+t.time : '')+'\u2003'+pillOf(spendCatById(t.cat))+(o ? '\u2003split' : '')+'</div></div>'+
+      '<div style="text-align:right;flex-shrink:0;">'+(o ? '<b>'+amt(t.amount - o)+'</b><div class="stat-sub" style="margin:0;">of '+amt(t.amount)+'</div>' : '<b>'+amt(t.amount)+'</b>')+'</div></div>';
+}
 function renderFinSpend(box){
   const keepAmt = document.getElementById('spAmt') ? document.getElementById('spAmt').value : '', keepMer = document.getElementById('spMer') ? document.getElementById('spMer').value : '';
   if(!spendMonth) spendMonth = todayStr().slice(0,7);
@@ -5798,53 +6205,81 @@ function renderFinSpend(box){
   const dimM = new Date(yy, mm, 0).getDate(), daysLeftM = ym === todayStr().slice(0,7) ? dimM - new Date().getDate() + 1 : 0;
   const perDay = (leftAll != null && leftAll > 0 && daysLeftM > 0) ? leftAll/daysLeftM : null;
   const pct = bud ? mp.spentAll/bud : 0;
-  h += '<div class="card"><div class="sp-month"><button type="button" class="chip-btn" data-sp-m="-1">\u2039</button><b>'+label+'</b><button type="button" class="chip-btn" data-sp-m="1">\u203a</button></div>'+
+  const monthHtml = '<div class="card"><div class="stat-sub" style="margin:0 0 4px;">'+label+'</div>'+
     '<div class="sp-big">'+amt(mp.spentAll)+'</div>'+
     '<div class="stat-sub">'+(bud ? 'of '+money(bud)+'\u2003'+(leftAll >= 0 ? money(leftAll)+' left' : '<b class="sum-over">'+money(-leftAll)+' over</b>')+(perDay ? '\u2003'+money(perDay)+'/day' : '') : 'Set your budgets below to see what\u2019s left')+'</div>'+
     (bud ? '<div class="sp-bar"><div class="sp-fill'+(pct > 1 ? ' over' : (pct > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pct*100)+'%"></div></div>' : '')+'</div>';
   // money coming in this month
   const ins = []; finIncome.forEach(it=> finOccurrences(it, ym).forEach(d=> ins.push({d, name:it.name, amt:it.amount}))); ins.sort((x,y)=> x.d.localeCompare(y.d));
-  if(ins.length) h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Money in</h2><span class="sum-k">'+money(mp.income)+'</span></div>'+ins.map(i=> '<div class="sum-row"><span>'+escapeHtml(i.name)+'<span class="stat-sub" style="display:block;margin:0;">'+niceDate(i.d)+'\u2003'+(i.d <= todayStr() ? 'received' : 'due')+'</span></span><span class="sum-v" style="color:var(--home);">+'+money(i.amt)+'</span></div>').join('')+'</div>';
+  let moneyInHtml = ''; if(ins.length) moneyInHtml = accOpen('Scheduled income', money(mp.income), false, false, ym === todayStr().slice(0,7) ? 'this month' : 'in '+finMonthLabel(ym))+ins.map(i=> '<div class="sum-row"><span>'+escapeHtml(i.name)+'<span class="stat-sub" style="display:block;margin:0;">'+niceDate(i.d)+'\u2003'+(i.d <= todayStr() ? 'received' : 'due')+'</span></span><span class="sum-v" style="color:var(--home);">+'+money(i.amt)+'</span></div>').join('')+'</div></details>';
   const owedNow = finOwedUnpaid();
-  if(owedNow > 0) h += '<div class="card tap" data-sp-owed><div class="sum-row" style="padding:0;border:none;"><span><b>Owed to you</b></span><span class="sum-v"><b>'+money(owedNow)+'</b> <span class="sum-k">\u203a</span></span></div></div>';
+  let owedHtml = ''; if(owedNow > 0) owedHtml = '<div class="acc-row tap" data-sp-owed><b>Owed to you</b><span><b>'+money(owedNow)+'</b> <span class="sum-k">\u203a</span></span></div>';
   const since = addDays(todayStr(), -120), freq = {};
   spendTxns.forEach(t=>{ if(t.date >= since && t.src !== 'invest'){ freq[t.merchant] = (freq[t.merchant]||0) + 1; } });
-  const top = Object.keys(freq).sort((a,b)=> freq[b]-freq[a]).slice(0,6);
-  h += '<div class="card"><h2 style="font-size:15px;margin-bottom:8px;">Add spend</h2><div class="sp-add"><input type="text" id="spAmt" inputmode="decimal" placeholder="\u00a3" style="width:84px;flex-shrink:0;"><input type="text" id="spMer" placeholder="Where?" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="spAddBtn">Add</button></div>'+
-    (top.length ? '<div class="sp-chips">'+top.map(m=> '<button type="button" class="chip-btn" data-sp-mer="'+escapeHtml(m)+'">'+escapeHtml(m)+'</button>').join('')+'</div>' : '')+'</div>';
+  const top = Object.keys(freq).sort((a,b)=> freq[b]-freq[a]).slice(0,8);
+  const fin2 = {}; finIn.forEach(i=>{ if(i.desc) fin2[i.desc] = (fin2[i.desc] || 0) + 1; }); finIncome.forEach(it=>{ if(it.name) fin2[it.name] = (fin2[it.name] || 0) + 1; });
+  const topIn = Object.keys(fin2).sort((a,b)=> fin2[b]-fin2[a]).slice(0,8);
+  const acctNow = finAccount(), mpNow = mp;
+  const accountHtml = '<div class="card lg-acct"><div class="lg-acct-top"><span class="stat-sub" style="margin:0;">Spending account</span><button type="button" class="w-link" data-sp-acct>'+(acctNow ? 'Update' : 'Set balance')+'</button></div>'+
+    '<div class="sp-big">'+(acctNow ? amt(acctNow.value) : '\u2014')+'</div>'+
+    '<div class="lg-io"><span>In <b>'+money(mpNow.incomeSoFar)+'</b></span><span>Out <b>'+money(mpNow.spentAll)+'</b></span><span class="stat-sub" style="margin:0;">'+(ym === todayStr().slice(0,7) ? 'this month' : 'in '+finMonthLabel(ym))+'</span></div>'+(acctNow ? '' : '<div class="stat-sub" style="margin:6px 0 0;">Type what the account shows and every payment in and out will keep it up to date.</div>')+'</div>';
+  h += accountHtml+'<div class="card"><div class="sum-head" style="margin-bottom:8px;"><h2 style="font-size:15px;margin:0;">Add</h2><div class="seg sp-dir"><button type="button" data-sp-dir="out" class="sel-home">Money out</button><button type="button" data-sp-dir="in">Money in</button></div></div><div class="sp-add"><input type="text" id="spAmt" inputmode="decimal" placeholder="\u00a3" style="width:84px;flex-shrink:0;"><select id="spPlace" aria-label="Where" style="flex:1;min-width:0;"></select><button type="button" class="btn small" id="spAddBtn">Add</button></div>'+
+    '<input type="text" id="spMer" placeholder="Where?" autocomplete="off" style="width:100%;margin-top:8px;" hidden></div>';
+  const ledgerCardHtml = '<div class="card" id="lgCard"><div class="sp-month" style="margin-bottom:6px;"><button type="button" class="chip-btn" data-sp-m="-1" aria-label="Earlier month">\u2039</button><b>'+label+'</b><button type="button" class="chip-btn" data-sp-m="1" aria-label="Later month">\u203a</button></div>'+
+    '<div class="lg-tot"><span id="lgTot"></span><span class="stat-sub" id="lgSum" style="margin:0;"></span></div>'+
+    (spendFilter ? '<div style="margin:0 0 6px;"><span class="chip-btn active" data-sp-filter-clear style="cursor:pointer;">'+escapeHtml((spendCatById(spendFilter) || {name:'To sort'}).name)+' \u00d7</span></div>' : '')+
+    '<input type="search" id="lgSearch" class="ls-search" placeholder="Search a shop, amount or date" autocomplete="off" autocapitalize="none" value="'+escapeHtml(finLedgerQ)+'">'+
+    '<div class="chip-row" id="lgFilters" style="margin-bottom:2px;"><button type="button" class="chip-btn" data-lg-f="all">All</button><button type="button" class="chip-btn" data-lg-f="in">Money in</button><button type="button" class="chip-btn" data-lg-f="out">Money out</button></div>'+
+    '<div id="lgBody"></div></div>';
+  let budgetHtml = '';
+  const envLeft = finR2(cats.filter(c=> c.id !== 'bills' && c.id !== 'investing' && c.budget > 0).reduce((a,c)=> a + (c.budget - (st.by[c.id] || 0)), 0)), hasEnv = cats.some(c=> c.id !== 'bills' && c.id !== 'investing' && c.budget > 0);
+  const budgetStatus = hasEnv ? (envLeft >= 0 ? money(envLeft)+' left to spend' : money(-envLeft)+' over') : 'Set budgets';
   if(spendEditing){
-    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budget</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Done</span></div>'+
+    budgetHtml += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budget</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Done</span></div>'+
       cats.map(c=> c.id === 'bills' ? '<div class="sp-edit-row" data-cat-row="bills"><input type="text" value="'+escapeHtml(c.name)+'" data-sp-name="bills" style="flex:1;min-width:0;"><span class="stat-sub" style="margin:0;white-space:nowrap;">worked out from your bills</span></div>' : '<div class="sp-edit-row" data-cat-row="'+c.id+'"><input type="text" value="'+escapeHtml(c.name)+'" data-sp-name="'+c.id+'" style="flex:1;min-width:0;"><input type="number" inputmode="decimal" min="0" step="1" placeholder="\u00a3/mo" value="'+(c.budget || '')+'" data-sp-bud="'+c.id+'"><button type="button" class="todo-del" data-sp-delcat="'+c.id+'">&times;</button></div>').join('')+
       '<button type="button" class="btn secondary small" id="spAddCat" style="margin-top:4px;">+ Budget</button></div>';
   }else{
-    const shown = cats.filter(c=> c.id !== 'bills' && (c.budget > 0 || (st.by[c.id] || 0) !== 0));
-    const bc = spendCatById('bills'), bp = mp.billsPlanned ? mp.billsSpent/mp.billsPlanned : 0;
-    const billsRow = (mp.billsPlanned > 0 || mp.billsSpent > 0) ? '<div class="sp-cat" data-sp-filter="bills"><div class="sp-catrow"><span><span class="sp-pill" style="background:'+(bc ? bc.color : '#8A6FB3')+';padding:0;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;"></span>'+escapeHtml(bc ? bc.name : 'Bills')+(spendFilter === 'bills' ? ' \u2713' : '')+'</span><span>'+amt(mp.billsSpent)+(mp.billsPlanned ? ' <span class="sum-k">/ '+money(mp.billsPlanned)+'</span>' : '')+'</span></div>'+
-      (mp.billsPlanned ? '<div class="sp-bar thin"><div class="sp-fill'+(bp > 1 ? ' over' : (bp > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, bp*100)+'%"></div></div>' : '')+
-      (mp.rentEst ? '<div class="stat-sub" style="margin:3px 0 0;font-size:11.5px;">includes rent for the whole month at home ('+dimM+' \u00d7 '+money(RATE_HOME)+')</div>' : '')+'</div>' : '';
-    h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Budget</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Edit</span></div>'+billsRow+
-      (shown.length || billsRow ? shown.map(c=>{
-        const sp = st.by[c.id] || 0, p = c.budget ? sp/c.budget : 0;
-        return '<div class="sp-cat" data-sp-filter="'+c.id+'"><div class="sp-catrow"><span><span class="sp-pill" style="background:'+c.color+';padding:0;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;"></span>'+escapeHtml(c.name)+(spendFilter===c.id ? ' \u2713' : '')+'</span><span>'+amt(sp)+(c.budget ? ' <span class="sum-k">/ '+money(c.budget)+'</span>' : '')+'</span></div>'+
-          (c.budget ? '<div class="sp-bar thin"><div class="sp-fill'+(p > 1 ? ' over' : (p > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, p*100)+'%"></div></div>' : '')+'</div>';
-      }).join('') : '<div class="stat-sub">Nothing yet \u2014 tap Edit to set monthly limits.</div>')+'</div>';
+    const envs = cats.filter(c=> c.id !== 'bills' && c.id !== 'investing' && (c.budget > 0 || (st.by[c.id] || 0) !== 0));
+    const bc = spendCatById('bills'), ic = spendCatById('investing');
+    const fill = p=> '<div class="sp-bar thin"><div class="sp-fill'+(p > 1 ? ' over' : (p > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, p*100)+'%"></div></div>';
+    const row = (name, color, planned, used, verb, filt, note)=> (planned > 0 || used > 0) ? '<div class="bd-row"'+(filt ? ' data-sp-filter="'+filt+'"' : '')+'><div class="bd-top"><span><span class="bd-dot" style="background:'+color+'"></span>'+escapeHtml(name)+(spendFilter === filt && filt ? ' \u2713' : '')+'</span><b'+(used > planned && planned > 0 ? ' class="over"' : '')+'>'+(planned > 0 ? (planned - used >= 0 ? money(planned - used)+' '+verb : money(used - planned)+' over') : money(used)+' spent')+'</b></div>'+(planned > 0 ? fill(used/planned) : '')+'<div class="bd-sub">'+money(used)+(planned > 0 ? ' of '+money(planned) : '')+(note ? '\u2003'+note : '')+'</div></div>' : '';
+    const unalloc = finR2(mp.income - mp.budget);
+    const allocNote = unalloc > 0.005 ? 'Give it a job: raise a budget, or add one for savings.' : (unalloc < -0.005 ? 'That is more than your income.' : 'Every pound has a job.');
+    budgetHtml += '<div class="card bd-card"><div class="sum-head"><h2 style="font-size:15px;">Budget</h2><span data-sp-edit style="cursor:pointer;font-weight:600;">Edit</span></div>'+
+      '<div class="bd-alloc"><div class="sum-row"><span class="sum-k">Income this month</span><span class="sum-v">'+money(mp.income)+'</span></div>'+
+      '<div class="sum-row"><span class="sum-k">Given a job</span><span class="sum-v">\u2212'+money(mp.budget)+'</span></div>'+
+      '<div class="sum-row bd-left"><span class="sum-k"><b>Left to give a job</b></span><span class="sum-v'+(unalloc < -0.005 ? ' sum-over' : '')+'"><b>'+(unalloc < -0.005 ? '\u2212' : '')+money(Math.abs(unalloc))+'</b></span></div>'+
+      '<div class="stat-sub" style="margin:2px 0 0;">'+allocNote+'</div></div>'+
+      '<div class="bd-label">Set aside</div>'+
+      row('Bills', bc ? bc.color : '#8A6FB3', mp.billsPlanned, mp.billsSpent, 'to pay', 'bills', '')+
+      row('Investments', ic ? ic.color : '#3E8E8E', mp.invested, mp.invActual, 'to invest', 'investing', '')+
+      '<div class="bd-label">To spend, resets each month</div>'+
+      (envs.length ? envs.map(c=> row(c.name, c.color, c.budget || 0, st.by[c.id] || 0, 'left', c.id, '')).join('') : '<div class="stat-sub">Nothing yet. Tap Edit to set a limit for each part of your spending.</div>')+'</div>';
   }
   let list = st.tx.slice().sort((a,b)=> (b.date+(b.time||'')+b.id).localeCompare(a.date+(a.time||'')+a.id));
   if(spendFilter) list = list.filter(t=> (t.cat || '_') === spendFilter);
   const fc = spendFilter ? spendCatById(spendFilter) : null;
-  const rows = spendShowAll ? list : list.slice(0, 25);
+  const rows = list.slice(0, 5);
   const oth = finOthersMap();
-  const txnRow = t=>{
-    const o = oth[t.id] || 0;
-    return '<div class="sp-txn tap" data-sp-txn="'+t.id+'"><div style="min-width:0;flex:1;"><div style="font-size:14px;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(t.merchant)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+shortDate(t.date)+(t.time ? ' '+t.time : '')+'\u2003'+pillOf(spendCatById(t.cat))+(o ? '\u2003split' : '')+'</div></div>'+
-      '<div style="text-align:right;flex-shrink:0;">'+(o ? '<b>'+amt(t.amount - o)+'</b><div class="stat-sub" style="margin:0;">of '+amt(t.amount)+'</div>' : '<b>'+amt(t.amount)+'</b>')+'</div></div>';
-  };
-  h += '<div id="finBillsBox"></div>';
-  h += '<div class="card"><div class="sum-head"><h2 style="font-size:15px;">Transactions</h2>'+(spendFilter ? '<span data-sp-filter-clear style="cursor:pointer;">'+(fc ? escapeHtml(fc.name) : 'Sort')+' \u00d7</span>' : '<span>'+list.length+'</span>')+'</div>'+
-    (rows.length ? rows.map(txnRow).join('') : '<div class="empty">Nothing this month.</div>')+
-    (list.length > 25 && !spendShowAll ? '<button type="button" class="btn secondary small block" id="spMore" style="margin-top:8px;">Show all '+list.length+'</button>' : '')+'</div>';
+  const txnRow = t=> spendTxnRowHtml(t, oth);
+  h += '<div class="acc-list">'+accOpen('Budget', budgetStatus, hasEnv && envLeft < 0, spendEditing || !!spendFilter, label)+monthHtml+budgetHtml+'</div></details></div>'+ledgerCardHtml+'<div class="acc-list">'+moneyInHtml+owedHtml+accOpen('Bills', money(finMonthTotal(finDD, ym)), false, false, ym === todayStr().slice(0,7) ? 'this month' : 'in '+finMonthLabel(ym))+'<div id="finBillsBox"></div></div></details></div>';
   box.innerHTML = h;
-  renderFinRecurring(document.getElementById('finBillsBox'), 'dd', spendMonth || todayStr().slice(0,7));
+  renderFinRecurring(document.getElementById('finBillsBox'), 'dd', spendMonth || todayStr().slice(0,7), true);
+  renderLedger();
+  const si = document.getElementById('lgSearch'); if(si) si.addEventListener('input', ()=>{ finLedgerQ = si.value; renderLedger(); });
+  box.querySelectorAll('[data-lg-f]').forEach(b=> b.addEventListener('click', ()=>{ finLedgerFilter = b.dataset.lgF; renderLedger(); }));
+  box.querySelectorAll('[data-sp-acct]').forEach(b=> b.addEventListener('click', finOpenAcctSheet));
+  const applyDir = ()=>{
+    box.querySelectorAll('[data-sp-dir]').forEach(b=>{ const on = b.dataset.spDir === spendDir; b.classList.toggle('sel-home', on); b.classList.toggle('sel-none', !on); });
+    const mer = document.getElementById('spMer'), sel = document.getElementById('spPlace'); if(!sel || !mer) return;
+    const list = spendDir === 'in' ? topIn : top;
+    sel.innerHTML = list.map(x=> '<option value="'+escapeHtml(x)+'">'+escapeHtml(x)+'</option>').join('')+'<option value="__else">'+(list.length ? 'Somewhere else\u2026' : (spendDir === 'in' ? 'Type who it\u2019s from' : 'Type where'))+'</option>';
+    mer.placeholder = spendDir === 'in' ? 'From?' : 'Where?';
+    const showText = ()=>{ mer.hidden = sel.value !== '__else'; if(!mer.hidden) mer.focus(); };
+    sel.onchange = showText; mer.hidden = sel.value !== '__else';
+  };
+  box.querySelectorAll('[data-sp-dir]').forEach(b=> b.addEventListener('click', ()=>{ spendDir = b.dataset.spDir; applyDir(); }));
+  applyDir();
   if(keepAmt && document.getElementById('spAmt')) document.getElementById('spAmt').value = keepAmt;
   if(keepMer && document.getElementById('spMer')) document.getElementById('spMer').value = keepMer;
   box.querySelectorAll('[data-sp-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.spGo)));
@@ -5857,14 +6292,13 @@ function renderFinSpend(box){
   box.querySelectorAll('[data-sp-set]').forEach(b=> b.addEventListener('click', ()=> spendSetCat(b.dataset.spSet, b.dataset.cat)));
   box.querySelectorAll('[data-sp-filter]').forEach(el=> el.addEventListener('click', ()=>{ spendFilter = spendFilter===el.dataset.spFilter ? null : el.dataset.spFilter; renderBudget(); }));
   const fcl = box.querySelector('[data-sp-filter-clear]'); if(fcl) fcl.addEventListener('click', ()=>{ spendFilter = null; renderBudget(); });
-  const more = document.getElementById('spMore'); if(more) more.addEventListener('click', ()=>{ spendShowAll = true; renderBudget(); });
   box.querySelectorAll('[data-sp-edit]').forEach(el=> el.addEventListener('click', ()=>{ spendEditing = !spendEditing; renderBudget(); }));
-  box.querySelectorAll('[data-sp-mer]').forEach(b=> b.addEventListener('click', ()=>{ document.getElementById('spMer').value = b.dataset.spMer; document.getElementById('spAmt').focus(); }));
   const add = async ()=>{
-    const a = spendParseAmount(document.getElementById('spAmt').value), m = document.getElementById('spMer').value.trim();
+    const a = spendParseAmount(document.getElementById('spAmt').value), pl = document.getElementById('spPlace'), typed = document.getElementById('spMer').value.trim(), m = typed || (pl && pl.value !== '__else' ? pl.value : '');
     if(!a){ showToast('Enter the amount.'); return; }
-    spendTxns.push({id:spendNewId('m'), date:todayStr(), time:nowHM(), amount:a, merchant:m || 'Cash', card:'', src:'manual', cat:spendGuess(m || '')});
-    await saveKey('spend-txns', spendTxns);
+    if(spendDir === 'in'){ finIn.push({id:spendNewId('in'), date:todayStr(), time:nowHM(), amount:a, desc:m || 'Money in'}); await saveKey('fin-in', finIn); showToast('Money in added.'); }
+    else{ spendTxns.push({id:spendNewId('m'), date:todayStr(), time:nowHM(), amount:a, merchant:m || 'Cash', card:'', src:'manual', cat:spendGuess(m || '')});
+    await saveKey('spend-txns', spendTxns); }
     spendMonth = todayStr().slice(0,7);
     renderBudget();
     const ai = document.getElementById('spAmt'); if(ai) ai.focus();
@@ -6302,6 +6736,7 @@ function renderAutoSetup(){
 const SETTINGS_PAGES = [
   {id:'general', group:'Everyday', title:'General', sub:()=> 'Dark mode, colours, travel'},
   {id:'workhome', group:'Everyday', title:'Work & home', sub:()=> 'Rent rates, TOIL balance, van odometer'},
+  {id:'gym', group:'Everyday', title:'Gym targets', sub:()=> Object.keys(gymTargets || {}).length ? 'Weekly sets, '+Object.keys(gymTargets).length+' changed' : 'Weekly sets for each muscle'},
   {id:'reports', group:'Everyday', title:'Reports & archive', sub:()=> 'Trends, archived to-dos'},
   {id:'sync', group:'Connected', title:'Sync & backup', sub:()=> (document.getElementById('syncStatus') || {}).textContent || 'Not connected'},
   {id:'applepay', group:'Connected', title:'Apple Pay', sub:()=>{ const l = spendMeta.last; return l && !l.empty ? 'Last tap: '+l.merchant+'\u2003'+money(l.amount) : (syncConfig ? 'Ready to set up' : 'Needs sync first'); }},
@@ -6327,21 +6762,36 @@ function applySettingsPage(){
   root.hidden = !!settingsPage;
   document.querySelectorAll('#view-settings .set-page').forEach(pg=>{ pg.hidden = pg.dataset.set !== settingsPage; });
 }
+function renderGymTargets(){
+  const box = document.getElementById('gymTargetsBody');
+  if(!box) return;
+  let total = 0;
+  const groups = ['Push', 'Pull', 'Legs', 'Core'];
+  box.innerHTML = groups.map(g=>
+    '<div class="set-label" style="margin:14px 2px 2px;">'+g+'</div>'+
+    GYM_MUSCLES.filter(m=> m.g === g).map(m=>{
+      total += m.t;
+      return '<div class="gt-row"><span class="gt-n">'+escapeHtml(m.n)+(m.t !== m.t0 ? '<small>default '+m.t0+'</small>' : '')+'</span>'+
+        '<span class="fin-step"><button type="button" data-gt="'+m.k+':-1" aria-label="Fewer sets for '+escapeHtml(m.n)+'">\u2212</button><b>'+m.t+'</b><button type="button" data-gt="'+m.k+':1" aria-label="More sets for '+escapeHtml(m.n)+'">+</button></span></div>';
+    }).join('')
+  ).join('')+
+  '<div class="gt-total"><span>Total a week</span><b>'+total+' sets</b></div>'+
+  '<button type="button" class="btn secondary block" id="gymTargetsReset"'+(Object.keys(gymTargets || {}).length ? '' : ' disabled')+'>Reset all to defaults</button>';
+  box.querySelectorAll('[data-gt]').forEach(b=> b.addEventListener('click', async ()=>{
+    const [k, d] = b.dataset.gt.split(':'), m = GYM_M[k];
+    const v = Math.max(1, Math.min(40, m.t + Number(d)));
+    if(v === m.t) return;
+    gymTargets = Object.assign({}, gymTargets); if(v === m.t0) delete gymTargets[k]; else gymTargets[k] = v;
+    await saveKey('gym-targets', gymTargets); applyGymTargets(); renderGymTargets(); renderSettingsRoot();
+  }));
+  document.getElementById('gymTargetsReset').addEventListener('click', async ()=>{ gymTargets = {}; await saveKey('gym-targets', gymTargets); applyGymTargets(); renderGymTargets(); renderSettingsRoot(); showToast('Targets reset.'); });
+}
 function setupSettingsNav(){
   document.getElementById('view-settings').addEventListener('click', (e)=>{
     if(e.target.closest('[data-set-back]')){ settingsPage = null; applySettingsPage(); window.scrollTo(0, 0); }
   });
 }
-function renderTodosTab(){
-  const datedContainer = document.getElementById('list-dated');
-  const generalContainer = document.getElementById('list-general');
-  datedContainer.innerHTML = '';
-  generalContainer.innerHTML = '';
-  const pending = todos.filter(t=>t.kind==='task' && !t.done);
-  const dated = pending.filter(t=>t.dueDate).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));
-  const general = pending.filter(t=>!t.dueDate);
-
-  const buildRow = (t)=>{
+function todoRowEl(t){
     const row = document.createElement('div');
     row.className = 'todo-item';
     let dueLabel = '';
@@ -6365,20 +6815,50 @@ function renderTodosTab(){
     row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); renderCalendarAll(); if(selectedDate) renderDayHappeningList(selectedDate); });
     row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); renderCalendarAll(); if(selectedDate) renderDayHappeningList(selectedDate); });
     return row;
-  };
+}
+function openTodosSheet(start){
+  openListSheet({kind:'todos', title:'All to-dos', placeholder:'Search your to-dos', startFilter:start || 'open',
+    filters:[{id:'open', label:'To do', fn:t=> !t.done}, {id:'dated', label:'Dated', fn:t=> !t.done && !!t.dueDate}, {id:'general', label:'General', fn:t=> !t.done && !t.dueDate}, {id:'done', label:'Done', fn:t=> t.done}],
+    items:()=> todos.filter(t=> t.kind === 'task').sort((a,b)=> (a.dueDate || '9999').localeCompare(b.dueDate || '9999')),
+    text:t=> t.text+' '+(t.dueDate ? shortDate(t.dueDate) : 'no date'),
+    group:t=> t.dueDate ? {key:t.dueDate.slice(0,7), label:finMonthLabel(t.dueDate.slice(0,7))} : {key:'none', label:'No date'},
+    sub:t=> t.dueDate ? {key:t.dueDate, label:niceDate(t.dueDate)} : null,
+    row:t=> t.done ? todoDoneRowEl(t) : todoRowEl(t), empty:'Nothing here.'});
+}
+function todoDoneRowEl(t){
+  const row = document.createElement('div'); row.className = 'todo-item';
+  row.innerHTML = '<div class="todo-check done">&#10003;</div><div class="todo-text done" style="flex:1;">'+escapeHtml(t.text)+'</div><button class="todo-del">&times;</button>';
+  row.querySelector('.todo-check').addEventListener('click', async ()=>{ await toggleTodoDone(t); renderTodosTab(); renderCalendarAll(); if(selectedDate) renderDayHappeningList(selectedDate); });
+  row.querySelector('.todo-del').addEventListener('click', async ()=>{ todos = todos.filter(x=>x.id!==t.id); await saveKey('todos', todos); renderTodosTab(); renderCalendarAll(); });
+  return row;
+}
+function renderTodosTab(){
+  const datedContainer = document.getElementById('list-dated');
+  const generalContainer = document.getElementById('list-general');
+  datedContainer.innerHTML = '';
+  generalContainer.innerHTML = '';
+  const pending = todos.filter(t=>t.kind==='task' && !t.done);
+  const dated = pending.filter(t=>t.dueDate).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));
+  const general = pending.filter(t=>!t.dueDate);
+
+  const buildRow = todoRowEl;
 
   if(dated.length===0){ datedContainer.innerHTML = '<div class="empty">No dated to-dos.</div>'; }
-  else dated.forEach(t=> datedContainer.appendChild(buildRow(t)));
+  else dated.slice(0, 4).forEach(t=> datedContainer.appendChild(buildRow(t)));
+  if(dated.length > 4){ const w = document.createElement('div'); w.innerHTML = vaBtn('dated', 'View all '+dated.length+' dated to-dos'); datedContainer.appendChild(w.firstChild); }
 
   if(general.length===0){ generalContainer.innerHTML = '<div class="empty">No general to-dos.</div>'; }
-  else general.forEach(t=> generalContainer.appendChild(buildRow(t)));
+  else general.slice(0, 4).forEach(t=> generalContainer.appendChild(buildRow(t)));
+  if(general.length > 4){ const w = document.createElement('div'); w.innerHTML = vaBtn('general', 'View all '+general.length+' general to-dos'); generalContainer.appendChild(w.firstChild); }
+  document.querySelectorAll('#view-todo [data-va]').forEach(b=> b.addEventListener('click', ()=> openTodosSheet(b.dataset.va)));
+  refreshListSheet('todos');
 
   const archiveContainer = document.getElementById('list-archive');
   archiveContainer.innerHTML = '';
   const archived = todos.filter(t=>t.kind==='task' && t.done).sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||''));
   if(archived.length===0){ archiveContainer.innerHTML = '<div class="empty">Nothing archived yet.</div>'; }
   else{
-    archived.forEach(t=>{
+    archived.slice(0, 5).forEach(t=>{
       const row = document.createElement('div'); row.className = 'todo-item';
       row.innerHTML =
         '<div class="todo-check done">&#10003;</div>'+
@@ -6876,6 +7356,22 @@ function trBars(items, o){
     '<div class="tr-col'+(i.hl ? ' hl' : '')+'"><span class="tr-v">'+(i.v > 0 && (o.vals === 'all' || i.hl) ? (o.fmt ? o.fmt(i.v) : i.v) : '')+'</span>'+
     '<div class="tr-plot"><span class="tr-bar" style="height:'+(i.v > 0 ? Math.max(4, i.v/max*100) : 0)+'%"></span></div><span class="tr-l">'+i.l+'</span></div>').join('')+'</div>';
 }
+let trendsTab = 'work', trendsSplit = 'month';
+function finSpendSplit(yms){
+  const by = {}, om = finOthersMap(), today = todayStr();
+  yms.forEach(ym=>{
+    spendStats(ym).tx.forEach(t=>{ const k = t.cat || '_'; by[k] = (by[k] || 0) + (t.amount - (om[t.id] || 0)); });
+    finDD.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d <= today) by.bills = (by.bills || 0) + it.amount; }));
+  });
+  const slices = Object.keys(by).filter(k=> by[k] > 0.004).map(k=>{ const c = k === '_' ? null : spendCatById(k); return {id:k, name:c ? c.name : 'To sort', color:c ? c.color : '#8A8F98', value:finR2(by[k])}; }).sort((a,b)=> b.value - a.value);
+  return {slices, total:finR2(slices.reduce((a,x)=> a + x.value, 0))};
+}
+function trDonut(slices, total){
+  const R = 58, C = 2*Math.PI*R; let off = 0;
+  const arcs = slices.map(x=>{ const len = total > 0 ? x.value/total*C : 0; const el = '<circle cx="80" cy="80" r="'+R+'" fill="none" stroke="'+x.color+'" stroke-width="26" stroke-dasharray="'+len.toFixed(2)+' '+(C-len).toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'" transform="rotate(-90 80 80)"></circle>'; off += len; return el; }).join('');
+  return '<svg class="tr-donut" viewBox="0 0 160 160" role="img" aria-label="Where your spending goes"><circle cx="80" cy="80" r="'+R+'" fill="none" stroke="var(--surface-2)" stroke-width="26"></circle>'+arcs+
+    '<text x="80" y="76" text-anchor="middle" class="td-l">Spent</text><text x="80" y="96" text-anchor="middle" class="td-v">\u00a3'+Math.round(total).toLocaleString('en-GB')+'</text></svg>';
+}
 function renderTrends(){
   const box = document.getElementById('trendsBody');
   if(!box) return;
@@ -6890,7 +7386,7 @@ function renderTrends(){
       (stats ? '<div class="tr-stats">'+stats.map(x=> '<div><b>'+x[1]+'</b><span>'+x[0]+'</span></div>').join('')+'</div>' : '')+
     '</section>';
   const none = (msg, goto, btn)=> '<div class="tr-none">'+msg+(goto ? ' <button type="button" class="w-link" data-tr-go="'+goto+'">'+btn+'</button>' : '')+'</div>';
-  const out = [];
+  const out = {};
 
   // ---- Work: shifts, clock in and clock out ----
   const wk0 = mondayOf(today), weeks = [];
@@ -6903,14 +7399,14 @@ function renderTrends(){
   weeks.forEach(w=>{ for(let k = 0; k < 7; k++){ const d = addDays(w.st, k), en = calendarData[d]; if(d > today || !en || !en.shift) continue; const sh = en.shift;
     if(sh.start){ const m = sh.start.split(':'); startM.push(+m[0]*60 + +m[1]); } if(sh.start && sh.finish){ const m = sh.finish.split(':'); endM.push(+m[0]*60 + +m[1]); } } });
   const done = weeks.filter(w=> !w.hl && w.h > 0), avgWk = avg(done.map(w=> w.h));
-  out.push(section('Work', 'toil', avgWk !== null ? r1(avgWk)+'h' : '', 'a week, last '+done.length+' weeks',
+  out['work'] = (section('Work', 'toil', avgWk !== null ? r1(avgWk)+'h' : '', 'a week, last '+done.length+' weeks',
     weeks.some(w=> w.h > 0) ? trBars(weeks.map(w=> ({v:w.h, hl:w.hl, l:parseYMD(w.st).getDate()+'/'+(parseYMD(w.st).getMonth()+1)})), {vals:'all', fmt:v=> Math.round(v)}) : none('No shifts yet. Connecteam clock-ins land here.', 'settings:automations', 'Set up'),
     [['Clock in', startM.length ? minutesToClock(Math.round(avg(startM))) : '\u2014'], ['Clock out', endM.length ? minutesToClock(Math.round(avg(endM))) : '\u2014'], ['TOIL', (computeToilWeeks().balance >= 0 ? '+' : '\u2212')+Math.abs(r1(computeToilWeeks().balance))+'h']]));
 
   // ---- Sleep: the Bed automations ----
   const nights = []; for(let i = 14; i >= 1; i--){ const n = addDays(today, -i), m = autoBedFor(n); nights.push({n, m, l:['S','M','T','W','T','F','S'][parseYMD(n).getDay()], hl: i === 1}); }
   const slept = nights.filter(x=> x.m != null);
-  out.push(section('Sleep', '', slept.length ? autoMins(Math.round(avg(slept.map(x=> x.m)))) : '', 'in bed, on average',
+  out['sleep'] = (section('Sleep', '', slept.length ? autoMins(Math.round(avg(slept.map(x=> x.m)))) : '', 'in bed, on average',
     slept.length ? trBars(nights.map(x=> ({v:(x.m || 0)/60, hl:x.hl, l:x.l})), {vals:'hl', fmt:v=> r1(v)+'h'}) : none('No nights yet. The Bed automations record this.', 'settings:automations', 'Set up'),
     slept.length ? [['Longest', autoMins(Math.max.apply(null, slept.map(x=> x.m)))], ['Shortest', autoMins(Math.min.apply(null, slept.map(x=> x.m)))], ['Tracked', slept.length+' of 14']] : null));
 
@@ -6919,7 +7415,7 @@ function renderTrends(){
   const mTrips = ym2=> mileageTrips.filter(t=> t.date && t.date.slice(0,7) === ym2);
   const tm = mTrips(ym), tmMiles = tm.reduce((a,t)=> a + t.miles, 0), tmMins = tm.reduce((a,t)=> a + (t.mins || 0), 0);
   const biz = tm.filter(t=> t.category === 'business').reduce((a,t)=> a + t.miles, 0);
-  out.push(section('Driving', 'mileage', mileageTrips.length ? fmtMi(tmMiles, 1)+' mi' : '', 'this month, '+tm.length+' trip'+(tm.length === 1 ? '' : 's')+(tmMins ? ', '+autoMins(tmMins)+' driving' : ''),
+  out['driving'] = (section('Driving', 'mileage', mileageTrips.length ? fmtMi(tmMiles, 1)+' mi' : '', 'this month, '+tm.length+' trip'+(tm.length === 1 ? '' : 's')+(tmMins ? ', '+autoMins(tmMins)+' driving' : ''),
     mileageTrips.length ? trBars(months.map(m=> ({v:mTrips(m.ym).reduce((a,t)=> a + t.miles, 0), hl:m.hl, l:m.l})), {vals:'all', fmt:v=> Math.round(v)}) : none('No trips yet. CarPlay drives land here as drafts.', 'settings:automations', 'Set up'),
     mileageTrips.length ? [['Business', fmtMi(biz, 1)+' mi'], ['Personal', fmtMi(tmMiles - biz, 1)+' mi'], ['Average trip', tm.length ? fmtMi(tmMiles/tm.length, 1)+' mi' : '\u2014']] : null));
 
@@ -6928,7 +7424,7 @@ function renderTrends(){
   const awayAll = Object.keys(calendarData).filter(d=> d <= today && calendarData[d].status === 'away').length;
   const homeAll = Object.keys(calendarData).filter(d=> d <= today && calendarData[d].status !== 'away').length;
   const dayNo = parseYMD(today).getDate();
-  out.push(section('Nights away', 'calendar', String(awayIn(ym)), 'this month, '+Math.max(0, dayNo - awayIn(ym))+' at home',
+  out['away'] = (section('Nights away', 'calendar', String(awayIn(ym)), 'this month, '+Math.max(0, dayNo - awayIn(ym))+' at home',
     trBars(months.map(m=> ({v:awayIn(m.ym), hl:m.hl, l:m.l})), {vals:'all'}),
     [['Away in total', String(awayAll)], ['Home in total', String(homeAll)], ['Away share', (awayAll + homeAll ? Math.round(awayAll/(awayAll + homeAll)*100) : 0)+'%']]));
 
@@ -6937,7 +7433,7 @@ function renderTrends(){
   const allGymDates = [].concat.apply([], gWeeks.map(w=> w.dates)), gymMins = allGymDates.map(d=> gymTiming(d)).filter(Boolean).map(t=> t.mins);
   const setsThisWeek = gymLog.filter(l=> !l.wu && l.date >= wk0 && l.date <= today).length;
   const gDone = gWeeks.filter(w=> !w.hl);
-  out.push(section('Gym', 'gym', gymLog.length ? String(gWeeks[gWeeks.length-1].n) : '', 'session'+(gWeeks[gWeeks.length-1].n === 1 ? '' : 's')+' this week'+(gDone.length && gymLog.length ? ', '+r1(avg(gDone.map(w=> w.n)))+' a week on average' : ''),
+  out['gym'] = (section('Gym', 'gym', gymLog.length ? String(gWeeks[gWeeks.length-1].n) : '', 'session'+(gWeeks[gWeeks.length-1].n === 1 ? '' : 's')+' this week'+(gDone.length && gymLog.length ? ', '+r1(avg(gDone.map(w=> w.n)))+' a week on average' : ''),
     gymLog.length ? trBars(gWeeks.map(w=> ({v:w.n, hl:w.hl, l:w.l})), {vals:'all'}) : none('No sessions yet. Log a set to start.', 'gym', 'Open Gym'),
     gymLog.length ? [['Average session', gymMins.length ? Math.round(avg(gymMins))+' min' : '\u2014'], ['Sets this week', String(setsThisWeek)], ['Sessions, 8 weeks', String(allGymDates.length)]] : null));
 
@@ -6946,10 +7442,19 @@ function renderTrends(){
   const spNow = spendStats(ym), cats = spendCatList();
   const topCat = Object.keys(spNow.by).filter(k=> k !== '_').sort((a,b)=> spNow.by[b] - spNow.by[a])[0];
   const spHist = sp.filter(x=> !x.hl && x.v > 0);
-  out.push(section('Spending', 'budget:spend', spendTxns.length ? '\u00a3'+Math.round(spNow.spent).toLocaleString('en-GB') : '', 'this month'+(spHist.length ? ', \u00a3'+Math.round(avg(spHist.map(x=> x.v))).toLocaleString('en-GB')+' a month before' : ''),
+  out['spend'] = (section('Spending', 'budget:spend', spendTxns.length ? '\u00a3'+Math.round(spNow.spent).toLocaleString('en-GB') : '', 'this month'+(spHist.length ? ', \u00a3'+Math.round(avg(spHist.map(x=> x.v))).toLocaleString('en-GB')+' a month before' : ''),
     spendTxns.length ? trBars(sp.map(x=> ({v:x.v, hl:x.hl, l:x.l})), {vals:'hl', fmt:v=> '\u00a3'+Math.round(v).toLocaleString('en-GB')}) : none('No spending yet. Apple Pay taps land here.', 'settings:applepay', 'Set up'),
     spendTxns.length ? [['Biggest', topCat ? ((cats.find(c=> c.id === topCat) || {name:'Other'}).name+' \u00a3'+Math.round(spNow.by[topCat])) : '\u2014'], ['Payments', String(spNow.tx.length)], ['To sort', String(spNow.uncat)]] : null));
 
+  // ---- Where it goes: a pie of the money that went out ----
+  { const cur = ym, pm = (n)=>{ const d0 = parseYMD(today); const d = new Date(d0.getFullYear(), d0.getMonth()-n, 1); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); };
+    const periods = {month:[cur], last:[pm(1)], '3m':[cur, pm(1), pm(2)], year:Array.from({length:12}, (_, i)=> pm(i))};
+    const labels = {month:'This month', last:'Last month', '3m':'3 months', year:'12 months'};
+    const sp = finSpendSplit(periods[trendsSplit] || periods.month);
+    out['split'] = '<section class="tr"><div class="tr-h"><span>Where it goes</span></div>'+
+      '<div class="chip-row tr-tabs" style="margin-bottom:6px;">'+Object.keys(labels).map(k=> '<button type="button" class="chip-btn'+(k === trendsSplit ? ' active' : '')+'" data-tr-split="'+k+'">'+labels[k]+'</button>').join('')+'</div>'+
+      (sp.total > 0 ? '<div class="tr-pie">'+trDonut(sp.slices, sp.total)+'<div class="tr-legend">'+sp.slices.slice(0, 8).map(x=> '<button type="button" class="tr-lg" data-tr-slice="'+x.id+'"><i style="background:'+x.color+'"></i><span>'+escapeHtml(x.name)+'</span><b>'+money(x.value)+'</b><em>'+Math.round(x.value/sp.total*100)+'%</em></button>').join('')+'</div></div>' : none('Nothing spent in this period yet.', 'budget:spend', 'Add a payment'))+'</section>';
+    window.__trSplitMonths = periods[trendsSplit] || periods.month; }
   // ---- Totals ----
   const d = computeTrendsData();
   const rows = [
@@ -6959,9 +7464,14 @@ function renderTrends(){
     ['Expenses logged', money(expenses.reduce((a,e)=> a + e.amount, 0))],
     ['To-dos completed', String(todos.filter(t=> t.kind === 'task' && t.done).length)]
   ];
-  out.push('<section class="tr"><div class="tr-h"><span>Totals since 1 July</span></div>'+rows.map(r=> '<div class="trend-row"><span>'+r[0]+'</span><strong>'+r[1]+'</strong></div>').join('')+'</section>');
+  out['totals'] = ('<section class="tr"><div class="tr-h"><span>Totals since 1 July</span></div>'+rows.map(r=> '<div class="trend-row"><span>'+r[0]+'</span><strong>'+r[1]+'</strong></div>').join('')+'</section>');
 
-  box.innerHTML = out.join('');
+  const tabs = [['work','Work'],['sleep','Sleep'],['driving','Driving'],['away','Away'],['gym','Gym'],['spend','Spending'],['split','Where it goes'],['totals','Totals']];
+  if(!out[trendsTab]) trendsTab = 'work';
+  box.innerHTML = '<div class="chip-row tr-tabs">'+tabs.map(x=> '<button type="button" class="chip-btn'+(x[0] === trendsTab ? ' active' : '')+'" data-tr-tab="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>'+out[trendsTab];
+  box.querySelectorAll('[data-tr-tab]').forEach(b=> b.addEventListener('click', ()=>{ trendsTab = b.dataset.trTab; renderTrends(); }));
+  box.querySelectorAll('[data-tr-split]').forEach(b=> b.addEventListener('click', ()=>{ trendsSplit = b.dataset.trSplit; renderTrends(); }));
+  box.querySelectorAll('[data-tr-slice]').forEach(b=> b.addEventListener('click', ()=>{ spendFilter = b.dataset.trSlice === '_' ? null : b.dataset.trSlice; spendMonth = (window.__trSplitMonths || [ym])[0]; finTab = 'spend'; goToView('budget:spend'); }));
   box.querySelectorAll('[data-tr-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.trGo)));
 }
 // ---------- body map (interactive anatomy diagram) ----------
@@ -7170,7 +7680,11 @@ const GYM_MUSCLES = [
   {k:'lowerback',n:'Lower back',t:4,g:'Core',rest:3,d:3}
 ];
 const GYM_M = {};
-GYM_MUSCLES.forEach(m=>{ GYM_M[m.k] = m; });
+GYM_MUSCLES.forEach(m=>{ GYM_M[m.k] = m; m.t0 = m.t; });
+let gymTargets = {};                                  // your own weekly set targets, by muscle (anything missing uses the default)
+function applyGymTargets(){
+  GYM_MUSCLES.forEach(m=>{ const v = Number(gymTargets && gymTargets[m.k]); m.t = (isFinite(v) && v >= 1) ? Math.min(40, Math.round(v)) : m.t0; });
+}
 const GYM_KINDS = {
   bbl:{rr:[5,8],inc:5},   bbu:{rr:[5,8],inc:2.5},
   dbc:{rr:[8,12],inc:2},  dbi:{rr:[10,15],inc:1},
@@ -7384,12 +7898,13 @@ const GYM_SYN = {db:'dumbbell', bb:'barbell', ohp:'overhead press', rdl:'romania
 const GYM_BODY_ORDER = ['upperback','shoulders','chest','reardelts','lats','biceps','triceps','forearms','core','lowerback','glutes','quads','hamstrings','calves'];
 let gymSort = 'need';
 let gymBw = [];          // {date, kg}
+let finIn = [];                                    // money in that is not a scheduled income: refunds, gifts, transfers
 let spendTxns = [], spendCats = null, spendRules = {}, spendMeta = {secret:'', seen:[], last:null};
 let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = null, spendShowAll = false;
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v18.2';
+const APP_VERSION = 'v18.8';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
@@ -8043,6 +8558,8 @@ function renderGymMuscles(){
   if(!anyData){
     gid('gymNextBody').innerHTML = '<div class="empty">Log a few sets and this will tell you what to hit next.</div>';
     box.innerHTML = '';
+    gid('gymSortRow').innerHTML = '<button type="button" class="chip-btn" data-gym-targets>Change weekly targets \u203a</button>';
+    gid('gymSortRow').querySelector('[data-gym-targets]').addEventListener('click', ()=> goToView('settings:gym'));
     return;
   }
   // next session
@@ -8052,7 +8569,7 @@ function renderGymMuscles(){
   if(!next){
     nh = '<div class="stat-sub">All covered.</div>';
   }else{
-    next.exercises.forEach(ex=>{
+    next.exercises.slice(0, 2).forEach(ex=>{
       const ss = gymSessions(ex.id, addDays(todayStr(), 1));
       const lastS = ss.length ? ss[ss.length-1] : null;
       nh += '<div class="gym-next-item" data-gym-start="'+ex.id+'"><div><b>'+escapeHtml(ex.name)+'</b><div class="stat-sub" style="margin-top:2px;">'+ex.p.map(m=>GYM_M[m].n).join(', ')+'</div></div><div style="text-align:right;font-size:13px;">'+(lastS ? '<span class="stat-sub">Last</span><div><b>'+escapeHtml(gymLastText(ex, lastS.sets))+'</b></div>' : '<span class="stat-sub">new</span>')+'</div></div>';
@@ -8061,34 +8578,44 @@ function renderGymMuscles(){
   if(recovering.length) nh += '<div class="stat-sub" style="margin-top:10px;">Resting: '+recovering.slice(0,5).map(m=> m.n).join(', ')+(recovering.length>5 ? '\u2026' : '')+'</div>';
   gid('gymNextBody').innerHTML = nh;
   gid('gymNextBody').querySelectorAll('[data-gym-start]').forEach(el=> el.addEventListener('click', ()=>{ gymTab = 'log'; renderGym(); gymSelect(el.dataset.gymStart); }));
-  // every muscle in one flat list
+  // the muscles that need work most; the full list is one tap away
   const day = gymBodyCtx ? gymBodyCtx.day : gymDayStats(gymDate());
-  const order = gymSort === 'body' ? GYM_BODY_ORDER : GYM_MUSCLES.map(m=> m.k).sort((a,b)=> (st.pct[a]-st.pct[b]) || (GYM_M[b].t-GYM_M[a].t));
-  gid('gymSortRow').innerHTML = [['need','Needs most'],['body','Head to toe']].map(o=>'<button type="button" class="chip-btn'+(o[0]===gymSort?' active':'')+'" data-gym-sort="'+o[0]+'">'+o[1]+'</button>').join('');
-  gid('gymSortRow').querySelectorAll('[data-gym-sort]').forEach(b=> b.addEventListener('click', ()=>{ gymSort = b.dataset.gymSort; renderGymMuscles(); }));
-  let html = '';
-  order.forEach(k=>{
-    const m = GYM_M[k], p = st.pct[k];
-    const cls = p < 0.5 ? 'gm-low' : p < 1 ? 'gm-mid' : p <= 1.4 ? 'gm-ok' : 'gm-high';
-    const target = m.t * pinfo.days / 7;
-    const dp = day.pct[k], ds = gymDayStatus(dp);
-    html += '<div class="gym-muscle-row"><div class="gym-muscle-top"><span>'+m.n+(st.ready[k] ? '' : '<span class="gym-status rec">recovering</span>')+'</span><b>'+Math.round(p*100)+'%</b></div>'+
-      '<div class="gym-bar-wrap"><div class="gym-bar '+cls+'" style="width:'+Math.min(100, p*100)+'%"></div></div>'+
-      '<div class="gym-muscle-sub"><span>'+(Math.round(st.credit[k]*10)/10)+' / '+(Math.round(target*10)/10)+' sets\u2003last '+gymAgo(st.since[k])+'</span>'+
-      (day.credit[k] > 0 ? '<span class="gd-chip gd-'+ds[0]+'" style="margin:0;">'+gymDayLabel(day.date)+' '+Math.round(dp*100)+'%'+(dp >= 1 ? '\u2003over' : '')+'</span>' : '')+'</div></div>';
-  });
-  box.innerHTML = html;
+  const order = GYM_MUSCLES.map(m=> m.k).sort((x,y)=> (st.pct[x]-st.pct[y]) || (GYM_M[y].t-GYM_M[x].t));
+  gid('gymSortRow').innerHTML = '<button type="button" class="chip-btn" data-gym-targets>Change weekly targets \u203a</button>';
+  gid('gymSortRow').querySelector('[data-gym-targets]').addEventListener('click', ()=> goToView('settings:gym'));
+  box.innerHTML = order.slice(0, 4).map(k=> gymMuscleRowHtml(k, st, pinfo, day)).join('')+vaBtn('muscles', 'View all '+order.length+' muscles');
+  box.querySelector('[data-va]').addEventListener('click', openMusclesSheet);
+  refreshListSheet('muscles');
+}
+function gymMuscleRowHtml(k, st, pinfo, day){
+  const m = GYM_M[k], p = st.pct[k];
+  const cls = p < 0.5 ? 'gm-low' : p < 1 ? 'gm-mid' : p <= 1.4 ? 'gm-ok' : 'gm-high';
+  const target = m.t * pinfo.days / 7;
+  const dp = day.pct[k], ds = gymDayStatus(dp);
+  return '<div class="gym-muscle-row"><div class="gym-muscle-top"><span>'+m.n+(st.ready[k] ? '' : '<span class="gym-status rec">recovering</span>')+'</span><b>'+Math.round(p*100)+'%</b></div>'+
+    '<div class="gym-bar-wrap"><div class="gym-bar '+cls+'" style="width:'+Math.min(100, p*100)+'%"></div></div>'+
+    '<div class="gym-muscle-sub"><span>'+(Math.round(st.credit[k]*10)/10)+' / '+(Math.round(target*10)/10)+' sets\u2003last '+gymAgo(st.since[k])+'</span>'+
+    (day.credit[k] > 0 ? '<span class="gd-chip gd-'+ds[0]+'" style="margin:0;">'+gymDayLabel(day.date)+' '+Math.round(dp*100)+'%'+(dp >= 1 ? '\u2003over' : '')+'</span>' : '')+'</div></div>';
+}
+function openMusclesSheet(){
+  let ctx = null;
+  openListSheet({kind:'muscles', title:'All muscles', placeholder:'Search a muscle',
+    filters:[{id:'need', label:'Needs most'}, {id:'body', label:'Head to toe'}],
+    items:()=>{
+      const eff = gymPeriod === 'today' ? 7 : gymPeriod, st = gymMuscleStats(eff);
+      ctx = {st, pinfo:gymPeriodInfo(eff), day:(gymBodyCtx ? gymBodyCtx.day : gymDayStats(gymDate()))};
+      return listFilter === 'body' ? GYM_BODY_ORDER.slice() : GYM_MUSCLES.map(m=> m.k).sort((x,y)=> (ctx.st.pct[x]-ctx.st.pct[y]) || (GYM_M[y].t-GYM_M[x].t));
+    },
+    text:k=> GYM_M[k].n,
+    row:k=>{ const w = document.createElement('div'); w.innerHTML = gymMuscleRowHtml(k, ctx.st, ctx.pinfo, ctx.day); return w.firstElementChild; },
+    empty:'Nothing matches.'});
 }
 
 // ----- history tab -----
-function renderGymHistory(){
-  const box = gid('gymHistoryBody');
-  const dates = Array.from(new Set(gymLog.map(l=>l.date))).sort().reverse();
-  if(!dates.length){ box.innerHTML = '<div class="empty">No workouts yet. Log your first set on the Log tab.</div>'; return; }
-  if(gymHistOpen === null) gymHistOpen = new Set(dates.slice(0,1));
-  let html = '<div class="chip-row" style="margin-bottom:6px;"><button type="button" class="chip-btn" id="gymHistExpand">Expand all</button><button type="button" class="chip-btn" id="gymHistCollapse">Collapse all</button></div>';
-  dates.slice(0, gymHistLimit).forEach(d=>{
-    const logs = gymLog.filter(l=>l.date===d).sort((a,b)=>a.id-b.id);
+
+function gymHistDayEl(d){
+  let html = '';
+  const logs = gymLog.filter(l=>l.date===d).sort((a,b)=>a.id-b.id);
     const work = logs.filter(l=>!l.wu);
     const vol = work.reduce((a,l)=> a + gymVolume(l), 0);
     const tmh = gymTiming(d);
@@ -8108,28 +8635,35 @@ function renderGymHistory(){
       html += '<div class="gym-set-row" style="align-items:flex-start;"><span><b>'+escapeHtml(ex ? ex.name : 'Deleted exercise')+'</b><br><span class="stat-sub">'+by[id].map(x=> (x.wu?'W ':'')+(ex ? gymSetText(ex,x) : x.w+'kg \u00d7 '+x.r)).join('\u2003')+(tmh && tmh.per[id] ? '\u2003'+tmh.per[id]+' min' : '')+'</span></span></div>';
     });
     html += '<button type="button" class="btn secondary tiny" data-gym-delday="'+d+'" style="margin-top:6px;">Delete day</button></div></div></div>';
+  const w = document.createElement('div'); w.innerHTML = html; const el = w.firstElementChild;
+  el.querySelector('[data-gym-hist]').addEventListener('click', ()=>{ if(gymHistOpen === null) gymHistOpen = new Set(); if(gymHistOpen.has(d)) gymHistOpen.delete(d); else gymHistOpen.add(d); el.classList.toggle('open', gymHistOpen.has(d)); });
+  const del = el.querySelector('[data-gym-delday]'); let armed = false, timer = null;
+  del.addEventListener('click', async ()=>{
+    if(!armed){ armed = true; del.textContent = 'Tap again to delete'; timer = setTimeout(()=>{ armed = false; del.textContent = 'Delete day'; }, 3000); return; }
+    clearTimeout(timer); gymLog = gymLog.filter(l=> l.date !== d); await saveKey('gym-log', gymLog); renderGymHistory(); if(typeof renderGymLog === 'function') try{ renderGymLog(); }catch(e){}
   });
-  if(dates.length > gymHistLimit) html += '<button type="button" class="btn secondary small block" id="gymMoreBtn" style="margin-top:10px;">Show more</button>';
-  box.innerHTML = html;
-  box.querySelectorAll('[data-gym-hist]').forEach(b=> b.addEventListener('click', ()=>{
-    const d = b.dataset.gymHist;
-    if(gymHistOpen.has(d)) gymHistOpen.delete(d); else gymHistOpen.add(d);
-    b.parentNode.classList.toggle('open', gymHistOpen.has(d));
-  }));
-  gid('gymHistExpand').addEventListener('click', ()=>{ gymHistOpen = new Set(dates); renderGymHistory(); });
-  gid('gymHistCollapse').addEventListener('click', ()=>{ gymHistOpen = new Set(); renderGymHistory(); });
-  const more = gid('gymMoreBtn');
-  if(more) more.addEventListener('click', ()=>{ gymHistLimit += 12; renderGymHistory(); });
-  box.querySelectorAll('[data-gym-delday]').forEach(b=>{
-    let armed = false, timer = null;
-    b.addEventListener('click', async ()=>{
-      if(!armed){ armed = true; b.textContent = 'Tap again to delete'; timer = setTimeout(()=>{ armed = false; b.textContent = 'Delete day'; }, 3000); return; }
-      clearTimeout(timer);
-      gymLog = gymLog.filter(l=> l.date !== b.dataset.gymDelday);
-      await saveKey('gym-log', gymLog);
-      renderGymHistory();
-    });
-  });
+  return el;
+}
+function openGymHistorySheet(){
+  const nm = d=> { const names = []; gymLog.filter(l=> l.date === d).forEach(l=>{ const ex = gymById(l.ex); if(ex){ names.push(ex.name); ex.p.forEach(m=> names.push(GYM_M[m].n)); } }); return names.join(' '); };
+  openListSheet({kind:'gym', title:'All sessions', placeholder:'Search an exercise, muscle or month',
+    items:()=> Array.from(new Set(gymLog.map(l=> l.date))).sort().reverse(),
+    text:d=> niceDate(d)+' '+finMonthLabel(d.slice(0,7))+' '+nm(d),
+    group:d=> ({key:d.slice(0,7), label:finMonthLabel(d.slice(0,7))}),
+    groupMeta:list=> list.length+' session'+(list.length === 1 ? '' : 's'),
+    summary:list=> list.length+' session'+(list.length === 1 ? '' : 's'),
+    row:gymHistDayEl, empty:'No workouts yet.'});
+}
+
+function renderGymHistory(){
+  const box = gid('gymHistoryBody');
+  const dates = Array.from(new Set(gymLog.map(l=>l.date))).sort().reverse();
+  if(!dates.length){ box.innerHTML = '<div class="empty">No workouts yet. Log your first set on the Log tab.</div>'; return; }
+  if(gymHistOpen === null) gymHistOpen = new Set(dates.slice(0,1));
+  box.innerHTML = '';
+  dates.slice(0, 5).forEach(d=> box.appendChild(gymHistDayEl(d)));
+  if(dates.length > 5){ const w = document.createElement('div'); w.innerHTML = vaBtn('gym', 'View all '+dates.length+' sessions'); const b2 = w.firstChild; b2.addEventListener('click', openGymHistorySheet); box.appendChild(b2); }
+  refreshListSheet('gym');
 }
 
 // ----- shell -----
