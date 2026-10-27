@@ -1267,7 +1267,7 @@ body.dark{--pos:#5FC48B;}
           <div class="big" id="mileagePersonalTotal">0.0 mi</div>
         </div>
       </div>
-      <details class="acc" id="vanOdoBox" style="display:none;margin-top:10px;border-top:1px solid var(--line);">
+      <details class="acc" data-acc="vanOdo" id="vanOdoBox" style="display:none;margin-top:10px;border-top:1px solid var(--line);">
         <summary><span class="acc-t"><b>Van odometer</b><small>tracker estimate</small></span><span class="acc-s ok" id="vanOdoEstimate">&mdash;</span></summary>
         <div class="acc-b"><div class="stat-sub" id="vanOdoDetail" style="margin:0;"></div>
         <button type="button" class="btn secondary small" id="vanOdoCheckBtn" style="margin-top:8px;">Check against the van</button></div>
@@ -2446,7 +2446,7 @@ function renderListSheet(){
   if(!items.length){ body.innerHTML = '<div class="empty">'+(q ? 'Nothing matches \u201c'+escapeHtml(q)+'\u201d.' : escapeHtml(cfg.empty || 'Nothing here.'))+'</div>'; return; }
   const groups = [], by = {};
   items.forEach(it=>{ const g = cfg.group ? cfg.group(it) : {key:'_', label:''}; let G = by[g.key]; if(!G){ G = by[g.key] = {key:g.key, label:g.label, items:[]}; groups.push(G); } G.items.push(it); });
-  const monthShut = (G, i)=> !q && (listOpen[G.key] === undefined ? i > 0 : !listOpen[G.key]);
+  const monthShut = (G, i)=> !q && listOpen[G.key] !== true;
   const dayId = (G, S)=> 'd:'+G.key+'|'+S.key;
   groups.forEach((G, gi)=>{
     const shut = !!G.label && monthShut(G, gi);
@@ -2461,7 +2461,7 @@ function renderListSheet(){
     const subs = [], sby = {};
     G.items.forEach(it=>{ const x = cfg.sub(it), key = x ? x.key : '_'; let S = sby[key]; if(!S){ S = sby[key] = {key, label:x ? x.label : '', items:[]}; subs.push(S); } S.items.push(it); });
     subs.forEach(S=>{
-      const dshut = !!S.label && !q && listOpen[dayId(G, S)] === false;
+      const dshut = !!S.label && !q && listOpen[dayId(G, S)] !== true;
       if(S.label){
         const d = document.createElement('button'); d.type = 'button'; d.className = 'ls-d'+(dshut ? ' closed' : ''); d.setAttribute('aria-expanded', dshut ? 'false' : 'true');
         d.innerHTML = '<span>'+escapeHtml(S.label)+'</span><span>'+escapeHtml(cfg.subMeta ? cfg.subMeta(S.items) : String(S.items.length))+'</span>';
@@ -2473,15 +2473,17 @@ function renderListSheet(){
   });
   const tg = document.getElementById('listToggleAll'), labelled = groups.filter(G=> G.label);
   if(tg){
-    tg.hidden = q || labelled.length < 2;
-    const anyShut = labelled.some((G, i)=> monthShut(G, groups.indexOf(G)));
+    const daysOf = G=>{ const keys = []; if(cfg.sub) G.items.forEach(it=>{ const x = cfg.sub(it); if(x && keys.indexOf(x.key) < 0) keys.push(x.key); }); return keys; };
+    tg.hidden = !!q || labelled.length < 1;
+    const anyShut = labelled.some(G=> monthShut(G, 0) || daysOf(G).some(k=> listOpen['d:'+G.key+'|'+k] !== true));
     tg.textContent = anyShut ? 'Expand all' : 'Collapse all';
-    tg.onclick = ()=>{ labelled.forEach(G=>{ listOpen[G.key] = anyShut; }); if(anyShut) Object.keys(listOpen).forEach(k=>{ if(k.indexOf('d:') === 0) delete listOpen[k]; }); body.scrollTop = 0; renderListSheet(); };
+    tg.onclick = ()=>{ labelled.forEach(G=>{ listOpen[G.key] = anyShut; daysOf(G).forEach(k=>{ if(anyShut) listOpen['d:'+G.key+'|'+k] = true; else delete listOpen['d:'+G.key+'|'+k]; }); }); body.scrollTop = 0; renderListSheet(); };
   }
   body.scrollTop = keep;
 }
 const vaBtn = (id, text)=> '<button type="button" class="btn secondary block va-btn" data-va="'+id+'">'+text+'</button>';
 function setupSheet(){
+  document.addEventListener('toggle', (e)=>{ const d = e.target; if(d && d.tagName === 'DETAILS'){ const k = d.dataset.acc || d.id; if(k) accState[k] = d.open; } }, true);
   document.getElementById('listClose').addEventListener('click', closeListSheet);
   document.getElementById('listOverlay').addEventListener('click', (e)=>{ if(e.target.id === 'listOverlay') closeListSheet(); });
   document.getElementById('listSearch').addEventListener('input', ()=>{ document.getElementById('listBody').scrollTop = 0; renderListSheet(); });
@@ -3462,7 +3464,6 @@ function renderMileageTab(){
   sortedTrips.slice(0, 4).forEach(t=> list.appendChild(tripRowEl(t)));
   document.getElementById('mileageTripMore').innerHTML = sortedTrips.length ? (sortedTrips.length > 4 ? vaBtn('trips', 'View all '+sortedTrips.length+' trips') : '') : '';
   document.querySelectorAll('#mileageTripMore [data-va]').forEach(b=> b.addEventListener('click', openTripsSheet));
-  const lb = document.getElementById('mileageLogBody'); if(lb && !mileageTrips.length){ lb.style.display = ''; document.getElementById('mileageLogToggle').setAttribute('aria-expanded', 'true'); }
   refreshListSheet('trips');
 }
 function tripRowEl(t){
@@ -4491,8 +4492,8 @@ function loadDayIntoForm(dateStr){
   const hasShiftData = !!(shift.start || shift.finish || shift.breakMins || shift.title);
   const isAL = !!(hasEntry && entry.isAL);
   document.getElementById('dayModalALBtn').classList.toggle('active', isAL);
-  document.getElementById('shiftDetailsSection').style.display = (hasShiftData || isAL) ? 'block' : 'none';
-  document.getElementById('shiftToggleBtn').classList.toggle('expanded', hasShiftData || isAL);
+  document.getElementById('shiftDetailsSection').style.display = 'none';                 // the Shift drop-down starts closed; its heading still shows the times
+  document.getElementById('shiftToggleBtn').classList.remove('expanded');
 
   document.getElementById('dayWhatsOnInput').value = '';
   resetDayEditPanel();
@@ -5008,8 +5009,10 @@ async function importInbox(){
 function spendEndpoint(){
   return 'https://firestore.googleapis.com/v1/projects/'+syncConfig.projectId+'/databases/(default)/documents/inbox?key='+syncConfig.apiKey;
 }
+let accState = {};                                  // which drop-downs you have opened this time; everything else starts closed
 function accOpen(title, status, ok, open, sub){
-  return '<details class="acc fin-auto"'+(open ? ' open' : '')+'><summary><span class="acc-t"><b>'+title+'</b>'+(sub ? '<small>'+sub+'</small>' : '')+'</span>'+(status ? '<span class="acc-s'+(ok ? ' ok' : '')+'">'+status+'</span>' : '')+'</summary><div class="acc-b">';
+  const key = String(title).replace(/<[^>]*>/g, '');
+  return '<details class="acc fin-auto" data-acc="'+escapeHtml(key)+'"'+(accState[key] === true ? ' open' : '')+'><summary><span class="acc-t"><b>'+title+'</b>'+(sub ? '<small>'+sub+'</small>' : '')+'</span>'+(status ? '<span class="acc-s'+(ok ? ' ok' : '')+'">'+status+'</span>' : '')+'</summary><div class="acc-b">';
 }
 function spendEnsureSecret(){ if(!spendMeta.secret){ spendMeta.secret = spendRandom(24); saveKey('spend-meta', spendMeta); } return spendMeta.secret; }
 function spendBodyTemplate(){
@@ -5082,7 +5085,7 @@ function renderApplePaySetup(){
       '<li>Tap <b>Done</b>, then make a small real tap. The first time, the iPhone asks to send data to firestore.googleapis.com: choose <b>Always Allow</b>. Don\u2019t test with \u25b6, because with no real payment behind it the details come through blank.</li>'+
       '<li>Check it end to end.<div class="sp-btnrow"><button type="button" class="btn small" id="apTestBtn">Send test</button><button type="button" class="btn secondary small" id="apCheckBtn">Check inbox</button></div></li>'+
     '</ol></div></details>'+
-    accOpen('Lock it down', authOn ? '\u2713 On' : 'Recommended', authOn, authOn || syncNeedsSignIn, 'Add a sign-in so only you can use your data')+
+    accOpen('Lock it down', authOn ? '\u2713 On' : (syncNeedsSignIn ? 'Sign in needed' : 'Recommended'), authOn, authOn || syncNeedsSignIn, 'Add a sign-in so only you can use your data')+
       '<div class="stat-sub" style="margin:6px 0;">Firebase \u2192 Authentication \u2192 enable Email/Password \u2192 add yourself. Sign in here, then use the locked rules.</div>'+
       '<input type="email" id="spAuthEmail" placeholder="Email" autocomplete="username" value="'+escapeHtml(authOn ? syncAuth.email : '')+'" style="margin-bottom:6px;">'+
       '<input type="password" id="spAuthPw" placeholder="Password" autocomplete="current-password" style="margin-bottom:6px;">'+
@@ -5961,12 +5964,12 @@ function renderFinInvest(box){
       '<label class="ff"><span>Interest rate (% a year)</span><input type="number" inputmode="decimal" step="0.01" min="0" id="fhRate" class="f-rate" placeholder="e.g. 4.5"></label></div>'+
       '<div class="fin-opts"><span class="stat-sub" style="margin:0;" id="fhDateTxt">Invested today</span><a class="fin-link" id="fhDateLink">Change date</a></div><input type="date" id="fhDate" value="'+todayStr()+'" hidden>'+
       '<button type="button" class="btn block" id="fhAdd">Add</button></div></div></div>';
-  h += '<details class="card" id="finPriceSet" style="margin-top:12px;"'+(needKey ? ' open' : '')+'><summary style="cursor:pointer;font-weight:600;font-size:14px;">Price settings</summary>'+
+  h += '<details class="card" id="finPriceSet" style="margin-top:12px;"'+(accState.finPriceSet ? ' open' : '')+'><summary style="cursor:pointer;font-weight:600;font-size:14px;">Price settings</summary>'+
     '<div class="sum2-h" style="margin:10px 0 2px;"><span>Daily prices (ETFs and funds)</span></div>'+
     '<div class="stat-sub" style="margin:0 0 6px;">Free, no key. A small GitHub job fetches your prices once a day into a file this page reads.</div>'+
     '<div class="stat-sub" style="margin:0 0 6px;" id="finDailyStatus">'+escapeHtml(finDailyStatus())+'</div><div id="finDailyDetail" style="margin-bottom:8px;">'+finDailyDetail()+'</div>'+
     '<div class="sp-add"><input type="text" id="finPriceUrl" placeholder="'+escapeHtml(finDailyUrl() || 'GitHub username/repo, e.g. ewan/home-base')+'" value="'+escapeHtml(finSettings.priceUrl || '')+'" autocomplete="off" autocapitalize="none" style="flex:1;"><button type="button" class="btn small" id="finPriceUrlSave">Save</button></div>'+
-    '<details class="fin-auto"><summary>Set it up (once)</summary><ol class="sp-steps"><li>On GitHub open the repository that holds Home Base \u2192 <b>Add file \u2192 Create new file</b>.</li>'+
+    '<details class="fin-auto" data-acc="priceSetup"'+(accState.priceSetup ? ' open' : '')+'><summary>Set it up (once)</summary><ol class="sp-steps"><li>On GitHub open the repository that holds Home Base \u2192 <b>Add file \u2192 Create new file</b>.</li>'+
       '<li>Name it <b>.github/workflows/prices.yml</b> (typing the slashes makes the folders), paste this, then <b>Commit</b>.<div class="sp-btnrow"><button type="button" class="btn secondary small" id="finCopyWorkflow">Copy workflow</button></div></li>'+
       '<li>Open the <b>Actions</b> tab \u2192 <b>Update prices</b> \u2192 <b>Run workflow</b>. After that it runs by itself every weekday.</li>'+
       '<li>Come back here and tap <b>Refresh</b>. If you add a new ETF or fund, copy the workflow again.</li></ol></details>'+
@@ -7904,7 +7907,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v18.8';
+const APP_VERSION = 'v18.9';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
@@ -8659,7 +8662,7 @@ function renderGymHistory(){
   const box = gid('gymHistoryBody');
   const dates = Array.from(new Set(gymLog.map(l=>l.date))).sort().reverse();
   if(!dates.length){ box.innerHTML = '<div class="empty">No workouts yet. Log your first set on the Log tab.</div>'; return; }
-  if(gymHistOpen === null) gymHistOpen = new Set(dates.slice(0,1));
+  if(gymHistOpen === null) gymHistOpen = new Set();
   box.innerHTML = '';
   dates.slice(0, 5).forEach(d=> box.appendChild(gymHistDayEl(d)));
   if(dates.length > 5){ const w = document.createElement('div'); w.innerHTML = vaBtn('gym', 'View all '+dates.length+' sessions'); const b2 = w.firstChild; b2.addEventListener('click', openGymHistorySheet); box.appendChild(b2); }
