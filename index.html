@@ -1216,6 +1216,19 @@ details.acc > summary{min-height:50px;}
 .bd-lc-h b.sum-over{color:var(--danger);}
 .bd-lc .sum-row{padding:5px 0;border-bottom:0;}
 .bd-lc input[type=number]{width:96px;min-height:44px;text-align:right;}
+
+/* ---------- a line in each category's colour ---------- */
+.fc-list{margin:8px 0 2px;}
+.fc-row{display:block;width:100%;min-height:44px;padding:7px 0 6px;background:none;border:0;border-top:1px solid var(--line);text-align:left;color:var(--ink);}
+.fc-row:active{background:var(--surface-2);}
+.fc-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px;}
+.fc-name{font-size:12.5px;font-weight:600;}
+.fc-top b{font-size:12.5px;font-weight:800;white-space:nowrap;}
+.fc-top b.over{color:var(--danger);}
+.fc-of{font-weight:500;color:var(--ink-soft);font-size:11.5px;}
+.fc-top b.over .fc-of{color:var(--danger);}
+.fc-bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;}
+.fc-fill{height:100%;border-radius:3px;min-width:0;transition:width .3s ease;}
 </style>
 </head>
 <body data-view="calendar">
@@ -1546,6 +1559,8 @@ details.acc > summary{min-height:50px;}
         <span class="switch"><input type="checkbox" id="travelEnabledToggle"><span class="switch-slider"></span></span>
       </label>
     </div>
+<div class="set-label">How it is running</div>
+<div class="card" id="runModeCard"><div class="stat-sub" id="runModeText" style="margin:0;"></div></div>
 </div>
 <div class="set-page" id="setPage-workhome" data-set="workhome" hidden>
 <div class="set-head"><button type="button" class="chip-btn" data-set-back>&lsaquo; Settings</button><h2>Work & home</h2></div>
@@ -5568,11 +5583,12 @@ function renderFinDashboard(box){
       col('data-fin-tab="invest"', 'Invested', mp.invested ? '\u2212'+money(mp.invested) : '\u2014')+
       col('data-fin-tab="spend"', 'Spent', mp.spent ? '\u2212'+money(mp.spent) : '\u2014')+'</div></div>';
   // ---- spending: out of the budget you set, and what is in the account; tap for every transaction ----
-  const hasB = mp.budget > 0, leftB = finR2(mp.budget - mp.spentAll), pctB = hasB ? mp.spentAll/mp.budget : 0, lcv = finLoose(ym).avail;
+  const hasB = mp.budget > 0, leftB = finR2(mp.budget - mp.spentAll), pctB = hasB ? mp.spentAll/mp.budget : 0, lcState = finLoose(ym), lcv = lcState.avail;
   h += '<div class="card fs tap" data-fin-tab="spend"><div class="fm-top"><span class="fm-l">Spending</span><span class="sum-k">\u203a</span></div>'+
     '<div class="fs-row"><div class="fs-main"><b class="fs-big'+(pctB > 1 ? ' sum-over' : '')+'">'+money(mp.spentAll)+'</b><span class="fs-of">'+(hasB ? ' of '+money(mp.budget)+' budget' : ' spent this month')+'</span></div>'+
       '<div class="fs-acct"><span>In the account</span><b>'+(acct ? money(acct.value) : '\u2014')+'</b></div></div>'+
     (hasB ? '<div class="sp-bar thin"><div class="sp-fill'+(pctB > 1 ? ' over' : (pctB > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pctB*100)+'%"></div></div>' : '')+
+    finCatLines(mp, lcState)+
     '<div class="fs-foot"><span class="stat-sub" style="margin:0;">'+(hasB ? (leftB >= 0 ? money(leftB)+' left in budgets' : '<b class="sum-over">'+money(-leftB)+' over budgets</b>') : 'No budgets set yet')+'\u2003loose change '+(lcv < 0 ? '\u2212' : '')+money(Math.abs(lcv))+'</span><button type="button" class="fm-link" data-fin-budgets>Budgets</button></div></div>';
   const owedNow = finOwedUnpaid(), people = new Set();
   finOwed.forEach(o=> o.people.forEach(p=>{ if(!p.paid) people.add(p.name); }));
@@ -5597,7 +5613,25 @@ function renderFinDashboard(box){
   box.querySelectorAll('[data-fin-owed]').forEach(el=> el.addEventListener('click', finOpenOwedSheet));
   finBindEditors(box);
 }
+// every category, a line in its colour showing how much of it you have spent this month
+function finCatLines(mp, L){
+  const cats = spendCatList(), rows = [];
+  cats.forEach(c=>{
+    if(c.id === 'other') return;
+    if(c.id === 'investing'){ if(mp.invested > 0 || mp.invActual > 0) rows.push({c, S:mp.invActual, L:mp.invested}); return; }
+    const e = L.env.find(x=> x.c.id === c.id); if(e) rows.push({c, S:e.S, L:e.L});
+  });
+  if(!cats.some(c=> c.id === 'investing') && (mp.invested > 0 || mp.invActual > 0)) rows.push({c:{id:'investing', name:'Investing', color:'#3E8E8E'}, S:mp.invActual, L:mp.invested});
+  const oc = cats.find(c=> c.id === 'other'); if(oc) rows.push({c:oc, S:L.spentLC, L:0});
+  const tot = mp.spentAll > 0 ? mp.spentAll : 1;
+  return '<div class="fc-list">'+rows.map(r=>{
+    const hasL = r.L > 0, pct = hasL ? Math.min(100, r.S/r.L*100) : Math.min(100, Math.max(0, r.S)/tot*100), over = hasL && r.S > r.L;
+    const of = hasL ? ' of '+money(r.L) : (r.S > 0 ? ' \u00b7 '+Math.round(r.S/tot*100)+'% of spending' : ' \u00b7 no budget');
+    return '<button type="button" class="fc-row" data-fin-cat="'+r.c.id+'"><div class="fc-top"><span class="fc-name">'+escapeHtml(r.c.name)+'</span><b'+(over ? ' class="over"' : '')+'>'+money(r.S)+'<span class="fc-of">'+of+'</span></b></div><div class="fc-bar"><div class="fc-fill" style="width:'+pct.toFixed(1)+'%;background:'+r.c.color+';"></div></div></button>';
+  }).join('')+'</div>';
+}
 function finBindEditors(box){
+  box.querySelectorAll('[data-fin-cat]').forEach(b=> b.addEventListener('click', (e)=>{ e.stopPropagation(); spendFilter = b.dataset.finCat; finTab = 'spend'; finOpenItem = null; renderBudget(); SC.scrollTo(0, 0); }));
   box.querySelectorAll('[data-fin-recur]').forEach(b=> b.addEventListener('click', (e)=>{ e.stopPropagation(); openRecurSheet(b.dataset.finRecur); }));
   box.querySelectorAll('[data-fin-budgets]').forEach(b=> b.addEventListener('click', (e)=>{ e.stopPropagation(); openBudgetSheet(); }));
 }
@@ -6922,9 +6956,18 @@ function renderSettingsRoot(){
   root.insertAdjacentHTML('beforeend', '<div class="stat-sub" style="margin:20px 0 6px;">Home Base '+APP_VERSION+'</div>');
   root.querySelectorAll('[data-set-open]').forEach(b=> b.addEventListener('click', ()=>{ settingsPage = b.dataset.setOpen; applySettingsPage(); SC.scrollTo(0, 0); }));
 }
+function appRunMode(){
+  let sa = false;
+  try{ sa = window.navigator.standalone === true || (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches); }catch(e){}
+  return sa ? 'app' : 'tab';
+}
 function applySettingsPage(){
   const root = document.getElementById('setRoot');
   if(!root) return;
+  const rm = document.getElementById('runModeText');
+  if(rm) rm.innerHTML = appRunMode() === 'app'
+    ? '<b>\u2713 Home Screen app.</b> Full screen, so the footer sits at the very bottom of the phone.'
+    : '<b>Safari tab.</b> A browser tab keeps Safari\u2019s own toolbar on screen, and the footer sits just above it. That is as low as it can go in a tab. For the footer at the very bottom: tap <b>Share</b>, then <b>Add to Home Screen</b>, and open Home Base from that icon instead.';
   if(document.getElementById('view-settings').classList.contains('active')){ const st = document.getElementById('screenTitle'); const pg = SETTINGS_PAGES.find(x=> x.id === settingsPage); if(st) st.textContent = pg ? pg.title : 'Settings'; }
   if(settingsPage && !document.getElementById('setPage-'+settingsPage)) settingsPage = null;
   if(!settingsPage) renderSettingsRoot();
@@ -8073,7 +8116,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v19.2';
+const APP_VERSION = 'v19.4';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
