@@ -5537,30 +5537,27 @@ function finNavMonth(delta){
 }
 // everything about one month in one place: what comes in, what goes out, what's left
 function finPrevYm(ym){ const [y, m] = ym.split('-').map(Number), d = new Date(y, m-2, 1); return d.getFullYear()+'-'+pad(d.getMonth()+1); }
-// one-time tidy-up: "Other" becomes Loose change, Loose change starts counting from this month, and Bills gets a budget matching your bills
+// one-time tidy-up: "Other" becomes Loose change, Loose change counts from the MONTH BEFORE, and Bills gets a budget matching your bills
 function finLcInit(){
   let ch = false; spendEnsureCats();
+  const cur = todayStr().slice(0,7);
   const o = spendCats.find(c=> c.id === 'other');
   if(o && o.name === 'Other'){ o.name = 'Loose change'; o.budget = 0; spendSaveCats(); }
-  if(!finSettings.lc || !finSettings.lc.start){ finSettings = Object.assign({}, finSettings, {lc:{start:todayStr().slice(0,7), open:0}}); ch = true; }
+  if(!finSettings.lc || !finSettings.lc.start){ finSettings = Object.assign({}, finSettings, {lc:{start:finPrevYm(cur), open:0}, lcV:2}); ch = true; }
+  else if(!finSettings.lcV){            // earlier versions started counting this month; count from the month before instead (unless you typed a starting amount)
+    finSettings = Object.assign({}, finSettings, {lcV:2}); ch = true;
+    const open = Number(finSettings.lc.open) || 0;
+    if(finSettings.lc.start >= cur && open === 0) finSettings.lc = Object.assign({}, finSettings.lc, {start:finPrevYm(finSettings.lc.start)});
+  }
   if(!finSettings.lcBills){
     finSettings = Object.assign({}, finSettings, {lcBills:1}); ch = true;
-    const b = spendCats.find(c=> c.id === 'bills');
-    if(b && !(b.budget > 0)){ const tot = finMonthTotal(finDD, todayStr().slice(0,7)); if(tot > 0){ b.budget = Math.ceil(tot); spendSaveCats(); } }
+    const bb = spendCats.find(c=> c.id === 'bills');
+    if(bb && !(bb.budget > 0)){ const tot = finMonthTotal(finDD, cur); if(tot > 0){ bb.budget = Math.ceil(tot); spendSaveCats(); } }
   }
   if(ch) saveKey('fin-settings', finSettings);
 }
-// loose change brought into a month = what was left over of everything before it (income minus everything that went out)
-function finLooseCarry(ym){
-  finLcInit(); const lc = finSettings.lc;
-  if(ym < lc.start) return 0;
-  let carry = Number(lc.open) || 0;
-  finMonthsFrom(lc.start, finPrevYm(ym)).forEach(m=>{ const p = finMonthPlan(m); carry += p.income - p.out; });
-  return finR2(carry);
-}
-// loose change available in a month: brought forward + income not given to a budget - spent from it - budgets overspent
-function finLoose(ym){
-  finLcInit();
+// one month of loose change: brought forward + income not in a budget - spent from it - budgets overspent. Every budget counts as spent; what is really left only moves on when the month has ended.
+function finLooseMonth(ym, carry){
   const mp = finMonthPlan(ym), st = mp.st, cats = spendCatList();
   let overspend = 0, assigned = 0; const env = [];
   cats.forEach(c=>{
@@ -5570,10 +5567,22 @@ function finLoose(ym){
     const L = c.budget || 0, S = c.id === 'bills' ? mp.billsSpent : viaTx;
     env.push({c, L, S, left:finR2(L - S)}); if(S > L) overspend += S - L;
   });
-  const spentLC = finR2(st.spent - assigned);
-  const carry = finLooseCarry(ym), unalloc = finR2(mp.income - mp.budget);
-  return {mp, env, carry, unalloc, spentLC, overspend:finR2(overspend), avail:finR2(carry + unalloc - spentLC - overspend), cap:finR2(carry + unalloc), used:finR2(spentLC + overspend), start:finSettings.lc.start};
+  const spentLC = finR2(st.spent - assigned), unalloc = finR2(mp.income - mp.budget);
+  return {mp, env, carry, unalloc, spentLC, overspend:finR2(overspend), avail:finR2(carry + unalloc - spentLC - overspend), cap:finR2(carry + unalloc), used:finR2(spentLC + overspend)};
 }
+// loose change brought into a month: counts from the month before. A month that has ended hands on what was really left of everything; a month that has not ended hands on its loose change with every budget counted as spent.
+function finLooseCarry(ym){
+  finLcInit(); const lc = finSettings.lc, cur = todayStr().slice(0,7);
+  if(ym < lc.start) return 0;
+  let carry = Number(lc.open) || 0;
+  finMonthsFrom(lc.start, finPrevYm(ym)).forEach(m=>{
+    if(m < cur){ const p = finMonthPlan(m); carry += p.income - p.out; }
+    else carry = finLooseMonth(m, carry).avail;
+  });
+  return finR2(carry);
+}
+function finLoose(ym){ finLcInit(); const r = finLooseMonth(ym, finLooseCarry(ym)); r.start = finSettings.lc.start; return r; }
+
 function finInvScheduled(ym){
   let t = 0;
   finHoldings.forEach(h=>{ const r = h.recur; if(!r || r.active === false || !(r.amount > 0) || !r.date) return; finOccurrences(r, ym).forEach(()=>{ t += r.amount; }); });
@@ -5762,7 +5771,7 @@ function renderBudgetSheet(){
       '<div class="sum-row"><span class="sum-k">Income not in a budget</span><span class="sum-v">'+(L.unalloc < 0 ? '\u2212' : '+')+money(Math.abs(L.unalloc))+'</span></div>'+
       '<div class="sum-row"><span class="sum-k">Spent from loose change</span><span class="sum-v">'+(L.spentLC ? '\u2212'+money(L.spentLC) : '\u2014')+'</span></div>'+
       (L.overspend > 0 ? '<div class="sum-row"><span class="sum-k">Budgets gone over</span><span class="sum-v sum-over">\u2212'+money(L.overspend)+'</span></div>' : '')+
-      '<div class="stat-sub" style="margin:6px 0 0;">Extra income lands here, a smaller income comes out of it, and anything left in a budget moves here at the end of the month.</div>';
+      '<div class="stat-sub" style="margin:6px 0 0;">Until the month ends every budget counts as spent. Then whatever is really left in each budget, and any extra income, moves here for next month. A smaller income comes out of it.</div>';
     const lo = document.querySelector('[data-lc-open]'); if(lo && !lo.__b){ lo.__b = 1; lo.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, {open:parseFloat(lo.value) || 0})}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); }); }
   };
   paint();
@@ -8218,7 +8227,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v19.7';
+const APP_VERSION = 'v19.8';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
