@@ -900,7 +900,7 @@ body[data-view="calendar"] .top{display:none;}
 body[data-view="menu"] #menuTopBtn,body[data-view="summary"] #menuTopBtn{display:none;}
 body[data-view="menu"] #todayLabel{display:none;}
 #moneyEyeBtn{display:none;}
-body[data-view="summary"] #moneyEyeBtn,body[data-view="budget"] #moneyEyeBtn,body[data-view="expenses"] #moneyEyeBtn,body[data-view="rent"] #moneyEyeBtn{display:inline-flex;}
+body[data-view="summary"] #moneyEyeBtn,body[data-view="budget"] #moneyEyeBtn{display:inline-flex;}
 .return-cal-bar .nav-item{max-width:none;}
 .nav-ic{position:relative;display:inline-flex;}
 .nav-dot{position:absolute;top:-2px;right:-5px;width:10px;height:10px;border-radius:50%;background:var(--danger);border:2px solid var(--bg);display:none;}
@@ -967,7 +967,6 @@ body.dark{--away-line:#6E5126;--home-line:#2F4C7A;}
 .day-cell.today{border-color:var(--home);box-shadow:inset 0 0 0 1px var(--home);}
 
 /* ---------- trends ---------- */
-body[data-view="trends"] #moneyEyeBtn{display:inline-flex;}
 .tr{padding:4px 0 14px;border-bottom:1px solid var(--line);margin-bottom:10px;}
 .tr:last-child{border-bottom:0;}
 .tr-h{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:44px;padding:0;background:none;border:0;color:var(--ink);font-size:15px;font-weight:800;letter-spacing:-.015em;text-align:left;}
@@ -1229,6 +1228,51 @@ details.acc > summary{min-height:50px;}
 .fc-top b.over .fc-of{color:var(--danger);}
 .fc-bar{height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden;}
 .fc-fill{height:100%;border-radius:3px;min-width:0;transition:width .3s ease;}
+
+/* ---------- v19.6: footer lower, Spending page slimmed down ---------- */
+:root{--bar-pad:max(6px,calc(env(safe-area-inset-bottom,0px) - 20px));--bar-h:calc(48px + var(--bar-pad));}
+.return-cal-bar{padding-bottom:var(--bar-pad);}
+.return-cal-bar .nav-item{min-height:48px;}
+.pill{position:relative;display:inline-flex;align-items:center;justify-content:center;height:26px;padding:0 14px;border:0;border-radius:13px;background:var(--home);color:#fff;font-size:12px;font-weight:700;letter-spacing:.01em;white-space:nowrap;}
+.pill::after{content:'';position:absolute;left:-6px;right:-6px;top:-9px;bottom:-9px;}
+.pill:active{opacity:.8;}
+body.dark .pill{color:#0F1B2E;}
+.fm-pills{display:flex;gap:8px;margin:0 0 8px;padding:0 2px;}
+.lg-acct{padding:8px 12px 9px;}
+.la-r1{display:flex;align-items:center;justify-content:space-between;min-height:26px;}
+.la-l{font-size:11.5px;font-weight:600;color:var(--ink-soft);}
+.la-r2{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.la-bal{font-size:21px;font-weight:800;letter-spacing:-.02em;}
+.la-io{display:flex;flex-wrap:wrap;gap:0 10px;font-size:11px;color:var(--ink-soft);}
+.la-io b{color:var(--ink);font-weight:700;}
+.la-m{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+.sp-addcard{padding:6px 8px;}
+.sp-add1{display:flex;align-items:center;gap:6px;}
+.sp-add1 .sp-dir{width:auto;flex:none;display:inline-flex;}
+.sp-add1 .sp-dir button{min-width:40px;min-height:44px;padding:0;font-size:18px;font-weight:700;line-height:1;}
+.sp-add1 #spAmt{width:70px;flex:none;}
+.sp-add1 #spPlace{flex:1;min-width:0;}
+.sp-add1 .btn.small{flex:none;min-width:54px;padding:0 12px;}
+
+/* ---------- dashboard: driving time, finance, sleep, gym days ---------- */
+.n-s{display:block;font-size:10.5px;font-weight:500;color:var(--ink-soft);margin-top:1px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.d-gym{display:block;width:9px;height:4px;border-radius:2px;background:#C4504A;margin:0 auto;text-decoration:none;}
+.d-wk .d-gym{margin-top:-1px;}
+.w-gl{display:inline-flex;align-items:center;gap:4px;font-style:normal;font-size:10.5px;font-weight:600;color:var(--ink-soft);margin-left:8px;}
+.w-gl .d-gym{margin:0;}
+
+/* ---------- gym log: start a session ---------- */
+.gym-top{padding:8px 10px;}
+.gym-start-row{display:flex;align-items:center;gap:8px;}
+.gym-date-mini{width:138px;flex:none;min-height:44px;padding:0 8px;}
+.gym-start-row > .btn{flex:1;}
+.gym-live{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:1;}
+.gym-clock{font-size:21px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+.gym-live[hidden],#gymSearchWrap[hidden],#gymStartBtn[hidden],#gymDateInput[hidden]{display:none !important;}
+
+.w.n.has-s{flex-wrap:wrap;align-content:center;row-gap:0;}
+.w.n.has-s .n-s{flex:0 0 100%;order:3;margin-top:0;}
+#gymDateInput{width:138px;min-height:44px;padding:0 8px;flex:none;}
 </style>
 </head>
 <body data-view="calendar">
@@ -1239,7 +1283,7 @@ details.acc > summary{min-height:50px;}
     <button class="round-btn" id="menuTopBtn" title="Back" aria-label="Back"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 5 8 12 15 19"/></svg></button>
     <h1 id="screenTitle">Home Base</h1>
     <span class="top-date" id="todayLabel"></span>
-    <button class="round-btn" id="moneyEyeBtn" title="Hide amounts" aria-label="Hide amounts" aria-pressed="false"></button>
+    <button class="round-btn" id="moneyEyeBtn" title="Hide portfolio" aria-label="Hide portfolio" aria-pressed="false"></button>
   </div>
 
 
@@ -1491,10 +1535,16 @@ details.acc > summary{min-height:50px;}
       </div>
     </div>
     <div id="gymLogPane">
-      <div class="card">
-        <input type="text" id="gymSearchInput" placeholder="Search exercise or muscle…" autocomplete="off" style="width:100%;">
-        <div class="gym-date-row"><span class="stat-sub" style="margin:0;">Date</span><input type="date" id="gymDateInput" class="solo-date-input"></div>
-        <div id="gymSearchResults"></div>
+      <div class="card gym-top">
+        <div class="gym-start-row">
+          <input type="date" id="gymDateInput" class="gym-date-mini" aria-label="Date">
+          <button type="button" class="btn" id="gymStartBtn">Start session</button>
+          <div class="gym-live" id="gymLive" hidden><span class="gym-clock" id="gymClock">0:00:00</span><button type="button" class="btn secondary small" id="gymEndBtn">End session</button></div>
+        </div>
+        <div id="gymSearchWrap" hidden>
+          <input type="text" id="gymSearchInput" placeholder="Search exercise or muscle…" autocomplete="off" style="width:100%;margin-top:8px;">
+          <div id="gymSearchResults"></div>
+        </div>
       </div>
       <div class="card" id="gymExerciseCard" style="display:none;"></div>
       <div class="card">
@@ -2289,6 +2339,7 @@ async function init(){
   travelEnabled = await loadKey('travel-enabled', false);
   vanOdometer = await loadKey('van-odometer', null);
   gymLog = await loadKey('gym-log', []);
+  gymSess = await loadKey('gym-sess', null); if(gymSess && Date.now() - gymSess.start > 12*3600000) gymSess = null;
   gymCustom = await loadKey('gym-custom', []);
   gymBw = await loadKey('gym-bw', []);
   gymBwAsked = await loadKey('gym-bw-asked', '');
@@ -2310,6 +2361,7 @@ async function init(){
   mileageDrafts = await loadKey('mileage-drafts', []);
   sleepLog = await loadKey('sleep-log', []);
   await spendMigrate();
+  await spendMigrate3();
   setTimeout(()=>{ if(finHoldings.some(h=> h.recur)) finApplyRecurring(); }, 2500);
   syncAuth = await loadKey('sync-auth', null);
   Object.assign(geoCache, await loadKey('geocache', {}));
@@ -2398,7 +2450,7 @@ function goToView(viewName, dir, opts){
     requestAnimationFrame(()=> SC.scrollTo(0, 0));
   }
   if(viewName==='trends') renderTrends();
-  if(viewName==='gym'){ gymAutoPick = true; renderGym(); }
+  if(viewName==='gym'){ gymAutoPick = false; gymSelectedId = null; if(!gymSess) gymDateTouched = false; renderGym(); }
   { const vEl = document.getElementById('view-'+viewName); vEl.classList.add('fresh'); clearTimeout(vEl._fresh); vEl._fresh = setTimeout(()=>{ vEl.classList.remove('fresh'); document.body.dataset.nav = ''; }, 950); }
   if(viewName==='summary') renderSummary();
   if(viewName==='budget'){ finTab = setPage || 'overview'; finOpenItem = null; renderBudget(); importInbox(); finMaybeRefresh(); }
@@ -4789,9 +4841,9 @@ function renderCalHeaderAlert(){
   const hasOverdue = todos.some(t=>t.kind==='task' && !t.done && t.dueDate && t.dueDate < today);
   dot.style.display = hasOverdue ? 'block' : 'none';
 }
-// ---- Hide amounts: one eye on the money screens (Dashboard, Finance, Expenses, Rent). It is remembered on this phone. ----
+// ---- Hide portfolio: one eye (Dashboard and Finance) that hides only the portfolio figures. It is remembered on this phone. ----
 let hideMoney = false;
-const MONEY_MASK_ROOTS = ['budgetBody', 'view-expenses', 'view-rent', 'trendsBody'];
+const MONEY_MASK_ROOTS = ['budgetBody'];
 const moneyMasked = new Map();
 function maskMoneyIn(root){
   if(!hideMoney || !root) return;
@@ -4801,14 +4853,26 @@ function maskMoneyIn(root){
   const hit = []; while(w.nextNode()) hit.push(w.currentNode);
   hit.forEach(n=>{ moneyMasked.set(n, n.nodeValue); n.nodeValue = n.nodeValue.replace(/\u00a3\s?[\d,]+(\.\d+)?/g, '\u00a3\u2022\u2022\u2022'); });
 }
-function maskAllMoney(){ MONEY_MASK_ROOTS.forEach(id=> maskMoneyIn(document.getElementById(id))); }
+// what counts as portfolio: anything marked data-pf, and the whole Portfolio page
+function pfTargets(root){
+  const out = [];
+  if(!root || root.nodeType !== 1) return out;
+  if(root.closest('[data-pf]')) out.push(root); else root.querySelectorAll('[data-pf]').forEach(e=> out.push(e));
+  if(finTab === 'invest' && root.closest('#budgetBody')) out.push(root);
+  return out;
+}
+function maskAllMoney(){
+  document.querySelectorAll('[data-pf]').forEach(maskMoneyIn);
+  const bb = document.getElementById('budgetBody');
+  if(finTab === 'invest' && bb && document.getElementById('view-budget').classList.contains('active')) maskMoneyIn(bb);
+}
 function unmaskAllMoney(){ moneyMasked.forEach((orig, n)=>{ if(n.isConnected) n.nodeValue = orig; }); moneyMasked.clear(); }
 function updateEyeBtn(){
   const b = document.getElementById('moneyEyeBtn'); if(!b) return;
   b.innerHTML = hideMoney
     ? '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.2A9.8 9.8 0 0112 6c5 0 8.5 4 10 6-.7 1-1.8 2.3-3.2 3.4M6.4 7.8C4.4 9.2 2.9 11 2 12c1.5 2 5 6 10 6 1.5 0 2.8-.3 4-.9"/><path d="M9.9 10a3 3 0 004.1 4.1"/></svg>'
     : '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
-  b.title = b.ariaLabel = hideMoney ? 'Show amounts' : 'Hide amounts';
+  b.title = b.ariaLabel = hideMoney ? 'Show portfolio' : 'Hide portfolio';
   b.setAttribute('aria-pressed', hideMoney ? 'true' : 'false');
 }
 async function setHideMoney(on){
@@ -4818,7 +4882,7 @@ async function setHideMoney(on){
 }
 function setupMoneyEye(){
   document.getElementById('moneyEyeBtn').addEventListener('click', ()=> setHideMoney(!hideMoney));
-  const mo = new MutationObserver((muts)=>{ if(!hideMoney) return; muts.forEach(m=> m.addedNodes.forEach(n=>{ if(n.nodeType === 1) maskMoneyIn(n); else if(n.nodeType === 3 && n.parentNode) maskMoneyIn(n.parentNode); })); if(moneyMasked.size > 3000) moneyMasked.forEach((o, n)=>{ if(!n.isConnected) moneyMasked.delete(n); }); });
+  const mo = new MutationObserver((muts)=>{ if(!hideMoney) return; muts.forEach(m=> m.addedNodes.forEach(n=>{ if(n.nodeType === 1) pfTargets(n).forEach(maskMoneyIn); else if(n.nodeType === 3 && n.parentNode && n.parentNode.nodeType === 1) pfTargets(n.parentNode).forEach(maskMoneyIn); })); if(moneyMasked.size > 3000) moneyMasked.forEach((o, n)=>{ if(!n.isConnected) moneyMasked.delete(n); }); });
   MONEY_MASK_ROOTS.forEach(id=>{ const el = document.getElementById(id); if(el) mo.observe(el, {childList:true, subtree:true}); });
   updateEyeBtn();
 }
@@ -4847,6 +4911,7 @@ function renderSummary(){
     stale = mins > 16*60;
     clockTxt = stale ? 'In since '+shortDate(clockInState.date)+', forgot?' : 'In for '+Math.floor(mins/60)+'h '+pad(mins%60)+'m';
   }
+  const gymDays = new Set(gymLog.filter(l=> !l.wu).map(l=> l.date));            // days you trained
   // week
   const mon = mondayOf(today), dn = ['M','T','W','T','F','S','S'];
   let total = 0, wk = '';
@@ -4854,7 +4919,7 @@ function renderSummary(){
     const d = addDays(mon, i), en = calendarData[d], hh = en ? shiftHours(en.shift) : null;
     if(hh) total += hh;
     const lab = hh ? String(Math.round(hh*10)/10) : (en && en.isAL ? 'AL' : '');
-    wk += '<button type="button" class="d-wk'+(d === today ? ' now' : '')+(en && en.status === 'away' ? ' away' : '')+'" data-sum-date="'+d+'"><em>'+lab+'</em><span class="d-bar"><i style="height:'+(hh ? Math.max(8, Math.min(100, hh/12*100)) : 0)+'%"></i></span><b>'+dn[i]+'</b></button>';
+    wk += '<button type="button" class="d-wk'+(d === today ? ' now' : '')+(en && en.status === 'away' ? ' away' : '')+'" data-sum-date="'+d+'"><em>'+lab+'</em><span class="d-bar"><i style="height:'+(hh ? Math.max(8, Math.min(100, hh/12*100)) : 0)+'%"></i></span><b>'+dn[i]+'</b>'+(gymDays.has(d) ? '<s class="d-gym" title="Gym"></s>' : '')+'</button>';
   }
   const toilBal = computeToilWeeks().balance;
   // to-dos
@@ -4865,7 +4930,11 @@ function renderSummary(){
     const over = t.dueDate && t.dueDate < today;
     return '<button type="button" class="d-trow" data-sum-todo="'+t.id+'"><span>'+escapeHtml(t.text)+'</span><em class="'+(over ? 'late' : '')+'">'+(t.dueDate ? (t.dueDate === today ? 'Today' : shortDate(t.dueDate)) : '')+'</em></button>';
   }).join('');
-  // van, spending, rent, expenses, money
+  // gym days, driving time and sleep for the tiles
+  const driveMins = mileageTrips.filter(t=> t.date >= mon && t.date <= today).reduce((a, t)=> a + (t.mins || 0), 0);
+  const nights = []; for(let i = 1; i <= 7; i++){ const mm = autoBedFor(addDays(today, -i)); if(mm != null) nights.push(mm); }
+  const sleepAvg = nights.length ? Math.round(nights.reduce((a, b)=> a + b, 0)/nights.length) : null, hasSleep = sleepLog.length > 0;
+  // van, finance, rent, expenses, sleep
   const odo = computeVanOdometer();
   const sst = spendStats(today.slice(0,7)), pct = sst.budget ? sst.spent/sst.budget : 0;
   const owed = computeOwed(), rentSet = RATE_HOME > 0 || RATE_AWAY > 0;
@@ -4880,7 +4949,7 @@ function renderSummary(){
   const alerts =
     (autoMeta.workPending && clockInState ? '<button type="button" class="d-alert" data-sum-pend="1">Left Connecteam at '+autoHM(autoMeta.workPending.t)+' \u2014 clock out?</button>' : '')+
     (syncEnabled && syncFailed ? '<button type="button" class="d-alert warn" data-sum-go="settings:sync">Sync isn\u2019t working</button>' : '');
-  const N = (label, val, attrs, extra)=> '<div class="w n'+(extra || '')+'" role="button" tabindex="0" '+attrs+'><span class="n-l">'+label+'</span><b class="n-v">'+val+'</b></div>';
+  const N = (label, val, attrs, extra, sub)=> '<div class="w n'+(extra || '')+(sub ? ' has-s' : '')+'" role="button" tabindex="0" '+attrs+'><span class="n-l">'+label+'</span><b class="n-v">'+val+'</b>'+(sub ? '<span class="n-s">'+sub+'</span>' : '')+'</div>';
   const hide = (v)=> hideMoney ? '\u2022\u2022\u2022\u2022' : v;
   const bullets = pend.slice(0, 3).map(t=>{
     const over = t.dueDate && t.dueDate < today;
@@ -4891,15 +4960,15 @@ function renderSummary(){
       '<div class="w-toprow"><div class="w-hero'+(sh && sh.start ? '' : ' quiet')+'">'+shiftTxt+'</div><button type="button" class="btn'+(on ? ' secondary' : '')+'" id="sumClockBtn">'+(on ? 'Clock out' : 'Clock in')+'</button></div>'+
       '<div class="w-meta"><span class="w-clk'+(stale ? ' late' : '')+'"><i class="w-dot'+(on ? ' on' : '')+'"></i>'+clockTxt+'</span>'+meta+'</div>'+
       (events.length ? '<div class="w-line">'+escapeHtml(events.slice(0,2).join('   '))+'</div>' : '')+'</div>'+
-    '<div class="w w-week" role="button" tabindex="0" data-sum-go="toil"><div class="w-t"><span>This week</span><b class="w-wkn">'+(Math.round(total*10)/10)+'h</b><span class="w-toil">TOIL '+(toilBal >= 0 ? '+' : '\u2212')+Math.abs(Math.round(toilBal*10)/10)+'h</span></div><div class="d-bars">'+wk+'</div></div>'+
+    '<div class="w w-week" role="button" tabindex="0" data-sum-go="toil"><div class="w-t"><span>This week</span><i class="w-gl"><s class="d-gym"></s>gym</i><b class="w-wkn">'+(Math.round(total*10)/10)+'h</b><span class="w-toil">TOIL '+(toilBal >= 0 ? '+' : '\u2212')+Math.abs(Math.round(toilBal*10)/10)+'h</span></div><div class="d-bars">'+wk+'</div></div>'+
     '<div class="dash-main">'+
       '<div class="w w-gym" role="button" tabindex="0" data-sum-go="gym" aria-label="Gym"><div class="w-t"><span>Gym</span></div><div class="w-fig">'+fig+'</div></div>'+
       '<div class="dash-list">'+
-        N('Van', odo ? fmtMi(odo.estimate) : 'Set', 'data-sum-go="'+(odo ? 'mileage' : 'settings:workhome')+'"', odo ? '' : ' add')+
-        N('Spending', hide(m0(sst.spent)), 'data-sum-go="budget:spend"', sst.budget && sst.left < 0 && !hideMoney ? ' late' : '')+
-        N('Rent owed', rentSet ? hide(m0(owed.total)) : 'Set', 'data-sum-go="rent"', rentSet ? '' : ' add')+
-        N('To claim', claim.length ? hide(money(claimTot)) : hide('\u00a30'), 'data-sum-go="expenses"', claim.length ? '' : ' dim')+
-        N('Portfolio', money_ !== null ? hide(m0(money_)) : 'Add', 'data-sum-go="budget:invest"', money_ !== null ? '' : ' add')+
+        N('Van', odo ? fmtMi(odo.estimate) : 'Set', 'data-sum-go="'+(odo ? 'mileage' : 'settings:workhome')+'"', odo ? '' : ' add', driveMins > 0 ? (driveMins < 60 ? driveMins+'m' : Math.floor(driveMins/60)+'h '+pad(driveMins%60)+'m')+' driving this week' : 'no driving this week')+
+        N('Finance', acct ? m0(acct.value) : 'Set', 'data-sum-go="budget"', acct ? '' : ' add', pf.priced || pf.value > 0 ? 'portfolio '+hide(m0(pf.value)) : 'no portfolio yet')+
+        N('Rent owed', rentSet ? m0(owed.total) : 'Set', 'data-sum-go="rent"', rentSet ? '' : ' add')+
+        N('To claim', claim.length ? money(claimTot) : '\u00a30', 'data-sum-go="expenses"', claim.length ? '' : ' dim')+
+        N('Sleep', bedLast ? autoMins(bedLast) : (hasSleep ? '\u2014' : 'Set up'), hasSleep ? 'data-sum-sleep' : 'data-sum-go="settings:automations"', hasSleep ? '' : ' add', sleepAvg ? 'avg '+autoMins(sleepAvg) : (hasSleep ? 'last night' : ''))+
         (pend.length
           ? '<div class="w w-todos" role="button" tabindex="0" data-sum-go="todo"><div class="w-t"><span>To-dos</span><b class="w-count">'+pend.length+'</b></div>'+bullets+'</div>'
           : '<div class="w n add w-todos0" role="button" tabindex="0" data-sum-add><span class="n-l">To-dos</span><b class="n-v">Add</b></div>')+
@@ -4907,6 +4976,7 @@ function renderSummary(){
   box.querySelectorAll('[data-sum-day]').forEach(el=> el.addEventListener('click', ()=> goToCalendarDate(today)));
   box.querySelectorAll('[data-sum-date]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); goToCalendarDate(el.dataset.sumDate); }));
   box.querySelectorAll('[data-sum-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.sumGo)));
+  box.querySelectorAll('[data-sum-sleep]').forEach(el=> el.addEventListener('click', ()=>{ trendsTab = 'sleep'; goToView('trends'); }));
   box.querySelectorAll('.w[role="button"]').forEach(el=> el.addEventListener('keydown', (ev)=>{ if((ev.key === 'Enter' || ev.key === ' ') && ev.target === el){ ev.preventDefault(); el.click(); } }));
   box.querySelectorAll('[data-sum-pend]').forEach(el=> el.addEventListener('click', openWorkClockOutSheet));
   box.querySelectorAll('[data-sum-todo]').forEach(el=> el.addEventListener('click', (ev)=>{
@@ -4931,13 +5001,14 @@ const SPEND_DEFAULT_CATS = [
   {id:'other', name:'Loose change', budget:0, color:'#7C867F'}
 ];
 const SPEND_COLOURS = ['#5E8C61','#D08A3E','#3F6FA6','#8A6FB3','#C4504A','#B58B1E','#7C867F','#3E8E8E','#A0527C'];
-// first match wins; anything that matches nothing goes to Loose change
+// first match wins: supermarkets are Groceries, other shops are Shopping, and most of what is left is Activities
 const SPEND_HINTS = [
   [/gift|moonpig|funky pigeon|interflora|card factory|hallmark|thortful|prezzybox|florist|flowers|bloom ?& ?wild|not on the high street|clinton/, 'gifts'],
-  [/tesco|sainsbury|asda|\baldi\b|\blidl\b|morrisons|waitrose|co-?op\b|iceland|ocado|\bspar\b|booths|farmfoods|budgens|costcutter|londis|\bnisa\b|one stop|m&s food/, 'groceries'],
+  [/tesco|sainsbury|asda|\baldi\b|\blidl\b|morrisons|waitrose|co-?op\b|iceland|ocado|\bspar\b|booths|farmfoods|budgens|costcutter|londis|\bnisa\b|one stop|m&s food|m&s simply|marks ?& ?spencer food|heron foods|whole ?foods|\bmace\b|supermarket|grocer|butcher|fishmonger|farm ?shop|convenience/, 'groceries'],
   [/\brent\b|council tax|broadband|energy|electric|british gas|\bedf\b|octopus|scottish ?power|thames water|united utilities|severn trent|\bwater\b|tv licen[cs]e|netflix|spotify|disney|prime video|apple\.com|icloud|google|youtube|\bsky\b|vodafone|\bee\b|\bo2\b|\bthree\b|giffgaff|\bbt\b|virgin media|insurance|puregym|anytime fitness|\bgym\b/, 'bills'],
-  [/amazon|ebay|argos|currys|ikea|b&q|screwfix|primark|\bnext\b|h&m|zara|boots|superdrug|asos|etsy|jd sports|decathlon|tk ?maxx|\bm&s\b|marks ?& ?spencer|john lewis|b&m|home bargains|poundland|wilko|sports direct|river island|uniqlo|\bapple\b/, 'shopping'],
-  [/mcdonald|\bkfc\b|greggs|costa|starbucks|\bpret\b|nando|subway|burger|domino|pizza|deliveroo|uber ?eats|just ?eat|wetherspoon|\bpub\b|\bbar\b|cafe|coffee|restaurant|wagamama|five guys|\bitsu\b|\bleon\b|bakery|takeaway|cinema|odeon|\bvue\b|cineworld|ticketmaster|steam|playstation|xbox|nintendo|bowling|theatre|skiddle|dice\.fm|eventbrite|golf|climbing|escape|museum|\bzoo\b|festival|\bclub\b|\bgig\b|arena|stadium/, 'activities']
+  [/amazon|ebay|argos|currys|ikea|b&q|screwfix|primark|\bnext\b|h&m|zara|boots|superdrug|asos|etsy|jd sports|decathlon|tk ?maxx|\bm&s\b|marks ?& ?spencer|john lewis|b&m|home bargains|poundland|wilko|sports direct|river island|uniqlo|\bapple\b|amzn|wickes|homebase|dunelm|boohoo|pretty ?little ?thing|shein|temu|vinted|depop|\bjd\b|nike|adidas|new look|matalan|topshop|\bgap\b|fat face|ted baker|schuh|clarks|foot ?locker|flannels|specsavers|halfords|hobbycraft|waterstones|\bhmv\b|w ?h ?smith|paperchase|\bcex\b|pets at home|the works|staples|ryman|ao\.com|\bvery\b|the range|pharmacy|chemist|optician/, 'shopping'],
+  [/mcdonald|\bkfc\b|greggs|costa|starbucks|\bpret\b|nando|subway|burger|domino|pizza|deliveroo|uber ?eats|just ?eat|wetherspoon|\bpub\b|\bbar\b|cafe|coffee|restaurant|wagamama|five guys|\bitsu\b|\bleon\b|bakery|takeaway|cinema|odeon|\bvue\b|cineworld|ticketmaster|steam|playstation|xbox|nintendo|bowling|theatre|skiddle|dice\.fm|eventbrite|golf|climbing|escape|museum|\bzoo\b|festival|\bclub\b|\bgig\b|arena|stadium/, 'activities'],
+  [/\bshop\b|\bshops\b|boutique|outlet|clothing|fashion|garden cent|hardware|furniture|jewel|newsagent|stationer|bookshop|bookstore|\bstore\b/, 'shopping']
 ];
 function spendCatList(){ return spendCats || SPEND_DEFAULT_CATS; }
 function spendCatById(id){ return spendCatList().find(c=> c.id===id) || null; }
@@ -4953,11 +5024,11 @@ function spendGuess(m){
     for(const h of SPEND_HINTS){ if(h[0].test(low)){ id = h[1]; break; } }
   }
   if(id && spendCatById(id)) return id;
-  return spendCatById('other') ? 'other' : null;
+  return spendCatById('activities') ? 'activities' : (spendCatById('other') ? 'other' : null);
 }
 // one-off: move older spending onto the six categories
 async function spendMigrate(){
-  if(spendMeta.catV === 2) return;
+  if(spendMeta.catV >= 2) return;
   spendMeta.catV = 2;
   const MAP = {eating:'activities', fun:'activities', travel:'other'};
   if(spendCats){
@@ -4975,6 +5046,14 @@ async function spendMigrate(){
   spendTxns.forEach(t=>{ if(MAP[t.cat]) t.cat = MAP[t.cat]; });
   Object.keys(spendRules).forEach(k=>{ if(MAP[spendRules[k]]) spendRules[k] = MAP[spendRules[k]]; });
   spendTxns.forEach(t=>{ if(!t.cat) t.cat = spendGuess(t.merchant); });
+  await saveKey('spend-txns', spendTxns); await saveKey('spend-rules', spendRules); await saveKey('spend-meta', spendMeta);
+}
+// one-off: payments that were all dumped in Loose change get filed properly (Loose change is now money you set aside, not a bin)
+async function spendMigrate3(){
+  if(spendMeta.catV >= 3) return;
+  Object.keys(spendRules).forEach(k=>{ if(spendRules[k] === 'other') delete spendRules[k]; });
+  spendTxns.forEach(t=>{ if(!t.cat || t.cat === 'other') t.cat = spendGuess(t.merchant); });
+  spendMeta.catV = 3;
   await saveKey('spend-txns', spendTxns); await saveKey('spend-rules', spendRules); await saveKey('spend-meta', spendMeta);
 }
 function spendParseAmount(a){
@@ -5493,7 +5572,7 @@ function finLoose(ym){
   });
   const spentLC = finR2(st.spent - assigned);
   const carry = finLooseCarry(ym), unalloc = finR2(mp.income - mp.budget);
-  return {mp, env, carry, unalloc, spentLC, overspend:finR2(overspend), avail:finR2(carry + unalloc - spentLC - overspend), start:finSettings.lc.start};
+  return {mp, env, carry, unalloc, spentLC, overspend:finR2(overspend), avail:finR2(carry + unalloc - spentLC - overspend), cap:finR2(carry + unalloc), used:finR2(spentLC + overspend), start:finSettings.lc.start};
 }
 function finInvScheduled(ym){
   let t = 0;
@@ -5594,7 +5673,7 @@ function renderFinDashboard(box){
   finOwed.forEach(o=> o.people.forEach(p=>{ if(!p.paid) people.add(p.name); }));
   if(owedNow > 0) h += '<button type="button" class="fm-row" data-fin-owed><span>Owed to you</span><b>'+money(owedNow)+'</b><span class="stat-sub" style="margin:0;">'+people.size+' '+(people.size === 1 ? 'person' : 'people')+' \u203a</span></button>';
   // ---- portfolio ----
-  h += '<div class="card tap fp" data-fin-tab="invest"><div class="fm-top"><span class="fm-l">Portfolio</span><span class="sum-k">\u203a</span></div>';
+  h += '<div class="card tap fp" data-fin-tab="invest" data-pf><div class="fm-top"><span class="fm-l">Portfolio</span><span class="sum-k">\u203a</span></div>';
   if(pf.priced || acct){
     h += '<div class="fin-big">'+money(total)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+
       [pf.priced ? 'Investments '+money(pf.value - pf.sav) : '', pf.sav > 0 ? 'Savings '+money(pf.sav) : '', acct ? 'Spending account '+money(acct.value) : ''].filter(Boolean).join('\u2003')+'</div>';
@@ -5622,12 +5701,16 @@ function finCatLines(mp, L){
     const e = L.env.find(x=> x.c.id === c.id); if(e) rows.push({c, S:e.S, L:e.L});
   });
   if(!cats.some(c=> c.id === 'investing') && (mp.invested > 0 || mp.invActual > 0)) rows.push({c:{id:'investing', name:'Investing', color:'#3E8E8E'}, S:mp.invActual, L:mp.invested});
-  const oc = cats.find(c=> c.id === 'other'); if(oc) rows.push({c:oc, S:L.spentLC, L:0});
+  const oc = cats.find(c=> c.id === 'other'); if(oc) rows.push({c:oc, S:L.used, L:Math.max(0, L.cap), lc:true, left:L.avail});
   const tot = mp.spentAll > 0 ? mp.spentAll : 1;
   return '<div class="fc-list">'+rows.map(r=>{
+    if(r.lc){
+      const lo = r.left < 0, lp = r.L > 0 ? Math.min(100, r.S/r.L*100) : (r.S > 0 ? 100 : 0);
+      return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\"><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b'+(lo ? ' class=\"over\"' : '')+'>'+(lo ? '\u2212' : '')+money(Math.abs(r.left))+(lo ? ' over' : ' left')+'<span class=\"fc-of\"> of '+money(r.L)+'</span></b></div><div class=\"fc-bar\"><div class=\"fc-fill\" style=\"width:'+lp.toFixed(1)+'%;background:'+r.c.color+';\"></div></div></button>';
+    }
     const hasL = r.L > 0, pct = hasL ? Math.min(100, r.S/r.L*100) : Math.min(100, Math.max(0, r.S)/tot*100), over = hasL && r.S > r.L;
     const of = hasL ? ' of '+money(r.L) : (r.S > 0 ? ' \u00b7 '+Math.round(r.S/tot*100)+'% of spending' : ' \u00b7 no budget');
-    return '<button type="button" class="fc-row" data-fin-cat="'+r.c.id+'"><div class="fc-top"><span class="fc-name">'+escapeHtml(r.c.name)+'</span><b'+(over ? ' class="over"' : '')+'>'+money(r.S)+'<span class="fc-of">'+of+'</span></b></div><div class="fc-bar"><div class="fc-fill" style="width:'+pct.toFixed(1)+'%;background:'+r.c.color+';"></div></div></button>';
+    return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\"><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b'+(over ? ' class=\"over\"' : '')+'>'+money(r.S)+'<span class=\"fc-of\">'+of+'</span></b></div><div class="fc-bar"><div class="fc-fill" style="width:'+pct.toFixed(1)+'%;background:'+r.c.color+';"></div></div></button>';
   }).join('')+'</div>';
 }
 function finBindEditors(box){
@@ -5671,7 +5754,9 @@ function renderBudgetSheet(){
     if(mt){ if(tot > 0 && bills && Math.round(tot) !== Math.round(bills.budget || 0)) mt.innerHTML = 'Your scheduled bills come to '+money(tot)+'. <button type="button" class="fm-link" data-bmatch style="padding:0 6px;">Use '+money(Math.ceil(tot))+'</button>'; else mt.textContent = tot > 0 ? 'Covers your scheduled bills ('+money(tot)+') and rent you mark as paid.' : 'Rent and bills you pay come out of this.';
       const mb = mt.querySelector('[data-bmatch]'); if(mb) mb.addEventListener('click', async ()=>{ bills.budget = Math.ceil(tot); await spendSaveCats(); finSheetSkip = true; renderBudget(); finSheetSkip = false; const inp = body.querySelector('[data-bb="bills"]'); if(inp) inp.value = bills.budget; paint(); }); }
     const first = finSettings.lc.start === ym;
-    document.getElementById('budLc').innerHTML = '<div class="bd-lc-h"><span>Loose change</span><b class="'+(L.avail < 0 ? 'sum-over' : '')+'">'+signed(L.avail)+'</b></div>'+
+    document.getElementById('budLc').innerHTML = '<div class="bd-lc-h"><span>Loose change</span><b class="'+(L.avail < 0 ? 'sum-over' : '')+'">'+signed(L.avail)+' left</b></div>'+
+      '<div class="fc-bar" style="margin:2px 0 4px;"><div class="fc-fill" style="width:'+(L.cap > 0 ? Math.min(100, L.used/L.cap*100) : (L.used > 0 ? 100 : 0)).toFixed(1)+'%;background:'+((spendCatById('other') || {}).color || '#7C867F')+';"></div></div>'+
+      '<div class="stat-sub" id="budCap" style="margin:0 0 4px;">'+(L.used > 0 ? money(L.used)+' used' : 'Nothing used')+' of <b>'+money(Math.max(0, L.cap))+'</b> you have to draw on: leftovers and extra income from earlier months, plus income not in a budget this month.</div>'+
       (ym < L.start ? '<div class="stat-sub" style="margin:2px 0 6px;">Loose change starts counting from '+finMonthLabel(L.start)+'.</div>' : '')+
       '<div class="sum-row"><span class="sum-k">Brought forward</span><span class="sum-v">'+(first ? '<input type="number" inputmode="decimal" step="1" value="'+(finSettings.lc.open || '')+'" placeholder="0" data-lc-open aria-label="Brought forward">' : signed(L.carry))+'</span></div>'+
       '<div class="sum-row"><span class="sum-k">Income not in a budget</span><span class="sum-v">'+(L.unalloc < 0 ? '\u2212' : '+')+money(Math.abs(L.unalloc))+'</span></div>'+
@@ -6430,11 +6515,12 @@ function renderFinSpend(box){
   const fin2 = {}; finIn.forEach(i=>{ if(i.desc) fin2[i.desc] = (fin2[i.desc] || 0) + 1; }); finIncome.forEach(it=>{ if(it.name) fin2[it.name] = (fin2[it.name] || 0) + 1; });
   const topIn = Object.keys(fin2).sort((a,b)=> fin2[b]-fin2[a]).slice(0,8);
   const acctNow = finAccount(), mpNow = mp;
-  const accountHtml = '<div class="card lg-acct"><div class="lg-acct-top"><span class="stat-sub" style="margin:0;">Spending account</span><button type="button" class="w-link" data-sp-acct>'+(acctNow ? 'Update' : 'Set balance')+'</button></div>'+
-    '<div class="sp-big">'+(acctNow ? amt(acctNow.value) : '\u2014')+'</div>'+
-    '<div class="lg-io"><span>In <b>'+money(mpNow.incomeSoFar)+'</b></span><span>Out <b>'+money(mpNow.spentAll)+'</b></span><span>Loose change <b>'+(finLoose(ym).avail < 0 ? '\u2212' : '')+money(Math.abs(finLoose(ym).avail))+'</b></span><span class="stat-sub" style="margin:0;">'+(ym === todayStr().slice(0,7) ? 'this month' : 'in '+finMonthLabel(ym))+'</span></div>'+(acctNow ? '' : '<div class="stat-sub" style="margin:6px 0 0;">Type what the account shows and every payment in and out will keep it up to date.</div>')+'</div>';
-  h += accountHtml+'<div class="card"><div class="sum-head" style="margin-bottom:8px;"><h2 style="font-size:13px;margin:0;">Add</h2><div class="seg sp-dir"><button type="button" data-sp-dir="out" class="sel-home">Money out</button><button type="button" data-sp-dir="in">Money in</button></div></div><div class="sp-add"><input type="text" id="spAmt" inputmode="decimal" placeholder="\u00a3" style="width:84px;flex-shrink:0;"><select id="spPlace" aria-label="Where" style="flex:1;min-width:0;"></select><button type="button" class="btn small" id="spAddBtn">Add</button></div>'+
-    '<input type="text" id="spMer" placeholder="Where?" autocomplete="off" style="width:100%;margin-top:8px;" hidden></div>';
+  const lcAvail = finLoose(ym).avail, whole = n=> '\u00a3'+Math.round(Math.abs(n)).toLocaleString('en-GB');
+  const accountHtml = '<div class="card lg-acct"><div class="la-r1"><span class="la-l">Spending account</span><button type="button" class="pill" data-sp-acct>'+(acctNow ? 'Update' : 'Set balance')+'</button></div>'+
+    '<div class="la-r2"><b class="la-bal">'+(acctNow ? amt(acctNow.value) : '\u2014')+'</b><span class="la-io"><span>In <b>'+whole(mpNow.incomeSoFar)+'</b></span><span>Out <b>'+whole(mpNow.spentAll)+'</b></span><span>Loose change <b>'+(lcAvail < 0 ? '\u2212' : '')+whole(lcAvail)+'</b></span></span></div>'+
+    (ym !== todayStr().slice(0,7) ? '<div class="la-m">'+finMonthLabel(ym)+'</div>' : '')+(acctNow ? '' : '<div class="stat-sub" style="margin:4px 0 0;">Type what the account shows and every payment in and out keeps it up to date.</div>')+'</div>';
+  h += accountHtml+'<div class="card sp-addcard"><div class="sp-add1"><div class="seg sp-dir"><button type="button" data-sp-dir="out" class="sel-home" title="Money out" aria-label="Money out">\u2212</button><button type="button" data-sp-dir="in" title="Money in" aria-label="Money in">+</button></div><input type="text" id="spAmt" inputmode="decimal" placeholder="\u00a3" aria-label="Amount"><select id="spPlace" aria-label="Where"></select><button type="button" class="btn small" id="spAddBtn">Add</button></div>'+
+    '<input type="text" id="spMer" placeholder="Where?" autocomplete="off" style="width:100%;margin-top:6px;" hidden></div>';
   const ledgerCardHtml = '<div class="card" id="lgCard"><div class="sp-month" style="margin-bottom:6px;"><button type="button" class="chip-btn" data-sp-m="-1" aria-label="Earlier month">\u2039</button><b>'+label+'</b><button type="button" class="chip-btn" data-sp-m="1" aria-label="Later month">\u203a</button></div>'+
     '<div class="lg-tot"><span id="lgTot"></span><span class="stat-sub" id="lgSum" style="margin:0;"></span></div>'+
     (spendFilter ? '<div style="margin:0 0 6px;"><span class="chip-btn active" data-sp-filter-clear style="cursor:pointer;">'+escapeHtml((spendCatById(spendFilter) || {name:'To sort'}).name)+' \u00d7</span></div>' : '')+
@@ -6447,7 +6533,7 @@ function renderFinSpend(box){
   const rows = list.slice(0, 5);
   const oth = finOthersMap();
   const txnRow = t=> spendTxnRowHtml(t, oth);
-  h += '<div class="fm-chips"><button type="button" class="chip-btn" data-fin-budgets>Budgets</button><button type="button" class="chip-btn" data-fin-recur="dd">Bills</button><button type="button" class="chip-btn" data-fin-recur="income">Income</button></div>'+ledgerCardHtml+owedHtml;
+  h += '<div class="fm-pills"><button type="button" class="pill" data-fin-budgets>Budgets</button><button type="button" class="pill" data-fin-recur="dd">Bills</button><button type="button" class="pill" data-fin-recur="income">Income</button></div>'+ledgerCardHtml+owedHtml;
   box.innerHTML = h;
   finBindEditors(box);
   renderLedger();
@@ -6701,14 +6787,26 @@ async function autoClockOut(whenMs){
   if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
   return timeStr;
 }
+// would opening Connecteam at this moment clock you in? returns the answer and, if not, the plain reason
+function autoWorkVerdict(t){
+  const w = autoWork(), day = fmt(new Date(t)), timeStr = autoHM(t), e = calendarData[day];
+  if(Date.now() - t > 72*3600000) return {ok:false, short:'too old', why:'That signal was more than 3 days old, so it was ignored.'};
+  if(clockInState && (t - autoClockStart()) <= 16*3600000) return {ok:false, quiet:true, short:'already clocked in', why:'You are already clocked in (since '+clockInState.start+' on '+shortDate(clockInState.date)+').'};
+  const forgot = clockInState ? ' The forgotten clock-in from '+shortDate(clockInState.date)+' ('+clockInState.start+') would be closed with no finish time first.' : '';
+  if(timeStr < w.from || timeStr > w.to) return {ok:false, short:'outside '+w.from+'\u2013'+w.to, why:'It is '+timeStr+', outside the hours you set to clock in ('+w.from+'\u2013'+w.to+'). Change them in Work clock.'+forgot};
+  if(e && e.isAL) return {ok:false, short:'annual leave', why:'That day is marked as annual leave.'+forgot};
+  if(e && e.shift && e.shift.finish) return {ok:false, short:'that day already has a finish time', why:'That day already has a finish time ('+e.shift.finish+'), so it counts as done.'+forgot};
+  return {ok:true, why:'It would clock you in at '+timeStr+'.'+forgot};
+}
 async function autoWorkOpen(t){
   const w = autoWork(), day = fmt(new Date(t)), timeStr = autoHM(t), rec = {at:t, what:'opened', result:''};
-  const e = calendarData[day], stale = clockInState && (t - autoClockStart()) > 16*3600000;
-  if(Date.now() - t > 72*3600000) rec.result = 'ignored (too old)';
-  else if(clockInState) rec.result = stale ? 'ignored (an earlier clock-in is still running)' : 'already clocked in';
-  else if(timeStr < w.from || timeStr > w.to) rec.result = 'ignored (outside '+w.from+'\u2013'+w.to+')';
-  else if(e && e.isAL) rec.result = 'ignored (annual leave)';
-  else if(e && e.shift && e.shift.finish) rec.result = 'ignored (that day already has a finish time)';
+  let msg = null, note = '';
+  if(Date.now() - t <= 72*3600000 && clockInState && (t - autoClockStart()) > 16*3600000){
+    note = ' (The forgotten clock-in from '+shortDate(clockInState.date)+' was closed with no finish time.)';
+    await autoClockOut(t);                                   // an old clock-in nobody closed must not block today
+  }
+  const v = autoWorkVerdict(t);
+  if(!v.ok){ rec.result = v.quiet ? v.short : 'ignored ('+v.short+')'; if(!v.quiet) msg = 'Connecteam opened at '+timeStr+' but you were not clocked in: '+v.why.replace(/ Change them in Work clock\.$/, '').replace(/ The forgotten.*$/, '')+note; }
   else{
     if(!calendarData[day]) calendarData[day] = {status:'home', shift:{start:null, finish:null, breakMins:0, title:''}};
     const en = calendarData[day];
@@ -6718,10 +6816,10 @@ async function autoWorkOpen(t){
     await saveKey('clock-in-state', clockInState); await saveKey('calendar-data', calendarData);
     updateClockInBtn(); renderCalendarAll();
     if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
-    rec.result = 'clocked in';
+    rec.result = 'clocked in'; msg = 'Clocked in at '+timeStr+' (Connecteam).'+note;
   }
   autoMeta.lastWork = rec; await autoSaveMeta();
-  return rec.result === 'clocked in' ? 'Clocked in at '+timeStr+' (Connecteam).' : null;
+  return msg;
 }
 async function autoWorkClose(t){
   const w = autoWork(), rec = {at:t, what:'closed', result:''}; let msg = null;
@@ -6895,7 +6993,10 @@ function renderAutoSetup(){
         '<div class="sp-chips" style="margin-top:0;"><button type="button" class="chip-btn'+(w.mode === 'ask' ? ' active' : '')+'" data-work-mode="ask">Ask me first</button><button type="button" class="chip-btn'+(w.mode === 'auto' ? ' active' : '')+'" data-work-mode="auto">Clock out automatically</button></div>'+
         '<div class="fin-srow" style="margin-top:8px;"><span>Count a close after at least</span><span class="fin-step"><button type="button" data-work-h="-1">\u2212</button><b>'+w.minH+' h</b><button type="button" data-work-h="1">+</button></span></div>'+
         '<div class="fin-opts" style="margin:8px 0 4px;"><span class="stat-sub" style="margin:0;">Only clock in between</span><input type="time" id="workFrom" value="'+w.from+'"><input type="time" id="workTo" value="'+w.to+'"></div>'+
-        '<div class="stat-sub" style="margin:0;">Stops a quick look at the schedule on an evening off clocking you in.</div></div></details>'+
+        '<div class="stat-sub" style="margin:0;">Stops a quick look at the schedule on an evening off clocking you in.</div>'+
+        '<div class="set-label" style="margin:12px 0 2px;">Did it work?</div>'+
+        '<div class="stat-sub" style="margin:0 0 6px;">'+(autoMeta.lastWork && autoMeta.lastWork.what === 'opened' ? '<b>Last heard:</b> '+escapeHtml(when(autoMeta.lastWork.at)+', opened \u2192 '+autoMeta.lastWork.result) : ((autoMeta.seen || {})['work-open'] ? '<b>Last heard:</b> '+escapeHtml(when(autoMeta.seen['work-open'])) : '<b>Nothing heard yet</b> from the \u201cConnecteam opened\u201d Shortcut. If you have opened Connecteam on the work phone and this is still blank, the Shortcut is not reaching Home Base: press its \u25b6 once, then tap <b>Check for new signals</b>.'))+'</div>'+
+        '<div class="sp-btnrow"><button type="button" class="btn secondary small" id="workCheckBtn">Would it clock me in now?</button></div><div class="stat-sub" id="workCheckMsg" style="margin:6px 0 0;"></div></div></details>'+
       accOpen('Before you start', '', false, false, 'Two things the iPhone asks the first time')+
         '<ul class="auto-before"><li>Location ones: the first run asks to use your location. Say <b>Allow</b>, and in Settings \u2192 Privacy &amp; Security \u2192 Location Services \u2192 Shortcuts choose <b>Always</b> if it\u2019s offered.</li><li>The first run also asks to send data to <b>firestore.googleapis.com</b>. Choose <b>Always Allow</b>.</li><li>These use the same link as Apple Pay capture, so get that working first.</li></ul></div></details>'+
       accOpen('Latest activity', latest ? '' : 'Nothing yet', false, false, 'What Home Base last heard')+(latest || '<div class="stat-sub">Nothing has come through yet.</div>')+'</div></details>'+
@@ -6928,6 +7029,7 @@ function renderAutoSetup(){
   box.querySelectorAll('[data-work-mode]').forEach(b=> b.addEventListener('click', ()=> saveWork({mode:b.dataset.workMode})));
   box.querySelectorAll('[data-work-h]').forEach(b=> b.addEventListener('click', ()=> saveWork({minH:Math.max(1, Math.min(14, autoWork().minH + parseInt(b.dataset.workH, 10)))})));
   ['workFrom','workTo'].forEach(id=>{ const el = document.getElementById(id); if(el) el.addEventListener('change', ()=>{ if(el.value) saveWork(id === 'workFrom' ? {from:el.value} : {to:el.value}); }); });
+  { const wb = document.getElementById('workCheckBtn'); if(wb) wb.addEventListener('click', ()=>{ const v = autoWorkVerdict(Date.now()), m = document.getElementById('workCheckMsg'); if(m){ m.textContent = (v.ok ? '\u2713 ' : '\u2717 ')+v.why; m.style.color = v.ok ? 'var(--pos)' : 'var(--danger)'; } }); }
   document.getElementById('autoCopyUrlBtn').addEventListener('click', ()=> copyText(spendEndpoint(), 'URL'));
   document.getElementById('autoTestBtn').addEventListener('click', autoSendPing);
   box.querySelectorAll('[data-auto-url]').forEach(b=> b.addEventListener('click', ()=> copyText(spendEndpoint(), 'URL')));
@@ -8116,7 +8218,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v19.4';
+const APP_VERSION = 'v19.7';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
@@ -8124,6 +8226,7 @@ let gymAutoPick = true, gymHistOpen = null, gymBwAsked = '';
 let gymLog = [];     // {id, date, ex, w, r, wu}
 let gymCustom = [];  // {id, name, p:[muscle], s:[], kind}
 let gymTab = 'log', gymSelectedId = null, gymPeriod = 7, gymHistLimit = 12, gymDateTouched = false;
+let gymSess = null, gymTickT = null;                  // the session you have started, if any: {date, start}
 let gymBuiltIn = null;
 const gid = (id)=> document.getElementById(id);
 
@@ -8550,22 +8653,37 @@ function renderGymBw(){
   gid('gymBwSaveBtn').addEventListener('click', gymBwSaveHandler('gymBwInput'));
   gid('gymBwCard').style.order = gymBwDue() ? '-1' : '';          // month-end weigh-in sits on top until it's done
 }
-function renderGymLog(){
-  if(gymAutoPick){
-    gymAutoPick = false;
-    if(!gymSelectedId && !gid('gymSearchInput').value.trim()){
-      // prefer a recommended exercise you've lifted before, so there's a last-time note to beat
-      const recs = gymRecommend(gymDate());
-      const rec = recs.find(r=> gymSessions(r.ex.id, null).length) || recs[0];
-      let ex = rec ? rec.ex : null;
-      if(!ex && gymLog.length) ex = gymById(gymLog[gymLog.length-1].ex);
-      if(ex) gymSelectedId = ex.id;
-    }
+function gymSessUi(){
+  const on = !!gymSess;
+  gid('gymStartBtn').hidden = on; gid('gymLive').hidden = !on; gid('gymSearchWrap').hidden = !on; gid('gymDateInput').hidden = on;
+  const ex = gid('gymExerciseCard'); if(!on && ex) ex.style.display = 'none';
+  clearInterval(gymTickT);
+  if(on){
+    const tick = ()=>{ const el = gid('gymClock'); if(!el) return; const sec = Math.max(0, Math.floor((Date.now() - gymSess.start)/1000)); el.textContent = Math.floor(sec/3600)+':'+pad(Math.floor(sec%3600/60))+':'+pad(sec%60); };
+    tick(); gymTickT = setInterval(()=>{ if(document.getElementById('view-gym').classList.contains('active') && gymTab === 'log') tick(); }, 1000);
   }
+}
+function renderGymLog(){
+  gymAutoPick = false;                                   // nothing opens by itself: you pick what you are doing
+  if(!gymSess) gymSelectedId = null;
   renderGymResults();
   renderGymExercise();
   renderGymSession();
   renderGymBw();
+  gymSessUi();
+}
+async function gymStartSession(){
+  gymSess = {date:gymDate(), start:Date.now()}; gymSelectedId = null; gid('gymSearchInput').value = '';
+  await saveKey('gym-sess', gymSess); renderGymLog(); gid('gymSearchInput').focus();
+}
+async function gymEndSession(){
+  const s0 = gymSess; gymSess = null; gymSelectedId = null; gymDateTouched = false; gid('gymSearchInput').value = '';
+  await saveKey('gym-sess', null);
+  if(s0){
+    const n = gymLog.filter(l=> !l.wu && l.date === s0.date && (gymSetTime(l) || 0) >= s0.start - 1000).length, mins = Math.max(1, Math.round((Date.now() - s0.start)/60000));
+    showToast(n ? 'Session saved: '+n+' set'+(n === 1 ? '' : 's')+', '+mins+' min.' : 'Session ended, no sets logged.');
+  }
+  renderGym();
 }
 
 // ----- body map UI (3D with SVG fallback) + daily load -----
@@ -8880,7 +8998,7 @@ function renderGymHistory(){
 
 // ----- shell -----
 function renderGym(){
-  if(!gymDateTouched){ const el = gid('gymDateInput'); if(el) el.value = todayStr(); }
+  { const el = gid('gymDateInput'); if(el){ if(gymSess) el.value = gymSess.date; else if(!gymDateTouched) el.value = todayStr(); } }
   document.querySelectorAll('#gymTabRow [data-gym-tab]').forEach(b=> b.classList.toggle('active', b.dataset.gymTab===gymTab));
   gid('gymLogPane').style.display = gymTab==='log' ? '' : 'none';
   gid('gymMusclesPane').style.display = gymTab==='muscles' ? '' : 'none';
@@ -8891,6 +9009,8 @@ function renderGym(){
 }
 function setupGym(){
   gid('gymDateInput').value = todayStr();
+  gid('gymStartBtn').addEventListener('click', gymStartSession);
+  gid('gymEndBtn').addEventListener('click', gymEndSession);
   document.querySelectorAll('#gymTabRow [data-gym-tab]').forEach(b=>{
     b.addEventListener('click', ()=>{ gymTab = b.dataset.gymTab; renderGym(); });
   });
