@@ -1273,6 +1273,44 @@ body.dark .pill{color:#0F1B2E;}
 .w.n.has-s{flex-wrap:wrap;align-content:center;row-gap:0;}
 .w.n.has-s .n-s{flex:0 0 100%;order:3;margin-top:0;}
 #gymDateInput{width:138px;min-height:44px;padding:0 8px;flex:none;}
+
+/* ---------- tappable notifications ---------- */
+.notif-toast.tap{cursor:pointer;pointer-events:auto;padding-right:34px;}
+.notif-toast .nt-chev{position:absolute;right:13px;top:50%;width:7px;height:7px;margin-top:-5px;border-right:2px solid currentColor;border-top:2px solid currentColor;transform:rotate(45deg);opacity:.8;}
+
+.pf-sub{display:flex;align-items:baseline;justify-content:space-between;margin:12px 4px 5px;font-size:12px;font-weight:700;color:var(--ink-soft);}
+.pf-sub b{color:var(--ink);font-size:13px;font-weight:800;letter-spacing:-.01em;}
+
+/* ---------- tabs you can swipe; Trends that fills the phone ---------- */
+.tabs-s{display:flex;gap:0;margin:0 0 8px;background:var(--surface-2);border-radius:12px;}
+.tabs-s.scroll{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.tabs-s.scroll::-webkit-scrollbar{display:none;}
+.tab-s{position:relative;flex:1 0 auto;min-height:44px;padding:0 14px;background:none;border:0;color:var(--ink-soft);font-size:12px;font-weight:600;white-space:nowrap;}
+.tab-s::before{content:'';position:absolute;left:3px;right:3px;top:5px;bottom:5px;border-radius:9px;background:transparent;transition:background .18s ease, box-shadow .18s ease;}
+.tab-s span{position:relative;z-index:1;}
+.tab-s.active{color:var(--ink);font-weight:700;}
+.tab-s.active::before{background:var(--surface);box-shadow:0 1px 3px rgba(14,21,35,.16);}
+@keyframes tabInL{from{opacity:0;transform:translateX(26px);}to{opacity:1;transform:none;}}
+@keyframes tabInR{from{opacity:0;transform:translateX(-26px);}to{opacity:1;transform:none;}}
+.tab-in-l{animation:tabInL .2s ease both;}
+.tab-in-r{animation:tabInR .2s ease both;}
+body[data-view="trends"] #app{display:flex;flex-direction:column;}
+body[data-view="trends"] .top{flex:none;}
+body[data-view="trends"] #view-trends.active{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding-bottom:6px;}
+#trendsBody{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;}
+#trendsBody .tr{flex:1 1 auto;display:flex;flex-direction:column;min-height:300px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 14px 14px;margin:0;}
+#trendsBody .tr-h{min-height:34px;font-size:13px;color:var(--ink-soft);font-weight:700;}
+.tr-head{flex-direction:column;align-items:flex-start;gap:0;margin:2px 0 10px;}
+.tr-head b{font-size:36px;line-height:1.05;}
+.tr-head span{font-size:12px;margin-top:2px;}
+.tr-bars{flex:1 1 auto;min-height:170px;align-items:stretch;background:repeating-linear-gradient(to bottom, transparent 0, transparent calc(25% - 1px), var(--line) calc(25% - 1px), var(--line) 25%);background-position:0 18px;}
+.tr-col{justify-content:flex-end;}
+.tr-plot{flex:1 1 auto;height:auto;min-height:100px;}
+.tr-bar{max-width:34px;}
+.tr-stats{margin-top:12px;gap:8px;}
+.tr-stats div{background:var(--surface-2);border-radius:10px;padding:8px 10px;}
+.tr-none{margin:auto 0;text-align:center;padding:20px 8px;}
+#trendsBody .tr-pie{flex:1 1 auto;justify-content:flex-start;}
 </style>
 </head>
 <body data-view="calendar">
@@ -1526,13 +1564,10 @@ body.dark .pill{color:#0F1B2E;}
 
   <!-- GYM -->
   <div class="view" id="view-gym">
-    <div class="card">
-      <h2 style="font-size:13px;">Gym</h2>
-      <div class="chip-row" id="gymTabRow" style="margin-top:8px;">
-        <button type="button" class="chip-btn active" data-gym-tab="log">Log</button>
-        <button type="button" class="chip-btn" data-gym-tab="muscles">Muscles</button>
-        <button type="button" class="chip-btn" data-gym-tab="history">History</button>
-      </div>
+    <div class="tabs-s" id="gymTabRow">
+      <button type="button" class="tab-s active" data-gym-tab="log"><span>Log</span></button>
+      <button type="button" class="tab-s" data-gym-tab="muscles"><span>Muscles</span></button>
+      <button type="button" class="tab-s" data-gym-tab="history"><span>History</span></button>
     </div>
     <div id="gymLogPane">
       <div class="card gym-top">
@@ -1634,9 +1669,10 @@ body.dark .pill{color:#0F1B2E;}
 <div class="set-label">Van</div>
 <div class="card">
       <h2 style="font-size:13px;">Van mileage</h2>
-      <div class="stat-sub" style="margin-bottom:8px;">New trips are added on top so you can compare with the dashboard.</div>
       <label class="mini-label">Odometer reading (miles)</label>
       <input type="number" id="vanOdoInput" inputmode="decimal" min="0" step="1" placeholder="e.g. 48250">
+      <label class="mini-label" for="vanOdoDate" style="margin-top:8px;">Reading taken on</label>
+      <input type="date" id="vanOdoDate">
       <button class="btn block" id="vanOdoSaveBtn" style="margin-top:10px;">Save reading</button>
       <div class="stat-sub" id="vanOdoInfo" style="margin-top:8px;"></div>
     </div>
@@ -1644,7 +1680,7 @@ body.dark .pill{color:#0F1B2E;}
 <div class="set-page" id="setPage-gym" data-set="gym" hidden>
 <div class="set-head"><button type="button" class="chip-btn" data-set-back>&lsaquo; Settings</button><h2>Gym targets</h2></div>
 <div class="card">
-  <div class="stat-sub" style="margin:0 0 4px;">How many sets a week each muscle should get. The percentages, the body map and &ldquo;next session&rdquo; all use these.</div>
+  <div class="stat-sub" style="margin:0 0 4px;">Weekly sets for each muscle.</div>
   <div id="gymTargetsBody"></div>
 </div>
 </div>
@@ -1669,7 +1705,7 @@ body.dark .pill{color:#0F1B2E;}
 <div class="set-label">Sync</div>
 <div class="card">
       <h2 style="font-size:13px;">Sync across devices</h2>
-      <div class="stat-sub" style="margin-bottom:8px;">Connect both phones to the same Firebase project and they'll stay in sync automatically. <span id="syncStatus">Not connected</span>.</div>
+      <div class="stat-sub" style="margin-bottom:8px;">Keeps your phones in sync. <span id="syncStatus">Not connected</span>.</div>
       <textarea id="syncConfigInput" placeholder="Paste your firebaseConfig object here" style="min-height:90px;font-family:monospace;font-size:11px;"></textarea>
       <button class="btn block" id="syncConnectBtn" style="margin-top:8px;">Connect</button>
       <button class="btn secondary block" id="syncDisconnectBtn" style="margin-top:8px;display:none;">Disconnect</button>
@@ -1883,15 +1919,24 @@ async function enforceTagScheme(){
   }
   if(changed) await saveKey('tag-defs', tagDefs);
 }
+// a saved value that is empty, or not the kind of thing the app expects (a list where there should be a setting, say), is treated as nothing saved
+function fitSaved(v, fallback){
+  if(v == null) return fallback;
+  if(Array.isArray(fallback)) return Array.isArray(v) ? v : fallback;
+  if(fallback && typeof fallback === 'object') return (v && typeof v === 'object' && !Array.isArray(v)) ? v : fallback;
+  if(fallback !== null && fallback !== undefined && typeof v !== typeof fallback) return fallback;
+  return v;
+}
 async function loadKey(key, fallback){
   try{
     if(hasClaudeStorage()){
       const res = await window.storage.get(key, false);
-      if(res && res.value!==undefined) return JSON.parse(res.value);
+      if(res && res.value!==undefined) return fitSaved(JSON.parse(res.value), fallback);
       return fallback;
     }
     const raw = localStorage.getItem('homebase:'+key);
-    return raw!==null ? JSON.parse(raw) : fallback;
+    if(raw === null) return fallback;
+    return fitSaved(JSON.parse(raw), fallback);
   }catch(e){ return fallback; }
 }
 async function saveKey(key, value, attempt){
@@ -2333,6 +2378,7 @@ async function init(){
     }
   });
   if(needsResave) await saveKey('todos', todos);
+  try{
   darkModeOn = await loadKey('dark-mode', false);
   hideMoney = !!(await loadKey('hide-money', false));
   updateEyeBtn(); if(hideMoney) maskAllMoney();
@@ -2346,7 +2392,7 @@ async function init(){
   gymTargets = await loadKey('gym-targets', {}); applyGymTargets();
   spendTxns = await loadKey('spend-txns', []);
   finIn = await loadKey('fin-in', []);
-  spendCats = await loadKey('spend-cats', null);
+  spendCats = await loadKey('spend-cats', null); if(!Array.isArray(spendCats)) spendCats = null;
   spendRules = await loadKey('spend-rules', {});
   spendMeta = Object.assign({secret:'', seen:[], last:null}, await loadKey('spend-meta', {}));
   finHoldings = await loadKey('fin-holdings', []);
@@ -2360,8 +2406,9 @@ async function init(){
   autoMeta = Object.assign({home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, await loadKey('auto-meta', {}));
   mileageDrafts = await loadKey('mileage-drafts', []);
   sleepLog = await loadKey('sleep-log', []);
-  await spendMigrate();
-  await spendMigrate3();
+  try{ await spendMigrate(); }catch(e){ console.error('Category tidy-up skipped:', e); }
+  try{ await spendMigrate3(); }catch(e){ console.error('Category tidy-up skipped:', e); }
+  }catch(err){ console.error('Some saved data could not be read, carrying on:', err); }
   setTimeout(()=>{ if(finHoldings.some(h=> h.recur)) finApplyRecurring(); }, 2500);
   syncAuth = await loadKey('sync-auth', null);
   Object.assign(geoCache, await loadKey('geocache', {}));
@@ -2373,23 +2420,23 @@ async function init(){
   normalizeRange();
   updateYearToggleLabel(now.getFullYear());
 
-  setupTabs();
-  setupCalendarToolbar();
-  setupInfiniteScroll();
-  setupDayModal();
-  setupSheet();
-  setupTasksTab();
-  setupToilPayouts();
-  setupRentActions();
-  setupShiftHistory();
-  setupSearch();
-  setupSettings();
-  setupMileage();
-  setupMileageExtras();
-  setupGym();
-  setupExpenses();
-  setupTravel();
-  setupSync();
+  safeStep(setupTabs);
+  safeStep(setupCalendarToolbar);
+  safeStep(setupInfiniteScroll);
+  safeStep(setupDayModal);
+  safeStep(setupSheet);
+  safeStep(setupTasksTab);
+  safeStep(setupToilPayouts);
+  safeStep(setupRentActions);
+  safeStep(setupShiftHistory);
+  safeStep(setupSearch);
+  safeStep(setupSettings);
+  safeStep(setupMileage);
+  safeStep(setupMileageExtras);
+  safeStep(setupGym);
+  safeStep(setupExpenses);
+  safeStep(setupTravel);
+  safeStep(setupSync);
 
   renderCalendarAll();
   renderRentTab();
@@ -2407,6 +2454,7 @@ async function init(){
   setTimeout(maybeAskBodyweight, 2200);
 }
 
+function safeStep(fn){ try{ return fn(); }catch(e){ console.error('Start-up step failed, carrying on:', e); } }
 function normalizeRange(){
   while(rangeStartYM.m < 0){ rangeStartYM.m += 12; rangeStartYM.y--; }
   while(rangeStartYM.m > 11){ rangeStartYM.m -= 12; rangeStartYM.y++; }
@@ -2965,7 +3013,7 @@ function expenseRow(e, isDone){
 function openExpensesSheet(start){
   openListSheet({kind:'expenses', title:'All expenses', placeholder:'Search a note, amount or month', startFilter:start || 'all',
     filters:[{id:'all', label:'All'}, {id:'pending', label:'To claim', fn:e=> !e.done}, {id:'done', label:'Claimed', fn:e=> e.done}],
-    items:()=> expenses.slice().sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id),
+    items:()=> expenses.slice().sort((a,b)=> (b.date || '').localeCompare(a.date || '') || b.id-a.id),
     text:e=> (e.note || '')+' '+e.amount.toFixed(2)+' '+shortDate(e.date)+' '+finMonthLabel(e.date.slice(0,7)),
     group:e=> ({key:e.date.slice(0,7), label:finMonthLabel(e.date.slice(0,7))}),
     groupMeta:list=> money(list.reduce((a,e)=> a + e.amount, 0))+'\u2003'+list.length,
@@ -2978,8 +3026,8 @@ function renderExpensesTab(){
   const doneList = document.getElementById('list-expenses-done');
   pendingList.innerHTML = '';
   doneList.innerHTML = '';
-  const pending = expenses.filter(e=>!e.done).sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id);
-  const done = expenses.filter(e=>e.done).sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id);
+  const pending = expenses.filter(e=>!e.done).sort((a,b)=> (b.date || '').localeCompare(a.date || '') || b.id-a.id);
+  const done = expenses.filter(e=>e.done).sort((a,b)=> (b.date || '').localeCompare(a.date || '') || b.id-a.id);
   if(pending.length===0){ pendingList.innerHTML = '<div class="empty">Nothing to claim right now.</div>'; }
   pending.slice(0, 4).forEach(e=> pendingList.appendChild(expenseRow(e, false)));
   if(pending.length > 1){
@@ -3366,6 +3414,7 @@ function computeVanOdometer(){
   return {estimate: vanOdometer.reading + added, added};
 }
 function renderVanOdo(){
+  { const de = document.getElementById('vanOdoDate'); if(de){ de.max = todayStr(); if(!de.value) de.value = todayStr(); } }
   const v = computeVanOdometer();
   const box = document.getElementById('vanOdoBox');
   const info = document.getElementById('vanOdoInfo');
@@ -3392,19 +3441,22 @@ async function saveVanOdometer(){
   const input = document.getElementById('vanOdoInput');
   const val = parseFloat(input.value);
   if(isNaN(val) || val < 0){ showToast("Enter the van's odometer reading."); return; }
+  const dEl = document.getElementById('vanOdoDate'), day = (dEl && dEl.value) || todayStr();
+  if(day > todayStr()){ showToast('That date is in the future.'); return; }
+  const isToday = day === todayStr();
   const prev = computeVanOdometer();
   let lastCheck = null;
-  let msg = 'Van odometer set to '+fmtMi(val)+' mi.';
-  if(prev){
+  let msg = 'Van odometer set to '+fmtMi(val)+' mi'+(isToday ? '.' : ' on '+shortDate(day)+'; trips since then are added.');
+  if(prev && isToday){
     const diff = val - prev.estimate;
     lastCheck = {date: todayStr(), estimated: prev.estimate, actual: val, diff};
     if(Math.abs(diff) < 0.5) msg = 'Spot on \u2014 tracker matched the van.';
     else if(diff > 0) msg = 'Van is '+fmtMi(diff)+' mi ahead of the tracker. Reading updated.';
     else msg = 'Tracker is '+fmtMi(-diff)+' mi ahead of the van. Reading updated.';
   }
-  vanOdometer = {reading: val, setDate: todayStr(), setAt: Date.now(), lastCheck};
+  vanOdometer = {reading: val, setDate: day, setAt: isToday ? Date.now() : 0, lastCheck};
   await saveKey('van-odometer', vanOdometer);
-  input.value = '';
+  input.value = ''; if(dEl) dEl.value = todayStr();
   renderVanOdo();
   showToast(msg);
 }
@@ -3604,7 +3656,7 @@ function renderMileageTab(){
   list.innerHTML = '';
   if(mileageTrips.length===0){ empty.style.display = 'block'; return; }
   empty.style.display = 'none';
-  const sortedTrips = mileageTrips.slice().sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id);
+  const sortedTrips = mileageTrips.slice().sort((a,b)=> (b.date || '').localeCompare(a.date || '') || b.id-a.id);
   sortedTrips.slice(0, 4).forEach(t=> list.appendChild(tripRowEl(t)));
   document.getElementById('mileageTripMore').innerHTML = sortedTrips.length ? (sortedTrips.length > 4 ? vaBtn('trips', 'View all '+sortedTrips.length+' trips') : '') : '';
   document.querySelectorAll('#mileageTripMore [data-va]').forEach(b=> b.addEventListener('click', openTripsSheet));
@@ -3633,7 +3685,7 @@ function tripRowEl(t){
 function openTripsSheet(){
   openListSheet({kind:'trips', title:'All trips', placeholder:'Search a place, date or Business',
     filters:[{id:'all', label:'All'}, {id:'business', label:'Business', fn:t=> t.category === 'business'}, {id:'personal', label:'Personal', fn:t=> t.category !== 'business'}],
-    items:()=> mileageTrips.slice().sort((a,b)=> b.date.localeCompare(a.date) || b.id-a.id),
+    items:()=> mileageTrips.slice().sort((a,b)=> (b.date || '').localeCompare(a.date || '') || b.id-a.id),
     text:t=> [t.from].concat(t.stops || [], [t.to]).map(x=> mileageShortPlace(x)+' '+mileageCleanAddr(x)).join(' ')+' '+t.category+' '+shortDate(t.date)+' '+finMonthLabel(t.date.slice(0,7))+' '+t.miles,
     group:t=> ({key:t.date.slice(0,7), label:finMonthLabel(t.date.slice(0,7))}),
     groupMeta:list=> fmtMi(list.reduce((a,t)=> a + t.miles, 0), 1)+' mi\u2003'+list.length,
@@ -5051,10 +5103,14 @@ async function spendMigrate(){
 // one-off: payments that were all dumped in Loose change get filed properly (Loose change is now money you set aside, not a bin)
 async function spendMigrate3(){
   if(spendMeta.catV >= 3) return;
-  Object.keys(spendRules).forEach(k=>{ if(spendRules[k] === 'other') delete spendRules[k]; });
-  spendTxns.forEach(t=>{ if(!t.cat || t.cat === 'other') t.cat = spendGuess(t.merchant); });
+  try{
+    if(!spendRules || typeof spendRules !== 'object') spendRules = {};
+    if(!Array.isArray(spendTxns)) spendTxns = [];
+    Object.keys(spendRules).forEach(k=>{ if(spendRules[k] === 'other') delete spendRules[k]; });
+    spendTxns.forEach(t=>{ try{ if(t && (!t.cat || t.cat === 'other')) t.cat = spendGuess(String(t.merchant == null ? '' : t.merchant)); }catch(e){} });
+  }catch(e){ console.error('Tidy-up of payment categories skipped:', e); }
   spendMeta.catV = 3;
-  await saveKey('spend-txns', spendTxns); await saveKey('spend-rules', spendRules); await saveKey('spend-meta', spendMeta);
+  try{ await saveKey('spend-txns', spendTxns); await saveKey('spend-rules', spendRules); await saveKey('spend-meta', spendMeta); }catch(e){}
 }
 function spendParseAmount(a){
   const n = parseFloat(String(a==null ? '' : a).replace(/[^0-9.\-]/g,''));
@@ -5153,11 +5209,12 @@ async function importInbox(){
     const evMsgs = [];
     if(evs.length){
       evs.sort((a,b)=> (autoParseTime(a.d) || 0) - (autoParseTime(b.d) || 0));
-      for(const ev of evs){ try{ const msg = await autoHandleEvent(ev); if(msg) evMsgs.push(msg); }catch(e){ console.error('signal failed', e); } }
+      let evGo = null; const EV_GO = {'away':'calendar', 'trip-start':'mileage', 'trip-end':'mileage', 'sleep-off':'sleep', 'work-open':'summary', 'work-close':'summary'};
+      for(const ev of evs){ try{ const msg = await autoHandleEvent(ev); if(msg){ evMsgs.push(msg); if(!evGo) evGo = EV_GO[String(ev.m).slice(3).trim().toLowerCase()] || null; } }catch(e){ console.error('signal failed', e); } }
       if(document.getElementById('view-settings').classList.contains('active')) renderAutoSetup();
       if(document.getElementById('view-mileage').classList.contains('active')) renderMileageTab();
       if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
-      if(evMsgs.length) showToast(evMsgs.join(' '));
+      if(evMsgs.length){ const goEv = evGo && (evGo === 'sleep' ? ()=>{ trendsTab = 'sleep'; goToView('trends'); } : evGo); showToast(evMsgs.join(' '), goEv || undefined); }
     }
     if(spendMeta.seen.length > 300) spendMeta.seen = spendMeta.seen.slice(-300);
     if(added || bizAdded || emptyTaps || sawTest || evs.length){
@@ -5171,7 +5228,7 @@ async function importInbox(){
       const parts = [];
       if(added) parts.push(added+' payment'+(added === 1 ? '' : 's'));
       if(bizAdded) parts.push(bizAdded+' business expense'+(bizAdded === 1 ? '' : 's'));
-      if(parts.length) showToast(parts.join(' and ')+' added from Apple Pay.');
+      if(parts.length) showToast(parts.join(' and ')+' added from Apple Pay.', added ? 'budget:spend' : 'expenses');
       else if(emptyTaps) showToast('A tap arrived with no details \u2014 the Shortcut isn\u2019t passing them in yet (Settings \u2192 Apple Pay capture).');
       else if(sawTest) showToast('Test received \u2014 Apple Pay capture works.');
     }
@@ -5246,20 +5303,20 @@ function renderApplePaySetup(){
   box.innerHTML =
     '<div class="sum-row" style="padding-top:0;"><span class="sum-k">Latest tap</span><span class="sum-v">'+lastTxt+'</span></div>'+
     (spendMeta.lastRaw ? '<div class="stat-sub" style="margin:0 0 6px;word-break:break-word;">Received: amount \u201c'+escapeHtml(spendMeta.lastRaw.a)+'\u201d\u2003shop \u201c'+escapeHtml(spendMeta.lastRaw.m)+'\u201d\u2003card \u201c'+escapeHtml(spendMeta.lastRaw.c)+'\u201d</div>' : '')+
-    (l && l.empty ? '<div class="stat-sub sum-over" style="margin:0 0 6px;">The Shortcut sent blank details. In the automation, the blue pills in the Text must be Amount, Merchant and Card \u2014 not just \u201cShortcut Input\u201d.</div>' : '')+
+    (l && l.empty ? '<div class="stat-sub sum-over" style="margin:0 0 6px;">Blank details: the Text\u2019s blue pills must be Amount, Merchant and Card, not just Shortcut Input.</div>' : '')+
     '<div class="acc-list">'+accOpen('Cards', cards.length ? cards.length+' card'+(cards.length === 1 ? '' : 's') : 'None yet', cards.length > 0, false, 'Which cards go to Expenses and which to Finance')+cardRows+
     '<div class="fin-opts" style="margin:6px 0 10px;"><span class="stat-sub" style="margin:0;">Business if the card name has</span><input type="text" id="apBiz" value="'+escapeHtml(spendMeta.bizWords === undefined ? 'aqua' : spendMeta.bizWords)+'" style="width:120px;" autocomplete="off" autocapitalize="none"></div></div></details>'+
     accOpen('Set up the Shortcut', (spendMeta.last && !spendMeta.last.empty) ? '\u2713 Working' : 'Start here', !!(spendMeta.last && !spendMeta.last.empty), false, 'On the phone you pay with')+'<ol class="sp-steps">'+
-      '<li><b>Firebase \u2192 Firestore \u2192 Rules.</b> Paste these over what\u2019s there and tap Publish.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="rulesOpen">Copy rules (open)</button><button type="button" class="btn secondary small" data-ap-copy="rulesLocked">Copy rules (locked)</button></div></li>'+
-      '<li>On the phone you pay with: Shortcuts \u2192 <b>Automation</b> tab \u2192 <b>+</b> \u2192 search <b>Wallet</b> and choose <b>When any card is tapped</b> (older iPhones call it <b>Transaction</b>). Pick your cards. Choose <b>Run Immediately</b>, turn <b>Notify When Run</b> off, tap <b>Next</b>, then <b>New Blank Automation</b>. It needs iOS 17 or later and Wallet allowed mobile data (Settings \u2192 Apps \u2192 Wallet).</li>'+
-      '<li>Tap <b>Add Action</b>, search <b>Text</b> and add it. Paste this in.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="body">Copy text</button></div></li>'+
-      '<li>Turn the capital words into blue pills. Tap the word, delete it, tap <b>Shortcut Input</b> in the bar above the keyboard, tap the blue pill that appears, and choose <b>Amount</b>. Do the same for MERCHANT \u2192 <b>Merchant</b> and CARD \u2192 <b>Card</b>. For DATE use <b>Current Date</b> instead: tap its pill, <b>Date Format</b>, <b>ISO 8601</b>.</li>'+
-      '<li>Add <b>Get Contents of URL</b>. Paste the URL, tap the small arrow to expand it, set <b>Method</b> to <b>POST</b>, add a header <b>Content-Type</b> = <b>application/json</b>, and set <b>Request Body</b> to <b>File</b> and choose the <b>Text</b>.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="url">Copy URL</button></div></li>'+
-      '<li>Tap <b>Done</b>, then make a small real tap. The first time, the iPhone asks to send data to firestore.googleapis.com: choose <b>Always Allow</b>. Don\u2019t test with \u25b6, because with no real payment behind it the details come through blank.</li>'+
+      '<li><b>Firebase \u2192 Firestore \u2192 Rules:</b> paste over what\u2019s there, Publish.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="rulesOpen">Copy rules (open)</button><button type="button" class="btn secondary small" data-ap-copy="rulesLocked">Copy rules (locked)</button></div></li>'+
+      '<li>On the phone you pay with: Shortcuts \u2192 <b>Automation</b> \u2192 <b>+</b> \u2192 <b>Wallet</b> \u2192 <b>When any card is tapped</b> (older: <b>Transaction</b>). Pick your cards. <b>Run Immediately</b>, <b>Notify When Run</b> off, <b>Next</b>, <b>New Blank Automation</b>. Needs iOS 17+ and Wallet allowed mobile data.</li>'+
+      '<li>Add <b>Text</b> and paste:<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="body">Copy text</button></div></li>'+
+      '<li>Turn the capital words into blue pills: tap the word, delete it, pick <b>Shortcut Input</b>, tap the pill and choose <b>Amount</b> / <b>Merchant</b> / <b>Card</b>. DATE \u2192 <b>Current Date</b> \u203a <b>ISO 8601</b>.</li>'+
+      '<li>Add <b>Get Contents of URL</b>: paste the URL, <b>POST</b>, header <b>Content-Type</b> = <b>application/json</b>, <b>Request Body</b> = <b>File</b> \u2192 the Text.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-ap-copy="url">Copy URL</button></div></li>'+
+      '<li><b>Done</b>, then make a small real tap and choose <b>Always Allow</b> when asked. Don\u2019t test with \u25b6: it sends blank details.</li>'+
       '<li>Check it end to end.<div class="sp-btnrow"><button type="button" class="btn small" id="apTestBtn">Send test</button><button type="button" class="btn secondary small" id="apCheckBtn">Check inbox</button></div></li>'+
     '</ol></div></details>'+
     accOpen('Lock it down', authOn ? '\u2713 On' : (syncNeedsSignIn ? 'Sign in needed' : 'Recommended'), authOn, authOn || syncNeedsSignIn, 'Add a sign-in so only you can use your data')+
-      '<div class="stat-sub" style="margin:6px 0;">Firebase \u2192 Authentication \u2192 enable Email/Password \u2192 add yourself. Sign in here, then use the locked rules.</div>'+
+      '<div class="stat-sub" style="margin:6px 0;">Firebase \u2192 Authentication \u2192 Email/Password \u2192 add yourself, sign in here, use the locked rules.</div>'+
       '<input type="email" id="spAuthEmail" placeholder="Email" autocomplete="username" value="'+escapeHtml(authOn ? syncAuth.email : '')+'" style="margin-bottom:6px;">'+
       '<input type="password" id="spAuthPw" placeholder="Password" autocomplete="current-password" style="margin-bottom:6px;">'+
       '<button type="button" class="btn small" id="spAuthBtn">Sign in</button>'+
@@ -5581,7 +5638,7 @@ function finLooseCarry(ym){
   });
   return finR2(carry);
 }
-function finLoose(ym){ finLcInit(); const r = finLooseMonth(ym, finLooseCarry(ym)); r.start = finSettings.lc.start; return r; }
+function finLoose(ym){ finLcInit(); const r = finLooseMonth(ym, finLooseCarry(ym)); r.start = finSettings.lc.start; r.before = ym < r.start; return r; }
 
 function finInvScheduled(ym){
   let t = 0;
@@ -5625,7 +5682,7 @@ function finAccount(){
 function finOpenAcctSheet(){
   openSheet('Spending account');
   const a = finAccount(), body = document.getElementById('sheetBody');
-  body.innerHTML = '<div class="stat-sub" style="margin:0 0 10px;">Type what the account shows right now. From then on your income, bills and spending move it automatically \u2014 re-enter it any time to tidy up.</div>'+
+  body.innerHTML = '<div class="stat-sub" style="margin:0 0 10px;">Type what the account shows. Your income, bills and spending then move it.</div>'+
     '<label class="ff"><span>Balance now (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" id="acctBal" value="'+(a ? a.value : '')+'"></label>'+
     (a ? '<div class="stat-sub" style="margin:8px 0 0;">Since '+niceDate(a.since)+': in '+money(a.inn)+', out '+money(a.out)+'.</div>' : '')+
     '<div class="fin-edit-row" style="margin-top:12px;"><button type="button" class="btn small" id="acctSave">Save</button>'+(a ? '<button type="button" class="btn secondary small" id="acctClear">Remove</button>' : '')+'</div>';
@@ -5677,7 +5734,7 @@ function renderFinDashboard(box){
       '<div class="fs-acct"><span>In the account</span><b>'+(acct ? money(acct.value) : '\u2014')+'</b></div></div>'+
     (hasB ? '<div class="sp-bar thin"><div class="sp-fill'+(pctB > 1 ? ' over' : (pctB > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pctB*100)+'%"></div></div>' : '')+
     finCatLines(mp, lcState)+
-    '<div class="fs-foot"><span class="stat-sub" style="margin:0;">'+(hasB ? (leftB >= 0 ? money(leftB)+' left in budgets' : '<b class="sum-over">'+money(-leftB)+' over budgets</b>') : 'No budgets set yet')+'\u2003loose change '+(lcv < 0 ? '\u2212' : '')+money(Math.abs(lcv))+'</span><button type="button" class="fm-link" data-fin-budgets>Budgets</button></div></div>';
+    '<div class="fs-foot"><span class="stat-sub" style="margin:0;">'+(hasB ? (leftB >= 0 ? money(leftB)+' left in budgets' : '<b class="sum-over">'+money(-leftB)+' over budgets</b>') : 'No budgets set yet')+(lcState.before ? '' : '\u2003loose change '+(lcv < 0 ? '\u2212' : '')+money(Math.abs(lcv)))+'</span><button type="button" class="fm-link" data-fin-budgets>Budgets</button></div></div>';
   const owedNow = finOwedUnpaid(), people = new Set();
   finOwed.forEach(o=> o.people.forEach(p=>{ if(!p.paid) people.add(p.name); }));
   if(owedNow > 0) h += '<button type="button" class="fm-row" data-fin-owed><span>Owed to you</span><b>'+money(owedNow)+'</b><span class="stat-sub" style="margin:0;">'+people.size+' '+(people.size === 1 ? 'person' : 'people')+' \u203a</span></button>';
@@ -5710,9 +5767,10 @@ function finCatLines(mp, L){
     const e = L.env.find(x=> x.c.id === c.id); if(e) rows.push({c, S:e.S, L:e.L});
   });
   if(!cats.some(c=> c.id === 'investing') && (mp.invested > 0 || mp.invActual > 0)) rows.push({c:{id:'investing', name:'Investing', color:'#3E8E8E'}, S:mp.invActual, L:mp.invested});
-  const oc = cats.find(c=> c.id === 'other'); if(oc) rows.push({c:oc, S:L.used, L:Math.max(0, L.cap), lc:true, left:L.avail});
+  const oc = cats.find(c=> c.id === 'other'); if(oc) rows.push({c:oc, S:L.used, L:Math.max(0, L.cap), lc:true, left:L.avail, pre:L.before, startLabel:finMonthLabel(L.start).split(' ')[0]});
   const tot = mp.spentAll > 0 ? mp.spentAll : 1;
   return '<div class="fc-list">'+rows.map(r=>{
+    if(r.lc && r.pre) return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\"><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b><span class=\"fc-of\">starts '+r.startLabel+'</span></b></div><div class=\"fc-bar\"></div></button>';
     if(r.lc){
       const lo = r.left < 0, lp = r.L > 0 ? Math.min(100, r.S/r.L*100) : (r.S > 0 ? 100 : 0);
       return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\"><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b'+(lo ? ' class=\"over\"' : '')+'>'+(lo ? '\u2212' : '')+money(Math.abs(r.left))+(lo ? ' over' : ' left')+'<span class=\"fc-of\"> of '+money(r.L)+'</span></b></div><div class=\"fc-bar\"><div class=\"fc-fill\" style=\"width:'+lp.toFixed(1)+'%;background:'+r.c.color+';\"></div></div></button>';
@@ -5743,7 +5801,7 @@ function renderBudgetSheet(){
   body.classList.add('rc-sheet');
   finLcInit(); spendEnsureCats();
   const cats = spendCatList(), ym = spendMonth || todayStr().slice(0,7), signed = n=> (n < 0 ? '\u2212' : '')+money(Math.abs(n));
-  let h = '<div class="bd-lc" id="budLc"></div><div class="stat-sub" id="budAlloc" style="margin:8px 0 0;"></div><div class="bd-label">'+finMonthLabel(ym)+'. Every budget starts again each month; what is left moves to loose change.</div>';
+  let h = '<div class="bd-lc" id="budLc"></div><div class="stat-sub" id="budAlloc" style="margin:8px 0 0;"></div><div class="bd-label">'+finMonthLabel(ym)+', resets each month</div>';
   cats.forEach(c=>{
     if(c.id === 'other') return;
     if(c.id === 'investing'){ h += '<div class="bud-row"><div class="bud-line"><span class="bud-fixed">'+escapeHtml(c.name)+'</span><span class="stat-sub" style="margin:0;">from your regular buys</span><b id="budInv"></b></div></div>'; return; }
@@ -5760,18 +5818,27 @@ function renderBudgetSheet(){
     L.env.forEach(e=>{ const el = body.querySelector('[data-bs="'+e.c.id+'"]'); if(el){ el.textContent = money(e.S)+' spent'+(e.L > 0 ? ', '+(e.left >= 0 ? money(e.left)+' left' : money(-e.left)+' over, taken from loose change') : ', set a limit'); el.style.color = e.L > 0 && e.left < 0 ? 'var(--danger)' : ''; } });
     const inv = document.getElementById('budInv'); if(inv) inv.textContent = money(mp.invested);
     const mt = document.getElementById('budMatch'), bills = spendCats.find(c=> c.id === 'bills'), tot = finMonthTotal(finDD, ym);
-    if(mt){ if(tot > 0 && bills && Math.round(tot) !== Math.round(bills.budget || 0)) mt.innerHTML = 'Your scheduled bills come to '+money(tot)+'. <button type="button" class="fm-link" data-bmatch style="padding:0 6px;">Use '+money(Math.ceil(tot))+'</button>'; else mt.textContent = tot > 0 ? 'Covers your scheduled bills ('+money(tot)+') and rent you mark as paid.' : 'Rent and bills you pay come out of this.';
+    if(mt){ if(tot > 0 && bills && Math.round(tot) !== Math.round(bills.budget || 0)) mt.innerHTML = 'Bills come to '+money(tot)+'. <button type="button" class="fm-link" data-bmatch style="padding:0 6px;">Use '+money(Math.ceil(tot))+'</button>'; else mt.textContent = tot > 0 ? 'Covers your bills ('+money(tot)+') and rent.' : 'Rent and bills you pay come out of this.';
       const mb = mt.querySelector('[data-bmatch]'); if(mb) mb.addEventListener('click', async ()=>{ bills.budget = Math.ceil(tot); await spendSaveCats(); finSheetSkip = true; renderBudget(); finSheetSkip = false; const inp = body.querySelector('[data-bb="bills"]'); if(inp) inp.value = bills.budget; paint(); }); }
     const first = finSettings.lc.start === ym;
+    const curYm = todayStr().slice(0,7), nextYm = (()=>{ const d = new Date(+curYm.slice(0,4), +curYm.slice(5,7), 1); return d.getFullYear()+'-'+pad(d.getMonth()+1); })();
+    const startOpts = Array.from(new Set([finPrevYm(curYm), curYm, nextYm, L.start])).sort().map(m=> '<option value="'+m+'"'+(m === L.start ? ' selected' : '')+'>'+finMonthLabel(m)+'</option>').join('');
+    const startRow = '<div class="sum-row"><span class="sum-k">Counting from</span><span class="sum-v"><select id="lcStart" aria-label="Count loose change from">'+startOpts+'</select></span></div>'+(L.start < nextYm ? '<div style="margin:2px 0 6px;"><button type="button" class="pill" id="lcFresh">Start fresh from '+finMonthLabel(nextYm).split(' ')[0]+'</button></div>' : '');
+    if(L.before){ document.getElementById('budLc').innerHTML = '<div class="bd-lc-h"><span>Loose change</span><b style="font-size:13px;color:var(--ink-soft);">starts '+finMonthLabel(L.start)+'</b></div>'+startRow;
+      const ls0 = document.getElementById('lcStart'); if(ls0) ls0.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, {start:ls0.value})}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); });
+      const lf0 = document.getElementById('lcFresh'); if(lf0) lf0.addEventListener('click', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:{start:nextYm, open:0}}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); });
+      return; }
     document.getElementById('budLc').innerHTML = '<div class="bd-lc-h"><span>Loose change</span><b class="'+(L.avail < 0 ? 'sum-over' : '')+'">'+signed(L.avail)+' left</b></div>'+
       '<div class="fc-bar" style="margin:2px 0 4px;"><div class="fc-fill" style="width:'+(L.cap > 0 ? Math.min(100, L.used/L.cap*100) : (L.used > 0 ? 100 : 0)).toFixed(1)+'%;background:'+((spendCatById('other') || {}).color || '#7C867F')+';"></div></div>'+
-      '<div class="stat-sub" id="budCap" style="margin:0 0 4px;">'+(L.used > 0 ? money(L.used)+' used' : 'Nothing used')+' of <b>'+money(Math.max(0, L.cap))+'</b> you have to draw on: leftovers and extra income from earlier months, plus income not in a budget this month.</div>'+
+      '<div class="stat-sub" id="budCap" style="margin:0 0 4px;">'+(L.used > 0 ? money(L.used)+' used' : 'Nothing used')+' of <b>'+money(Math.max(0, L.cap))+'</b> to draw on</div>'+
       (ym < L.start ? '<div class="stat-sub" style="margin:2px 0 6px;">Loose change starts counting from '+finMonthLabel(L.start)+'.</div>' : '')+
       '<div class="sum-row"><span class="sum-k">Brought forward</span><span class="sum-v">'+(first ? '<input type="number" inputmode="decimal" step="1" value="'+(finSettings.lc.open || '')+'" placeholder="0" data-lc-open aria-label="Brought forward">' : signed(L.carry))+'</span></div>'+
       '<div class="sum-row"><span class="sum-k">Income not in a budget</span><span class="sum-v">'+(L.unalloc < 0 ? '\u2212' : '+')+money(Math.abs(L.unalloc))+'</span></div>'+
       '<div class="sum-row"><span class="sum-k">Spent from loose change</span><span class="sum-v">'+(L.spentLC ? '\u2212'+money(L.spentLC) : '\u2014')+'</span></div>'+
       (L.overspend > 0 ? '<div class="sum-row"><span class="sum-k">Budgets gone over</span><span class="sum-v sum-over">\u2212'+money(L.overspend)+'</span></div>' : '')+
-      '<div class="stat-sub" style="margin:6px 0 0;">Until the month ends every budget counts as spent. Then whatever is really left in each budget, and any extra income, moves here for next month. A smaller income comes out of it.</div>';
+      startRow+'<div class="stat-sub" style="margin:6px 0 0;">Unspent budgets move here when the month ends.</div>';
+    { const ls = document.getElementById('lcStart'); if(ls) ls.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, {start:ls.value})}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); });
+      const lf = document.getElementById('lcFresh'); if(lf) lf.addEventListener('click', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:{start:nextYm, open:0}}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); }); }
     const lo = document.querySelector('[data-lc-open]'); if(lo && !lo.__b){ lo.__b = 1; lo.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, {open:parseFloat(lo.value) || 0})}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); }); }
   };
   paint();
@@ -6226,11 +6293,11 @@ function renderFinInvest(box){
     (prev && pf.priced ? '<div class="stat-sub" style="margin:2px 0 0;">'+(pf.value-prev.value >= 0 ? '+' : '\u2212')+money(Math.abs(pf.value-prev.value))+' since '+shortDate(prev.date)+'</div>' : '')+
     (upd ? '<div class="stat-sub" style="margin:2px 0 0;">Prices at '+upd+'</div>' : '')+
     (dailyLine ? '<div class="stat-sub" style="margin:2px 0 0;">'+dailyLine+'</div>' : '')+
-    (finAccount() ? '<div class="stat-sub" data-fin-acct style="margin:8px 0 0;cursor:pointer;"><b>Spending account '+money(finAccount().value)+'</b>\u2003counted in your portfolio total, not in the changes \u203a</div>' : '')+
+    (finAccount() ? '<div class="stat-sub" data-fin-acct style="margin:8px 0 0;cursor:pointer;"><b>Spending account '+money(finAccount().value)+'</b>\u2003in the total \u203a</div>' : '')+
     (finPriceMsg ? '<div class="stat-sub sum-over" style="margin-top:6px;">'+escapeHtml(finPriceMsg)+'</div>' : '')+
     (!finPriceMsg && finHoldings.some(x=> x.type === 'stock') && !finDailyUrl() && !(finSettings.avKey || '').trim() ? '<div class="stat-sub sum-over" style="margin-top:6px;">No price file linked yet \u2014 type your GitHub username/repository in Price settings (below).</div>' : '')+
     finSpark(finSnap.slice(-30).map(s=> s.value))+'</div>';
-  h += '<div class="card">'+(finHoldings.length ? finHoldings.map(x=>{
+  const pfRow = x=>{
     if(x.type === 'savings') return finSavingsRow(x);
     const v = finHoldingValue(x), open = String(finOpenItem) === String(x.id), inv = finInvested(x), hasC = !!(x.contribs && x.contribs.length);
     const gain = (v && inv > 0) ? v.value - inv : null;
@@ -6255,7 +6322,13 @@ function renderFinInvest(box){
           (x.type === 'other' ? '<label class="ff"><span>Current value (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" data-fh="manual" value="'+(x.manualPrice || '')+'"></label>' : '<label class="ff"><span>Manual price</span><input type="number" inputmode="decimal" step="any" min="0" data-fh="manual" value="'+(x.manualPrice || '')+'"></label>')+'</div>'+
           (x.type === 'stock' ? '<div class="sp-chips" style="margin-top:0;">'+[['GBP','Price in \u00a3'],['GBX','Price in pence'],['USD','Price in $']].map(u=> '<button type="button" class="chip-btn'+(x.unit === u[0] ? ' active' : '')+'" data-fh-unit="'+u[0]+'">'+u[1]+'</button>').join('')+'</div>' : '')+
           '<div class="fin-edit-row"><button type="button" class="btn small" data-fh-save="'+x.id+'">Save</button><button type="button" class="btn secondary small" data-fh-del="'+x.id+'">Delete</button></div></div></div>' : '')+'</div>';
-  }).join('') : '<div class="stat-sub">No holdings yet.</div>')+'</div>';
+  };
+  const pfGroups = [['Crypto', x=> x.type === 'crypto'], ['Stocks and shares', x=> x.type === 'stock' || x.type === 'other'], ['Savings accounts', x=> x.type === 'savings']];
+  h += finHoldings.length ? pfGroups.map(g=>{
+    const items = finHoldings.filter(g[1]); if(!items.length) return '';
+    const tot = items.reduce((a, x)=>{ const v = finHoldingValue(x); return a + (v ? v.value : 0); }, 0);
+    return '<div class="pf-sub"><span>'+g[0]+'</span><b>'+money(tot)+'</b></div><div class="card">'+items.map(pfRow).join('')+'</div>';
+  }).join('') : '<div class="card"><div class="stat-sub">No holdings yet.</div></div>';
   h += '<button type="button" class="btn secondary block" id="fhToggle">+ Add holding</button>'+
     '<div class="card" id="fhCard" hidden style="margin-top:10px;"><div class="fin-hform" id="fhForm" data-t="crypto">'+
     '<div class="sp-chips" style="margin:0 0 8px;"><button type="button" class="chip-btn active" data-fh-type="crypto">Crypto</button><button type="button" class="chip-btn" data-fh-type="stock">ETF / fund</button><button type="button" class="chip-btn" data-fh-type="savings">Savings</button><button type="button" class="chip-btn" data-fh-type="other">Other</button></div>'+
@@ -6524,10 +6597,10 @@ function renderFinSpend(box){
   const fin2 = {}; finIn.forEach(i=>{ if(i.desc) fin2[i.desc] = (fin2[i.desc] || 0) + 1; }); finIncome.forEach(it=>{ if(it.name) fin2[it.name] = (fin2[it.name] || 0) + 1; });
   const topIn = Object.keys(fin2).sort((a,b)=> fin2[b]-fin2[a]).slice(0,8);
   const acctNow = finAccount(), mpNow = mp;
-  const lcAvail = finLoose(ym).avail, whole = n=> '\u00a3'+Math.round(Math.abs(n)).toLocaleString('en-GB');
+  const lcSt = finLoose(ym), lcAvail = lcSt.avail, whole = n=> '\u00a3'+Math.round(Math.abs(n)).toLocaleString('en-GB');
   const accountHtml = '<div class="card lg-acct"><div class="la-r1"><span class="la-l">Spending account</span><button type="button" class="pill" data-sp-acct>'+(acctNow ? 'Update' : 'Set balance')+'</button></div>'+
-    '<div class="la-r2"><b class="la-bal">'+(acctNow ? amt(acctNow.value) : '\u2014')+'</b><span class="la-io"><span>In <b>'+whole(mpNow.incomeSoFar)+'</b></span><span>Out <b>'+whole(mpNow.spentAll)+'</b></span><span>Loose change <b>'+(lcAvail < 0 ? '\u2212' : '')+whole(lcAvail)+'</b></span></span></div>'+
-    (ym !== todayStr().slice(0,7) ? '<div class="la-m">'+finMonthLabel(ym)+'</div>' : '')+(acctNow ? '' : '<div class="stat-sub" style="margin:4px 0 0;">Type what the account shows and every payment in and out keeps it up to date.</div>')+'</div>';
+    '<div class="la-r2"><b class="la-bal">'+(acctNow ? amt(acctNow.value) : '\u2014')+'</b><span class="la-io"><span>In <b>'+whole(mpNow.incomeSoFar)+'</b></span><span>Out <b>'+whole(mpNow.spentAll)+'</b></span><span>Loose change <b>'+(lcSt.before ? 'starts '+finMonthLabel(lcSt.start).split(' ')[0] : (lcAvail < 0 ? '\u2212' : '')+whole(lcAvail))+'</b></span></span></div>'+
+    (ym !== todayStr().slice(0,7) ? '<div class="la-m">'+finMonthLabel(ym)+'</div>' : '')+(acctNow ? '' : '<div class="stat-sub" style="margin:4px 0 0;">Type what the account shows; payments then keep it up to date.</div>')+'</div>';
   h += accountHtml+'<div class="card sp-addcard"><div class="sp-add1"><div class="seg sp-dir"><button type="button" data-sp-dir="out" class="sel-home" title="Money out" aria-label="Money out">\u2212</button><button type="button" data-sp-dir="in" title="Money in" aria-label="Money in">+</button></div><input type="text" id="spAmt" inputmode="decimal" placeholder="\u00a3" aria-label="Amount"><select id="spPlace" aria-label="Where"></select><button type="button" class="btn small" id="spAddBtn">Add</button></div>'+
     '<input type="text" id="spMer" placeholder="Where?" autocomplete="off" style="width:100%;margin-top:6px;" hidden></div>';
   const ledgerCardHtml = '<div class="card" id="lgCard"><div class="sp-month" style="margin-bottom:6px;"><button type="button" class="chip-btn" data-sp-m="-1" aria-label="Earlier month">\u2039</button><b>'+label+'</b><button type="button" class="chip-btn" data-sp-m="1" aria-label="Later month">\u203a</button></div>'+
@@ -6617,25 +6690,25 @@ function renderFinSpend(box){
 const AUTO_EVENTS = [
   {id:'away', title:'Away check', phone:'Your phone', loc:true, what:'Marks last night as away if your phone isn\u2019t at home.',
    trigger:'<b>Time of Day</b>, set it to <b>04:30</b> and <b>Daily</b>',
-   test:'Press \u25b6 in the afternoon. The status above should then say \u201cignored (only early-morning checks count)\u201d. (Pressing it before noon while away from home would really mark last night away.)'},
+   test:'Press \u25b6 in the afternoon; it should say \u201cignored\u201d.'},
   {id:'trip-start', title:'CarPlay connects', phone:'Your phone', loc:true, what:'Notes where the drive started.',
    trigger:'<b>CarPlay</b>, then <b>Connects</b>',
-   test:'Press \u25b6 once. It\u2019s harmless: it just notes where you are.'},
+   test:'Press \u25b6 once. Harmless.'},
   {id:'trip-end', title:'CarPlay disconnects', phone:'Your phone', loc:true, what:'Turns the drive into a draft trip.',
    trigger:'<b>CarPlay</b>, then <b>Disconnects</b>',
-   test:'Press \u25b6 once. It\u2019s harmless: a drive that starts and ends in the same place within 5 minutes is ignored.'},
+   test:'Press \u25b6 once. Harmless.'},
   {id:'sleep-on', title:'Bed: on', phone:'Your phone', loc:false, what:'Starts the time-in-bed clock.',
    trigger:'<b>Focus</b>, pick <b>Sleep</b> (or the Focus you use at night), then <b>Is Turned On</b>',
-   test:'Press \u25b6 once. It\u2019s harmless.'},
+   test:'Press \u25b6 once. Harmless.'},
   {id:'sleep-off', title:'Bed: off', phone:'Your phone', loc:false, what:'Stops it and records the night.',
    trigger:'<b>Focus</b>, pick the same Focus, then <b>Is Turned Off</b>',
-   test:'Press \u25b6 once. It\u2019s harmless: anything under 2 hours isn\u2019t counted as a night.'},
+   test:'Press \u25b6 once. Harmless.'},
   {id:'work-open', title:'Connecteam opened', phone:'Work phone only', loc:false, what:'Clocks you in at the time you opened it.',
    trigger:'<b>App</b>, tick <b>Connecteam</b>, then <b>Is Opened</b>',
-   test:'Careful: pressing \u25b6 during your clock-in hours really clocks you in. Test it by opening Connecteam on a working day.'},
+   test:'Careful: \u25b6 in your hours really clocks you in.'},
   {id:'work-close', title:'Connecteam closed', phone:'Work phone only', loc:false, what:'Clocks you out after a few hours (or asks you first).',
    trigger:'<b>App</b>, tick <b>Connecteam</b>, then <b>Is Closed</b>',
-   test:'Press \u25b6 once. It\u2019s harmless: it only counts after you\u2019ve been clocked in for several hours.'}
+   test:'Press \u25b6 once. Harmless.'}
 ];
 const autoMins = m=> Math.floor(m/60)+'h '+pad(m%60)+'m';
 function autoDistM(lat1, lon1, lat2, lon2){
@@ -6996,37 +7069,37 @@ function renderAutoSetup(){
     '<div class="acc-list">'+
       accOpen('Home address', h ? '\u2713 Saved' : 'Not set', !!h, false, 'Where the away check measures from')+
         '<div class="sp-add"><input type="text" id="autoHome" value="'+escapeHtml(h ? h.addr : '57 Downsway, Shoreham-by-Sea BN43 5GN')+'" autocomplete="off" style="flex:1;"><button type="button" class="btn small" id="autoHomeSave">'+(h ? 'Update' : 'Save')+'</button></div>'+
-        '<div class="stat-sub" style="margin:6px 0 0;">'+(h ? 'The away check counts you as away if you\u2019re more than '+(autoMeta.radius || 400)+' m from here.' : 'Save this first so the away check knows where home is.')+'</div></div></details>'+
+        '<div class="stat-sub" style="margin:6px 0 0;">'+(h ? 'Away if you\u2019re over '+(autoMeta.radius || 400)+' m from here.' : 'Save this first.')+'</div></div></details>'+
       accOpen('Work clock (Connecteam)', w.mode === 'ask' ? 'Asks first' : 'Automatic', true, false, 'What happens when you open or leave Connecteam')+
-        '<div class="stat-sub" style="margin:0 0 8px;">Opening Connecteam clocks you in. Leaving it clocks you out only after you\u2019ve been in at least '+w.minH+' hours.</div>'+
+        '<div class="stat-sub" style="margin:0 0 8px;">Opening Connecteam clocks you in; closing it clocks you out after '+w.minH+'h or more.</div>'+
         '<div class="sp-chips" style="margin-top:0;"><button type="button" class="chip-btn'+(w.mode === 'ask' ? ' active' : '')+'" data-work-mode="ask">Ask me first</button><button type="button" class="chip-btn'+(w.mode === 'auto' ? ' active' : '')+'" data-work-mode="auto">Clock out automatically</button></div>'+
         '<div class="fin-srow" style="margin-top:8px;"><span>Count a close after at least</span><span class="fin-step"><button type="button" data-work-h="-1">\u2212</button><b>'+w.minH+' h</b><button type="button" data-work-h="1">+</button></span></div>'+
         '<div class="fin-opts" style="margin:8px 0 4px;"><span class="stat-sub" style="margin:0;">Only clock in between</span><input type="time" id="workFrom" value="'+w.from+'"><input type="time" id="workTo" value="'+w.to+'"></div>'+
-        '<div class="stat-sub" style="margin:0;">Stops a quick look at the schedule on an evening off clocking you in.</div>'+
+        '<div class="stat-sub" style="margin:0;">Stops an evening glance clocking you in.</div>'+
         '<div class="set-label" style="margin:12px 0 2px;">Did it work?</div>'+
-        '<div class="stat-sub" style="margin:0 0 6px;">'+(autoMeta.lastWork && autoMeta.lastWork.what === 'opened' ? '<b>Last heard:</b> '+escapeHtml(when(autoMeta.lastWork.at)+', opened \u2192 '+autoMeta.lastWork.result) : ((autoMeta.seen || {})['work-open'] ? '<b>Last heard:</b> '+escapeHtml(when(autoMeta.seen['work-open'])) : '<b>Nothing heard yet</b> from the \u201cConnecteam opened\u201d Shortcut. If you have opened Connecteam on the work phone and this is still blank, the Shortcut is not reaching Home Base: press its \u25b6 once, then tap <b>Check for new signals</b>.'))+'</div>'+
+        '<div class="stat-sub" style="margin:0 0 6px;">'+(autoMeta.lastWork && autoMeta.lastWork.what === 'opened' ? '<b>Last heard:</b> '+escapeHtml(when(autoMeta.lastWork.at)+', opened \u2192 '+autoMeta.lastWork.result) : ((autoMeta.seen || {})['work-open'] ? '<b>Last heard:</b> '+escapeHtml(when(autoMeta.seen['work-open'])) : '<b>Nothing heard yet.</b> Press \u25b6 on the Shortcut, then Check for new signals.'))+'</div>'+
         '<div class="sp-btnrow"><button type="button" class="btn secondary small" id="workCheckBtn">Would it clock me in now?</button></div><div class="stat-sub" id="workCheckMsg" style="margin:6px 0 0;"></div></div></details>'+
       accOpen('Before you start', '', false, false, 'Two things the iPhone asks the first time')+
-        '<ul class="auto-before"><li>Location ones: the first run asks to use your location. Say <b>Allow</b>, and in Settings \u2192 Privacy &amp; Security \u2192 Location Services \u2192 Shortcuts choose <b>Always</b> if it\u2019s offered.</li><li>The first run also asks to send data to <b>firestore.googleapis.com</b>. Choose <b>Always Allow</b>.</li><li>These use the same link as Apple Pay capture, so get that working first.</li></ul></div></details>'+
+        '<ul class="auto-before"><li>Location ones ask for your location: <b>Allow</b> (Location Services \u2192 Shortcuts \u2192 <b>Always</b>).</li><li>The first run asks to send data to firestore.googleapis.com: <b>Always Allow</b>.</li><li>Needs the Apple Pay link working first.</li></ul></div></details>'+
       accOpen('Latest activity', latest ? '' : 'Nothing yet', false, false, 'What Home Base last heard')+(latest || '<div class="stat-sub">Nothing has come through yet.</div>')+'</div></details>'+
       accOpen('Got an error?', '', false, false, 'The 400 \u201cmalformed request\u201d page')+
-        '<div class="stat-sub" style="margin:0 0 6px;">\u201cThat\u2019s an error. Your client has issued a malformed or illegal request\u201d means Google received something broken. Tap <b>Test the link</b> first: if it says the link works, the fault is inside the Shortcut. Then check the <b>Get Contents of URL</b> action:</div>'+
-        '<ol class="sp-steps"><li>The URL box holds <b>only</b> the link. Clear it, tap <b>Copy URL</b> here and paste again. No spaces, no second line, nothing typed after it.</li><li><b>Method</b> is <b>POST</b>.</li><li>The header is <b>Content-Type</b> = <b>application/json</b>. Retype it by hand; a trailing space breaks it.</li><li><b>Request Body</b> is <b>File</b>, and the file is the blue <b>Text</b> pill from the Text action above it. Not typed in, not Form.</li><li>In the Text, only the capital words became pills. The quote marks are straight (&quot;), and nothing else was edited.</li></ol></div></details>'+
+        '<div class="stat-sub" style="margin:0 0 6px;">Tap <b>Test the link</b>. If it works, check the Shortcut\u2019s <b>Get Contents of URL</b>:</div>'+
+        '<ol class="sp-steps"><li>The URL box holds only the link (Copy URL, paste again).</li><li><b>Method</b> POST.</li><li>Header <b>Content-Type</b> = <b>application/json</b>, retyped by hand.</li><li><b>Request Body</b> = <b>File</b> \u2192 the Text.</li><li>In the Text, only the capital words are pills; quotes are straight.</li></ol></div></details>'+
     '</div>'+
     '<div class="set-label">The 7 automations<span class="auto-count">'+heard+' of 7 heard</span></div>'+
-    '<div class="stat-sub" style="margin:0 2px 8px;">Set them up one at a time. Open one and follow it from the top: a tick means Home Base has heard from it.</div>'+
+    '<div class="stat-sub" style="margin:0 2px 8px;">A tick means Home Base has heard it.</div>'+
     '<div class="sp-btnrow" style="margin-bottom:8px;"><button type="button" class="btn secondary small" id="autoCopyUrlBtn">Copy URL</button><button type="button" class="btn secondary small" id="autoTestBtn">Test the link</button><button type="button" class="btn secondary small" id="autoCheckBtn">Check for new signals</button></div><div class="stat-sub" id="autoTestMsg" style="margin:0 2px 8px;"></div>'+
     '<div class="acc-list">'+AUTO_EVENTS.map(e=>{
       const seen = (autoMeta.seen || {})[e.id];
-      const rest = e.loc ? 'LAT \u2192 <b>Current Location</b>, tap the pill, <b>Latitude</b>. LON \u2192 <b>Current Location</b>, <b>Longitude</b>. ' : '';
-      return accOpen(escapeHtml(e.title), seen ? '\u2713 Heard '+when(seen) : 'Not set up', !!seen, false, e.phone)+
-      '<div class="stat-sub" style="margin:0 0 4px;">'+escapeHtml(e.what)+'</div><ol class="sp-steps">'+
-      '<li>Shortcuts \u2192 <b>Automation</b> tab \u2192 <b>+</b> \u2192 '+e.trigger+'. Choose <b>Run Immediately</b>, turn <b>Notify When Run</b> off, tap <b>Next</b>, then <b>New Blank Automation</b>.</li>'+
-      (e.loc ? '<li>Tap <b>Add Action</b>, search <b>Get Current Location</b> and add it.</li>' : '')+
-      '<li>Add another action, <b>Text</b>. Paste this in.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-auto-copy="'+e.id+'">Copy text</button></div></li>'+
-      '<li>Turn the capital words into blue pills. Tap the word, delete it, then tap the variable in the bar above the keyboard. '+rest+'DATE \u2192 <b>Current Date</b>, tap its pill, <b>Date Format</b>, <b>ISO 8601</b>.</li>'+
-      '<li>Add <b>Get Contents of URL</b>. Paste the URL, tap the small arrow to expand it, set <b>Method</b> to <b>POST</b>, add a header <b>Content-Type</b> = <b>application/json</b>, and set <b>Request Body</b> to <b>File</b> and choose the <b>Text</b>.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-auto-url>Copy URL</button></div></li>'+
-      '<li>Tap <b>Done</b>. <b>Test:</b> '+e.test+' Then come back here and tap Check for new signals: the tick above should appear.</li></ol></div></details>';
+      const rest = e.loc ? 'LAT \u2192 <b>Current Location</b> \u203a <b>Latitude</b>, LON \u2192 <b>Longitude</b>. ' : '';
+      return accOpen(escapeHtml(e.title), seen ? '\u2713 Heard '+when(seen) : 'Not set up', !!seen, false, e.what)+
+      '<ol class="sp-steps">'+
+      '<li>'+(/Work/.test(e.phone) ? 'On the <b>work phone</b>: ' : '')+'Shortcuts \u2192 <b>Automation</b> \u2192 <b>+</b> \u2192 '+e.trigger+'. <b>Run Immediately</b>, <b>Notify When Run</b> off, <b>Next</b>, <b>New Blank Automation</b>.</li>'+
+      (e.loc ? '<li>Add <b>Get Current Location</b>.</li>' : '')+
+      '<li>Add <b>Text</b> and paste:<div class="sp-btnrow"><button type="button" class="btn secondary small" data-auto-copy="'+e.id+'">Copy text</button></div></li>'+
+      '<li>Turn the capital words into blue pills (tap the word, delete it, pick the variable). '+rest+'DATE \u2192 <b>Current Date</b> \u203a <b>ISO 8601</b>.</li>'+
+      '<li>Add <b>Get Contents of URL</b>: paste the URL, <b>POST</b>, header <b>Content-Type</b> = <b>application/json</b>, <b>Request Body</b> = <b>File</b> \u2192 the Text.<div class="sp-btnrow"><button type="button" class="btn secondary small" data-auto-url>Copy URL</button></div></li>'+
+      '<li><b>Done</b>. Test: '+e.test+'</li></ol></div></details>';
     }).join('')+'</div>';
   document.getElementById('autoHomeSave').addEventListener('click', async ()=>{
     const b = document.getElementById('autoHomeSave'); b.disabled = true; b.textContent = 'Finding\u2026';
@@ -7077,8 +7150,8 @@ function applySettingsPage(){
   if(!root) return;
   const rm = document.getElementById('runModeText');
   if(rm) rm.innerHTML = appRunMode() === 'app'
-    ? '<b>\u2713 Home Screen app.</b> Full screen, so the footer sits at the very bottom of the phone.'
-    : '<b>Safari tab.</b> A browser tab keeps Safari\u2019s own toolbar on screen, and the footer sits just above it. That is as low as it can go in a tab. For the footer at the very bottom: tap <b>Share</b>, then <b>Add to Home Screen</b>, and open Home Base from that icon instead.';
+    ? '<b>\u2713 Home Screen app.</b> Full screen.'
+    : '<b>Safari tab.</b> Share \u2192 Add to Home Screen for full screen and a lower footer.';
   if(document.getElementById('view-settings').classList.contains('active')){ const st = document.getElementById('screenTitle'); const pg = SETTINGS_PAGES.find(x=> x.id === settingsPage); if(st) st.textContent = pg ? pg.title : 'Settings'; }
   if(settingsPage && !document.getElementById('setPage-'+settingsPage)) settingsPage = null;
   if(!settingsPage) renderSettingsRoot();
@@ -7636,7 +7709,7 @@ function computeTrendsData(){
   }
   const monthlyBizMiles = {}, monthlyPersMiles = {};
   mileageTrips.forEach(t=>{
-    const mKey = t.date.slice(0,7);
+    const mKey = (t.date || '').slice(0,7);
     if(t.category==='business') monthlyBizMiles[mKey] = (monthlyBizMiles[mKey]||0)+t.miles;
     else monthlyPersMiles[mKey] = (monthlyPersMiles[mKey]||0)+t.miles;
   });
@@ -7670,6 +7743,20 @@ function allMonthKeys(...objs){
   objs.forEach(o=> Object.keys(o).forEach(k=>set.add(k)));
   return Array.from(set).sort().slice(-12);
 }
+// swipe left or right on a screen to move between its tabs (ignores fields, the tab strip, drawings and anything marked data-no-swipe)
+function bindTabSwipe(el, step){
+  if(!el || el.__swipeBound) return; el.__swipeBound = true;
+  let x0 = 0, y0 = 0, t0 = 0, on = false;
+  el.addEventListener('touchstart', e=>{
+    if(e.touches.length !== 1 || (e.target.closest && e.target.closest('input,select,textarea,.tabs-s,.chip-row,canvas,svg,[data-no-swipe]'))){ on = false; return; }
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now(); on = true;
+  }, {passive:true});
+  el.addEventListener('touchend', e=>{
+    if(!on) return; on = false;
+    const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.6 && Date.now() - t0 < 700) step(dx < 0 ? 1 : -1);
+  }, {passive:true});
+}
 // ---------- Trends: one section for each thing the automations record ----------
 const TR_MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function trBars(items, o){
@@ -7701,6 +7788,7 @@ function renderTrends(){
   const today = todayStr(), ym = today.slice(0,7);
   const avg = a=> a.length ? a.reduce((x,y)=> x+y, 0)/a.length : null;
   const r1 = n=> Math.round(n*10)/10;
+  const yest = addDays(today, -1), daysBetween = (a, b)=> Math.round((parseYMD(b) - parseYMD(a))/86400000);
   const section = (title, goto, headline, caption, chart, stats)=>
     '<section class="tr">'+
       (goto ? '<button type="button" class="tr-h" data-tr-go="'+goto+'"><span>'+title+'</span><i class="tr-chev"></i></button>' : '<div class="tr-h"><span>'+title+'</span></div>')+
@@ -7721,8 +7809,10 @@ function renderTrends(){
   const startM = [], endM = [];
   weeks.forEach(w=>{ for(let k = 0; k < 7; k++){ const d = addDays(w.st, k), en = calendarData[d]; if(d > today || !en || !en.shift) continue; const sh = en.shift;
     if(sh.start){ const m = sh.start.split(':'); startM.push(+m[0]*60 + +m[1]); } if(sh.start && sh.finish){ const m = sh.finish.split(':'); endM.push(+m[0]*60 + +m[1]); } } });
-  const done = weeks.filter(w=> !w.hl && w.h > 0), avgWk = avg(done.map(w=> w.h));
-  out['work'] = (section('Work', 'toil', avgWk !== null ? r1(avgWk)+'h' : '', 'a week, last '+done.length+' weeks',
+  const wkDays = Object.keys(calendarData).filter(d=> d <= yest && calendarData[d] && shiftHours(calendarData[d].shift)), wkFirst = wkDays.length ? wkDays.slice().sort()[0] : null;
+  const wkSpan = wkFirst ? daysBetween(wkFirst, yest) + 1 : 0, wkTotal = wkDays.reduce((a, d)=> a + shiftHours(calendarData[d].shift), 0);
+  const avgWk = wkSpan >= 7 ? wkTotal/(wkSpan/7) : null;                    // hours a week, counted from your first shift (not from a fixed window)
+  out['work'] = (section('Work', 'toil', avgWk !== null ? r1(avgWk)+'h' : (wkFirst ? r1(wkTotal)+'h' : ''), avgWk !== null ? 'a week, since '+shortDate(wkFirst) : (wkFirst ? 'so far, since '+shortDate(wkFirst) : ''),
     weeks.some(w=> w.h > 0) ? trBars(weeks.map(w=> ({v:w.h, hl:w.hl, l:parseYMD(w.st).getDate()+'/'+(parseYMD(w.st).getMonth()+1)})), {vals:'all', fmt:v=> Math.round(v)}) : none('No shifts yet. Connecteam clock-ins land here.', 'settings:automations', 'Set up'),
     [['Clock in', startM.length ? minutesToClock(Math.round(avg(startM))) : '\u2014'], ['Clock out', endM.length ? minutesToClock(Math.round(avg(endM))) : '\u2014'], ['TOIL', (computeToilWeeks().balance >= 0 ? '+' : '\u2212')+Math.abs(r1(computeToilWeeks().balance))+'h']]));
 
@@ -7731,7 +7821,7 @@ function renderTrends(){
   const slept = nights.filter(x=> x.m != null);
   out['sleep'] = (section('Sleep', '', slept.length ? autoMins(Math.round(avg(slept.map(x=> x.m)))) : '', 'in bed, on average',
     slept.length ? trBars(nights.map(x=> ({v:(x.m || 0)/60, hl:x.hl, l:x.l})), {vals:'hl', fmt:v=> r1(v)+'h'}) : none('No nights yet. The Bed automations record this.', 'settings:automations', 'Set up'),
-    slept.length ? [['Longest', autoMins(Math.max.apply(null, slept.map(x=> x.m)))], ['Shortest', autoMins(Math.min.apply(null, slept.map(x=> x.m)))], ['Tracked', slept.length+' of 14']] : null));
+    slept.length ? [['Longest', autoMins(Math.max.apply(null, slept.map(x=> x.m)))], ['Shortest', autoMins(Math.min.apply(null, slept.map(x=> x.m)))], ['Tracked', slept.length+' of '+Math.max(slept.length, Math.min(14, (sleepLog.map(x=> x.night).filter(Boolean).sort()[0] ? daysBetween(sleepLog.map(x=> x.night).filter(Boolean).sort()[0], yest) + 1 : 0)))]] : null));
 
   // ---- Driving: CarPlay ----
   const months = []; { const d0 = parseYMD(today); for(let i = 5; i >= 0; i--){ const d = new Date(d0.getFullYear(), d0.getMonth()-i, 1); months.push({ym:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'), l:TR_MON[d.getMonth()], hl: i === 0}); } }
@@ -7755,8 +7845,9 @@ function renderTrends(){
   const gWeeks = weeks.map(w=>{ const set = new Set(); for(let k = 0; k < 7; k++){ const d = addDays(w.st, k); if(gymLog.some(l=> l.date === d && !l.wu)) set.add(d); } return {n:set.size, dates:[...set], hl:w.hl, l:parseYMD(w.st).getDate()+'/'+(parseYMD(w.st).getMonth()+1)}; });
   const allGymDates = [].concat.apply([], gWeeks.map(w=> w.dates)), gymMins = allGymDates.map(d=> gymTiming(d)).filter(Boolean).map(t=> t.mins);
   const setsThisWeek = gymLog.filter(l=> !l.wu && l.date >= wk0 && l.date <= today).length;
-  const gDone = gWeeks.filter(w=> !w.hl);
-  out['gym'] = (section('Gym', 'gym', gymLog.length ? String(gWeeks[gWeeks.length-1].n) : '', 'session'+(gWeeks[gWeeks.length-1].n === 1 ? '' : 's')+' this week'+(gDone.length && gymLog.length ? ', '+r1(avg(gDone.map(w=> w.n)))+' a week on average' : ''),
+  const gDates = Array.from(new Set(gymLog.filter(l=> !l.wu && l.date && l.date <= yest).map(l=> l.date))).sort(), gFirst = gDates[0] || null;
+  const gAvg = gFirst && daysBetween(gFirst, yest) + 1 >= 7 ? gDates.length/((daysBetween(gFirst, yest) + 1)/7) : null;     // sessions a week since your first session
+  out['gym'] = (section('Gym', 'gym', gymLog.length ? String(gWeeks[gWeeks.length-1].n) : '', 'session'+(gWeeks[gWeeks.length-1].n === 1 ? '' : 's')+' this week'+(gAvg !== null ? ', '+r1(gAvg)+' a week on average since '+shortDate(gFirst) : ''),
     gymLog.length ? trBars(gWeeks.map(w=> ({v:w.n, hl:w.hl, l:w.l})), {vals:'all'}) : none('No sessions yet. Log a set to start.', 'gym', 'Open Gym'),
     gymLog.length ? [['Average session', gymMins.length ? Math.round(avg(gymMins))+' min' : '\u2014'], ['Sets this week', String(setsThisWeek)], ['Sessions, 8 weeks', String(allGymDates.length)]] : null));
 
@@ -7764,8 +7855,9 @@ function renderTrends(){
   const sp = months.map(m=> ({...m, v:spendStats(m.ym).spent}));
   const spNow = spendStats(ym), cats = spendCatList();
   const topCat = Object.keys(spNow.by).filter(k=> k !== '_').sort((a,b)=> spNow.by[b] - spNow.by[a])[0];
-  const spHist = sp.filter(x=> !x.hl && x.v > 0);
-  out['spend'] = (section('Spending', 'budget:spend', spendTxns.length ? '\u00a3'+Math.round(spNow.spent).toLocaleString('en-GB') : '', 'this month'+(spHist.length ? ', \u00a3'+Math.round(avg(spHist.map(x=> x.v))).toLocaleString('en-GB')+' a month before' : ''),
+  const spOm = finOthersMap(), spTx = spendTxns.filter(t=> t.date && t.date <= yest), spFirst = spTx.length ? spTx.map(t=> t.date).sort()[0] : null;
+  const spSpan = spFirst ? daysBetween(spFirst, yest) + 1 : 0, spAvg = spSpan >= 28 ? spTx.reduce((a, t)=> a + t.amount - (spOm[t.id] || 0), 0)/(spSpan/30.4375) : null;     // a month, counted from your first payment
+  out['spend'] = (section('Spending', 'budget:spend', spendTxns.length ? '\u00a3'+Math.round(spNow.spent).toLocaleString('en-GB') : '', 'this month'+(spAvg !== null ? ', \u00a3'+Math.round(spAvg).toLocaleString('en-GB')+' a month on average since '+shortDate(spFirst) : ''),
     spendTxns.length ? trBars(sp.map(x=> ({v:x.v, hl:x.hl, l:x.l})), {vals:'hl', fmt:v=> '\u00a3'+Math.round(v).toLocaleString('en-GB')}) : none('No spending yet. Apple Pay taps land here.', 'settings:applepay', 'Set up'),
     spendTxns.length ? [['Biggest', topCat ? ((cats.find(c=> c.id === topCat) || {name:'Loose change'}).name+' \u00a3'+Math.round(spNow.by[topCat])) : '\u2014'], ['Payments', String(spNow.tx.length)], ['To sort', String(spNow.uncat)]] : null));
 
@@ -7791,7 +7883,11 @@ function renderTrends(){
 
   const tabs = [['work','Work'],['sleep','Sleep'],['driving','Driving'],['away','Away'],['gym','Gym'],['spend','Spending'],['split','Where it goes'],['totals','Totals']];
   if(!out[trendsTab]) trendsTab = 'work';
-  box.innerHTML = '<div class="chip-row tr-tabs">'+tabs.map(x=> '<button type="button" class="chip-btn'+(x[0] === trendsTab ? ' active' : '')+'" data-tr-tab="'+x[0]+'">'+x[1]+'</button>').join('')+'</div>'+out[trendsTab];
+  const trDir = window.__trDir || 0; window.__trDir = 0;
+  box.innerHTML = '<div class="tabs-s scroll" id="trTabs">'+tabs.map(x=> '<button type="button" class="tab-s'+(x[0] === trendsTab ? ' active' : '')+'" data-tr-tab="'+x[0]+'"><span>'+x[1]+'</span></button>').join('')+'</div>'+out[trendsTab];
+  { const tr = document.getElementById('trTabs'), act = tr && tr.querySelector('.active'); if(act) tr.scrollLeft = act.offsetLeft - (tr.clientWidth - act.offsetWidth)/2; }
+  if(trDir){ const sec = box.querySelector('.tr'); if(sec){ sec.classList.add(trDir > 0 ? 'tab-in-l' : 'tab-in-r'); } }
+  bindTabSwipe(document.getElementById('view-trends'), dir=>{ const i = tabs.findIndex(x=> x[0] === trendsTab), j = Math.max(0, Math.min(tabs.length - 1, i + dir)); if(j !== i){ trendsTab = tabs[j][0]; window.__trDir = dir; renderTrends(); } });
   box.querySelectorAll('[data-tr-tab]').forEach(b=> b.addEventListener('click', ()=>{ trendsTab = b.dataset.trTab; renderTrends(); }));
   box.querySelectorAll('[data-tr-split]').forEach(b=> b.addEventListener('click', ()=>{ trendsSplit = b.dataset.trSplit; renderTrends(); }));
   box.querySelectorAll('[data-tr-slice]').forEach(b=> b.addEventListener('click', ()=>{ spendFilter = b.dataset.trSlice === '_' ? null : b.dataset.trSlice; spendMonth = (window.__trSplitMonths || [ym])[0]; finTab = 'spend'; goToView('budget:spend'); }));
@@ -8227,7 +8323,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v19.8';
+const APP_VERSION = 'v19.9';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
@@ -9007,6 +9103,7 @@ function renderGymHistory(){
 
 // ----- shell -----
 function renderGym(){
+  { const gd = window.__gymDir || 0; window.__gymDir = 0; if(gd){ const pane = gymTab === 'log' ? 'gymLogPane' : (gymTab === 'muscles' ? 'gymMusclesPane' : 'gymHistoryPane'); setTimeout(()=>{ const pe = document.getElementById(pane); if(pe){ pe.classList.remove('tab-in-l', 'tab-in-r'); void pe.offsetWidth; pe.classList.add(gd > 0 ? 'tab-in-l' : 'tab-in-r'); } }, 0); } }
   { const el = gid('gymDateInput'); if(el){ if(gymSess) el.value = gymSess.date; else if(!gymDateTouched) el.value = todayStr(); } }
   document.querySelectorAll('#gymTabRow [data-gym-tab]').forEach(b=> b.classList.toggle('active', b.dataset.gymTab===gymTab));
   gid('gymLogPane').style.display = gymTab==='log' ? '' : 'none';
@@ -9018,6 +9115,7 @@ function renderGym(){
 }
 function setupGym(){
   gid('gymDateInput').value = todayStr();
+  bindTabSwipe(document.getElementById('view-gym'), dir=>{ const order = ['log', 'muscles', 'history'], i = order.indexOf(gymTab), j = Math.max(0, Math.min(2, i + dir)); if(j !== i){ gymTab = order[j]; window.__gymDir = dir; renderGym(); } });
   gid('gymStartBtn').addEventListener('click', gymStartSession);
   gid('gymEndBtn').addEventListener('click', gymEndSession);
   document.querySelectorAll('#gymTabRow [data-gym-tab]').forEach(b=>{
@@ -9142,11 +9240,16 @@ function handleImportClick(){
   reader.readAsText(file);
 }
 
-function showToast(msg){
-  const el = document.createElement('div'); el.className = 'notif-toast'; el.textContent = msg;
+// a message at the top; give it a place to go (a view name, or a function) and tapping it takes you there
+function showToast(msg, target){
+  const el = document.createElement('div'); el.className = 'notif-toast'+(target ? ' tap' : ''); el.textContent = msg;
+  if(target){
+    const ch = document.createElement('i'); ch.className = 'nt-chev'; el.appendChild(ch);
+    el.addEventListener('click', ()=>{ el.remove(); if(typeof target === 'function') target(); else goToView(target); });
+  }
   document.body.appendChild(el);
-  setTimeout(()=> el.classList.add('out'), 3800);
-  setTimeout(()=> el.remove(), 4250);
+  setTimeout(()=> el.classList.add('out'), target ? 6300 : 3800);
+  setTimeout(()=> el.remove(), target ? 6750 : 4250);
 }
 
 let lastHiddenAt = null;
