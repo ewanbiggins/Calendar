@@ -1311,6 +1311,10 @@ body[data-view="trends"] #view-trends.active{flex:1 1 auto;min-height:0;display:
 .tr-stats div{background:var(--surface-2);border-radius:10px;padding:8px 10px;}
 .tr-none{margin:auto 0;text-align:center;padding:20px 8px;}
 #trendsBody .tr-pie{flex:1 1 auto;justify-content:flex-start;}
+
+/* gym days on the week recap: a dumbbell, not a red mark */
+.d-gym{display:block;width:16px;height:8px;margin:1px auto 0;border-radius:0;background:var(--home);-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 12'%3E%3Crect x='0' y='3' width='2.5' height='6' rx='1'/%3E%3Crect x='3' y='1' width='3' height='10' rx='1'/%3E%3Crect x='6' y='5' width='12' height='2'/%3E%3Crect x='18' y='1' width='3' height='10' rx='1'/%3E%3Crect x='21.5' y='3' width='2.5' height='6' rx='1'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 12'%3E%3Crect x='0' y='3' width='2.5' height='6' rx='1'/%3E%3Crect x='3' y='1' width='3' height='10' rx='1'/%3E%3Crect x='6' y='5' width='12' height='2'/%3E%3Crect x='18' y='1' width='3' height='10' rx='1'/%3E%3Crect x='21.5' y='3' width='2.5' height='6' rx='1'/%3E%3C/svg%3E") center/contain no-repeat;}
+.w-gl .d-gym{margin:0;width:14px;height:7px;}
 </style>
 </head>
 <body data-view="calendar">
@@ -8323,7 +8327,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v19.9';
+const APP_VERSION = 'v19.9.1';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
