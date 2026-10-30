@@ -2136,7 +2136,14 @@ async function applyRemoteValue(key, value){
     case 'fin-in': finIn = value || []; break;
     case 'spend-cats': spendCats = value || null; break;
     case 'spend-rules': spendRules = value || {}; break;
-    case 'spend-meta': spendMeta = Object.assign({secret:'', seen:[], last:null}, value || {}); break;
+    case 'spend-meta': {                                // never forget a secret: the newest wins, the rest stay accepted
+      const loc = spendMeta || {}, inc = (value && typeof value === 'object') ? value : {}, uniq = a=> Array.from(new Set(a.filter(Boolean)));
+      const primary = inc.secret || loc.secret || '';
+      spendMeta = Object.assign({secret:'', seen:[], last:null}, loc, inc);
+      spendMeta.secret = primary;
+      spendMeta.alt = uniq([].concat(loc.alt || [], inc.alt || [], [loc.secret, inc.secret])).filter(x=> x !== primary).slice(-8);
+      spendMeta.seen = uniq([].concat(loc.seen || [], inc.seen || [])).slice(-300);
+      break; }
     case 'fin-holdings': finHoldings = value || []; break;
     case 'fin-dd': finDD = value || []; break;
     case 'fin-income': finIncome = value || []; break;
@@ -5191,7 +5198,7 @@ function spendEnsureCats(){ if(!spendCats) spendCats = SPEND_DEFAULT_CATS.map(c=
 
 // ---- Apple Pay inbox: the Shortcut drops each tap into Firestore, the app files it here ----
 function spendFromInbox(d, id){
-  if(!d || !spendMeta.secret || d.k !== spendMeta.secret) return null;
+  if(!d || !spendMeta.secret || !spendAccepts(d.k)) return null;
   if(spendTxns.some(x=> x.id === 'ap_'+id)) return null;
   const merchant = String(d.m || '').trim() || 'Unknown';
   const dm = /^(\d{4}-\d{2}-\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(String(d.d || ''));
@@ -5207,18 +5214,21 @@ function spendCardRoute(card){
   const words = String(spendMeta.bizWords === undefined ? 'aqua' : spendMeta.bizWords).toLowerCase().split(',').map(w=> w.trim()).filter(Boolean);
   return words.some(w=> c.toLowerCase().indexOf(w) > -1) ? 'business' : 'personal';
 }
-let inboxBusy = false;
+let inboxBusy = false, inboxStrays = [], lastStraySig = '';
+function spendAccepts(k){ return !!k && (k === spendMeta.secret || (spendMeta.alt || []).indexOf(k) > -1); }
 async function importInbox(){
   if(inboxBusy || !syncEnabled || !firestoreDb || !spendMeta.secret) return 0;
   inboxBusy = true;
   let added = 0, bizAdded = 0, emptyTaps = 0, sawTest = false; const evs = [];
   try{
     const snap = await firestoreDb.collection('inbox').get();
+    const strays = [];
     for(const doc of snap.docs){
       const d = doc.data();
+      if(d && d.k != null && !spendAccepts(d.k)){ strays.push({id:doc.id, ref:doc.ref, k:d.k, a:d.a, m:d.m, c:d.c, d:d.d}); continue; }     // not ours yet: keep it, do not delete it
       if(!spendMeta.seen.includes(doc.id)){
         spendMeta.seen.push(doc.id);
-        if(d && d.k === spendMeta.secret){
+        if(d && spendAccepts(d.k)){
           if(d.m === 'Test payment' && d.c === 'Test'){ sawTest = true; }
           else if(String(d.m || '').indexOf('ev:') === 0){ evs.push(d); }
           else{
@@ -5239,6 +5249,12 @@ async function importInbox(){
         }
       }
       try{ await doc.ref.delete(); }catch(e){}
+    }
+    inboxStrays = strays;
+    if(strays.length){
+      if(document.getElementById('view-settings').classList.contains('active')) renderApplePaySetup();
+      const sig = strays.map(x=> x.id).join(',');
+      if(sig !== lastStraySig){ lastStraySig = sig; showToast(strays.length+' payment'+(strays.length === 1 ? '' : 's')+' came in with an unknown secret. Tap to fix.', 'settings:applepay'); }
     }
     // signals from your phone (away check, CarPlay, sleep) are handled oldest first
     const evMsgs = [];
@@ -5335,7 +5351,10 @@ function renderApplePaySetup(){
   const cards = spendMeta.cards || [];
   const cardRows = cards.length ? cards.map(c=>{ const r = spendCardRoute(c); return '<div class="sum-row"><span style="min-width:0;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(c)+'</span><button type="button" class="chip-btn'+(r === 'business' ? ' active' : '')+'" data-ap-card="'+escapeHtml(c)+'">'+(r === 'business' ? 'Business \u2192 Expenses' : 'Personal \u2192 Finance')+'</button></div>'; }).join('')
     : '<div class="stat-sub" style="margin:0 0 4px;">Your cards show up here after their first tap.</div>';
-  box.innerHTML =
+  const strayItems = inboxStrays || [], payItems = strayItems.filter(x=> String(x.m || '').indexOf('ev:') !== 0), sTop = payItems.length ? payItems[payItems.length - 1] : (strayItems.length ? strayItems[strayItems.length - 1] : null);
+  const strayHtml = strayItems.length ? '<div class="card" style="border-color:var(--danger);margin:0 0 10px;"><div class="sum2-h"><span>'+strayItems.length+' waiting, secret not recognised</span></div><div class="stat-sub" style="margin:0 0 6px;">Usually another phone changed the secret. Latest: <b>'+escapeHtml(String(sTop.m || '?'))+'</b> '+(spendParseAmount(sTop.a) ? money(spendParseAmount(sTop.a)) : '')+'. Accept to import them and keep your Shortcut working.</div><div class="sp-btnrow"><button type="button" class="btn small" id="strayAccept">Accept and import</button><button type="button" class="btn secondary small" id="strayDrop">Delete them</button></div></div>' : '';
+  box.innerHTML = strayHtml+
+    '<div class="sum-row" style="padding-top:0;"><span class="sum-k">Secret ends</span><span class="sum-v" id="secretEnd">\u2026'+escapeHtml(String(spendMeta.secret || '').slice(-4))+'</span></div>'+
     '<div class="sum-row" style="padding-top:0;"><span class="sum-k">Latest tap</span><span class="sum-v">'+lastTxt+'</span></div>'+
     (spendMeta.lastRaw ? '<div class="stat-sub" style="margin:0 0 6px;word-break:break-word;">Received: amount \u201c'+escapeHtml(spendMeta.lastRaw.a)+'\u201d\u2003shop \u201c'+escapeHtml(spendMeta.lastRaw.m)+'\u201d\u2003card \u201c'+escapeHtml(spendMeta.lastRaw.c)+'\u201d</div>' : '')+
     (l && l.empty ? '<div class="stat-sub sum-over" style="margin:0 0 6px;">Blank details: the Text\u2019s blue pills must be Amount, Merchant and Card, not just Shortcut Input.</div>' : '')+
@@ -5369,6 +5388,14 @@ function renderApplePaySetup(){
     spendMeta.bizWords = e.target.value.trim(); await saveKey('spend-meta', spendMeta); renderApplePaySetup();
   });
   document.getElementById('apTestBtn').addEventListener('click', spendSendTest);
+  { const sa = document.getElementById('strayAccept'); if(sa) sa.addEventListener('click', async ()=>{
+      const ks = Array.from(new Set((inboxStrays || []).map(x=> x.k).filter(Boolean)));
+      spendMeta.alt = Array.from(new Set((spendMeta.alt || []).concat(ks))).slice(-8);
+      await saveKey('spend-meta', spendMeta); inboxStrays = []; lastStraySig = '';
+      const n = await importInbox(); showToast(n ? 'Imported.' : 'Accepted.'); renderApplePaySetup(); });
+    const sd = document.getElementById('strayDrop'); if(sd) sd.addEventListener('click', async ()=>{
+      for(const x of (inboxStrays || [])){ try{ await x.ref.delete(); }catch(e){} }
+      inboxStrays = []; lastStraySig = ''; renderApplePaySetup(); showToast('Deleted.'); }); }
   document.getElementById('apCheckBtn').addEventListener('click', async ()=>{ const n = await importInbox(); if(!n) showToast('Nothing new in the inbox.'); });
   document.getElementById('spAuthBtn').addEventListener('click', syncSignIn);
 }
@@ -8395,7 +8422,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v20.1';
+const APP_VERSION = 'v20.2';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
