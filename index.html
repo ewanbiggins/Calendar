@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Home Base app ‚Äî version v20.5 (bump by +0.1 in APP_VERSION on every future update). Logbook design. -->
+<!-- Home Base app ‚Äî version v20.6 (bump by +0.1 in APP_VERSION on every future update). Logbook design. -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1650,7 +1650,13 @@ async function applyRemoteValue(key, value){
     case 'fin-in': finIn = value || []; break;
     case 'spend-cats': spendCats = value || null; break;
     case 'spend-rules': spendRules = value || {}; break;
-    case 'spend-meta': spendMeta = Object.assign({secret:'', seen:[], last:null}, value || {}); break;
+    case 'spend-meta': {
+      const prevKeys = spendKeys(), prevSeen = spendMeta.seen || [];
+      spendMeta = Object.assign({secret:'', seen:[], last:null}, value || {});
+      spendMeta.keys = Array.from(new Set(prevKeys.concat(spendMeta.keys || [], [spendMeta.secret]).filter(Boolean))).slice(-12);
+      spendMeta.seen = Array.from(new Set(prevSeen.concat(spendMeta.seen || []))).slice(-300);
+      break;
+    }
     case 'fin-holdings': finHoldings = value || []; break;
     case 'fin-dd': finDD = value || []; break;
     case 'fin-income': finIncome = value || []; break;
@@ -4790,8 +4796,11 @@ async function spendSaveCats(){ await saveKey('spend-cats', spendCats); }
 function spendEnsureCats(){ if(!spendCats) spendCats = SPEND_DEFAULT_CATS.map(c=> Object.assign({}, c)); }
 
 // ---- Apple Pay inbox: the Shortcut drops each tap into Firestore, the app files it here ----
+// every key this app has used is kept and accepted, so a Shortcut copied before the key changed still works
+function spendKeys(){ return Array.from(new Set([spendMeta.secret].concat(spendMeta.keys || []).filter(Boolean))); }
+function spendKeyOk(k){ return !!k && spendKeys().indexOf(String(k)) > -1; }
 function spendFromInbox(d, id){
-  if(!d || !spendMeta.secret || d.k !== spendMeta.secret) return null;
+  if(!d || !spendKeyOk(d.k)) return null;
   if(spendTxns.some(x=> x.id === 'ap_'+id)) return null;
   const merchant = String(d.m || '').trim() || 'Unknown';
   const dm = /^(\d{4}-\d{2}-\d{2})(?:[T ](\d{2}:\d{2}))?/.exec(String(d.d || ''));
@@ -4809,16 +4818,24 @@ function spendCardRoute(card){
 }
 let inboxBusy = false;
 async function importInbox(){
-  if(inboxBusy || !syncEnabled || !firestoreDb || !spendMeta.secret) return 0;
+  if(inboxBusy || !syncEnabled || !firestoreDb || !spendKeys().length) return 0;
   inboxBusy = true;
-  let added = 0, bizAdded = 0, emptyTaps = 0, sawTest = false; const evs = [];
+  let added = 0, bizAdded = 0, emptyTaps = 0, sawTest = false, foreign = 0; const evs = [];
   try{
     const snap = await firestoreDb.collection('inbox').get();
     for(const doc of snap.docs){
       const d = doc.data();
+      // a tap with a key this phone doesn't know is left in the inbox (never deleted), and you are told about it
+      if(!(d && spendKeyOk(d.k))){
+        foreign++;
+        spendMeta.lastForeign = {at:Date.now(), key:String((d && d.k) || '').slice(-4), m:String((d && d.m) || '').slice(0,40), a:String((d && d.a) || '')};
+        const when = d && autoParseTime(d.d);
+        if(when && Date.now() - when > 30*86400000){ try{ await doc.ref.delete(); }catch(e){} }     // a month old: nobody is going to claim it
+        continue;
+      }
       if(!spendMeta.seen.includes(doc.id)){
         spendMeta.seen.push(doc.id);
-        if(d && d.k === spendMeta.secret){
+        {
           if(d.m === 'Test payment' && d.c === 'Test'){ sawTest = true; }
           else if(String(d.m || '').indexOf('ev:') === 0){ evs.push(d); }
           else{
@@ -4852,7 +4869,9 @@ async function importInbox(){
       if(evMsgs.length){ const goEv = evGo && (evGo === 'sleep' ? ()=>{ trendsTab = 'sleep'; goToView('trends'); } : evGo); showToast(evMsgs.join(' '), goEv || undefined); }
     }
     if(spendMeta.seen.length > 300) spendMeta.seen = spendMeta.seen.slice(-300);
-    if(added || bizAdded || emptyTaps || sawTest || evs.length){
+    const warnForeign = foreign && Date.now() - (spendMeta.foreignWarnAt || 0) > 3*3600000;
+    if(warnForeign) spendMeta.foreignWarnAt = Date.now();
+    if(added || bizAdded || emptyTaps || sawTest || evs.length || foreign){
       if(sawTest && !added && !bizAdded && !emptyTaps) spendMeta.last = {merchant:'Test payment', amount:0.01, date:todayStr(), time:''};
       await saveKey('spend-txns', spendTxns);
       if(bizAdded){ await saveKey('expenses', expenses); renderExpensesTab(); }
@@ -4867,6 +4886,7 @@ async function importInbox(){
       else if(emptyTaps) showToast('A tap arrived with no details. The Shortcut isn‚Äôt passing them in yet (Settings ‚Üí Apple Pay).');
       else if(sawTest) showToast('Test received. Apple Pay capture works.');
     }
+    if(warnForeign) showToast('A payment arrived with an out-of-date key, so it wasn\u2019t added. Open Settings \u2192 Apple Pay to fix it.', 'settings:applepay');
   }catch(e){ console.error('inbox import failed', e); }
   finally{ inboxBusy = false; }
   return added + bizAdded + emptyTaps + evs.length;
@@ -4879,7 +4899,7 @@ function accOpen(title, status, ok, open, sub){
   const key = String(title).replace(/<[^>]*>/g, '');
   return '<details class="acc fin-auto" data-acc="'+escapeHtml(key)+'"'+(accState[key] === true ? ' open' : '')+'><summary><span class="acc-t"><b>'+title+'</b>'+(sub ? '<small>'+sub+'</small>' : '')+'</span>'+(status ? '<span class="acc-s'+(ok ? ' ok' : '')+'">'+status+'</span>' : '')+'</summary><div class="acc-b">';
 }
-function spendEnsureSecret(){ if(!spendMeta.secret){ spendMeta.secret = spendRandom(24); saveKey('spend-meta', spendMeta); } return spendMeta.secret; }
+function spendEnsureSecret(){ if(!spendMeta.secret){ spendMeta.secret = spendRandom(24); spendMeta.keys = spendKeys(); saveKey('spend-meta', spendMeta); } return spendMeta.secret; }
 function spendBodyTemplate(){
   spendEnsureSecret();
   return '{"fields":{"k":{"stringValue":"'+spendMeta.secret+'"},"a":{"stringValue":"AMOUNT"},"m":{"stringValue":"MERCHANT"},"c":{"stringValue":"CARD"},"d":{"stringValue":"DATE"}}}';
@@ -4888,7 +4908,7 @@ function spendRulesText(locked){
   spendEnsureSecret();
   const email = (syncAuth && syncAuth.email) || 'you@example.com';
   const who = locked ? "request.auth != null && request.auth.token.email == '"+email+"'" : 'true';
-  return "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /homebase/{doc} {\n      allow read, write: if "+who+";\n    }\n    match /inbox/{id} {\n      allow create: if request.resource.data.k == '"+spendMeta.secret+"'\n        && request.resource.data.keys().hasOnly(['k','a','m','c','d'])\n        && request.resource.data.m.size() < 120;\n      allow read, delete: if "+who+";\n    }\n  }\n}";
+  return "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /homebase/{doc} {\n      allow read, write: if "+who+";\n    }\n    match /inbox/{id} {\n      allow create: if request.resource.data.k in ["+spendKeys().map(k=> "'"+k+"'").join(', ')+"]\n        && request.resource.data.keys().hasOnly(['k','a','m','c','d'])\n        && request.resource.data.m.size() < 120;\n      allow read, delete: if "+who+";\n    }\n  }\n}";
 }
 async function spendSendTest(){
   if(!syncConfig){ showToast('Connect sync first.'); return; }
@@ -4927,7 +4947,7 @@ async function copyText(text, label){
 function renderApplePaySetup(){
   const box = document.getElementById('applePayBody');
   if(!box) return;
-  if(!spendMeta.secret){ spendMeta.secret = spendRandom(24); saveKey('spend-meta', spendMeta); }
+  spendEnsureSecret();
   if(!syncConfig){ box.innerHTML = '<div class="stat-sub">Connect sync first (Settings ‚Üí Sync and backup).</div>'; return; }
   const l = spendMeta.last;
   const lastTxt = (l && l.empty) ? 'Empty tap: no details came through' : l ? escapeHtml(l.merchant)+'‚ÄÉ'+money(l.amount)+'‚ÄÉ'+shortDate(l.date)+(l.time ? ' '+l.time : '')+(l.route === 'business' ? '‚ÄÉExpenses' : '') : 'Nothing received yet';
@@ -4937,6 +4957,8 @@ function renderApplePaySetup(){
     : '<div class="stat-sub" style="margin:0 0 4px;">Your cards show up here after their first tap.</div>';
   box.innerHTML =
     '<div class="sum-row" style="padding-top:0;"><span class="sum-k">Latest tap</span><span class="sum-v">'+lastTxt+'</span></div>'+
+    '<div class="sum-row"><span class="sum-k">Key</span><span class="sum-v">ends in <b>'+escapeHtml(spendMeta.secret.slice(-4))+'</b>'+(spendKeys().length > 1 ? ', plus '+(spendKeys().length - 1)+' older' : '')+'</span></div>'+
+    (spendMeta.lastForeign ? '<div class="stat-sub sum-over" style="margin:6px 0;">Refused: a tap ('+escapeHtml(spendMeta.lastForeign.m || 'no shop')+(spendMeta.lastForeign.a ? ', '+escapeHtml(spendMeta.lastForeign.a) : '')+') came with a key ending in <b>'+escapeHtml(spendMeta.lastForeign.key || '????')+'</b>, which neither phone knows. It is still in the inbox. On the phone you pay with, open the Shortcut and paste the Text again (Copy text, step 3), then tap Check inbox.</div>' : '')+
     (spendMeta.lastRaw ? '<div class="stat-sub" style="margin:0 0 6px;word-break:break-word;">Received: amount ‚Äú'+escapeHtml(spendMeta.lastRaw.a)+'‚Äù‚ÄÉshop ‚Äú'+escapeHtml(spendMeta.lastRaw.m)+'‚Äù‚ÄÉcard ‚Äú'+escapeHtml(spendMeta.lastRaw.c)+'‚Äù</div>' : '')+
     (l && l.empty ? '<div class="stat-sub sum-over" style="margin:0 0 6px;">Blank details: the Text‚Äôs blue pills must be Amount, Merchant and Card, not just Shortcut Input.</div>' : '')+
     '<div class="acc-list">'+accOpen('Cards', cards.length ? cards.length+' card'+(cards.length === 1 ? '' : 's') : 'None yet', cards.length > 0, false, 'Which cards go to Expenses and which to Finance')+cardRows+
@@ -7903,7 +7925,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v20.5';
+const APP_VERSION = 'v20.6';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
