@@ -1329,6 +1329,11 @@ body[data-view="trends"] #view-trends.active{flex:1 1 auto;min-height:0;display:
 
 .sp-add1{display:flex;gap:8px;align-items:center;}
 .bd-left{border-top:1px solid var(--line);margin-top:4px;padding-top:6px;}
+
+/* the line over the tab you are on */
+.nav-ind{position:absolute;top:0;left:0;width:34px;height:3px;border-radius:0 0 3px 3px;background:var(--home);transform:translateX(-100px);opacity:0;transition:transform .3s cubic-bezier(.3,.85,.3,1),opacity .2s;pointer-events:none;}
+.nav-ind.show{opacity:1;}
+.nav-ind.drag{transition:none;}
 </style>
 </head>
 <body data-view="calendar">
@@ -1760,6 +1765,7 @@ body[data-view="trends"] #view-trends.active{flex:1 1 auto;min-height:0;display:
 
 <div class="return-cal-fade" id="returnCalFade" style="display:none;"></div>
 <div class="return-cal-bar" id="returnCalBar">
+  <span class="nav-ind" id="navInd"></span>
   <button type="button" class="nav-item" id="returnBarMenuBtn" data-nav="menu" title="Menu"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg><i class="nav-dot" id="menuNavDot"></i></span><span>Menu</span></button>
   <button type="button" class="nav-item" id="returnCalBtn" data-nav="calendar" title="Calendar"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span>Calendar</span></button>
   <button type="button" class="nav-item" id="returnDashBtn" data-nav="summary" title="Dashboard"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/></svg></span><span>Dashboard</span></button>
@@ -2462,7 +2468,7 @@ async function init(){
   safeStep(setupExpenses);
   safeStep(setupTravel);
   safeStep(setupSync);
-  safeStep(()=>{ autoSettleWork(); });
+  safeStep(()=>{ autoSettleWork(); setTimeout(()=>{ autoRetryDrafts(); }, 1500); window.addEventListener('online', ()=>{ autoRetryDrafts(); importInbox(); }); });
 
   renderCalendarAll();
   renderRentTab();
@@ -2517,7 +2523,7 @@ function goToView(viewName, dir, opts){
   { const ttl = {menu:'Menu', summary:'Dashboard', todo:'To-dos', rent:'Rent', toil:'TOIL', mileage:'Mileage', expenses:'Expenses', gym:'Gym', budget:'Finance', settings:'Settings', trends:'Trends', travel:'Travel'}[viewName];
     const st = document.getElementById('screenTitle'); if(st) st.textContent = ttl || 'Home Base';
     const td = document.getElementById('todayLabel'); if(td) td.style.display = viewName === 'summary' ? '' : 'none';
-    document.querySelectorAll('#returnCalBar [data-nav]').forEach(b=> b.classList.toggle('on', b.dataset.nav === viewName || (viewName === 'summary' && b.dataset.nav === 'summary'))); }
+    document.querySelectorAll('#returnCalBar [data-nav]').forEach(b=> b.classList.toggle('on', b.dataset.nav === viewName || (viewName === 'summary' && b.dataset.nav === 'summary'))); navIndUpdate(); }
   if(viewName==='calendar'){
     if(!(opts && opts.noRestore)) requestAnimationFrame(()=> SC.scrollTo(0, savedCalendarScrollY));
   }else{
@@ -2529,6 +2535,23 @@ function goToView(viewName, dir, opts){
   if(viewName==='summary') renderSummary();
   if(viewName==='budget'){ finTab = setPage || 'overview'; finOpenItem = null; renderBudget(); importInbox(); finMaybeRefresh(); }
   if(viewName==='settings'){ settingsPage = setPage; applySettingsPage(); renderApplePaySetup(); renderAutoSetup(); renderGymTargets(); importInbox(); }
+}
+// the line over the tab you are on: moves to the new tab, and follows your finger while you swipe
+function navIndBtn(name){ return document.querySelector('#returnCalBar [data-nav="'+name+'"]'); }
+function navIndX(btn){ const r = btn.getBoundingClientRect(); return r.left + r.width/2 - 17; }
+function navIndUpdate(){
+  const ind = document.getElementById('navInd'); if(!ind) return;
+  const v = document.body.dataset.view, on = document.querySelector('#returnCalBar .nav-item.on');
+  ind.classList.remove('drag');
+  if(!on || MAIN_VIEWS.indexOf(v) < 0){ ind.classList.remove('show'); return; }
+  ind.style.transform = 'translateX('+navIndX(on).toFixed(1)+'px)'; ind.classList.add('show');
+}
+function navIndDrag(dx){
+  const ind = document.getElementById('navInd'), v = document.body.dataset.view, i = MAIN_VIEWS.indexOf(v); if(!ind || i < 0) return;
+  const j = i + (dx < 0 ? 1 : -1); if(j < 0 || j > 2 || (v === 'calendar' && yearViewActive)) return;
+  const a = navIndBtn(MAIN_VIEWS[i]), b = navIndBtn(MAIN_VIEWS[j]); if(!a || !b) return;
+  const pr = Math.min(1, Math.abs(dx)/56), x = navIndX(a) + (navIndX(b) - navIndX(a))*pr;
+  ind.classList.add('drag', 'show'); ind.style.transform = 'translateX('+x.toFixed(1)+'px)';
 }
 function setupTabs(){
   const isOn = (v)=> document.getElementById('view-'+v).classList.contains('active');
@@ -2543,7 +2566,7 @@ function setupTabs(){
   document.getElementById('returnDashBtn').addEventListener('click', ()=>{ if(!isOn('summary')) goToView('summary'); });
   // Menu, Calendar and Dashboard sit side by side: swipe to move between them. Fires as soon as the swipe is clearly sideways (so a browser
   // scroll taking over the touch can't swallow it), and again on release for short flicks.
-  const swipe = (el, onSwipe)=>{
+  const swipe = (el, onSwipe, onDrag, onCancel)=>{
     let sx = null, sy = null, st = 0, sx0 = 0, fired = false;
     const blocked = ()=> document.body.style.overflow === 'hidden' || !!document.querySelector('.overlay:not(.hidden)');
     const fire = (dx)=>{ fired = true; sx = null; onSwipe(dx < 0 ? 'left' : 'right'); };
@@ -2551,6 +2574,7 @@ function setupTabs(){
     el.addEventListener('touchmove', (e)=>{
       if(sx === null || fired) return;
       const t = e.touches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+      if(onDrag && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)*1.3 && !blocked()) onDrag(dx);
       if(Math.abs(dx) > 56 && Math.abs(dx) > Math.abs(dy)*1.3 && !blocked()) fire(dx);
     }, {passive:true});
     const end = (e)=>{
@@ -2560,6 +2584,7 @@ function setupTabs(){
       const quick = Math.abs(dx) > 20 && Math.abs(dx)/Math.max(1, dt) > 0.18;    // a short flick counts
       const long = Math.abs(dx) > 34;                                           // so does a deliberate drag
       if((quick || long) && Math.abs(dx) > Math.abs(dy)*1.15 && dt < 1100 && !blocked()) onSwipe(dx < 0 ? 'left' : 'right');
+      else if(onCancel) onCancel();
     };
     el.addEventListener('touchend', end, {passive:true});
     el.addEventListener('touchcancel', end, {passive:true});
@@ -2569,7 +2594,9 @@ function setupTabs(){
     if(v === 'calendar'){ if(!yearViewActive) goToView(dir === 'left' ? 'summary' : 'menu'); }
     else if(v === 'menu'){ if(dir === 'left') goToView('calendar'); }
     else if(v === 'summary'){ if(dir === 'right') goToView('calendar'); }
-  });
+  }, navIndDrag, navIndUpdate);
+  window.addEventListener('resize', navIndUpdate); window.addEventListener('orientationchange', ()=> setTimeout(navIndUpdate, 250));
+  setTimeout(navIndUpdate, 400);
   setupSettingsNav();
   setupMoneyEye();
   window.addEventListener('resize', fitSummary);
@@ -5739,7 +5766,13 @@ function finLooseCarryParts(ym){
   return {carry:finR2(carry), base:finR2(base), unspent:finR2(unspent)};
 }
 function finLooseCarry(ym){ return finLooseCarryParts(ym).carry; }
-function finLoose(ym){ finLcInit(); const cp = finLooseCarryParts(ym), r = finLooseMonth(ym, cp.carry); r.base = cp.base; r.unspentPrev = cp.unspent; r.start = finSettings.lc.start; r.before = ym < r.start; r.pre = r.before && ym === finPrevYm(r.start); r.preAmt = r.pre ? finLcPre() : 0; return r; }
+function finLoose(ym){ finLcInit(); const cp = finLooseCarryParts(ym), r = finLooseMonth(ym, cp.carry); r.base = cp.base; r.unspentPrev = cp.unspent; r.start = finSettings.lc.start; r.before = ym < r.start; r.pre = r.before && ym === finPrevYm(r.start); r.preAmt = 0;
+  if(r.before){                          // the setup period reads like any other period; earlier ones show nothing
+    const P = finLcPreParts(), open = Number(finSettings.lc.open) || 0;
+    if(r.pre){ r.carry = open; r.base = open; r.unspentPrev = 0; r.unalloc = 0; r.extra = P.extra; r.repaid = P.repaid; r.lent = P.lent; r.adj = 0; r.spentLC = P.spent; r.overspend = 0; r.cap = finR2(open + P.extra + P.repaid - P.lent); r.used = P.spent; r.avail = finR2(r.cap - P.spent); r.preAmt = r.avail; }
+    else{ r.cap = 0; r.used = 0; r.avail = 0; r.hide = true; }
+  }
+  return r; }
 
 function finInvScheduled(ym){
   let t = 0;
@@ -5851,7 +5884,7 @@ function renderFinDashboard(box){
       '<div class="fs-acct"><span>In the account</span><b>'+(acct ? money(acct.value) : '\u2014')+'</b></div></div>'+
     (hasB ? '<div class="sp-bar thin"><div class="sp-fill'+(pctB > 1 ? ' over' : (pctB > 0.85 ? ' warn' : ''))+'" style="width:'+Math.min(100, pctB*100)+'%"></div></div>' : '')+
     finCatLines(mp, lcState)+
-    '<div class="fs-foot"><span class="stat-sub" style="margin:0;">'+(hasB ? (leftB >= 0 ? money(leftB)+' left in budgets' : '<b class="sum-over">'+money(-leftB)+' over budgets</b>') : 'No budgets set yet')+(lcState.before ? (lcState.preAmt ? '\u2003loose change '+(lcState.preAmt < 0 ? '\u2212' : '')+money(Math.abs(lcState.preAmt))+' so far' : '') : '\u2003loose change '+(lcv < 0 ? '\u2212' : '')+money(Math.abs(lcv)))+'</span><button type="button" class="fm-link" data-fin-budgets>Budgets</button></div></div>';
+    '<div class="fs-foot"><span class="stat-sub" style="margin:0;">'+(hasB ? (leftB >= 0 ? money(leftB)+' left in budgets' : '<b class="sum-over">'+money(-leftB)+' over budgets</b>') : 'No budgets set yet')+(lcState.hide ? '' : '\u2003loose change '+(lcv < 0 ? '\u2212' : '')+money(Math.abs(lcv)))+'</span><button type="button" class="fm-link" data-fin-budgets>Budgets</button></div></div>';
   const owedNow = finOwedUnpaid(), people = new Set();
   finOwed.forEach(o=> o.people.forEach(p=>{ if(!p.paid) people.add(p.name); }));
   if(owedNow > 0) h += '<button type="button" class="fm-row" data-fin-owed><span>Owed to you</span><b>'+money(owedNow)+'</b><span class="stat-sub" style="margin:0;">'+people.size+' '+(people.size === 1 ? 'person' : 'people')+' \u203a</span></button>';
@@ -5885,10 +5918,9 @@ function finCatLines(mp, L){
     const e = L.env.find(x=> x.c.id === c.id); if(e) rows.push({c, S:e.S, L:e.L});
   });
   if(!cats.some(c=> c.id === 'investing') && (mp.invested > 0 || mp.invActual > 0)) rows.push({c:{id:'investing', name:'Investing', color:'#3E8E8E'}, S:mp.invActual, L:mp.invested});
-  const oc = cats.find(c=> c.id === 'other'); if(oc) rows.push({c:oc, S:L.used, L:Math.max(0, L.cap), lc:true, left:L.avail, pre:L.before, startLabel:finStartLabel(L.start), preAmt:L.preAmt});
+  const oc = cats.find(c=> c.id === 'other'); if(oc && !L.hide) rows.push({c:oc, S:L.used, L:Math.max(0, L.cap), lc:true, left:L.avail});
   const tot = mp.spentAll > 0 ? mp.spentAll : 1;
   return '<div class="fc-list">'+rows.map(r=>{
-    if(r.lc && r.pre) return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\" data-fin-lc><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b>'+(r.preAmt ? (r.preAmt < 0 ? '\u2212' : '')+money(Math.abs(r.preAmt))+'<span class=\"fc-of\"> so far, budgets start '+r.startLabel+'</span>' : '<span class=\"fc-of\">starts '+r.startLabel+'</span>')+'</b></div><div class=\"fc-bar\"></div></button>';
     if(r.lc){
       const lo = r.left < 0, lp = r.L > 0 ? Math.min(100, r.S/r.L*100) : (r.S > 0 ? 100 : 0);
       return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\" data-fin-lc><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b'+(lo ? ' class=\"over\"' : '')+'>'+money(r.S)+'<span class=\"fc-of\"> of '+money(r.L)+'</span></b></div><div class=\"fc-bar\"><div class=\"fc-fill\" style=\"width:'+lp.toFixed(1)+'%;background:'+r.c.color+';\"></div></div></button>';
@@ -5925,7 +5957,7 @@ function renderLooseSheet(){
   let h = '<div class="stat-sub" style="margin:0 0 2px;">'+finPeriodLabel(ym)+'</div>';
   if(L.before){
     const P = finLcPreParts(), open = Number(lc.open) || 0, total = finR2(open + P.total);
-    h += '<div class="fin-big'+(total < 0 ? ' sum-over' : '')+'">'+signed(total)+'</div><div class="stat-sub" style="margin:0 0 8px;">so far. Budgets start '+finStartLabel(L.start)+'.</div>'+
+    h += '<div class="fin-big'+(total < 0 ? ' sum-over' : '')+'">'+signed(total)+'</div><div class="stat-sub" style="margin:0 0 8px;">left to spend</div>'+
       row('Already set aside', plus(open))+row('Extra income', plus(P.extra))+(P.repaid ? row('Paid back to you', plus(P.repaid)) : '')+(P.lent ? row('Fronted for others', '\u2212'+money(P.lent)) : '')+row('Spent from loose change', P.spent ? '\u2212'+money(P.spent) : '\u2014');
   }else{
     h += '<div class="fin-big'+(L.avail < 0 ? ' sum-over' : '')+'">'+signed(L.avail)+'</div><div class="stat-sub" style="margin:0 0 4px;">left to spend</div>'+
@@ -5988,10 +6020,10 @@ function renderBudgetSheet(){
     L.env.forEach(e=>{ const el = body.querySelector('[data-bs="'+e.c.id+'"]'); if(el){ el.textContent = money(e.S)+' spent'+(e.L > 0 ? ', '+(e.left >= 0 ? money(e.left)+' left' : money(-e.left)+' over, taken from loose change') : ', set a limit'); el.style.color = e.L > 0 && e.left < 0 ? 'var(--danger)' : ''; } });
     { const lr = body.querySelector('[data-bs="other"]'), li = body.querySelector('[data-lc-cap]');
       if(lr){
-        if(L.before) lr.textContent = L.preAmt ? signed(L.preAmt)+' so far, budgets start '+finStartLabel(L.start) : 'starts '+finStartLabel(L.start);
+        if(L.hide) lr.textContent = '';
         else{ lr.textContent = money(L.used)+' spent, '+(L.avail >= 0 ? money(L.avail)+' left' : money(-L.avail)+' over'); lr.style.color = L.avail < 0 ? 'var(--danger)' : ''; }
       }
-      if(li) li.value = L.before ? (L.preAmt ? String(finR2(L.preAmt)) : '') : String(finR2(Math.max(0, L.cap)));
+      if(li) li.value = L.hide ? '' : String(finR2(Math.max(0, L.cap)));
     }
     // ---- Investments: the whole pay period's regular buys up front; the paid part only grows as each one falls due ----
     { const blk = document.getElementById('budInvBlock'); if(blk){
@@ -6025,7 +6057,8 @@ function renderBudgetSheet(){
     const curYm = finCurKey(), nextYm = finNextKey(curYm);
     const startOpts = Array.from(new Set([finPrevYm(curYm), curYm, nextYm, L.start])).sort().map(m=> '<option value="'+m+'"'+(m === L.start ? ' selected' : '')+'>'+finPeriodLabel(m)+'</option>').join('');
     const startRow = '<div class="sum-row"><span class="sum-k">Counting from</span><span class="sum-v"><select id="lcStart" aria-label="Count loose change from">'+startOpts+'</select></span></div>'+(L.start < nextYm ? '<div style="margin:2px 0 6px;"><button type="button" class="pill" id="lcFresh">Start fresh from '+finStartLabel(nextYm)+'</button></div>' : '');
-    if(L.before){ document.getElementById('budLc').innerHTML = '<div class="bd-lc-h"><span>Loose change</span><b'+(L.preAmt ? '>'+signed(L.preAmt)+' so far' : ' style="font-size:13px;color:var(--ink-soft);">starts '+finStartLabel(L.start))+'</b></div>'+(L.pre ? '<div class="stat-sub" style="margin:2px 0 4px;">Extra income and repayments count from the day they arrive. Budgets start '+finStartLabel(L.start)+'.</div>' : '')+startRow;
+    if(L.before){ document.getElementById('budLc').innerHTML = '<div class="bd-lc-h"><span>Loose change <button type="button" class="pill" id="lcDetails" style="margin-left:6px;">Running total</button></span><b>'+(L.pre ? signed(L.avail)+' left' : '')+'</b></div>'+startRow;
+      { const ld0 = document.getElementById('lcDetails'); if(ld0) ld0.addEventListener('click', openLooseSheet); }
       const ls0 = document.getElementById('lcStart'); if(ls0) ls0.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, {start:ls0.value})}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); });
       const lf0 = document.getElementById('lcFresh'); if(lf0) lf0.addEventListener('click', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:finNewLc(nextYm)}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); });
       return; }
@@ -6809,7 +6842,7 @@ function renderFinSpend(box){
   const acctNow = finAccount(), mpNow = mp;
   const lcSt = finLoose(ym), lcAvail = lcSt.avail, whole = n=> '\u00a3'+Math.round(Math.abs(n)).toLocaleString('en-GB');
   const accountHtml = '<div class="card lg-acct"><div class="la-r1"><span class="la-l">Spending account</span><button type="button" class="pill" data-sp-acct>'+(acctNow ? 'Update' : 'Set balance')+'</button></div>'+
-    '<div class="la-r2"><b class="la-bal">'+(acctNow ? amt(acctNow.value) : '\u2014')+'</b><span class="la-io"><span>In <b>'+whole(mpNow.incomeSoFar)+'</b></span><span>Out <b>'+whole(mpNow.spentAll)+'</b></span><span class="la-lc" data-open-lc style="cursor:pointer;">Loose change <b>'+(lcSt.before ? (lcSt.preAmt ? (lcSt.preAmt < 0 ? '\u2212' : '')+whole(lcSt.preAmt)+' so far' : 'starts '+finStartLabel(lcSt.start)) : (lcAvail < 0 ? '\u2212' : '')+whole(lcAvail))+'</b></span></span></div>'+
+    '<div class="la-r2"><b class="la-bal">'+(acctNow ? amt(acctNow.value) : '\u2014')+'</b><span class="la-io"><span>In <b>'+whole(mpNow.incomeSoFar)+'</b></span><span>Out <b>'+whole(mpNow.spentAll)+'</b></span><span class="la-lc" data-open-lc style="cursor:pointer;">Loose change <b>'+(lcSt.hide ? '\u2014' : (lcAvail < 0 ? '\u2212' : '')+whole(lcAvail))+'</b></span></span></div>'+
     (ym !== finCurKey() ? '<div class="la-m">'+finPeriodLabel(ym)+'</div>' : '')+(acctNow ? '' : '<div class="stat-sub" style="margin:4px 0 0;">Type what the account shows; payments then keep it up to date.</div>')+'</div>';
   h += accountHtml+'<div class="card sp-addcard"><div class="sp-add1"><div class="seg sp-dir"><button type="button" data-sp-dir="out" class="sel-home" title="Money out" aria-label="Money out">\u2212</button><button type="button" data-sp-dir="in" title="Money in" aria-label="Money in">+</button></div><input type="text" id="spAmt" inputmode="decimal" placeholder="\u00a3" aria-label="Amount"><select id="spPlace" aria-label="Where"></select><button type="button" class="btn small" id="spAddBtn">Add</button></div>'+
     '<input type="text" id="spMer" placeholder="Where?" autocomplete="off" style="width:100%;margin-top:6px;" hidden></div>';
@@ -6968,7 +7001,9 @@ async function autoSetHome(addr){
   return true;
 }
 // a coordinate -> a name: home, one of your saved places, or the nearest address
-async function autoPlaceName(pt){
+async function autoPlaceName(pt0){
+  const pt = {lat:Number(pt0 && pt0.lat), lon:Number(pt0 && pt0.lon)};
+  if(isNaN(pt.lat) || isNaN(pt.lon)) return 'Unknown place';
   const home = autoMeta.home;
   if(home && autoDistM(pt.lat, pt.lon, home.lat, home.lon) < 200) return home.addr;
   for(const f of mileageFavorites){
@@ -6984,16 +7019,26 @@ async function autoPlaceName(pt){
   }catch(e){}
   return pt.lat.toFixed(4)+', '+pt.lon.toFixed(4);
 }
+let autoResolving = {};
+const autoIsCoord = t=> /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/.test(String(t || '').trim());
 async function autoResolveDraft(dr){
+  if(autoResolving[dr.id]) return;
+  autoResolving[dr.id] = true; renderMileageDrafts();
   try{
-    const names = await Promise.all([autoPlaceName(dr.from), autoPlaceName(dr.to)]);
-    dr.from.text = names[0]; dr.to.text = names[1];
-    const m = await routeMiles([{lat:dr.from.lat, lon:dr.from.lon}, {lat:dr.to.lat, lon:dr.to.lon}]);
-    if(m != null) dr.miles = m;
-  }catch(e){}
-  dr.resolved = true;
+    const one = async pt=>{ try{ return await autoPlaceName(pt); }catch(e){ return ''; } };
+    const names = await Promise.all([one(dr.from), one(dr.to)]), co = pt=> Number(pt.lat).toFixed(4)+', '+Number(pt.lon).toFixed(4);
+    dr.from.text = names[0] || dr.from.text || co(dr.from); dr.to.text = names[1] || dr.to.text || co(dr.to);
+    if(dr.miles == null){ try{ const m = await routeMiles([{lat:dr.from.lat, lon:dr.from.lon}, {lat:dr.to.lat, lon:dr.to.lon}]); if(m != null) dr.miles = m; }catch(e){} }
+  }catch(e){ console.error(e); }
+  dr.tries = (dr.tries || 0) + 1;
+  dr.resolved = !autoIsCoord(dr.from.text) && !autoIsCoord(dr.to.text) && dr.miles != null;
+  delete autoResolving[dr.id];
   await saveKey('mileage-drafts', mileageDrafts);
   renderMileageDrafts();
+}
+// drives that never got their places or distance (no signal when they ended): try again whenever the app opens or the phone is back online
+async function autoRetryDrafts(){
+  for(const dr of mileageDrafts.slice()){ if(!dr.resolved && (dr.tries || 0) < 6 && !autoResolving[dr.id]) await autoResolveDraft(dr); }
 }
 async function autoTripEnd(lat, lon, t, hasLoc){
   const st = autoMeta.tripStart;
@@ -7171,7 +7216,7 @@ function renderMileageDrafts(){
   const list = mileageDrafts.slice().sort((a,b)=> b.startT - a.startT);
   body.innerHTML = list.map(dr=>{
     const prev = autoPrevDraft(dr);
-    const fromL = dr.from.text ? mileageShortPlace(dr.from.text) : 'Finding the place\u2026', toL = dr.to.text ? mileageShortPlace(dr.to.text) : 'Finding the place\u2026';
+    const nm = (t, id)=> t ? mileageShortPlace(t) : (autoResolving[id] ? 'Finding the place\u2026' : 'Place not found'), fromL = nm(dr.from.text, dr.id), toL = nm(dr.to.text, dr.id);
     return '<div class="fin-item" data-draft="'+dr.id+'"><div style="min-width:0;"><b class="trip-title">'+escapeHtml(fromL)+' \u2192 '+escapeHtml(toL)+'</b>'+((dr.stops || []).length ? '<div class="stat-sub" style="margin:2px 0 0;">via '+escapeHtml(dr.stops.map(mileageDisplayName).join(', '))+'</div>' : '')+
       '<div class="trip-meta" style="margin-top:3px;"><span>'+shortDate(dr.date)+'</span><span>'+hm(dr.startT)+'\u2013'+hm(dr.endT)+'</span><span>'+dr.mins+' min</span><span><b>'+(dr.miles != null ? Number(dr.miles).toFixed(1)+' mi' : 'distance pending')+'</b></span></div></div>'+
       '<div class="sp-btnrow"><button type="button" class="btn small" data-dr-apply="business" data-id="'+dr.id+'">Business</button><button type="button" class="btn small secondary" data-dr-apply="personal" data-id="'+dr.id+'">Personal</button></div>'+
@@ -7316,6 +7361,7 @@ function renderAutoSetup(){
     '<div class="set-label">The 7 automations<span class="auto-count">'+heard+' of 7 heard</span></div>'+
     '<div class="stat-sub" style="margin:0 2px 8px;">A tick means Home Base has heard it.</div>'+
     '<div class="sp-btnrow" style="margin-bottom:8px;"><button type="button" class="btn secondary small" id="autoCopyUrlBtn">Copy URL</button><button type="button" class="btn secondary small" id="autoTestBtn">Test the link</button><button type="button" class="btn secondary small" id="autoCheckBtn">Check for new signals</button></div><div class="stat-sub" id="autoTestMsg" style="margin:0 2px 8px;"></div>'+
+    '<div class="stat-sub" style="margin:0 2px 10px;"><b>\u201cOffline\u201d or error -1009?</b> The phone had no data then. Settings \u203a Cellular \u203a turn <b>Shortcuts</b> on.</div>'+
     '<div class="acc-list">'+AUTO_EVENTS.map(e=>{
       const seen = (autoMeta.seen || {})[e.id];
       const rest = e.loc ? 'LAT \u2192 <b>Current Location</b> \u203a <b>Latitude</b>, LON \u2192 <b>Longitude</b>. ' : '';
@@ -8551,7 +8597,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v20.5';
+const APP_VERSION = 'v20.6';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
@@ -9492,6 +9538,7 @@ document.addEventListener('visibilitychange', ()=>{
     lastHiddenAt = null;
     updateClockInBtn();
     autoSettleWork();
+    autoRetryDrafts();
     syncNow(true);
     importInbox();
     setTimeout(maybeAskBodyweight, 700);
