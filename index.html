@@ -5518,11 +5518,11 @@ function finRenderOwedSheet(){
   body.querySelectorAll('[data-fo-pay]').forEach(b=> b.addEventListener('click', async ()=>{
     const o = finOwed.find(x=> String(x.id) === b.dataset.foPay); if(!o) return;
     const p = o.people.find(x=> x.name === b.dataset.who); if(!p) return;
-    p.paid = !p.paid; p.paidDate = p.paid ? todayStr() : null; await persist();
+    p.paid = !p.paid; p.paidDate = p.paid ? todayStr() : null; p.paidTime = p.paid ? nowHM() : null; await persist();
   }));
   body.querySelectorAll('[data-fo-date]').forEach(i=> i.addEventListener('change', async ()=>{ const o = finOwed.find(x=> String(x.id) === i.dataset.foDate); const pp = o && o.people.find(x=> x.name === i.dataset.who); if(pp && i.value && i.value <= todayStr()){ pp.paidDate = i.value; await persist(); showToast('Date updated.'); } }));
   body.querySelectorAll('[data-fo-all]').forEach(b=> b.addEventListener('click', async ()=>{
-    finOwed.forEach(o=> o.people.forEach(p=>{ if(p.name === b.dataset.foAll && !p.paid){ p.paid = true; p.paidDate = todayStr(); } }));
+    finOwed.forEach(o=> o.people.forEach(p=>{ if(p.name === b.dataset.foAll && !p.paid){ p.paid = true; p.paidDate = todayStr(); p.paidTime = nowHM(); } }));
     await persist(); showToast(b.dataset.foAll+' is all settled.');
   }));
   const sp = body.querySelector('#foShowPaid'); if(sp) sp.addEventListener('click', ()=>{ finShowPaid = !finShowPaid; finRenderOwedSheet(); });
@@ -5590,7 +5590,7 @@ function finRenderTxnSheet(id){
   body.querySelectorAll('[data-ft-pay]').forEach(b=> b.addEventListener('click', async ()=>{
     const o = finOwed.find(x=> String(x.id) === b.dataset.ftPay); if(!o) return;
     const p = o.people.find(x=> x.name === b.dataset.who); if(!p) return;
-    p.paid = !p.paid; p.paidDate = p.paid ? todayStr() : null;
+    p.paid = !p.paid; p.paidDate = p.paid ? todayStr() : null; p.paidTime = p.paid ? nowHM() : null;
     await saveKey('fin-owed', finOwed); redo(); finBack();
   }));
   const start = body.querySelector('#ftSplitStart');
@@ -5782,7 +5782,7 @@ function finAccount(){
   const skip = new Set(a.skip || []);                                           // already entered when you typed the balance: already in it
   spendTxns.forEach(t=>{ if(t.date && t.date <= today && !skip.has(t.id) && (t.date+' '+(t.time || '23:59')) > stamp) out += t.amount; });
   finIn.forEach(i=>{ if(i.date && i.date <= today && !skip.has('i:'+i.id) && (i.date+' '+(i.time || '00:00')) > stamp) inn += i.amount; });
-  finOwed.forEach(o=> o.people.forEach(pp=>{ if(pp.paid && pp.paidDate && pp.paidDate <= today && (pp.paidDate+' 23:59') > stamp) inn += pp.share; }));
+  finOwed.forEach(o=> o.people.forEach(pp=>{ if(pp.paid && pp.paidDate && pp.paidDate <= today && (pp.paidDate+' '+(pp.paidTime || '00:00')) > stamp) inn += pp.share; }));
   return {value:finR2(a.bal + inn - out), set:a.bal, since:a.date, inn:finR2(inn), out:finR2(out)};
 }
 function finOpenAcctSheet(){
@@ -5797,16 +5797,15 @@ function finOpenAcctSheet(){
     const err = document.getElementById('acctErr'), v = finParseMoney(document.getElementById('acctBal').value);
     if(v === null){ err.textContent = 'Type the balance, for example 1250.50.'; return; }
     try{
-      const td = todayStr(), tm = nowHM(), stamp = td+' '+tm, skip = [];
-      spendTxns.forEach(t=>{ if(t.date && t.date <= td && (t.date+' '+(t.time || '23:59')) > stamp) skip.push(t.id); });
-      finIn.forEach(i=>{ if(i.date && i.date <= td && (i.date+' '+(i.time || '00:00')) > stamp) skip.push('i:'+i.id); });
-      finSettings = Object.assign({}, finSettings, {acct:{bal:finR2(v), date:td, time:tm, skip}});
+      const td = todayStr(), tm = nowHM();
+      finSettings = Object.assign({}, finSettings, {acct:{bal:finR2(v), date:td, time:tm}});
+      const counted = finAccount(), delta = counted ? finR2(counted.value - finR2(v)) : 0;     // anything dated today that is already entered is already in the balance you typed
+      if(Math.abs(delta) > 0.004) finSettings.acct.bal = finR2(v - delta);
       await saveKey('fin-settings', finSettings);
     }catch(e){ err.textContent = 'Could not save: '+(e && e.message ? e.message : 'try again'); return; }
     const shown = finAccount(); closeSheet();
     try{ renderBudget(); }catch(e){ console.error(e); }
-    const diff = shown ? finR2(shown.value - finR2(v)) : 0;
-    showToast(Math.abs(diff) > 0.005 ? 'Saved '+money(v)+'. It shows '+money(shown.value)+' because items dated after this moment are already counted.' : 'Balance saved: '+money(v)+'.');
+    showToast('Balance saved: '+money(v)+'.');
   };
   document.getElementById('acctSave').addEventListener('click', save);
   document.getElementById('acctBal').addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); save(); } });
@@ -5966,22 +5965,34 @@ function renderBudgetSheet(){
   body.classList.add('rc-sheet');
   finLcInit(); spendEnsureCats();
   const cats = spendCatList(), ym = spendMonth || finCurKey(), signed = n=> (n < 0 ? '\u2212' : '')+money(Math.abs(n));
-  let h = '<div class="bd-lc" id="budLc"></div><div class="stat-sub" id="budAlloc" style="margin:8px 0 0;"></div><div class="bd-label">'+finPeriodLabel(ym)+(finCycle() === 'calendar' ? ', resets each month' : ', resets every payday')+'</div><div class="sum-row" style="margin-top:6px;"><span class="sum-k">Budgets refresh on</span><span class="sum-v"><select id="cycleSel" aria-label="When budgets refresh"><option value="lastfri"'+(finCycle() === 'lastfri' ? ' selected' : '')+'>Last Friday</option><option value="calendar"'+(finCycle() === 'calendar' ? ' selected' : '')+'>1st of month</option></select></span></div>';
+  let h = '<div class="stat-sub" id="budAlloc" style="margin:0;"></div><div class="bd-label">'+finPeriodLabel(ym)+(finCycle() === 'calendar' ? ', resets each month' : ', resets every payday')+'</div><div class="sum-row" style="margin-top:6px;"><span class="sum-k">Budgets refresh on</span><span class="sum-v"><select id="cycleSel" aria-label="When budgets refresh"><option value="lastfri"'+(finCycle() === 'lastfri' ? ' selected' : '')+'>Last Friday</option><option value="calendar"'+(finCycle() === 'calendar' ? ' selected' : '')+'>1st of month</option></select></span></div>';
   cats.forEach(c=>{
-    if(c.id === 'other') return;
+    if(c.id === 'other'){
+      h += '<div class="bud-row" data-lc-row role="button" tabindex="0" style="cursor:pointer;"><div class="bud-line"><input type="text" readonly inputmode="none" tabindex="-1" value="'+escapeHtml(c.name)+'" aria-label="Name" style="pointer-events:none;"><input type="text" readonly inputmode="none" tabindex="-1" placeholder="\u00a3 a month" value="" data-lc-cap aria-label="Loose change to draw on" style="pointer-events:none;width:96px;flex:none;"><span style="width:44px;flex:none;text-align:center;color:var(--ink-soft);font-size:18px;">\u203a</span></div><div class="bud-sub" data-bs="other"></div></div>';
+      return;
+    }
     if(c.id === 'investing') return;                    // shown in its own Investments block below
     const isBills = c.id === 'bills';
     h += '<div class="bud-row" data-bud="'+c.id+'"><div class="bud-line">'+(isBills ? '<span class="bud-fixed" style="flex:1;">'+escapeHtml(c.name)+'</span>' : '<input type="text" value="'+escapeHtml(c.name)+'" data-bn="'+c.id+'" aria-label="Name">')+
       '<input type="number" inputmode="decimal" min="0" step="1" placeholder="\u00a3 a month" value="'+(c.budget || '')+'" data-bb="'+c.id+'" aria-label="Monthly limit">'+(isBills ? '<span style="width:44px;flex:none;"></span>' : '<button type="button" class="todo-del" data-bd="'+c.id+'" aria-label="Delete">&times;</button>')+'</div>'+
       '<div class="bud-sub" data-bs="'+c.id+'"></div>'+(isBills ? '<div class="bud-sub" id="budMatch"></div>' : '')+'</div>';
   });
-  h += '<div id="budInvBlock"></div><button type="button" class="btn secondary small" id="budAdd" style="margin-top:8px;">+ Add budget</button>';
+  h += '<div id="budInvBlock"></div><button type="button" class="btn secondary small" id="budAdd" style="margin-top:8px;">+ Add budget</button>'+
+    '<div style="margin-top:10px;border-top:1px solid var(--line);">'+accOpen('Loose change details', '', false, false, 'how it adds up, where it starts')+'<div class="bd-lc" id="budLc"></div></div></details></div>';
   body.innerHTML = h;
+  { const lr = body.querySelector('[data-lc-row]'); if(lr){ lr.addEventListener('click', openLooseSheet); lr.addEventListener('keydown', e=>{ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openLooseSheet(); } }); } }
   { const cs = document.getElementById('cycleSel'); if(cs) cs.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {cycle:cs.value}); spendMonth = finCurKey(); finSettings.lc = finNewLc(finNextKey(finCurKey())); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; renderBudgetSheet(); }); }
   const paint = ()=>{
     const L = finLoose(ym), mp = L.mp; if(!document.getElementById('budAlloc')) return;
     document.getElementById('budAlloc').textContent = 'Income '+money(mp.income)+' this '+finWord()+', '+money(mp.budget)+' in budgets';
     L.env.forEach(e=>{ const el = body.querySelector('[data-bs="'+e.c.id+'"]'); if(el){ el.textContent = money(e.S)+' spent'+(e.L > 0 ? ', '+(e.left >= 0 ? money(e.left)+' left' : money(-e.left)+' over, taken from loose change') : ', set a limit'); el.style.color = e.L > 0 && e.left < 0 ? 'var(--danger)' : ''; } });
+    { const lr = body.querySelector('[data-bs="other"]'), li = body.querySelector('[data-lc-cap]');
+      if(lr){
+        if(L.before) lr.textContent = L.preAmt ? signed(L.preAmt)+' so far, budgets start '+finStartLabel(L.start) : 'starts '+finStartLabel(L.start);
+        else{ lr.textContent = money(L.used)+' spent, '+(L.avail >= 0 ? money(L.avail)+' left' : money(-L.avail)+' over'); lr.style.color = L.avail < 0 ? 'var(--danger)' : ''; }
+      }
+      if(li) li.value = L.before ? (L.preAmt ? String(finR2(L.preAmt)) : '') : String(finR2(Math.max(0, L.cap)));
+    }
     // ---- Investments: the whole pay period's regular buys up front; the paid part only grows as each one falls due ----
     { const blk = document.getElementById('budInvBlock'); if(blk){
       const td = todayStr(), rb = finHoldings.filter(x=> x.recur && x.recur.amount > 0);
@@ -8540,7 +8551,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v20.4';
+const APP_VERSION = 'v20.5';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
