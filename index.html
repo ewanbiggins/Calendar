@@ -1326,6 +1326,9 @@ body[data-view="trends"] #view-trends.active{flex:1 1 auto;min-height:0;display:
 .inv-form select{width:100%;}
 
 .fo-date{min-height:44px;width:150px;margin-top:2px;}
+
+.sp-add1{display:flex;gap:8px;align-items:center;}
+.bd-left{border-top:1px solid var(--line);margin-top:4px;padding-top:6px;}
 </style>
 </head>
 <body data-view="calendar">
@@ -2723,7 +2726,7 @@ function openSheet(title){
 }
 function closeSheet(){
   acCloseAll();
-  finRecurSheet = null; finBudgetSheet = false; { const sb = document.getElementById('sheetBody'); if(sb) sb.classList.remove('rc-sheet'); }
+  finRecurSheet = null; finBudgetSheet = false; finLooseSheet = false; { const sb = document.getElementById('sheetBody'); if(sb) sb.classList.remove('rc-sheet'); }
   if(listCfg) setTimeout(renderListSheet, 0);
   restoreRelocatedElement();
   quickAddActive = null;
@@ -5657,7 +5660,7 @@ function renderBudget(){
   if(back) back.addEventListener('click', ()=>{ finTab = 'overview'; finOpenItem = null; renderBudget(); SC.scrollTo(0, 0); });
   ({overview:renderFinDashboard, spend:renderFinSpend, invest:renderFinInvest, income:b=> renderFinRecurring(b,'income')})[finTab](document.getElementById('finBody'));
   box.querySelectorAll('[data-fin-acct]').forEach(el=> el.addEventListener('click', finOpenAcctSheet));
-  if(!finSheetSkip){ renderRecurSheet(); renderBudgetSheet(); }
+  if(!finSheetSkip){ renderRecurSheet(); renderBudgetSheet(); renderLooseSheet(); }
 }
 function finNavMonth(delta){
   const [y, m] = (spendMonth || finCurKey()).split('-').map(Number), d = new Date(y, m-1+delta, 1);
@@ -5669,15 +5672,19 @@ function finPrevYm(ym){ const [y, m] = ym.split('-').map(Number), d = new Date(y
 // one-time tidy-up: "Other" becomes Loose change, Loose change counts from the MONTH BEFORE, and Bills gets a budget matching your bills
 function finLcInit(){
   let ch = false; spendEnsureCats();
+  if(finSettings.lc && finSettings.lc.start && finSettings.lc.cyc && (!finSettings.cycle || !finSettings.lcV || !finSettings.lcBills)){
+    finSettings = Object.assign({}, finSettings, {cycle:finSettings.cycle || finSettings.lc.cyc, lcV:finSettings.lcV || 2, lcBills:finSettings.lcBills || 1}); ch = true;      // an older phone sent settings without these flags: put them back, change nothing else
+  }
+  if(finSettings.lc && finSettings.lc.start && !finSettings.lc.cyc && finSettings.cycle && finSettings.lcV){ finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, {cyc:finSettings.cycle})}); ch = true; }
   if(!finSettings.cycle){                // payday months: a clean slate from the next payday (or from this one if it only just started)
     finSettings = Object.assign({}, finSettings, {cycle:'lastfri'}); ch = true;
     const typed = finSettings.lc && Number(finSettings.lc.open);
-    if(!typed){ const ck = finCurKey(), pp = finPeriod(ck); finSettings.lc = {start:(finDaysBetween(pp.start, todayStr()) <= 6 ? ck : finNextKey(ck)), open:0}; finSettings.lcV = 2; }
+    if(!typed){ const ck = finCurKey(), pp = finPeriod(ck); finSettings.lc = finNewLc(finDaysBetween(pp.start, todayStr()) <= 6 ? ck : finNextKey(ck)); finSettings.lcV = 2; }
   }
   const cur = finCurKey();
   const o = spendCats.find(c=> c.id === 'other');
   if(o && o.name === 'Other'){ o.name = 'Loose change'; o.budget = 0; spendSaveCats(); }
-  if(!finSettings.lc || !finSettings.lc.start){ finSettings = Object.assign({}, finSettings, {lc:{start:finPrevYm(cur), open:0}, lcV:2}); ch = true; }
+  if(!finSettings.lc || !finSettings.lc.start){ finSettings = Object.assign({}, finSettings, {lc:finNewLc(finPrevYm(cur)), lcV:2}); ch = true; }
   else if(!finSettings.lcV){            // earlier versions started counting this month; count from the month before instead (unless you typed a starting amount)
     finSettings = Object.assign({}, finSettings, {lcV:2}); ch = true;
     const open = Number(finSettings.lc.open) || 0;
@@ -5703,32 +5710,36 @@ function finLooseMonth(ym, carry){
   });
   const spentLC = finR2(st.spent - assigned), unalloc = finR2((mp.income - mp.oneOffAll) - mp.budget);      // pay not given to a budget
   const extra = mp.oneOffNow, repaid = mp.repaid, lent = mp.lent;                                           // extra income and repayments count the day they arrive; money fronted for others comes off until it is paid back
-  const cap = finR2(carry + unalloc + extra + repaid - lent);
-  return {mp, env, carry, unalloc, extra, repaid, lent, spentLC, overspend:finR2(overspend), avail:finR2(cap - spentLC - overspend), cap, used:finR2(spentLC + overspend)};
+  const adj = finLcAdj(ym), cap = finR2(carry + unalloc + extra + repaid - lent + adj);
+  return {mp, env, carry, unalloc, extra, repaid, lent, adj, spentLC, overspend:finR2(overspend), avail:finR2(cap - spentLC - overspend), cap, used:finR2(spentLC + overspend)};
 }
 // the pay period just before Loose change starts: budgets have not begun, but extra income, repayments and anything spent from Loose change already count
-function finLcPre(){
-  const lc = finSettings.lc; if(!lc || !lc.start) return 0;
+function finLcAdj(key){ const lc = finSettings.lc; return (lc && lc.adj && lc.adj[key]) ? Number(lc.adj[key]) || 0 : 0; }
+function finNewLc(start){ return {start, open:0, cyc:finCycle()}; }
+function finLcPreParts(){
+  const lc = finSettings.lc, z = {extra:0, repaid:0, lent:0, spent:0, total:0}; if(!lc || !lc.start) return z;
   const since = finPeriod(finPrevYm(lc.start)).start, startD = finPeriod(lc.start).start, td = todayStr(), last = td < startD ? td : addDays(startD, -1);
-  if(last < since) return 0;
-  const om = finOthersMap(); let t = 0;
-  finIn.forEach(i=>{ if(i.date && i.date >= since && i.date <= last) t += i.amount; });
-  finOwed.forEach(o=> o.people.forEach(pp=>{ if(o.date && o.date >= since && o.date <= last) t -= pp.share; if(pp.paid && pp.paidDate && pp.paidDate >= since && pp.paidDate <= last) t += pp.share; }));
-  spendTxns.forEach(x=>{ if(x.cat === 'other' && x.date && x.date >= since && x.date <= last) t -= (x.amount - (om[x.id] || 0)); });
-  return finR2(t);
+  if(last < since) return z;
+  const om = finOthersMap(), o = {extra:0, repaid:0, lent:0, spent:0};
+  finIn.forEach(i=>{ if(i.date && i.date >= since && i.date <= last) o.extra += i.amount; });
+  finOwed.forEach(ow=> ow.people.forEach(pp=>{ if(ow.date && ow.date >= since && ow.date <= last) o.lent += pp.share; if(pp.paid && pp.paidDate && pp.paidDate >= since && pp.paidDate <= last) o.repaid += pp.share; }));
+  spendTxns.forEach(x=>{ if(x.cat === 'other' && x.date && x.date >= since && x.date <= last) o.spent += (x.amount - (om[x.id] || 0)); });
+  return {extra:finR2(o.extra), repaid:finR2(o.repaid), lent:finR2(o.lent), spent:finR2(o.spent), total:finR2(o.extra + o.repaid - o.lent - o.spent)};
 }
+function finLcPre(){ return finLcPreParts().total; }
 // loose change brought into a month: counts from the month before. A month that has ended hands on what was really left of everything; a month that has not ended hands on its loose change with every budget counted as spent.
-function finLooseCarry(ym){
+function finLooseCarryParts(ym){
   finLcInit(); const lc = finSettings.lc, cur = finCurKey();
-  if(ym < lc.start) return 0;
-  let carry = (Number(lc.open) || 0) + finLcPre();
+  if(ym < lc.start) return {carry:0, base:0, unspent:0};
+  let carry = (Number(lc.open) || 0) + finLcPre(), base = carry, unspent = 0;
   finMonthsFrom(lc.start, finPrevYm(ym)).forEach(m=>{
-    if(m < cur){ const p = finMonthPlan(m); carry += p.income + p.repaid - p.out - p.lent; }
-    else carry = finLooseMonth(m, carry).avail;
+    if(m < cur){ const p = finMonthPlan(m), before = carry, availEnd = finLooseMonth(m, before).avail; carry = before + p.income + p.repaid - p.out - p.lent + finLcAdj(m); base = availEnd; unspent = carry - availEnd; }
+    else{ carry = finLooseMonth(m, carry).avail; base = carry; unspent = 0; }
   });
-  return finR2(carry);
+  return {carry:finR2(carry), base:finR2(base), unspent:finR2(unspent)};
 }
-function finLoose(ym){ finLcInit(); const r = finLooseMonth(ym, finLooseCarry(ym)); r.start = finSettings.lc.start; r.before = ym < r.start; r.pre = r.before && ym === finPrevYm(r.start); r.preAmt = r.pre ? finLcPre() : 0; return r; }
+function finLooseCarry(ym){ return finLooseCarryParts(ym).carry; }
+function finLoose(ym){ finLcInit(); const cp = finLooseCarryParts(ym), r = finLooseMonth(ym, cp.carry); r.base = cp.base; r.unspentPrev = cp.unspent; r.start = finSettings.lc.start; r.before = ym < r.start; r.pre = r.before && ym === finPrevYm(r.start); r.preAmt = r.pre ? finLcPre() : 0; return r; }
 
 function finInvScheduled(ym){
   let t = 0;
@@ -5768,8 +5779,9 @@ function finAccount(){
     finIncome.forEach(it=> finOccCal(it, ym).forEach(d=>{ if(d > a.date && d <= today) inn += it.amount; }));
     finDD.forEach(it=> finOccCal(it, ym).forEach(d=>{ if(d > a.date && d <= today) out += it.amount; }));
   });
-  spendTxns.forEach(t=>{ if(t.date && t.date <= today && (t.date+' '+(t.time || '23:59')) > stamp) out += t.amount; });
-  finIn.forEach(i=>{ if(i.date && i.date <= today && (i.date+' '+(i.time || '00:00')) > stamp) inn += i.amount; });
+  const skip = new Set(a.skip || []);                                           // already entered when you typed the balance: already in it
+  spendTxns.forEach(t=>{ if(t.date && t.date <= today && !skip.has(t.id) && (t.date+' '+(t.time || '23:59')) > stamp) out += t.amount; });
+  finIn.forEach(i=>{ if(i.date && i.date <= today && !skip.has('i:'+i.id) && (i.date+' '+(i.time || '00:00')) > stamp) inn += i.amount; });
   finOwed.forEach(o=> o.people.forEach(pp=>{ if(pp.paid && pp.paidDate && pp.paidDate <= today && (pp.paidDate+' 23:59') > stamp) inn += pp.share; }));
   return {value:finR2(a.bal + inn - out), set:a.bal, since:a.date, inn:finR2(inn), out:finR2(out)};
 }
@@ -5777,15 +5789,27 @@ function finOpenAcctSheet(){
   openSheet('Spending account');
   const a = finAccount(), body = document.getElementById('sheetBody');
   body.innerHTML = '<div class="stat-sub" style="margin:0 0 10px;">Type what the account shows. Your income, bills and spending then move it.</div>'+
-    '<label class="ff"><span>Balance now (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" id="acctBal" value="'+(a ? a.value : '')+'"></label>'+
+    '<label class="ff"><span>Balance now (\u00a3)</span><input type="text" inputmode="decimal" id="acctBal" autocomplete="off" value="'+(a ? a.value : '')+'"></label>'+
+    '<div class="stat-sub" id="acctErr" style="color:var(--danger);margin:6px 0 0;"></div>'+
     (a ? '<div class="stat-sub" style="margin:8px 0 0;">Since '+niceDate(a.since)+': in '+money(a.inn)+', out '+money(a.out)+'.</div>' : '')+
     '<div class="fin-edit-row" style="margin-top:12px;"><button type="button" class="btn small" id="acctSave">Save</button>'+(a ? '<button type="button" class="btn secondary small" id="acctClear">Remove</button>' : '')+'</div>';
-  document.getElementById('acctSave').addEventListener('click', async ()=>{
-    const v = parseFloat(document.getElementById('acctBal').value);
-    if(isNaN(v)){ showToast('Type the balance.'); return; }
-    finSettings = Object.assign({}, finSettings, {acct:{bal:finR2(v), date:todayStr(), time:nowHM()}});
-    await saveKey('fin-settings', finSettings); closeSheet(); renderBudget(); showToast('Balance saved.');
-  });
+  const save = async ()=>{
+    const err = document.getElementById('acctErr'), v = finParseMoney(document.getElementById('acctBal').value);
+    if(v === null){ err.textContent = 'Type the balance, for example 1250.50.'; return; }
+    try{
+      const td = todayStr(), tm = nowHM(), stamp = td+' '+tm, skip = [];
+      spendTxns.forEach(t=>{ if(t.date && t.date <= td && (t.date+' '+(t.time || '23:59')) > stamp) skip.push(t.id); });
+      finIn.forEach(i=>{ if(i.date && i.date <= td && (i.date+' '+(i.time || '00:00')) > stamp) skip.push('i:'+i.id); });
+      finSettings = Object.assign({}, finSettings, {acct:{bal:finR2(v), date:td, time:tm, skip}});
+      await saveKey('fin-settings', finSettings);
+    }catch(e){ err.textContent = 'Could not save: '+(e && e.message ? e.message : 'try again'); return; }
+    const shown = finAccount(); closeSheet();
+    try{ renderBudget(); }catch(e){ console.error(e); }
+    const diff = shown ? finR2(shown.value - finR2(v)) : 0;
+    showToast(Math.abs(diff) > 0.005 ? 'Saved '+money(v)+'. It shows '+money(shown.value)+' because items dated after this moment are already counted.' : 'Balance saved: '+money(v)+'.');
+  };
+  document.getElementById('acctSave').addEventListener('click', save);
+  document.getElementById('acctBal').addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); save(); } });
   const clr = document.getElementById('acctClear');
   if(clr) clr.addEventListener('click', async ()=>{ const f = Object.assign({}, finSettings); delete f.acct; finSettings = f; await saveKey('fin-settings', finSettings); closeSheet(); renderBudget(); });
 }
@@ -5865,10 +5889,10 @@ function finCatLines(mp, L){
   const oc = cats.find(c=> c.id === 'other'); if(oc) rows.push({c:oc, S:L.used, L:Math.max(0, L.cap), lc:true, left:L.avail, pre:L.before, startLabel:finStartLabel(L.start), preAmt:L.preAmt});
   const tot = mp.spentAll > 0 ? mp.spentAll : 1;
   return '<div class="fc-list">'+rows.map(r=>{
-    if(r.lc && r.pre) return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\"><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b>'+(r.preAmt ? (r.preAmt < 0 ? '\u2212' : '')+money(Math.abs(r.preAmt))+'<span class=\"fc-of\"> so far, budgets start '+r.startLabel+'</span>' : '<span class=\"fc-of\">starts '+r.startLabel+'</span>')+'</b></div><div class=\"fc-bar\"></div></button>';
+    if(r.lc && r.pre) return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\" data-fin-lc><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b>'+(r.preAmt ? (r.preAmt < 0 ? '\u2212' : '')+money(Math.abs(r.preAmt))+'<span class=\"fc-of\"> so far, budgets start '+r.startLabel+'</span>' : '<span class=\"fc-of\">starts '+r.startLabel+'</span>')+'</b></div><div class=\"fc-bar\"></div></button>';
     if(r.lc){
       const lo = r.left < 0, lp = r.L > 0 ? Math.min(100, r.S/r.L*100) : (r.S > 0 ? 100 : 0);
-      return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\"><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b'+(lo ? ' class=\"over\"' : '')+'>'+(lo ? '\u2212' : '')+money(Math.abs(r.left))+(lo ? ' over' : ' left')+'<span class=\"fc-of\"> of '+money(r.L)+'</span></b></div><div class=\"fc-bar\"><div class=\"fc-fill\" style=\"width:'+lp.toFixed(1)+'%;background:'+r.c.color+';\"></div></div></button>';
+      return '<button type=\"button\" class=\"fc-row\" data-fin-cat=\"'+r.c.id+'\" data-fin-lc><div class=\"fc-top\"><span class=\"fc-name\">'+escapeHtml(r.c.name)+'</span><b'+(lo ? ' class=\"over\"' : '')+'>'+money(r.S)+'<span class=\"fc-of\"> of '+money(r.L)+'</span></b></div><div class=\"fc-bar\"><div class=\"fc-fill\" style=\"width:'+lp.toFixed(1)+'%;background:'+r.c.color+';\"></div></div></button>';
     }
     const hasL = r.L > 0, pct = hasL ? Math.min(100, r.S/r.L*100) : Math.min(100, Math.max(0, r.S)/tot*100), over = hasL && r.S > r.L;
     const of = hasL ? ' of '+money(r.L) : (r.S > 0 ? ' \u00b7 '+Math.round(r.S/tot*100)+'% of spending' : ' \u00b7 no budget');
@@ -5876,18 +5900,64 @@ function finCatLines(mp, L){
   }).join('')+'</div>';
 }
 function finBindEditors(box){
-  box.querySelectorAll('[data-fin-cat]').forEach(b=> b.addEventListener('click', (e)=>{ e.stopPropagation(); spendFilter = b.dataset.finCat; finTab = 'spend'; finOpenItem = null; renderBudget(); SC.scrollTo(0, 0); }));
+  box.querySelectorAll('[data-fin-lc]').forEach(b=> b.addEventListener('click', (e)=>{ e.stopPropagation(); openLooseSheet(); }));
+  box.querySelectorAll('[data-fin-cat]:not([data-fin-lc])').forEach(b=> b.addEventListener('click', (e)=>{ e.stopPropagation(); spendFilter = b.dataset.finCat; finTab = 'spend'; finOpenItem = null; renderBudget(); SC.scrollTo(0, 0); }));
   box.querySelectorAll('[data-fin-recur]').forEach(b=> b.addEventListener('click', (e)=>{ e.stopPropagation(); openRecurSheet(b.dataset.finRecur); }));
   box.querySelectorAll('[data-fin-budgets]').forEach(b=> b.addEventListener('click', (e)=>{ e.stopPropagation(); openBudgetSheet(); }));
 }
 // ---- small editors in a pop-up: bills, income and budgets ----
-let finRecurSheet = null, finBudgetSheet = false, finSheetSkip = false;
+let finRecurSheet = null, finBudgetSheet = false, finSheetSkip = false, finLooseSheet = false;
 function openRecurSheet(kind){ finRecurSheet = kind; finBudgetSheet = false; openSheet(kind === 'dd' ? 'Bills' : 'Income'); renderRecurSheet(); }
 function renderRecurSheet(){
   if(!finRecurSheet) return;
   const body = document.getElementById('sheetBody'); if(!body) return;
   renderFinRecurring(body, finRecurSheet, spendMonth || finCurKey(), true);
   body.classList.add('rc-sheet');
+}
+function openLooseSheet(){ finLooseSheet = true; finBudgetSheet = false; finRecurSheet = null; openSheet('Loose change'); renderLooseSheet(); }
+function finParseMoney(v){ const raw = String(v == null ? '' : v).replace(/[\u00a3,\s]/g, ''); const n = parseFloat(raw); return (raw === '' || isNaN(n)) ? null : n; }
+function renderLooseSheet(){
+  if(!finLooseSheet) return;
+  const body = document.getElementById('sheetBody'); if(!body) return;
+  body.classList.add('rc-sheet');
+  finLcInit();
+  const ym = spendMonth || finCurKey(), L = finLoose(ym), lc = finSettings.lc, plus = n=> (n < 0 ? '\u2212' : '+')+money(Math.abs(n)), signed = n=> (n < 0 ? '\u2212' : '')+money(Math.abs(n));
+  const row = (k, v, cls)=> '<div class="sum-row"><span class="sum-k">'+k+'</span><span class="sum-v'+(cls ? ' '+cls : '')+'">'+v+'</span></div>';
+  let h = '<div class="stat-sub" style="margin:0 0 2px;">'+finPeriodLabel(ym)+'</div>';
+  if(L.before){
+    const P = finLcPreParts(), open = Number(lc.open) || 0, total = finR2(open + P.total);
+    h += '<div class="fin-big'+(total < 0 ? ' sum-over' : '')+'">'+signed(total)+'</div><div class="stat-sub" style="margin:0 0 8px;">so far. Budgets start '+finStartLabel(L.start)+'.</div>'+
+      row('Already set aside', plus(open))+row('Extra income', plus(P.extra))+(P.repaid ? row('Paid back to you', plus(P.repaid)) : '')+(P.lent ? row('Fronted for others', '\u2212'+money(P.lent)) : '')+row('Spent from loose change', P.spent ? '\u2212'+money(P.spent) : '\u2014');
+  }else{
+    h += '<div class="fin-big'+(L.avail < 0 ? ' sum-over' : '')+'">'+signed(L.avail)+'</div><div class="stat-sub" style="margin:0 0 4px;">left to spend</div>'+
+      '<div class="fc-bar" style="margin:4px 0 8px;"><div class="fc-fill" style="width:'+(L.cap > 0 ? Math.min(100, L.used/L.cap*100) : (L.used > 0 ? 100 : 0)).toFixed(1)+'%;background:'+((spendCatById('other') || {}).color || '#7C867F')+';"></div></div>'+
+      row('Brought forward', signed(L.base))+row('Unspent budget', plus(L.unspentPrev))+row('Not given to a budget', plus(L.unalloc))+
+      row('Additional income', plus(finR2(L.extra + L.repaid)))+(L.lent ? row('Fronted for others', '\u2212'+money(L.lent)) : '')+(L.adj ? row('Adjustment you made', plus(L.adj)) : '')+
+      row('Spent this month', L.used ? '\u2212'+money(L.used) : '\u2014')+(L.overspend > 0 ? '<div class="stat-sub" style="margin:-2px 0 4px;text-align:right;">includes \u2212'+money(L.overspend)+' from budgets gone over</div>' : '')+
+      '<div class="sum-row bd-left"><span class="sum-k"><b>Left</b></span><span class="sum-v'+(L.avail < 0 ? ' sum-over' : '')+'"><b>'+signed(L.avail)+'</b></span></div>';
+  }
+  h += '<div class="bd-label">Set it by hand</div><div class="stat-sub" style="margin:0 0 6px;">Type what Loose change should be right now.</div>'+
+    '<div class="sp-add1"><input type="text" id="lcSetAmt" inputmode="decimal" placeholder="\u00a3" autocomplete="off" style="flex:1;min-width:0;"><button type="button" class="btn small" id="lcSetBtn">Set</button></div>'+
+    '<div class="stat-sub" id="lcSetErr" style="color:var(--danger);margin:4px 0 0;"></div>'+
+    '<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">'+((L.adj || (L.before && Number(lc.open))) ? '<button type="button" class="pill" id="lcSetClear">Remove what I set</button>' : '')+'<button type="button" class="pill" id="lcSeePay">See payments</button></div>';
+  body.innerHTML = h;
+  const save = async ()=>{
+    const err = document.getElementById('lcSetErr'), v = finParseMoney(document.getElementById('lcSetAmt').value);
+    if(v === null){ err.textContent = 'Type an amount, for example 250.'; return; }
+    const cur = finLoose(ym); let lc2;
+    if(cur.before) lc2 = Object.assign({}, finSettings.lc, {open:finR2(v - finLcPreParts().total)});
+    else{ const adj = Object.assign({}, finSettings.lc.adj || {}), noAdj = finR2(cur.avail - cur.adj), na = finR2(v - noAdj); if(Math.abs(na) < 0.005) delete adj[ym]; else adj[ym] = na; lc2 = Object.assign({}, finSettings.lc, {adj}); }
+    finSettings = Object.assign({}, finSettings, {lc:lc2});
+    try{ await saveKey('fin-settings', finSettings); }catch(e){ err.textContent = 'Could not save, try again.'; return; }
+    finSheetSkip = true; renderBudget(); finSheetSkip = false; renderLooseSheet(); showToast('Loose change set to '+money(v)+'.');
+  };
+  document.getElementById('lcSetBtn').addEventListener('click', save);
+  document.getElementById('lcSetAmt').addEventListener('keydown', e=>{ if(e.key === 'Enter'){ e.preventDefault(); save(); } });
+  const clr = document.getElementById('lcSetClear'); if(clr) clr.addEventListener('click', async ()=>{
+    const adj = Object.assign({}, finSettings.lc.adj || {}); delete adj[ym];
+    finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, L.before ? {open:0} : {adj})});
+    await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; renderLooseSheet(); });
+  document.getElementById('lcSeePay').addEventListener('click', ()=>{ closeSheet(); spendFilter = 'other'; finTab = 'spend'; finOpenItem = null; renderBudget(); SC.scrollTo(0, 0); });
 }
 function openBudgetSheet(){ finBudgetSheet = true; finRecurSheet = null; openSheet('Budgets'); renderBudgetSheet(); }
 function renderBudgetSheet(){
@@ -5907,7 +5977,7 @@ function renderBudgetSheet(){
   });
   h += '<div id="budInvBlock"></div><button type="button" class="btn secondary small" id="budAdd" style="margin-top:8px;">+ Add budget</button>';
   body.innerHTML = h;
-  { const cs = document.getElementById('cycleSel'); if(cs) cs.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {cycle:cs.value}); spendMonth = finCurKey(); finSettings.lc = {start:finNextKey(finCurKey()), open:0}; await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; renderBudgetSheet(); }); }
+  { const cs = document.getElementById('cycleSel'); if(cs) cs.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {cycle:cs.value}); spendMonth = finCurKey(); finSettings.lc = finNewLc(finNextKey(finCurKey())); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; renderBudgetSheet(); }); }
   const paint = ()=>{
     const L = finLoose(ym), mp = L.mp; if(!document.getElementById('budAlloc')) return;
     document.getElementById('budAlloc').textContent = 'Income '+money(mp.income)+' this '+finWord()+', '+money(mp.budget)+' in budgets';
@@ -5946,9 +6016,9 @@ function renderBudgetSheet(){
     const startRow = '<div class="sum-row"><span class="sum-k">Counting from</span><span class="sum-v"><select id="lcStart" aria-label="Count loose change from">'+startOpts+'</select></span></div>'+(L.start < nextYm ? '<div style="margin:2px 0 6px;"><button type="button" class="pill" id="lcFresh">Start fresh from '+finStartLabel(nextYm)+'</button></div>' : '');
     if(L.before){ document.getElementById('budLc').innerHTML = '<div class="bd-lc-h"><span>Loose change</span><b'+(L.preAmt ? '>'+signed(L.preAmt)+' so far' : ' style="font-size:13px;color:var(--ink-soft);">starts '+finStartLabel(L.start))+'</b></div>'+(L.pre ? '<div class="stat-sub" style="margin:2px 0 4px;">Extra income and repayments count from the day they arrive. Budgets start '+finStartLabel(L.start)+'.</div>' : '')+startRow;
       const ls0 = document.getElementById('lcStart'); if(ls0) ls0.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, {start:ls0.value})}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); });
-      const lf0 = document.getElementById('lcFresh'); if(lf0) lf0.addEventListener('click', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:{start:nextYm, open:0}}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); });
+      const lf0 = document.getElementById('lcFresh'); if(lf0) lf0.addEventListener('click', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:finNewLc(nextYm)}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); });
       return; }
-    document.getElementById('budLc').innerHTML = '<div class="bd-lc-h"><span>Loose change</span><b class="'+(L.avail < 0 ? 'sum-over' : '')+'">'+signed(L.avail)+' left</b></div>'+
+    document.getElementById('budLc').innerHTML = '<div class="bd-lc-h"><span>Loose change <button type="button" class="pill" id="lcDetails" style="margin-left:6px;">Running total</button></span><b class="'+(L.avail < 0 ? 'sum-over' : '')+'">'+signed(L.avail)+' left</b></div>'+
       '<div class="fc-bar" style="margin:2px 0 4px;"><div class="fc-fill" style="width:'+(L.cap > 0 ? Math.min(100, L.used/L.cap*100) : (L.used > 0 ? 100 : 0)).toFixed(1)+'%;background:'+((spendCatById('other') || {}).color || '#7C867F')+';"></div></div>'+
       '<div class="stat-sub" id="budCap" style="margin:0 0 4px;">'+(L.used > 0 ? money(L.used)+' used' : 'Nothing used')+' of <b>'+money(Math.max(0, L.cap))+'</b> to draw on</div>'+
       (ym < L.start ? '<div class="stat-sub" style="margin:2px 0 6px;">Loose change starts counting from '+finStartLabel(L.start)+'.</div>' : '')+
@@ -5963,7 +6033,8 @@ function renderBudgetSheet(){
       startRow+'<div class="stat-sub" style="margin:6px 0 0;">Unspent budgets move here when the month ends.</div>';
     {
       const ls = document.getElementById('lcStart'); if(ls) ls.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, {start:ls.value})}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); });
-      const lf = document.getElementById('lcFresh'); if(lf) lf.addEventListener('click', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:{start:nextYm, open:0}}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); }); }
+      const lf = document.getElementById('lcFresh'); if(lf) lf.addEventListener('click', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:finNewLc(nextYm)}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); }); }
+    { const ld = document.getElementById('lcDetails'); if(ld) ld.addEventListener('click', openLooseSheet); }
     const lo = document.querySelector('[data-lc-open]'); if(lo && !lo.__b){ lo.__b = 1; lo.addEventListener('change', async ()=>{ finSettings = Object.assign({}, finSettings, {lc:Object.assign({}, finSettings.lc, {open:parseFloat(lo.value) || 0})}); await saveKey('fin-settings', finSettings); finSheetSkip = true; renderBudget(); finSheetSkip = false; paint(); }); }
   };
   paint();
@@ -6727,7 +6798,7 @@ function renderFinSpend(box){
   const acctNow = finAccount(), mpNow = mp;
   const lcSt = finLoose(ym), lcAvail = lcSt.avail, whole = n=> '\u00a3'+Math.round(Math.abs(n)).toLocaleString('en-GB');
   const accountHtml = '<div class="card lg-acct"><div class="la-r1"><span class="la-l">Spending account</span><button type="button" class="pill" data-sp-acct>'+(acctNow ? 'Update' : 'Set balance')+'</button></div>'+
-    '<div class="la-r2"><b class="la-bal">'+(acctNow ? amt(acctNow.value) : '\u2014')+'</b><span class="la-io"><span>In <b>'+whole(mpNow.incomeSoFar)+'</b></span><span>Out <b>'+whole(mpNow.spentAll)+'</b></span><span>Loose change <b>'+(lcSt.before ? (lcSt.preAmt ? (lcSt.preAmt < 0 ? '\u2212' : '')+whole(lcSt.preAmt)+' so far' : 'starts '+finStartLabel(lcSt.start)) : (lcAvail < 0 ? '\u2212' : '')+whole(lcAvail))+'</b></span></span></div>'+
+    '<div class="la-r2"><b class="la-bal">'+(acctNow ? amt(acctNow.value) : '\u2014')+'</b><span class="la-io"><span>In <b>'+whole(mpNow.incomeSoFar)+'</b></span><span>Out <b>'+whole(mpNow.spentAll)+'</b></span><span class="la-lc" data-open-lc style="cursor:pointer;">Loose change <b>'+(lcSt.before ? (lcSt.preAmt ? (lcSt.preAmt < 0 ? '\u2212' : '')+whole(lcSt.preAmt)+' so far' : 'starts '+finStartLabel(lcSt.start)) : (lcAvail < 0 ? '\u2212' : '')+whole(lcAvail))+'</b></span></span></div>'+
     (ym !== finCurKey() ? '<div class="la-m">'+finPeriodLabel(ym)+'</div>' : '')+(acctNow ? '' : '<div class="stat-sub" style="margin:4px 0 0;">Type what the account shows; payments then keep it up to date.</div>')+'</div>';
   h += accountHtml+'<div class="card sp-addcard"><div class="sp-add1"><div class="seg sp-dir"><button type="button" data-sp-dir="out" class="sel-home" title="Money out" aria-label="Money out">\u2212</button><button type="button" data-sp-dir="in" title="Money in" aria-label="Money in">+</button></div><input type="text" id="spAmt" inputmode="decimal" placeholder="\u00a3" aria-label="Amount"><select id="spPlace" aria-label="Where"></select><button type="button" class="btn small" id="spAddBtn">Add</button></div>'+
     '<input type="text" id="spMer" placeholder="Where?" autocomplete="off" style="width:100%;margin-top:6px;" hidden></div>';
@@ -6750,6 +6821,7 @@ function renderFinSpend(box){
   const si = document.getElementById('lgSearch'); if(si) si.addEventListener('input', ()=>{ finLedgerQ = si.value; renderLedger(); });
   box.querySelectorAll('[data-lg-f]').forEach(b=> b.addEventListener('click', ()=>{ finLedgerFilter = b.dataset.lgF; renderLedger(); }));
   box.querySelectorAll('[data-sp-acct]').forEach(b=> b.addEventListener('click', finOpenAcctSheet));
+  box.querySelectorAll('[data-open-lc]').forEach(b=> b.addEventListener('click', openLooseSheet));
   const applyDir = ()=>{
     box.querySelectorAll('[data-sp-dir]').forEach(b=>{ const on = b.dataset.spDir === spendDir; b.classList.toggle('sel-home', on); b.classList.toggle('sel-none', !on); });
     const mer = document.getElementById('spMer'), sel = document.getElementById('spPlace'); if(!sel || !mer) return;
@@ -8468,7 +8540,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v20.3';
+const APP_VERSION = 'v20.4';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
