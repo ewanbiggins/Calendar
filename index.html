@@ -1395,6 +1395,24 @@ body[data-view="summary"] .dash{min-height:0;}
 .ff-check input::before{content:'';position:absolute;left:11px;top:11px;width:22px;height:22px;border:2px solid var(--ink-soft);border-radius:6px;box-sizing:border-box;background:var(--surface);}
 .ff-check input:checked::before{background:var(--home);border-color:var(--home);}
 .ff-check input:checked::after{content:'';position:absolute;left:19px;top:15px;width:6px;height:12px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg);}
+
+/* ---------- Home sizes: To-dos compact, the rest a touch bigger ---------- */
+.w.w-todos{flex:0 0 auto !important;}
+.dash-list > .n{flex:1 1 auto !important;align-content:center;min-height:46px;}
+.dash-list > .n .n-s{line-height:1.3;}
+.n .n-s{display:block;}
+
+/* ---------- side-by-side fields: never overlap, on any phone ---------- */
+.shift-compact{grid-template-columns:repeat(2,minmax(0,1fr)) !important;gap:8px 10px !important;align-items:end;}
+.shift-compact .shift-total-mini{align-self:center;}
+input[type="time"],input[type="date"],input[type="datetime-local"],input[type="month"]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0 !important;max-width:100%;min-height:44px;box-sizing:border-box;overflow:hidden;text-align:left;padding-left:10px;padding-right:10px;}
+input[type="time"]::-webkit-datetime-edit,input[type="date"]::-webkit-datetime-edit{padding:0;margin:0;}
+input[type="time"]::-webkit-date-and-time-value,input[type="date"]::-webkit-date-and-time-value{text-align:left;margin:0;min-height:1.3em;}
+input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webkit-calendar-picker-indicator{margin:0;padding:0;}
+.fin-opts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+.fin-opts > .stat-sub{flex:1 1 100%;}
+.fin-opts input{flex:1 1 130px;min-width:0 !important;width:auto;}
+.ff,.ff-grid > *,.dm-row > *,.row2 > *{min-width:0;}
 </style>
 </head>
 <body data-view="calendar">
@@ -1978,7 +1996,7 @@ let rangeEndYM = null;
 
 // ---------- storage ----------
 function hasClaudeStorage(){ return typeof window.storage !== 'undefined' && window.storage && typeof window.storage.get === 'function'; }
-function isWorkTag(tag){ return !!tag && tag.label.trim().toLowerCase().includes('work'); }
+function isWorkTag(tag){ return !!tag && tag.label.trim().toLowerCase() === 'work'; }      // the red Work tag only ("Personal Work" is personal admin, not a shift)
 const REQUIRED_TAGS = [
   {label:'Work', color:'#B3453B'},
   {label:'Personal Leisure', color:'#3F6FA6'},
@@ -5115,7 +5133,7 @@ function renderSummary(){
         (pend.length
           ? '<div class="w w-todos" role="button" tabindex="0" data-sum-go="todo"><div class="w-t"><span>To-dos</span><b class="w-count">'+pend.length+'</b></div>'+bullets+'</div>'
           : '<div class="w n add w-todos0" role="button" tabindex="0" data-sum-add><span class="n-l">To-dos</span><b class="n-v">Add</b></div>')+
-        N('Finance', acct ? m0(acct.value) : 'Set', 'data-sum-go="budget"', acct ? '' : ' add', ([pf.priced || pf.value > 0 ? 'portfolio '+hide(m0(pf.value)) : '', rentSet ? 'rent owed '+m0(owed.total) : ''].filter(Boolean).join(' \u00b7 ')) || 'no portfolio yet')+
+        N('Finance', acct ? m0(acct.value) : 'Set', 'data-sum-go="budget"', acct ? '' : ' add', ([pf.priced || pf.value > 0 ? 'portfolio '+hide(m0(pf.value)) : '', rentSet ? 'rent owed '+m0(owed.total) : ''].filter(Boolean).join('<br>')) || 'no portfolio yet')+
         N('To claim', claim.length ? money(claimTot) : '\u00a30', 'data-sum-go="expenses"', claim.length ? '' : ' dim')+
         N('Van', odo ? fmtMi(odo.estimate) : 'Set', 'data-sum-go="'+(odo ? 'mileage' : 'settings:workhome')+'"', odo ? '' : ' add', driveMins > 0 ? (driveMins < 60 ? driveMins+'m' : Math.floor(driveMins/60)+'h '+pad(driveMins%60)+'m')+' driving this week' : 'no driving this week')+
         N('Sleep', bedLast ? autoMins(bedLast) : (hasSleep ? '\u2014' : 'Set up'), hasSleep ? 'data-sum-sleep' : 'data-sum-go="settings:automations"', hasSleep ? '' : ' add', sleepAvg ? 'avg '+autoMins(sleepAvg) : (hasSleep ? 'last night' : ''))+
@@ -8708,7 +8726,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v21.0';
+const APP_VERSION = 'v21.1';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
