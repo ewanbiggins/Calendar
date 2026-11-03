@@ -897,7 +897,7 @@ html.dark{--bg:#0E1523;background:#0E1523;}
 
 /* ---------- navigation: Menu | Calendar | Dashboard ---------- */
 body[data-view="calendar"] .top{display:none;}
-body[data-view="menu"] #menuTopBtn,body[data-view="summary"] #menuTopBtn{display:none;}
+body[data-view="summary"] #menuTopBtn{display:none;}
 body[data-view="menu"] #todayLabel{display:none;}
 #moneyEyeBtn{display:none;}
 body[data-view="summary"] #moneyEyeBtn,body[data-view="budget"] #moneyEyeBtn{display:inline-flex;}
@@ -1334,6 +1334,67 @@ body[data-view="trends"] #view-trends.active{flex:1 1 auto;min-height:0;display:
 .nav-ind{position:absolute;top:0;left:0;width:34px;height:3px;border-radius:0 0 3px 3px;background:var(--home);transform:translateX(-100px);opacity:0;transition:transform .3s cubic-bezier(.3,.85,.3,1),opacity .2s;pointer-events:none;}
 .nav-ind.show{opacity:1;}
 .nav-ind.drag{transition:none;}
+
+/* ---------- Home: header buttons ---------- */
+#trendsTopBtn,#settingsTopBtn{display:none;}
+body[data-view="summary"] #trendsTopBtn,body[data-view="summary"] #settingsTopBtn,body.has-trends #trendsTopBtn{display:inline-flex;}
+.top .round-btn{flex:none;}
+@media (max-width:389px){ body[data-view="summary"] .top-date{display:none;} }
+/* the strip beside the camera / status bar is always solid, so nothing scrolls through it */
+body::before{content:'';position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:90;pointer-events:none;}
+/* two fields side by side never overlap, whatever the phone's time or date picker wants */
+.shift-compact{display:grid !important;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:8px;align-items:end;}
+.shift-compact > div{min-width:0;}
+.shift-compact input{width:100%;min-width:0;max-width:100%;box-sizing:border-box;padding-left:8px;padding-right:8px;}
+input[type="time"],input[type="date"]{min-width:0;max-width:100%;box-sizing:border-box;}
+.ff-grid{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+.ff-grid > *{min-width:0;}
+.fin-opts input[type="time"]{flex:1 1 0;min-width:0;width:auto;}
+
+/* ---------- Home: needs attention, week icons, gym stats ---------- */
+.w-need{margin-top:6px;padding-top:5px;border-top:1px solid var(--line);display:flex;flex-direction:column;}
+.w-need > b{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:1px;}
+.nd{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:30px;padding:0;background:none;border:0;color:var(--ink);font-size:12.5px;text-align:left;}
+.nd i{font-style:normal;color:var(--ink-soft);font-size:16px;}
+.nd.warn span{color:#C4504A;font-weight:700;}
+.nd-more{font-size:11px;color:var(--ink-soft);padding:2px 0;}
+.d-ics{display:flex;align-items:center;justify-content:center;gap:4px;height:8px;}
+.d-ics .d-gym,.d-ics .d-work{margin:0;}
+.d-work{display:block;width:12px;height:3px;border-radius:2px;background:#C4504A;}
+.w-gl .d-work{width:10px;margin:0 3px 0 0;display:inline-block;vertical-align:middle;}
+.w-gym .w-gs{display:flex;flex-direction:column;gap:1px;margin-bottom:2px;}
+.w-gym .w-gs b{font-size:12.5px;font-weight:800;color:var(--ink);}
+.w-gym .w-gs span{font-size:11px;color:var(--ink-soft);}
+
+/* the right-hand stack gives way (the To-dos tile shrinks first) instead of running under the footer */
+.dash-main{grid-template-rows:minmax(0,1fr) !important;}
+.dash-list > .n{flex:none;}
+.w-need{margin-top:4px;padding-top:4px;}
+.nd{min-height:28px;}
+
+.dash{box-sizing:border-box !important;overflow:hidden;}
+
+/* Home is exactly one screen tall: its boxes give way inside it (the To-dos box first) instead of running under the footer */
+body[data-view="summary"] #app{height:100%;}
+body[data-view="summary"] .dash{min-height:0;}
+
+/* ---------- Trends: tap a bar; sleep editor ---------- */
+.tr-col[data-tip]{cursor:pointer;}
+.tr-col.sel .tr-bar{background:var(--ink) !important;}
+.tr-tip{margin-top:8px;text-align:center;font-size:12.5px;color:var(--ink);font-weight:600;min-height:18px;}
+.tr-act{display:flex;justify-content:center;margin-top:6px;}
+.sl-list{margin-bottom:8px;max-height:30vh;overflow:auto;}
+.sl-row{display:flex;justify-content:space-between;gap:8px;align-items:center;width:100%;min-height:44px;padding:6px 0;background:none;border:0;border-top:1px solid var(--line);color:var(--ink);text-align:left;font-size:13px;}
+.sl-row b{font-weight:800;}
+.tr-stats{grid-template-columns:repeat(3,minmax(0,1fr));}
+
+.nd-box{width:20px;height:20px;border:2px solid var(--ink-soft);border-radius:6px;flex:none;box-sizing:border-box;}
+.nd.tick span{font-weight:600;}
+.ff-check{display:flex !important;flex-direction:row;align-items:center;gap:10px;}
+.ff-check input{-webkit-appearance:none;appearance:none;width:44px;height:44px;margin:0;flex:none;position:relative;background:none;border:0;padding:0;}
+.ff-check input::before{content:'';position:absolute;left:11px;top:11px;width:22px;height:22px;border:2px solid var(--ink-soft);border-radius:6px;box-sizing:border-box;background:var(--surface);}
+.ff-check input:checked::before{background:var(--home);border-color:var(--home);}
+.ff-check input:checked::after{content:'';position:absolute;left:19px;top:15px;width:6px;height:12px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg);}
 </style>
 </head>
 <body data-view="calendar">
@@ -1345,6 +1406,8 @@ body[data-view="trends"] #view-trends.active{flex:1 1 auto;min-height:0;display:
     <h1 id="screenTitle">Home Base</h1>
     <span class="top-date" id="todayLabel"></span>
     <button class="round-btn" id="moneyEyeBtn" title="Hide portfolio" aria-label="Hide portfolio" aria-pressed="false"></button>
+    <button class="round-btn" id="trendsTopBtn" title="Trends" aria-label="Trends"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-7"/></svg></button>
+    <button class="round-btn" id="settingsTopBtn" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></button>
   </div>
 
 
@@ -1368,9 +1431,6 @@ body[data-view="trends"] #view-trends.active{flex:1 1 auto;min-height:0;display:
   </div>
 
   <!-- MENU (left of the calendar) -->
-  <div class="view" id="view-menu">
-    <div id="drawerBody" class="menu-grid"></div>
-  </div>
 
   <!-- TASKS -->
   <div class="view" id="view-todo">
@@ -1766,9 +1826,8 @@ body[data-view="trends"] #view-trends.active{flex:1 1 auto;min-height:0;display:
 <div class="return-cal-fade" id="returnCalFade" style="display:none;"></div>
 <div class="return-cal-bar" id="returnCalBar">
   <span class="nav-ind" id="navInd"></span>
-  <button type="button" class="nav-item" id="returnBarMenuBtn" data-nav="menu" title="Menu"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h14"/></svg><i class="nav-dot" id="menuNavDot"></i></span><span>Menu</span></button>
   <button type="button" class="nav-item" id="returnCalBtn" data-nav="calendar" title="Calendar"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></span><span>Calendar</span></button>
-  <button type="button" class="nav-item" id="returnDashBtn" data-nav="summary" title="Dashboard"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/></svg></span><span>Dashboard</span></button>
+  <button type="button" class="nav-item" id="returnDashBtn" data-nav="summary" title="Home"><span class="nav-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/></svg></span><span>Home</span></button>
 </div>
 
 <div class="mileage-print-area" id="mileagePrintArea"></div>
@@ -2468,6 +2527,7 @@ async function init(){
   safeStep(setupExpenses);
   safeStep(setupTravel);
   safeStep(setupSync);
+  safeStep(()=>{ gymIdleCheck(); setInterval(gymIdleCheck, 30000); document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) gymIdleCheck(); }); });
   safeStep(()=>{ autoSettleWork(); setTimeout(()=>{ autoRetryDrafts(); }, 1500); window.addEventListener('online', ()=>{ autoRetryDrafts(); importInbox(); }); });
 
   renderCalendarAll();
@@ -2503,11 +2563,14 @@ function goToCalendarDate(dateStr){
   scrollToMonth(d.getFullYear(), d.getMonth(), wasCal);      // glide only when you're already on the calendar
   openDayModal(dateStr);
 }
-const MAIN_VIEWS = ['menu', 'calendar', 'summary'];      // left to right: Menu, Calendar, Dashboard
+const MAIN_VIEWS = ['calendar', 'summary'];      // left to right: Calendar, Home (Home = the old Dashboard and Menu together)
+const TRENDS_FOR = {toil:'work', gym:'gym', mileage:'driving', budget:'spend', expenses:'spend', travel:'away'};      // the Trends tab each page's button opens
+let trendsBackTo = null;
 let lastMainView = 'calendar';
 function goToView(viewName, dir, opts){
   let setPage = null;
   if(String(viewName).indexOf(':') > -1){ const pp = viewName.split(':'); viewName = pp[0]; setPage = pp[1]; }
+  if(viewName === 'menu') viewName = 'summary';
   { const cur = document.querySelector('.view.active'), from = cur ? cur.id.replace('view-', '') : null;
     if(!dir && from && from !== viewName && MAIN_VIEWS.indexOf(from) > -1 && MAIN_VIEWS.indexOf(viewName) > -1) dir = MAIN_VIEWS.indexOf(viewName) > MAIN_VIEWS.indexOf(from) ? 'fwd' : 'back'; }
   document.body.dataset.nav = dir || '';
@@ -2518,12 +2581,11 @@ function goToView(viewName, dir, opts){
   document.getElementById('view-'+viewName).classList.add('active');
   document.body.dataset.view = viewName;
   if(MAIN_VIEWS.indexOf(viewName) > -1) lastMainView = viewName;
-  if(viewName === 'menu') buildMenuBody();
   document.getElementById('returnCalFade').style.display = 'none';
-  { const ttl = {menu:'Menu', summary:'Dashboard', todo:'To-dos', rent:'Rent', toil:'TOIL', mileage:'Mileage', expenses:'Expenses', gym:'Gym', budget:'Finance', settings:'Settings', trends:'Trends', travel:'Travel'}[viewName];
+  { const ttl = {summary:'Home', todo:'To-dos', rent:'Rent', toil:'TOIL', mileage:'Mileage', expenses:'Expenses', gym:'Gym', budget:'Finance', settings:'Settings', trends:'Trends', travel:'Travel'}[viewName];
     const st = document.getElementById('screenTitle'); if(st) st.textContent = ttl || 'Home Base';
     const td = document.getElementById('todayLabel'); if(td) td.style.display = viewName === 'summary' ? '' : 'none';
-    document.querySelectorAll('#returnCalBar [data-nav]').forEach(b=> b.classList.toggle('on', b.dataset.nav === viewName || (viewName === 'summary' && b.dataset.nav === 'summary'))); navIndUpdate(); }
+    document.querySelectorAll('#returnCalBar [data-nav]').forEach(b=> b.classList.toggle('on', b.dataset.nav === viewName || (viewName === 'summary' && b.dataset.nav === 'summary'))); document.body.classList.toggle('has-trends', !!TRENDS_FOR[viewName]); navIndUpdate(); }
   if(viewName==='calendar'){
     if(!(opts && opts.noRestore)) requestAnimationFrame(()=> SC.scrollTo(0, savedCalendarScrollY));
   }else{
@@ -2559,18 +2621,28 @@ function setupTabs(){
     const v = document.body.dataset.view;
     if(v === 'settings' && settingsPage){ settingsPage = null; applySettingsPage(); SC.scrollTo(0, 0); return; }
     if(v === 'budget' && finTab !== 'overview'){ finTab = 'overview'; finOpenItem = null; renderBudget(); SC.scrollTo(0, 0); return; }
-    goToView(lastMainView || 'menu', 'back');
+    if(v === 'trends' && trendsBackTo){ const b = trendsBackTo; trendsBackTo = null; goToView(b, 'back'); return; }
+    goToView(lastMainView || 'summary', 'back');
   });
-  document.getElementById('returnBarMenuBtn').addEventListener('click', ()=>{ if(!isOn('menu')) goToView('menu'); });
+  document.getElementById('settingsTopBtn').addEventListener('click', ()=> goToView('settings'));
+  document.getElementById('trendsTopBtn').addEventListener('click', ()=>{ const v = document.body.dataset.view; if(TRENDS_FOR[v]) trendsTab = TRENDS_FOR[v]; goToView('trends'); trendsBackTo = v === 'summary' ? null : v; });
+  window.HB = {go:(v)=> goToView(v)};
   document.getElementById('returnCalBtn').addEventListener('click', ()=>{ if(!isOn('calendar')) goToView('calendar'); });
   document.getElementById('returnDashBtn').addEventListener('click', ()=>{ if(!isOn('summary')) goToView('summary'); });
   // Menu, Calendar and Dashboard sit side by side: swipe to move between them. Fires as soon as the swipe is clearly sideways (so a browser
   // scroll taking over the touch can't swallow it), and again on release for short flicks.
+  let swipeStartEl = null;
+  const noBackSwipe = (el)=>{                                  // a swipe that starts on a field, chart or sideways-scrolling list is not a "go back"
+    if(!el || !el.closest) return false;
+    if(el.closest('input,select,textarea,.tabs-s,.chip-row,canvas,svg,[data-no-swipe],.bm-stage,.tr-bars')) return true;
+    for(let n = el; n && n !== document.body; n = n.parentElement){ if(n.scrollWidth > n.clientWidth + 4){ const ov = getComputedStyle(n).overflowX; if(ov === 'auto' || ov === 'scroll') return true; } }
+    return false;
+  };
   const swipe = (el, onSwipe, onDrag, onCancel)=>{
-    let sx = null, sy = null, st = 0, sx0 = 0, fired = false;
+    let sx = null, sy = null, st = 0, sx0 = 0, fired = false; const startEl = ()=> swipeStartEl;
     const blocked = ()=> document.body.style.overflow === 'hidden' || !!document.querySelector('.overlay:not(.hidden)');
     const fire = (dx)=>{ fired = true; sx = null; onSwipe(dx < 0 ? 'left' : 'right'); };
-    el.addEventListener('touchstart', (e)=>{ if(e.touches.length !== 1){ sx = null; return; } sx = sx0 = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); fired = false; }, {passive:true});
+    el.addEventListener('touchstart', (e)=>{ if(e.touches.length !== 1){ sx = null; return; } sx = sx0 = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now(); fired = false; swipeStartEl = e.target; }, {passive:true});
     el.addEventListener('touchmove', (e)=>{
       if(sx === null || fired) return;
       const t = e.touches[0], dx = t.clientX - sx, dy = t.clientY - sy;
@@ -2591,53 +2663,16 @@ function setupTabs(){
   };
   swipe(document.getElementById('app'), (dir)=>{                                                                     // listens on the whole screen, margins included
     const v = document.body.dataset.view;
-    if(v === 'calendar'){ if(!yearViewActive) goToView(dir === 'left' ? 'summary' : 'menu'); }
-    else if(v === 'menu'){ if(dir === 'left') goToView('calendar'); }
+    if(v === 'calendar'){ if(!yearViewActive && dir === 'left') goToView('summary'); }
     else if(v === 'summary'){ if(dir === 'right') goToView('calendar'); }
+    else if(dir === 'right' && v !== 'gym' && v !== 'trends' && !noBackSwipe(swipeStartEl)) document.getElementById('menuTopBtn').click();      // a page without tabs: swipe right = the back button
   }, navIndDrag, navIndUpdate);
   window.addEventListener('resize', navIndUpdate); window.addEventListener('orientationchange', ()=> setTimeout(navIndUpdate, 250));
-  setTimeout(navIndUpdate, 400);
+  document.querySelectorAll('#returnCalBar [data-nav]').forEach(b=> b.classList.toggle('on', b.dataset.nav === document.body.dataset.view));      // the tab you open on is marked from the start
+  navIndUpdate(); setTimeout(navIndUpdate, 400);
   setupSettingsNav();
   setupMoneyEye();
   window.addEventListener('resize', fitSummary);
-}
-function buildMenuBody(){
-  const body = document.getElementById('drawerBody');
-  const urgentCount = todos.filter(t=>t.kind==='task' && !t.done && t.dueDate && t.dueDate < todayStr()).length;
-  const pendingExpenses = expenses.filter(e=>!e.done).length;
-  const icons = {
-    calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/>',
-    summary:'<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
-    todo:'<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 12l2.5 2.5L16 9"/>',
-    rent:'<path d="M4 11l8-7 8 7"/><path d="M6 9.5V20h12V9.5"/>',
-    toil:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/>',
-    mileage:'<path d="M4 17h16M6 17l1.5-5h9L18 17M9 8h6l1 4H8l1-4z"/><circle cx="7.5" cy="17" r="1.5"/><circle cx="16.5" cy="17" r="1.5"/>',
-    expenses:'<rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/>',
-    budget:'<circle cx="12" cy="12" r="9"/><path d="M14.5 8.5a3 3 0 00-5 2.2V14c0 1-.6 1.8-1.5 2h8"/><line x1="8.5" y1="12" x2="13" y2="12"/>',
-    gym:'<path d="M6.5 6.5v11"/><path d="M17.5 6.5v11"/><path d="M3.5 9v6"/><path d="M20.5 9v6"/><path d="M6.5 12h11"/>',
-    travel:'<path d="M3 12l18-8-7 18-3-7-8-3z"/>',
-    trends:'<path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-7"/>',
-    settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09a1.65 1.65 0 00-1-1.51 1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09a1.65 1.65 0 001.51-1 1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/>'
-  };
-  const items = [
-    ['todo','To-dos',urgentCount],
-    ['mileage','Mileage',mileageDrafts.length],
-    ['expenses','Expenses',pendingExpenses],
-    ['rent','Rent',0],
-    ['toil','TOIL',0],
-    ['budget','Finance',0],
-    ['gym','Gym',0],
-    ['trends','Trends',0]
-  ];
-  if(travelEnabled) items.push(['travel','Travel',0]);
-  items.push(['settings','Settings',0]);
-  body.innerHTML = items.map(it=>
-    '<button type="button" class="menu-tile" data-goto="'+it[0]+'">'+
-      '<span class="mt-ic"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+icons[it[0]]+'</svg></span>'+
-      '<span class="mt-l">'+it[1]+'</span>'+
-      (it[2] > 0 ? '<span class="tab-badge">'+it[2]+'</span>' : '')+
-    '</button>').join('');
-  body.querySelectorAll('[data-goto]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.goto)));
 }
 let quickAddActive = null;
 function openQuickAddMileageForm(){
@@ -3721,7 +3756,7 @@ function tripRowEl(t){
   const row = document.createElement('div');
   row.className = 'trip';
   row.innerHTML =
-    '<div class="trip-main" role="button" tabindex="0" aria-expanded="false"><div class="trip-top"><span class="trip-title">'+mileageTitle(t)+'</span><span class="trip-miles">'+t.miles.toFixed(1)+'<small>mi</small></span></div>'+
+    '<div class="trip-main" role="button" tabindex="0" aria-expanded="false"><div class="trip-top"><span class="trip-title">'+mileageTitle(t)+'</span><span class="trip-miles">'+(Number(t.miles) || 0).toFixed(1)+'<small>mi</small></span></div>'+
     '<div class="trip-meta"><span>'+shortDate(t.date)+'</span><span class="tag '+(biz ? 'biz' : 'pers')+'">'+(biz ? 'Business' : 'Personal')+'</span>'+(t.mins ? '<span>'+t.mins+' min</span>' : '')+'</div></div>'+
     '<div class="trip-detail" hidden>'+points.map(pt=> '<div class="trip-pt">'+escapeHtml(mileageCleanAddr(pt))+'</div>').join('')+'<button type="button" class="btn secondary small todo-del trip-del">Delete trip</button></div>';
   const main = row.querySelector('.trip-main'), det = row.querySelector('.trip-detail');
@@ -4813,7 +4848,7 @@ async function toggleClockIn(){
       if(!entry.shift) entry.shift = {start:null,finish:null,breakMins:0,title:''};
       entry.shift.start = timeStr;
       entry.shift.finish = null;
-      clockInState = {date:today, start:timeStr}; autoMeta.workPending = null;
+      clockInState = {date:today, start:timeStr}; autoMeta.workPending = null; autoMarkClocked(today); autoSaveMeta();
       await saveKey('clock-in-state', clockInState);
       await saveKey('calendar-data', calendarData);
       updateClockInBtn();
@@ -5005,7 +5040,7 @@ function renderSummary(){
   if(!box) return;
   const today = todayStr(), e = calendarData[today];
   const sh = e && e.shift, hrs = shiftHours(sh);
-  const events = [].concat(autoEventsForDate(today).map(x=>x.title), todos.filter(t=> t.kind==='whatson' && todoOccursOn(t, today)).map(t=>t.text), gymDayLine(today) ? [gymDayLine(today)] : []);
+  const events = [].concat(autoEventsForDate(today).map(x=>x.title), todos.filter(t=> t.kind==='whatson' && todoOccursOn(t, today)).map(t=>t.text));
   const bedLast = autoBedFor(addDays(today, -1));
   const m0 = n=> '\u00a3'+Math.round(n).toLocaleString('en-GB');
   // clock
@@ -5024,7 +5059,7 @@ function renderSummary(){
     const d = addDays(mon, i), en = calendarData[d], hh = en ? shiftHours(en.shift) : null;
     if(hh) total += hh;
     const lab = hh ? String(Math.round(hh*10)/10) : (en && en.isAL ? 'AL' : '');
-    wk += '<button type="button" class="d-wk'+(d === today ? ' now' : '')+(en && en.status === 'away' ? ' away' : '')+'" data-sum-date="'+d+'"><em>'+lab+'</em><span class="d-bar"><i style="height:'+(hh ? Math.max(8, Math.min(100, hh/12*100)) : 0)+'%"></i></span><b>'+dn[i]+'</b>'+(gymDays.has(d) ? '<s class="d-gym" title="Gym"></s>' : '')+'</button>';
+    wk += '<button type="button" class="d-wk'+(d === today ? ' now' : '')+(en && en.status === 'away' ? ' away' : '')+'" data-sum-date="'+d+'"><em>'+lab+'</em><span class="d-bar"><i style="height:'+(hh ? Math.max(8, Math.min(100, hh/12*100)) : 0)+'%"></i></span><b>'+dn[i]+'</b><span class="d-ics">'+((en && en.shift && en.shift.start) ? '<s class="d-work" title="Work"></s>' : '')+(gymDays.has(d) ? '<s class="d-gym" title="Gym"></s>' : '')+'</span></button>';
   }
   const toilBal = computeToilWeeks().balance;
   // to-dos
@@ -5051,39 +5086,49 @@ function renderSummary(){
   try{ fig = bmBuildSvg('front', gymMuscleStats(7).pct, null, 'sm').replace('viewBox="0 0 300 660"', 'viewBox="32 4 236 652"').replace('<svg class="bm-svg', '<svg class="bm-svg d-svg').replace(/ tabindex="[^"]*"/g,'').replace(/ role="[^"]*"/g,'').replace(/ aria-label="[^"]*"/g,''); }catch(err){ fig = ''; }
   const shiftTxt = sh && sh.start ? escapeHtml(sh.start)+'\u2013'+escapeHtml(sh.finish || '\u2026') : (e && e.isAL ? 'Annual leave' : 'No shift today');
   const meta = [hrs ? hrs+'h' : '', (e && e.status === 'away') ? 'Away' : 'Home', bedLast ? autoMins(bedLast)+' in bed' : ''].filter(Boolean).map(x=> '<span>'+x+'</span>').join('');
-  const alerts =
-    (autoMeta.workPending && clockInState ? '<button type="button" class="d-alert" data-sum-pend="1">Left Connecteam at '+autoHM(autoMeta.workPending.t)+' \u2014 clock out?</button>' : '')+
-    (syncEnabled && syncFailed ? '<button type="button" class="d-alert warn" data-sum-go="settings:sync">Sync isn\u2019t working</button>' : '');
+  const unsorted = spendTxns.filter(t=> !t.cat && t.date && t.date >= addDays(today, -60)).length;
+  const needs = [];
+  finPendingBills().forEach(pb=> needs.push({t:pb.it.name+' '+money(pb.it.amount)+' due '+shortDate(pb.d), a:'data-nd-bill="'+escapeHtml(String(pb.it.id))+'|'+pb.d+'"', tick:1}));
+  if(autoMeta.workPending && clockInState) needs.push({t:'Left Connecteam at '+autoHM(autoMeta.workPending.t)+', clock out?', a:'data-nd-pend="1"', warn:1});
+  if(mileageDrafts.length) needs.push({t:mileageDrafts.length+(mileageDrafts.length === 1 ? ' drive' : ' drives')+' to check', a:'data-nd-go="mileage"'});
+  if(claim.length) needs.push({t:claim.length+(claim.length === 1 ? ' expense' : ' expenses')+' to claim, '+money(claimTot), a:'data-nd-go="expenses"'});
+  if(unsorted) needs.push({t:unsorted+(unsorted === 1 ? ' payment' : ' payments')+' to sort', a:'data-nd-go="budget:spend"'});
+  if(syncEnabled && syncFailed) needs.push({t:'Sync isn\u2019t working', a:'data-nd-go="settings:sync"', warn:1});
+  const needHtml = needs.length ? '<div class="w-need"><b>Needs attention</b>'+needs.slice(0, 3).map(n=> '<button type="button" class="nd'+(n.warn ? ' warn' : '')+(n.tick ? ' tick' : '')+'" '+n.a+'><span>'+escapeHtml(n.t)+'</span>'+(n.tick ? '<i class="nd-box" aria-label="Tick when paid"></i>' : '<i>\u203a</i>')+'</button>').join('')+(needs.length > 3 ? '<span class="nd-more">+'+(needs.length - 3)+' more</span>' : '')+'</div>' : '';
+  const gymWeekN = new Set(gymLog.filter(l=> !l.wu && l.date >= mon && l.date <= today).map(l=> l.date)).size, gymLastD = gymLog.filter(l=> !l.wu).map(l=> l.date).sort().pop();
+  const gymStat1 = gymWeekN+(gymWeekN === 1 ? ' session' : ' sessions')+' this week', gymStat2 = gymDayLine(today) || (gymLastD ? 'last '+shortDate(gymLastD) : 'none logged yet');
   const N = (label, val, attrs, extra, sub)=> '<div class="w n'+(extra || '')+(sub ? ' has-s' : '')+'" role="button" tabindex="0" '+attrs+'><span class="n-l">'+label+'</span><b class="n-v">'+val+'</b>'+(sub ? '<span class="n-s">'+sub+'</span>' : '')+'</div>';
   const hide = (v)=> hideMoney ? '\u2022\u2022\u2022\u2022' : v;
   const bullets = pend.slice(0, 3).map(t=>{
     const over = t.dueDate && t.dueDate < today;
     return '<div class="d-bul"><i></i><span>'+escapeHtml(t.text)+'</span>'+(t.dueDate ? '<em class="'+(over ? 'late' : '')+'">'+(t.dueDate === today ? 'Today' : shortDate(t.dueDate))+'</em>' : '')+'</div>';
   }).join('');
-  box.innerHTML = alerts+'<div class="dash">'+
+  box.innerHTML = '<div class="dash">'+
     '<div class="w w-today" role="button" tabindex="0" data-sum-day><div class="w-t"><span>Today</span></div>'+
       '<div class="w-toprow"><div class="w-hero'+(sh && sh.start ? '' : ' quiet')+'">'+shiftTxt+'</div><button type="button" class="btn'+(on ? ' secondary' : '')+'" id="sumClockBtn">'+(on ? 'Clock out' : 'Clock in')+'</button></div>'+
       '<div class="w-meta"><span class="w-clk'+(stale ? ' late' : '')+'"><i class="w-dot'+(on ? ' on' : '')+'"></i>'+clockTxt+'</span>'+meta+'</div>'+
-      (events.length ? '<div class="w-line">'+escapeHtml(events.slice(0,2).join('   '))+'</div>' : '')+'</div>'+
-    '<div class="w w-week" role="button" tabindex="0" data-sum-go="toil"><div class="w-t"><span>This week</span><i class="w-gl"><s class="d-gym"></s>gym</i><b class="w-wkn">'+(Math.round(total*10)/10)+'h</b><span class="w-toil">TOIL '+(toilBal >= 0 ? '+' : '\u2212')+Math.abs(Math.round(toilBal*10)/10)+'h</span></div><div class="d-bars">'+wk+'</div></div>'+
+      (events.length ? '<div class="w-line">'+escapeHtml(events.slice(0,2).join('   '))+'</div>' : '')+needHtml+'</div>'+
+    '<div class="w w-week" role="button" tabindex="0" data-sum-go="toil"><div class="w-t"><span>This week</span><i class="w-gl"><s class="d-work"></s>work</i><i class="w-gl"><s class="d-gym"></s>gym</i><b class="w-wkn">'+(Math.round(total*10)/10)+'h</b><span class="w-toil">TOIL '+(toilBal >= 0 ? '+' : '\u2212')+Math.abs(Math.round(toilBal*10)/10)+'h</span></div><div class="d-bars">'+wk+'</div></div>'+
     '<div class="dash-main">'+
-      '<div class="w w-gym" role="button" tabindex="0" data-sum-go="gym" aria-label="Gym"><div class="w-t"><span>Gym</span></div><div class="w-fig">'+fig+'</div></div>'+
+      '<div class="w w-gym" role="button" tabindex="0" data-sum-go="gym" aria-label="Gym"><div class="w-gs"><b>'+gymStat1+'</b><span>'+escapeHtml(gymStat2)+'</span></div><div class="w-fig">'+fig+'</div></div>'+
       '<div class="dash-list">'+
-        N('Van', odo ? fmtMi(odo.estimate) : 'Set', 'data-sum-go="'+(odo ? 'mileage' : 'settings:workhome')+'"', odo ? '' : ' add', driveMins > 0 ? (driveMins < 60 ? driveMins+'m' : Math.floor(driveMins/60)+'h '+pad(driveMins%60)+'m')+' driving this week' : 'no driving this week')+
-        N('Finance', acct ? m0(acct.value) : 'Set', 'data-sum-go="budget"', acct ? '' : ' add', pf.priced || pf.value > 0 ? 'portfolio '+hide(m0(pf.value)) : 'no portfolio yet')+
-        N('Rent owed', rentSet ? m0(owed.total) : 'Set', 'data-sum-go="rent"', rentSet ? '' : ' add')+
-        N('To claim', claim.length ? money(claimTot) : '\u00a30', 'data-sum-go="expenses"', claim.length ? '' : ' dim')+
-        N('Sleep', bedLast ? autoMins(bedLast) : (hasSleep ? '\u2014' : 'Set up'), hasSleep ? 'data-sum-sleep' : 'data-sum-go="settings:automations"', hasSleep ? '' : ' add', sleepAvg ? 'avg '+autoMins(sleepAvg) : (hasSleep ? 'last night' : ''))+
         (pend.length
           ? '<div class="w w-todos" role="button" tabindex="0" data-sum-go="todo"><div class="w-t"><span>To-dos</span><b class="w-count">'+pend.length+'</b></div>'+bullets+'</div>'
           : '<div class="w n add w-todos0" role="button" tabindex="0" data-sum-add><span class="n-l">To-dos</span><b class="n-v">Add</b></div>')+
+        N('Finance', acct ? m0(acct.value) : 'Set', 'data-sum-go="budget"', acct ? '' : ' add', ([pf.priced || pf.value > 0 ? 'portfolio '+hide(m0(pf.value)) : '', rentSet ? 'rent owed '+m0(owed.total) : ''].filter(Boolean).join(' \u00b7 ')) || 'no portfolio yet')+
+        N('To claim', claim.length ? money(claimTot) : '\u00a30', 'data-sum-go="expenses"', claim.length ? '' : ' dim')+
+        N('Van', odo ? fmtMi(odo.estimate) : 'Set', 'data-sum-go="'+(odo ? 'mileage' : 'settings:workhome')+'"', odo ? '' : ' add', driveMins > 0 ? (driveMins < 60 ? driveMins+'m' : Math.floor(driveMins/60)+'h '+pad(driveMins%60)+'m')+' driving this week' : 'no driving this week')+
+        N('Sleep', bedLast ? autoMins(bedLast) : (hasSleep ? '\u2014' : 'Set up'), hasSleep ? 'data-sum-sleep' : 'data-sum-go="settings:automations"', hasSleep ? '' : ' add', sleepAvg ? 'avg '+autoMins(sleepAvg) : (hasSleep ? 'last night' : ''))+
+        (travelEnabled ? N('Travel', 'Open', 'data-sum-go="travel"', ' dim', 'places and trips') : '')+
       '</div></div></div>';
   box.querySelectorAll('[data-sum-day]').forEach(el=> el.addEventListener('click', ()=> goToCalendarDate(today)));
   box.querySelectorAll('[data-sum-date]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); goToCalendarDate(el.dataset.sumDate); }));
   box.querySelectorAll('[data-sum-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.sumGo)));
   box.querySelectorAll('[data-sum-sleep]').forEach(el=> el.addEventListener('click', ()=>{ trendsTab = 'sleep'; goToView('trends'); }));
   box.querySelectorAll('.w[role="button"]').forEach(el=> el.addEventListener('keydown', (ev)=>{ if((ev.key === 'Enter' || ev.key === ' ') && ev.target === el){ ev.preventDefault(); el.click(); } }));
-  box.querySelectorAll('[data-sum-pend]').forEach(el=> el.addEventListener('click', openWorkClockOutSheet));
+  box.querySelectorAll('[data-nd-pend]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); openWorkClockOutSheet(); }));
+  box.querySelectorAll('[data-nd-go]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); goToView(el.dataset.ndGo); }));
+  box.querySelectorAll('[data-nd-bill]').forEach(el=> el.addEventListener('click', async (ev)=>{ ev.stopPropagation(); const pp = el.dataset.ndBill.split('|'); await finConfirmBill(pp[0], pp[1]); const it = finDD.find(x=> String(x.id) === pp[0]); showToast((it ? it.name : 'Bill')+' marked as paid.'); renderSummary(); }));
   box.querySelectorAll('[data-sum-todo]').forEach(el=> el.addEventListener('click', (ev)=>{
     ev.stopPropagation();
     const t = todos.find(x=> String(x.id)===el.dataset.sumTodo);
@@ -5473,6 +5518,16 @@ function finOccurrences(it, key){
   finMonthsFrom(pp.start.slice(0,7), pp.end.slice(0,7)).forEach(m=> finOccCal(it, m).forEach(d=>{ if(d >= pp.start && d <= pp.end && out.indexOf(d) < 0) out.push(d); }));
   return out.sort();
 }
+function finDDPaid(it, d){ return !it.confirm || (it.paidDates || []).indexOf(d) > -1; }
+function finPendingBills(){                         // bills set to "ask me to tick it off" that have come due and are not ticked yet
+  const td = todayStr(), from = addDays(td, -45), out = [];
+  finDD.forEach(it=>{ if(!it.confirm || it.active === false) return; finMonthsFrom(from.slice(0,7), td.slice(0,7)).forEach(ym=> finOccCal(it, ym).forEach(d=>{ if(d >= from && d <= td && !finDDPaid(it, d)) out.push({it, d}); })); });
+  return out.sort((a, b)=> a.d.localeCompare(b.d));
+}
+async function finConfirmBill(id, d){
+  const it = finDD.find(x=> String(x.id) === String(id)); if(!it) return;
+  it.paidDates = (it.paidDates || []).concat([d]).slice(-24); await saveKey('fin-dd', finDD);
+}
 function finNext(it, from){
   if(!it || it.active === false) return null;
   const f = parseYMD(from);
@@ -5792,7 +5847,7 @@ function finMonthPlan(ym){
   const oneOffAll = finR2(oneOff.reduce((a, i)=> a + i.amount, 0)), oneOffNow = finR2(oneOff.filter(i=> i.date <= today).reduce((a, i)=> a + i.amount, 0));
   let repaid = 0, lent = 0;                      // money you fronted for others, and what they have paid back (counted on the day it arrives)
   finOwed.forEach(o=>{ o.people.forEach(pp=>{ if(o.date && finKeyOf(o.date) === ym) lent += pp.share; if(pp.paid && pp.paidDate && pp.paidDate <= today && finKeyOf(pp.paidDate) === ym) repaid += pp.share; }); });
-  finDD.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d <= today) billsPaid += it.amount; }));
+  finDD.forEach(it=> finOccurrences(it, ym).forEach(d=>{ if(d <= today && finDDPaid(it, d)) billsPaid += it.amount; }));
   const [y, m] = ym.split('-').map(Number), dim = new Date(y, m, 0).getDate();
   const rentEst = 0;                                                              // rent is an ordinary bill now: add it to your bills
   const rentPaid = finR2(st.tx.filter(t=> t.src === 'rent').reduce((a,t)=> a + t.amount, 0));
@@ -5813,7 +5868,7 @@ function finAccount(){
   let inn = 0, out = 0;
   finMonthsFrom(a.date.slice(0,7), today.slice(0,7)).forEach(ym=>{
     finIncome.forEach(it=> finOccCal(it, ym).forEach(d=>{ if(d > a.date && d <= today) inn += it.amount; }));
-    finDD.forEach(it=> finOccCal(it, ym).forEach(d=>{ if(d > a.date && d <= today) out += it.amount; }));
+    finDD.forEach(it=> finOccCal(it, ym).forEach(d=>{ if(d > a.date && d <= today && finDDPaid(it, d)) out += it.amount; }));
   });
   const skip = new Set(a.skip || []);                                           // already entered when you typed the balance: already in it
   spendTxns.forEach(t=>{ if(t.date && t.date <= today && !skip.has(t.id) && (t.date+' '+(t.time || '23:59')) > stamp) out += t.amount; });
@@ -5890,6 +5945,7 @@ function renderFinDashboard(box){
     '<div class="fs-foot"><span class="stat-sub" style="margin:0;">'+(hasB ? (leftB >= 0 ? money(leftB)+' left in budgets' : '<b class="sum-over">'+money(-leftB)+' over budgets</b>') : 'No budgets set yet')+(lcState.hide ? '' : '\u2003loose change '+(lcv < 0 ? '\u2212' : '')+money(Math.abs(lcv)))+'</span><button type="button" class="fm-link" data-fin-budgets>Budgets</button></div></div>';
   const owedNow = finOwedUnpaid(), people = new Set();
   finOwed.forEach(o=> o.people.forEach(p=>{ if(!p.paid) people.add(p.name); }));
+  if(RATE_HOME > 0 || RATE_AWAY > 0) h += '<button type="button" class="fm-row" data-fin-rent><span>Rent owed</span><b>'+money(computeOwed().total)+'</b><span class="stat-sub" style="margin:0;">details \u203a</span></button>';
   if(owedNow > 0) h += '<button type="button" class="fm-row" data-fin-owed><span>Owed to you</span><b>'+money(owedNow)+'</b><span class="stat-sub" style="margin:0;">'+people.size+' '+(people.size === 1 ? 'person' : 'people')+' \u203a</span></button>';
   else if(finOwed.length) h += '<button type="button" class="fm-row" data-fin-owed><span>Owed to you</span><b>\u00a30.00</b><span class="stat-sub" style="margin:0;">all settled \u203a</span></button>';
   // ---- portfolio ----
@@ -5910,6 +5966,7 @@ function renderFinDashboard(box){
   box.querySelectorAll('[data-fin-m]').forEach(b=> b.addEventListener('click', ()=> finNavMonth(Number(b.dataset.finM))));
   box.querySelectorAll('[data-fin-tab]').forEach(el=> el.addEventListener('click', (e)=>{ e.stopPropagation(); finTab = el.dataset.finTab; finOpenItem = null; renderBudget(); SC.scrollTo(0, 0); }));
   box.querySelectorAll('[data-fin-owed]').forEach(el=> el.addEventListener('click', finOpenOwedSheet));
+  box.querySelectorAll('[data-fin-rent]').forEach(el=> el.addEventListener('click', ()=> goToView('rent')));
   finBindEditors(box);
 }
 // every category, a line in its colour showing how much of it you have spent this month
@@ -6118,7 +6175,7 @@ function renderFinRecurring(box, kind, forYm, compact){
         '<label class="ff ff-wide"><span>Name</span><input type="text" data-fe="name" value="'+escapeHtml(it.name)+'"></label>'+
         '<label class="ff"><span>Amount (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" data-fe="amount" value="'+it.amount+'"></label>'+
         '<label class="ff"><span>'+(it.freq === 'once' ? 'Date' : ((it.freq === 'lastfri' || it.freq === 'lastwd') ? 'Starting from' : 'Next payment date'))+'</span><input type="date" data-fe="date" value="'+it.date+'"></label>'+
-        '<label class="ff ff-wide"><span>How often</span><select data-fe="freq">'+freqOpts(it.freq)+'</select></label></div>'+
+        '<label class="ff ff-wide"><span>How often</span><select data-fe="freq">'+freqOpts(it.freq)+'</select></label>'+(isDD ? '<label class="ff ff-wide ff-check"><input type="checkbox" data-fe="confirm"'+(it.confirm ? ' checked' : '')+'><span>Ask me to tick it off when it is due</span></label>' : '')+'</div>'+
         '<div class="fin-edit-row"><button type="button" class="btn small" data-fe-save="'+it.id+'">Save</button><button type="button" class="btn secondary small" data-fe-pause="'+it.id+'">'+(it.active === false ? 'Resume' : 'Pause')+'</button><button type="button" class="btn secondary small" data-fe-del="'+it.id+'">Delete</button></div></div>' : '')+'</div>';
   }).join('') : '<div class="stat-sub">'+(isDD ? 'No bills yet.' : 'No income added yet.')+'</div>')+'</div>';
   if(rows.length > 4) h += '<button type="button" class="btn secondary small block" data-fr-all style="margin-bottom:8px;">'+(showAllRows ? 'Show fewer' : 'Show all '+rows.length)+'</button>';
@@ -6127,7 +6184,7 @@ function renderFinRecurring(box, kind, forYm, compact){
     '<label class="ff ff-wide"><span>Name</span><input type="text" id="frName" placeholder="'+(isDD ? 'e.g. Rent' : 'e.g. Salary')+'" autocomplete="off"></label>'+
     '<label class="ff"><span>Amount (\u00a3)</span><input type="number" inputmode="decimal" step="0.01" min="0" id="frAmt"></label>'+
     '<label class="ff"><span id="frDateLbl">Next payment date</span><input type="date" id="frDate" value="'+today+'"></label>'+
-    '<label class="ff ff-wide"><span>How often</span><select id="frFreq">'+freqOpts('monthly')+'</select></label></div>'+
+    '<label class="ff ff-wide"><span>How often</span><select id="frFreq">'+freqOpts('monthly')+'</select></label>'+(isDD ? '<label class="ff ff-wide ff-check"><input type="checkbox" id="frConfirm"><span>Ask me to tick it off when it is due (always on for Rent)</span></label>' : '')+'</div>'+
     '<button type="button" class="btn block" id="frAdd" style="margin-top:12px;">Add</button></div>';
   box.innerHTML = h;
   box.querySelectorAll('[data-fr-all]').forEach(b=> b.addEventListener('click', ()=>{ finRecurAll[kind] = !finRecurAll[kind]; renderBudget(); }));
@@ -6139,6 +6196,7 @@ function renderFinRecurring(box, kind, forYm, compact){
     const amt = parseFloat(g('amount'));
     if(!g('name').trim() || isNaN(amt) || !g('date')){ showToast('Name, amount and date please.'); return; }
     it.name = g('name').trim(); it.amount = finR2(amt); it.freq = g('freq'); it.date = g('date');
+    if(isDD){ const cf = box.querySelector('[data-fe="confirm"]'); it.confirm = !!(cf && cf.checked); }
     finOpenItem = null; await save();
   }));
   box.querySelectorAll('[data-fe-pause]').forEach(b=> b.addEventListener('click', async ()=>{
@@ -6162,7 +6220,8 @@ function renderFinRecurring(box, kind, forYm, compact){
   document.getElementById('frAdd').addEventListener('click', async ()=>{
     const name = document.getElementById('frName').value.trim(), amt = parseFloat(document.getElementById('frAmt').value), date = document.getElementById('frDate').value;
     if(!name || isNaN(amt) || amt <= 0 || !date){ showToast('Name, amount and date please.'); return; }
-    list.push({id:uid(), name, amount:finR2(amt), freq:document.getElementById('frFreq').value, date, active:true});
+    const cfOn = isDD && (/\brent\b/i.test(name) || !!(document.getElementById('frConfirm') && document.getElementById('frConfirm').checked));
+    list.push(Object.assign({id:uid(), name, amount:finR2(amt), freq:document.getElementById('frFreq').value, date, active:true}, cfOn ? {confirm:true, paidDates:[]} : {}));
     await save();
   });
   const fr = document.getElementById('frFreq');
@@ -6732,7 +6791,7 @@ function finLedgerItems(){
   const startYm = (a && a.date && a.date < first ? a.date : first).slice(0,7), endD = addDays(today, 14);
   const months = finMonthsFrom(startYm, endD.slice(0,7));
   finIncome.forEach(it=> months.forEach(ym=> finOccCal(it, ym).forEach(d=>{ if(d <= endD) rows.push({k:'sched', id:'i:'+it.id+':'+d, date:d, time:'', amt:it.amount, title:it.name, up:d > today, it, inc:true}); })));
-  finDD.forEach(it=> months.forEach(ym=> finOccCal(it, ym).forEach(d=>{ if(d <= endD) rows.push({k:'sched', id:'b:'+it.id+':'+d, date:d, time:'', amt:-it.amount, title:it.name, up:d > today, it, inc:false}); })));
+  finDD.forEach(it=> months.forEach(ym=> finOccCal(it, ym).forEach(d=>{ if(d <= endD) rows.push({k:'sched', id:'b:'+it.id+':'+d, date:d, time:'', amt:-it.amount, title:it.name, up:d > today || !finDDPaid(it, d), pend:d <= today && !finDDPaid(it, d), it, inc:false}); })));
   finHoldings.forEach(h=>{ const r = h.recur; if(!r || r.active === false || !(r.amount > 0) || !r.date) return; months.forEach(ym=> finOccCal(r, ym).forEach(d=>{ if(d > today && d <= endD) rows.push({k:'sched', id:'v:'+h.id+':'+d, date:d, time:'', amt:-r.amount, title:'Invest '+finDisplayName(h), up:true, it:r, inv:true}); })); });
   return rows.sort((x, y)=> (y.date+(y.time || '')).localeCompare(x.date+(x.time || '')));
 }
@@ -6749,7 +6808,7 @@ function finLedgerRowEl(r, oth){
   }else if(r.k === 'in'){
     html = '<div class="lg-row tap" data-lg-in="'+r.id+'"><span class="lg-d">'+day+'</span><div class="lg-m"><div class="lg-t">'+escapeHtml(r.title)+'</div><div class="lg-s">Money in'+(r.time ? '\u2003'+r.time : '')+'</div></div><div class="lg-r">'+amt(false, Math.abs(r.amt))+'</div></div>';
   }else{
-    html = '<div class="lg-row tap'+(r.up ? ' up' : '')+'" data-lg-sched="'+escapeHtml(r.id)+'"><span class="lg-d">'+day+'</span><div class="lg-m"><div class="lg-t">'+escapeHtml(r.title)+'</div><div class="lg-s">'+(r.inc ? 'Income' : (r.inv ? 'Investment' : 'Bill'))+(r.up ? ', due' : '')+'</div></div><div class="lg-r">'+amt(!r.inc, Math.abs(r.amt))+'</div></div>';
+    html = '<div class="lg-row tap'+(r.up ? ' up' : '')+'" data-lg-sched="'+escapeHtml(r.id)+'"><span class="lg-d">'+day+'</span><div class="lg-m"><div class="lg-t">'+escapeHtml(r.title)+'</div><div class="lg-s">'+(r.inc ? 'Income' : (r.inv ? 'Investment' : 'Bill'))+(r.pend ? ', tick when paid' : (r.up ? ', due' : ''))+'</div></div><div class="lg-r">'+amt(!r.inc, Math.abs(r.amt))+'</div></div>';
   }
   w.innerHTML = html; const el = w.firstElementChild;
   if(r.k === 'txn') el.addEventListener('click', ()=> finOpenTxnSheet(r.t.id));
@@ -6803,7 +6862,9 @@ function finOpenSchedSheet(r){
     '<div class="sum-row"><span class="sum-k">'+(r.up ? 'Due' : (r.inc ? 'Received' : 'Paid'))+'</span><span class="sum-v">'+niceDate(r.date)+'</span></div>'+
     '<div class="sum-row"><span class="sum-k">Repeats</span><span class="sum-v">'+escapeHtml(finFreqLabel(it.freq))+'</span></div>'+
     '<div class="stat-sub" style="margin:10px 0;">This comes from your '+(r.inc ? 'income' : (r.inv ? 'regular buys' : 'bills'))+' schedule, so it moves the balance on its own.</div>'+
+    (r.pend ? '<button type="button" class="btn block" id="schedPaid" style="margin-bottom:8px;">I\u2019ve paid it</button>' : '')+
     '<button type="button" class="btn secondary block" id="schedManage">'+(r.inc ? 'Manage income' : (r.inv ? 'Manage investments' : 'Manage bills'))+'</button>';
+  { const sp = document.getElementById('schedPaid'); if(sp) sp.addEventListener('click', async ()=>{ await finConfirmBill(it.id, r.date); closeSheet(); renderBudget(); showToast(it.name+' marked as paid.'); }); }
   document.getElementById('schedManage').addEventListener('click', ()=>{
     closeSheet();
     if(r.inc){ openRecurSheet('income'); return; }
@@ -7129,14 +7190,19 @@ async function autoClockOut(whenMs){
   return timeStr;
 }
 // would opening Connecteam at this moment clock you in? returns the answer and, if not, the plain reason
+function autoMarkClocked(day){                       // remember the days the clock has run, so a planned finish time on a rota shift doesn't stop you clocking in
+  autoMeta.clocked = autoMeta.clocked || {}; autoMeta.clocked[day] = 1;
+  Object.keys(autoMeta.clocked).sort().slice(0, -21).forEach(k=> delete autoMeta.clocked[k]);
+}
 function autoWorkVerdict(t){
   const w = autoWork(), day = fmt(new Date(t)), timeStr = autoHM(t), e = calendarData[day];
   if(Date.now() - t > 72*3600000) return {ok:false, short:'too old', why:'That signal was more than 3 days old, so it was ignored.'};
   if(clockInState && (t - autoClockStart()) <= 16*3600000) return {ok:false, quiet:true, short:'already clocked in', why:'You are already clocked in (since '+clockInState.start+' on '+shortDate(clockInState.date)+').'};
   const forgot = clockInState ? ' The forgotten clock-in from '+shortDate(clockInState.date)+' ('+clockInState.start+') would be closed with no finish time first.' : '';
-  if(timeStr < w.from || timeStr > w.to) return {ok:false, short:'outside '+w.from+'\u2013'+w.to, why:'It is '+timeStr+', outside the hours you set to clock in ('+w.from+'\u2013'+w.to+'). Change them in Work clock.'+forgot};
   if(e && e.isAL) return {ok:false, short:'annual leave', why:'That day is marked as annual leave.'+forgot};
-  if(e && e.shift && e.shift.finish) return {ok:false, short:'that day already has a finish time', why:'That day already has a finish time ('+e.shift.finish+'), so it counts as done.'+forgot};
+  if(!(e && e.shift && (e.shift.start || e.shift.finish || e.shift.title))) return {ok:false, short:'no shift that day', why:'That day has no shift in your calendar, so you were not clocked in.'+forgot};
+  if(timeStr < w.from || timeStr > w.to) return {ok:false, short:'outside '+w.from+'\u2013'+w.to, why:'It is '+timeStr+', outside the hours you set to clock in ('+w.from+'\u2013'+w.to+'). Change them in Work clock.'+forgot};
+  if(e && e.shift && e.shift.finish && autoMeta.clocked && autoMeta.clocked[day]) return {ok:false, short:'that day already has a finish time', why:'That day already has a finish time ('+e.shift.finish+'), so it counts as done.'+forgot};
   return {ok:true, why:'It would clock you in at '+timeStr+'.'+forgot};
 }
 async function autoWorkOpen(t){
@@ -7154,7 +7220,7 @@ async function autoWorkOpen(t){
     const en = calendarData[day];
     if(!en.shift) en.shift = {start:null, finish:null, breakMins:0, title:''};
     en.shift.start = timeStr; en.shift.finish = null;
-    clockInState = {date:day, start:timeStr}; autoMeta.workPending = null;
+    clockInState = {date:day, start:timeStr}; autoMeta.workPending = null; autoMarkClocked(day);
     await saveKey('clock-in-state', clockInState); await saveKey('calendar-data', calendarData);
     updateClockInBtn(); renderCalendarAll();
     if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
@@ -7271,6 +7337,40 @@ async function autoApplyDraft(dr, category){
 }
 
 // ---- time in bed ----
+function sleepTimeToMs(night, hm, afterBed){ const d = parseYMD(night); const [h, m] = hm.split(':').map(Number); d.setHours(h, m, 0, 0); return d.getTime(); }
+function openSleepSheet(){
+  openSheet('Sleep');
+  const body = document.getElementById('sheetBody');
+  const draw = (editId)=>{
+    const rows = sleepLog.filter(z=> z.night).sort((a, b)=> b.night.localeCompare(a.night)).slice(0, 10);
+    const cur = editId ? sleepLog.find(z=> z.id === editId) : null;
+    const night = cur ? cur.night : addDays(todayStr(), -1);
+    const bedHM = cur ? autoHM(cur.start) : '23:00', wakeHM = cur ? autoHM(cur.end) : '07:00';
+    body.innerHTML = '<div class="stat-sub" style="margin:0 0 8px;">The night belongs to the evening you went to bed.</div>'+
+      '<div class="sl-list">'+(rows.length ? rows.map(z=> '<button type="button" class="sl-row" data-sl-edit="'+z.id+'"><span>'+niceDate(z.night)+'</span><span>'+autoHM(z.start)+' to '+autoHM(z.end)+'</span><b>'+autoMins(z.mins)+'</b></button>').join('') : '<div class="stat-sub">No nights recorded yet.</div>')+'</div>'+
+      '<div class="bd-label">'+(cur ? 'Edit this night' : 'Add a night')+'</div>'+
+      '<label class="ff"><span>Night (evening you went to bed)</span><input type="date" id="slNight" value="'+night+'" max="'+todayStr()+'"></label>'+
+      '<div class="ff-grid"><label class="ff"><span>Bed time</span><input type="time" id="slBed" value="'+bedHM+'"></label><label class="ff"><span>Woke up</span><input type="time" id="slWake" value="'+wakeHM+'"></label></div>'+
+      '<div class="stat-sub" id="slErr" style="color:var(--danger);margin:4px 0 0;"></div>'+
+      '<div class="fin-edit-row" style="margin-top:10px;"><button type="button" class="btn small" id="slSave">Save</button>'+(cur ? '<button type="button" class="btn secondary small" id="slDel">Delete</button><button type="button" class="btn secondary small" id="slNew">New night</button>' : '')+'</div>';
+    body.querySelectorAll('[data-sl-edit]').forEach(b=> b.addEventListener('click', ()=> draw(b.dataset.slEdit)));
+    const nw = document.getElementById('slNew'); if(nw) nw.addEventListener('click', ()=> draw(null));
+    document.getElementById('slSave').addEventListener('click', async ()=>{
+      const n = document.getElementById('slNight').value, bed = document.getElementById('slBed').value, wake = document.getElementById('slWake').value, err = document.getElementById('slErr');
+      if(!n || !bed || !wake){ err.textContent = 'Fill in the night, bed time and wake-up time.'; return; }
+      let st = sleepTimeToMs(n, bed); if(bed < '12:00') st += 86400000;          // a bed time after midnight is the next morning
+      let en = new Date(st); const [wh, wm] = wake.split(':').map(Number); en.setHours(wh, wm, 0, 0); en = en.getTime(); if(en <= st) en += 86400000;
+      const mins = Math.round((en - st)/60000);
+      if(mins < 60 || mins > 16*60){ err.textContent = 'That is '+autoMins(mins)+', which looks wrong. Check the times.'; return; }
+      sleepLog = sleepLog.filter(z=> z.id !== editId && z.night !== n);           // one entry per night
+      sleepLog.push({id:editId || uid(), night:n, start:st, end:en, mins, manual:true});
+      await saveKey('sleep-log', sleepLog);
+      showToast('Night saved: '+autoMins(mins)+'.'); renderTrends(); renderSummary(); draw(null);
+    });
+    const dl = document.getElementById('slDel'); if(dl) dl.addEventListener('click', async ()=>{ sleepLog = sleepLog.filter(z=> z.id !== editId); await saveKey('sleep-log', sleepLog); showToast('Night deleted.'); renderTrends(); renderSummary(); draw(null); });
+  };
+  draw(null);
+}
 function autoBedFor(night){ const rows = sleepLog.filter(s=> s.night === night); return rows.length ? rows.reduce((a,s)=> a + s.mins, 0) : null; }
 
 // ---- gym: how long a session took, from when each set was logged ----
@@ -7779,7 +7879,7 @@ function printMileageFallback(){
       '<td>'+escapeHtml(f.via)+'</td>'+
       '<td>'+escapeHtml(f.to)+'</td>'+
       '<td><span class="cat-badge '+(isBiz?'cat-biz':'cat-pers')+'">'+(isBiz?'Business':'Personal')+'</span></td>'+
-      '<td class="num">'+t.miles.toFixed(1)+'</td>'+
+      '<td class="num">'+(Number(t.miles) || 0).toFixed(1)+'</td>'+
     '</tr>';
   }).join('');
   area.innerHTML =
@@ -8030,7 +8130,7 @@ function bindTabSwipe(el, step){
   el.addEventListener('touchend', e=>{
     if(!on) return; on = false;
     const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
-    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.6 && Date.now() - t0 < 700) step(dx < 0 ? 1 : -1);
+    if(Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)*1.6 && Date.now() - t0 < 700){ window.__tabSwipeAt = Date.now(); step(dx < 0 ? 1 : -1); }
   }, {passive:true});
 }
 // ---------- Trends: one section for each thing the automations record ----------
@@ -8039,8 +8139,9 @@ function trBars(items, o){
   o = o || {};
   const max = Math.max.apply(null, items.map(i=> i.v).concat([0.0001]));
   return '<div class="tr-bars">'+items.map(i=>
-    '<div class="tr-col'+(i.hl ? ' hl' : '')+'"><span class="tr-v">'+(i.v > 0 && (o.vals === 'all' || i.hl) ? (o.fmt ? o.fmt(i.v) : i.v) : '')+'</span>'+
-    '<div class="tr-plot"><span class="tr-bar" style="height:'+(i.v > 0 ? Math.max(4, i.v/max*100) : 0)+'%"></span></div><span class="tr-l">'+i.l+'</span></div>').join('')+'</div>';
+    '<div class="tr-col'+(i.hl ? ' hl' : '')+'"'+(i.tip ? ' data-tip="'+String(i.tip).replace(/"/g, '&quot;')+'" role="button" tabindex="0"' : '')+'><span class="tr-v">'+(i.v > 0 && (o.vals === 'all' || i.hl) ? (o.fmt ? o.fmt(i.v) : i.v) : '')+'</span>'+
+    '<div class="tr-plot"><span class="tr-bar" style="height:'+(i.v > 0 ? Math.max(4, i.v/max*100) : 0)+'%"></span></div><span class="tr-l">'+i.l+'</span></div>').join('')+'</div>'+
+    (items.some(i=> i.tip) ? '<div class="tr-tip">'+escapeHtml(String((items.filter(i=> i.hl)[0] || items[items.length - 1]).tip || ''))+'</div>' : '');
 }
 let trendsTab = 'work', trendsSplit = 'month';
 function finSpendSplit(yms){
@@ -8089,15 +8190,20 @@ function renderTrends(){
   const wkSpan = wkFirst ? daysBetween(wkFirst, yest) + 1 : 0, wkTotal = wkDays.reduce((a, d)=> a + shiftHours(calendarData[d].shift), 0);
   const avgWk = wkSpan >= 7 ? wkTotal/(wkSpan/7) : null;                    // hours a week, counted from your first shift (not from a fixed window)
   out['work'] = (section('Work', 'toil', avgWk !== null ? r1(avgWk)+'h' : (wkFirst ? r1(wkTotal)+'h' : ''), avgWk !== null ? 'a week, since '+shortDate(wkFirst) : (wkFirst ? 'so far, since '+shortDate(wkFirst) : ''),
-    weeks.some(w=> w.h > 0) ? trBars(weeks.map(w=> ({v:w.h, hl:w.hl, l:parseYMD(w.st).getDate()+'/'+(parseYMD(w.st).getMonth()+1)})), {vals:'all', fmt:v=> Math.round(v)}) : none('No shifts yet. Connecteam clock-ins land here.', 'settings:automations', 'Set up'),
+    weeks.some(w=> w.h > 0) ? trBars(weeks.map(w=> ({v:w.h, hl:w.hl, l:parseYMD(w.st).getDate()+'/'+(parseYMD(w.st).getMonth()+1), tip:'Week of '+shortDate(w.st)+': '+r1(w.h)+'h worked'})), {vals:'all', fmt:v=> Math.round(v)}) : none('No shifts yet. Connecteam clock-ins land here.', 'settings:automations', 'Set up'),
     [['Clock in', startM.length ? minutesToClock(Math.round(avg(startM))) : '\u2014'], ['Clock out', endM.length ? minutesToClock(Math.round(avg(endM))) : '\u2014'], ['TOIL', (computeToilWeeks().balance >= 0 ? '+' : '\u2212')+Math.abs(r1(computeToilWeeks().balance))+'h']]));
 
   // ---- Sleep: the Bed automations ----
   const nights = []; for(let i = 14; i >= 1; i--){ const n = addDays(today, -i), m = autoBedFor(n); nights.push({n, m, l:['S','M','T','W','T','F','S'][parseYMD(n).getDay()], hl: i === 1}); }
   const slept = nights.filter(x=> x.m != null);
+  const sleepAvgTimes = (()=>{                                    // the times you actually go to bed and wake up, over the nights shown
+    const bed = [], wake = [];
+    nights.forEach(x=> sleepLog.filter(z=> z.night === x.n && z.start && z.end).forEach(z=>{ const a = new Date(z.start), b = new Date(z.end); if(isNaN(a) || isNaN(b)) return; let bm = a.getHours()*60 + a.getMinutes(); if(bm < 12*60) bm += 1440; bed.push(bm); wake.push(b.getHours()*60 + b.getMinutes()); }));
+    return {bed:bed.length ? minutesToClock(Math.round(avg(bed)) % 1440) : '\u2014', wake:wake.length ? minutesToClock(Math.round(avg(wake))) : '\u2014'};
+  })();
   out['sleep'] = (section('Sleep', '', slept.length ? autoMins(Math.round(avg(slept.map(x=> x.m)))) : '', 'in bed, on average',
-    slept.length ? trBars(nights.map(x=> ({v:(x.m || 0)/60, hl:x.hl, l:x.l})), {vals:'hl', fmt:v=> r1(v)+'h'}) : none('No nights yet. The Bed automations record this.', 'settings:automations', 'Set up'),
-    slept.length ? [['Longest', autoMins(Math.max.apply(null, slept.map(x=> x.m)))], ['Shortest', autoMins(Math.min.apply(null, slept.map(x=> x.m)))], ['Tracked', slept.length+' of '+Math.max(slept.length, Math.min(14, (sleepLog.map(x=> x.night).filter(Boolean).sort()[0] ? daysBetween(sleepLog.map(x=> x.night).filter(Boolean).sort()[0], yest) + 1 : 0)))]] : null));
+    (slept.length ? trBars(nights.map(x=> { const rw = sleepLog.filter(z=> z.night === x.n && z.start && z.end).sort((a, b)=> a.start - b.start)[0]; return {v:(x.m || 0)/60, hl:x.hl, l:x.l, tip:niceDate(x.n)+': '+(x.m != null ? autoMins(x.m)+' in bed'+(rw && !isNaN(new Date(rw.start)) && !isNaN(new Date(rw.end)) ? ', '+autoHM(rw.start)+' to '+autoHM(rw.end) : '') : 'no night recorded')}; }), {vals:'hl', fmt:v=> r1(v)+'h'}) : none('No nights yet. The Bed automations record this, or add one here.', 'settings:automations', 'Set up'))+'<div class="tr-act"><button type="button" class="pill" data-sleep-edit>Add or edit a night</button></div>',
+    slept.length ? [['Avg bedtime', sleepAvgTimes.bed], ['Avg wake-up', sleepAvgTimes.wake], ['Longest', autoMins(Math.max.apply(null, slept.map(x=> x.m)))], ['Shortest', autoMins(Math.min.apply(null, slept.map(x=> x.m)))], ['Tracked', slept.length+' of '+Math.max(slept.length, Math.min(14, (sleepLog.map(x=> x.night).filter(Boolean).sort()[0] ? daysBetween(sleepLog.map(x=> x.night).filter(Boolean).sort()[0], yest) + 1 : 0)))]] : null));
 
   // ---- Driving: CarPlay ----
   const months = []; { const d0 = parseYMD(today); for(let i = 5; i >= 0; i--){ const d = new Date(d0.getFullYear(), d0.getMonth()-i, 1); months.push({ym:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'), l:TR_MON[d.getMonth()], hl: i === 0}); } }
@@ -8105,7 +8211,7 @@ function renderTrends(){
   const tm = mTrips(ym), tmMiles = tm.reduce((a,t)=> a + t.miles, 0), tmMins = tm.reduce((a,t)=> a + (t.mins || 0), 0);
   const biz = tm.filter(t=> t.category === 'business').reduce((a,t)=> a + t.miles, 0);
   out['driving'] = (section('Driving', 'mileage', mileageTrips.length ? fmtMi(tmMiles, 1)+' mi' : '', 'this month, '+tm.length+' trip'+(tm.length === 1 ? '' : 's')+(tmMins ? ', '+autoMins(tmMins)+' driving' : ''),
-    mileageTrips.length ? trBars(months.map(m=> ({v:mTrips(m.ym).reduce((a,t)=> a + t.miles, 0), hl:m.hl, l:m.l})), {vals:'all', fmt:v=> Math.round(v)}) : none('No trips yet. CarPlay drives land here as drafts.', 'settings:automations', 'Set up'),
+    mileageTrips.length ? trBars(months.map(m=> ({v:mTrips(m.ym).reduce((a,t)=> a + t.miles, 0), hl:m.hl, l:m.l, tip:m.l+': '+fmtMi(mTrips(m.ym).reduce((a,t)=> a + t.miles, 0), 1)+' mi, '+mTrips(m.ym).length+' trip'+(mTrips(m.ym).length === 1 ? '' : 's')})), {vals:'all', fmt:v=> Math.round(v)}) : none('No trips yet. CarPlay drives land here as drafts.', 'settings:automations', 'Set up'),
     mileageTrips.length ? [['Business', fmtMi(biz, 1)+' mi'], ['Personal', fmtMi(tmMiles - biz, 1)+' mi'], ['Average trip', tm.length ? fmtMi(tmMiles/tm.length, 1)+' mi' : '\u2014']] : null));
 
   // ---- Nights away: the 4:30am check ----
@@ -8114,7 +8220,7 @@ function renderTrends(){
   const homeAll = Object.keys(calendarData).filter(d=> d <= today && calendarData[d].status !== 'away').length;
   const dayNo = parseYMD(today).getDate();
   out['away'] = (section('Nights away', 'calendar', String(awayIn(ym)), 'this month, '+Math.max(0, dayNo - awayIn(ym))+' at home',
-    trBars(months.map(m=> ({v:awayIn(m.ym), hl:m.hl, l:m.l})), {vals:'all'}),
+    trBars(months.map(m=> ({v:awayIn(m.ym), hl:m.hl, l:m.l, tip:m.l+': '+awayIn(m.ym)+' night'+(awayIn(m.ym) === 1 ? '' : 's')+' away'})), {vals:'all'}),
     [['Away in total', String(awayAll)], ['Home in total', String(homeAll)], ['Away share', (awayAll + homeAll ? Math.round(awayAll/(awayAll + homeAll)*100) : 0)+'%']]));
 
   // ---- Gym ----
@@ -8124,7 +8230,7 @@ function renderTrends(){
   const gDates = Array.from(new Set(gymLog.filter(l=> !l.wu && l.date && l.date <= yest).map(l=> l.date))).sort(), gFirst = gDates[0] || null;
   const gAvg = gFirst && daysBetween(gFirst, yest) + 1 >= 7 ? gDates.length/((daysBetween(gFirst, yest) + 1)/7) : null;     // sessions a week since your first session
   out['gym'] = (section('Gym', 'gym', gymLog.length ? String(gWeeks[gWeeks.length-1].n) : '', 'session'+(gWeeks[gWeeks.length-1].n === 1 ? '' : 's')+' this week'+(gAvg !== null ? ', '+r1(gAvg)+' a week on average since '+shortDate(gFirst) : ''),
-    gymLog.length ? trBars(gWeeks.map(w=> ({v:w.n, hl:w.hl, l:w.l})), {vals:'all'}) : none('No sessions yet. Log a set to start.', 'gym', 'Open Gym'),
+    gymLog.length ? trBars(gWeeks.map(w=> ({v:w.n, hl:w.hl, l:w.l, tip:'Week of '+w.l+': '+w.n+' session'+(w.n === 1 ? '' : 's')})), {vals:'all'}) : none('No sessions yet. Log a set to start.', 'gym', 'Open Gym'),
     gymLog.length ? [['Average session', gymMins.length ? Math.round(avg(gymMins))+' min' : '\u2014'], ['Sets this week', String(setsThisWeek)], ['Sessions, 8 weeks', String(allGymDates.length)]] : null));
 
   // ---- Spending: Apple Pay ----
@@ -8135,7 +8241,7 @@ function renderTrends(){
   const spOm = finOthersMap(), spTx = spendTxns.filter(t=> t.date && t.date <= yest), spFirst = spTx.length ? spTx.map(t=> t.date).sort()[0] : null;
   const spSpan = spFirst ? daysBetween(spFirst, yest) + 1 : 0, spAvg = spSpan >= 28 ? spTx.reduce((a, t)=> a + t.amount - (spOm[t.id] || 0), 0)/(spSpan/30.4375) : null;     // a month, counted from your first payment
   out['spend'] = (section('Spending', 'budget:spend', spendTxns.length ? '\u00a3'+Math.round(spNow.spent).toLocaleString('en-GB') : '', 'this '+finWord()+(spAvg !== null ? ', \u00a3'+Math.round(spAvg).toLocaleString('en-GB')+' a month on average since '+shortDate(spFirst) : ''),
-    spendTxns.length ? trBars(sp.map(x=> ({v:x.v, hl:x.hl, l:x.l})), {vals:'hl', fmt:v=> '\u00a3'+Math.round(v).toLocaleString('en-GB')}) : none('No spending yet. Apple Pay taps land here.', 'settings:applepay', 'Set up'),
+    spendTxns.length ? trBars(sp.map(x=> ({v:x.v, hl:x.hl, l:x.l, tip:finPeriodLabel(x.ym)+': \u00a3'+Math.round(x.v).toLocaleString('en-GB')+' spent'})), {vals:'hl', fmt:v=> '\u00a3'+Math.round(v).toLocaleString('en-GB')}) : none('No spending yet. Apple Pay taps land here.', 'settings:applepay', 'Set up'),
     spendTxns.length ? [['Biggest', topCat ? ((cats.find(c=> c.id === topCat) || {name:'Loose change'}).name+' \u00a3'+Math.round(spNow.by[topCat])) : '\u2014'], ['Payments', String(spNow.tx.length)], ['To sort', String(spNow.uncat)]] : null));
 
   // ---- Where it goes: a pie of the money that went out ----
@@ -8169,6 +8275,8 @@ function renderTrends(){
   box.querySelectorAll('[data-tr-split]').forEach(b=> b.addEventListener('click', ()=>{ trendsSplit = b.dataset.trSplit; renderTrends(); }));
   box.querySelectorAll('[data-tr-slice]').forEach(b=> b.addEventListener('click', ()=>{ spendFilter = b.dataset.trSlice === '_' ? null : b.dataset.trSlice; spendMonth = (window.__trSplitMonths || [ym])[0]; finTab = 'spend'; goToView('budget:spend'); }));
   box.querySelectorAll('[data-tr-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.trGo)));
+  box.querySelectorAll('.tr-col[data-tip]').forEach(col=>{ const show = ()=>{ const sec = col.closest('section'); sec.querySelectorAll('.tr-col').forEach(c=> c.classList.remove('sel')); col.classList.add('sel'); const tip = sec.querySelector('.tr-tip'); if(tip) tip.textContent = col.dataset.tip; }; col.addEventListener('click', show); col.addEventListener('keydown', ev=>{ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); show(); } }); });
+  box.querySelectorAll('[data-sleep-edit]').forEach(b=> b.addEventListener('click', openSleepSheet));
 }
 // ---------- body map (interactive anatomy diagram) ----------
 // Geometry is drawn for the viewer's LEFT half (x < 150) and mirrored for the right half.
@@ -8600,7 +8708,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v20.7';
+const APP_VERSION = 'v21.0';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
@@ -9035,6 +9143,17 @@ function renderGymBw(){
   gid('gymBwSaveBtn').addEventListener('click', gymBwSaveHandler('gymBwInput'));
   gid('gymBwCard').style.order = gymBwDue() ? '-1' : '';          // month-end weigh-in sits on top until it's done
 }
+function gymLastActivity(){
+  if(!gymSess) return 0;
+  let last = gymSess.start;
+  gymLog.forEach(l=>{ const t = gymSetTime(l); if(l.date === gymSess.date && t && t >= gymSess.start - 1000 && t > last) last = t; });
+  return last;
+}
+function gymIdleCheck(){
+  if(!gymSess) return;
+  const last = gymLastActivity();
+  if(Date.now() - last >= 30*60000) gymEndSession(last, true);
+}
 function gymSessUi(){
   const on = !!gymSess;
   gid('gymStartBtn').hidden = on; gid('gymLive').hidden = !on; gid('gymSearchWrap').hidden = !on; gid('gymDateInput').hidden = on;
@@ -9058,12 +9177,12 @@ async function gymStartSession(){
   gymSess = {date:gymDate(), start:Date.now()}; gymSelectedId = null; gid('gymSearchInput').value = '';
   await saveKey('gym-sess', gymSess); renderGymLog(); gid('gymSearchInput').focus();
 }
-async function gymEndSession(){
+async function gymEndSession(endAt, auto){
   const s0 = gymSess; gymSess = null; gymSelectedId = null; gymDateTouched = false; gid('gymSearchInput').value = '';
   await saveKey('gym-sess', null);
   if(s0){
-    const n = gymLog.filter(l=> !l.wu && l.date === s0.date && (gymSetTime(l) || 0) >= s0.start - 1000).length, mins = Math.max(1, Math.round((Date.now() - s0.start)/60000));
-    showToast(n ? 'Session saved: '+n+' set'+(n === 1 ? '' : 's')+', '+mins+' min.' : 'Session ended, no sets logged.');
+    const n = gymLog.filter(l=> !l.wu && l.date === s0.date && (gymSetTime(l) || 0) >= s0.start - 1000).length, mins = Math.max(1, Math.round(((typeof endAt === 'number' ? endAt : Date.now()) - s0.start)/60000));
+    showToast((auto === true ? 'Ended automatically (30 min with nothing logged). ' : '')+(n ? 'Session saved: '+n+' set'+(n === 1 ? '' : 's')+', '+mins+' min.' : 'Session ended, no sets logged.'));
   }
   renderGym();
 }
