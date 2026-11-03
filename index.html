@@ -954,8 +954,7 @@ body[data-view="summary"] #moneyEyeBtn,body[data-view="budget"] #moneyEyeBtn{dis
 .d-bul span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .d-bul em{flex:none;font-style:normal;font-size:11px;font-weight:500;color:var(--ink-soft);}
 .d-bul em.late{color:var(--danger);}
-@media (max-height:790px){ .d-bul:nth-child(n+4){display:none;} .w-week .d-bar{height:34px;} .w-today .w-hero{font-size:21px;} }
-@media (max-height:700px){ .d-bul:nth-child(n+3){display:none;} }
+@media (max-height:790px){ .w-week .d-bar{height:34px;} .w-today .w-hero{font-size:21px;} }
 
 /* ---------- calendar: every day has the same outline; only the colour changes ---------- */
 :root{--away-line:#D9BE88;--home-line:#B8C6DC;}
@@ -1413,6 +1412,32 @@ input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webki
 .fin-opts > .stat-sub{flex:1 1 100%;}
 .fin-opts input{flex:1 1 130px;min-width:0 !important;width:auto;}
 .ff,.ff-grid > *,.dm-row > *,.row2 > *{min-width:0;}
+
+.nav-ind{width:50%;border-radius:0 0 4px 4px;}
+.nav-ind:not(.drag){transition:transform .3s cubic-bezier(.3,.85,.3,1),width .3s cubic-bezier(.3,.85,.3,1),opacity .2s;}
+.dash-list{overflow:hidden;}
+.dash-list > .n{min-height:auto !important;}
+
+.w-todos .d-bul{flex:0 0 auto !important;min-height:24px;}
+
+.dash-list > .n{padding-top:10px !important;padding-bottom:10px !important;}
+@media (max-height:760px){ .dash-list > .n{padding-top:6px !important;padding-bottom:6px !important;} }
+.dash-list > .n.one{min-height:44px !important;}
+
+/* ---------- colour dropdown and the two-date row ---------- */
+.compose-form{position:relative;}
+.tag-menu{position:absolute;left:0;right:0;top:48px;z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.18);padding:4px;flex-direction:column;}
+.tag-menu .tag-opt{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:0 12px;background:none;border:0;border-radius:8px;color:var(--ink);font-size:15px;font-weight:600;text-align:left;}
+.tag-menu .tag-opt .dot{width:18px;height:18px;border-radius:50%;flex:none;}
+.tag-menu .tag-opt .dot.none{background:var(--surface-2);border:2px solid var(--line);box-sizing:border-box;}
+.tag-menu .tag-opt .chk{margin-left:auto;color:var(--home);font-weight:800;visibility:hidden;}
+.tag-menu .tag-opt.selected{background:var(--surface-2);}
+.tag-menu .tag-opt.selected .chk{visibility:visible;}
+#colourToggleBtn::after{content:'\25BE';font-size:10px;margin-left:1px;}
+.dm-title-row{gap:8px;}
+.dm-title-row .dm-date-input{flex:1 1 0;width:auto;min-width:0;max-width:180px;padding-left:8px;padding-right:6px;}
+.dm-range-inline.show{display:contents;}
+.dm-range-dash{flex:none;}
 </style>
 </head>
 <body data-view="calendar">
@@ -1425,7 +1450,7 @@ input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webki
     <span class="top-date" id="todayLabel"></span>
     <button class="round-btn" id="moneyEyeBtn" title="Hide portfolio" aria-label="Hide portfolio" aria-pressed="false"></button>
     <button class="round-btn" id="trendsTopBtn" title="Trends" aria-label="Trends"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 16v-4"/><path d="M12 16V8"/><path d="M16 16v-7"/></svg></button>
-    <button class="round-btn" id="settingsTopBtn" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg></button>
+    <button class="round-btn" id="settingsTopBtn" title="Settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </div>
 
 
@@ -1886,7 +1911,7 @@ input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webki
           <button type="button" class="btn secondary tiny" data-repeat="monthly">Monthly</button>
           <button type="button" class="btn secondary tiny" data-repeat="yearly">Yearly</button>
         </div>
-        <div class="tag-swatch-row" id="dayTodoTagSwatchRow" style="display:none;"></div>
+        <div class="tag-menu" id="dayTodoTagSwatchRow" role="listbox" aria-label="Colour" style="display:none;"></div>
       </div>
       <div id="dayModalEventsInfo" style="font-size:11px;color:var(--ink-soft);margin-top:4px;"></div>
       <div id="dayHappeningList"></div>
@@ -2618,20 +2643,21 @@ function goToView(viewName, dir, opts){
 }
 // the line over the tab you are on: moves to the new tab, and follows your finger while you swipe
 function navIndBtn(name){ return document.querySelector('#returnCalBar [data-nav="'+name+'"]'); }
-function navIndX(btn){ const r = btn.getBoundingClientRect(); return r.left + r.width/2 - 17; }
+function navIndX(btn){ return btn.getBoundingClientRect().left; }
+function navIndW(btn){ return btn.getBoundingClientRect().width; }
 function navIndUpdate(){
   const ind = document.getElementById('navInd'); if(!ind) return;
   const v = document.body.dataset.view, on = document.querySelector('#returnCalBar .nav-item.on');
   ind.classList.remove('drag');
   if(!on || MAIN_VIEWS.indexOf(v) < 0){ ind.classList.remove('show'); return; }
-  ind.style.transform = 'translateX('+navIndX(on).toFixed(1)+'px)'; ind.classList.add('show');
+  ind.style.width = navIndW(on).toFixed(1)+'px'; ind.style.transform = 'translateX('+navIndX(on).toFixed(1)+'px)'; ind.classList.add('show');
 }
 function navIndDrag(dx){
   const ind = document.getElementById('navInd'), v = document.body.dataset.view, i = MAIN_VIEWS.indexOf(v); if(!ind || i < 0) return;
   const j = i + (dx < 0 ? 1 : -1); if(j < 0 || j > 2 || (v === 'calendar' && yearViewActive)) return;
   const a = navIndBtn(MAIN_VIEWS[i]), b = navIndBtn(MAIN_VIEWS[j]); if(!a || !b) return;
-  const pr = Math.min(1, Math.abs(dx)/56), x = navIndX(a) + (navIndX(b) - navIndX(a))*pr;
-  ind.classList.add('drag', 'show'); ind.style.transform = 'translateX('+x.toFixed(1)+'px)';
+  const pr = Math.min(1, Math.abs(dx)/56), x = navIndX(a) + (navIndX(b) - navIndX(a))*pr, w = navIndW(a) + (navIndW(b) - navIndW(a))*pr;
+  ind.classList.add('drag', 'show'); ind.style.width = w.toFixed(1)+'px'; ind.style.transform = 'translateX('+x.toFixed(1)+'px)';
 }
 function setupTabs(){
   const isOn = (v)=> document.getElementById('view-'+v).classList.contains('active');
@@ -4490,9 +4516,14 @@ function setupDayModal(){
   document.querySelectorAll('#repeatOptionsRow [data-repeat]').forEach(btn=>{
     btn.addEventListener('click', ()=> setRepeatValue(btn.dataset.repeat));
   });
-  document.getElementById('colourToggleBtn').addEventListener('click', ()=>{
-    document.getElementById('dayTodoTagSwatchRow').style.display = document.getElementById('dayTodoTagSwatchRow').style.display==='none' ? 'flex' : 'none';
+  document.getElementById('colourToggleBtn').setAttribute('aria-haspopup', 'listbox');
+  document.getElementById('colourToggleBtn').addEventListener('click', (ev)=>{
+    ev.stopPropagation();
+    const m = document.getElementById('dayTodoTagSwatchRow'), opening = m.style.display === 'none';
+    m.style.display = opening ? 'flex' : 'none'; document.getElementById('colourToggleBtn').setAttribute('aria-expanded', opening ? 'true' : 'false');
   });
+  document.addEventListener('click', (ev)=>{ const m = document.getElementById('dayTodoTagSwatchRow'); if(m && m.style.display !== 'none' && !m.contains(ev.target)){ m.style.display = 'none'; document.getElementById('colourToggleBtn').setAttribute('aria-expanded', 'false'); } });
+  document.addEventListener('keydown', (ev)=>{ if(ev.key === 'Escape'){ const m = document.getElementById('dayTodoTagSwatchRow'); if(m && m.style.display !== 'none'){ m.style.display = 'none'; } } });
 
   document.getElementById('shiftToggleBtn').addEventListener('click', ()=>{
     const section = document.getElementById('shiftDetailsSection');
@@ -4574,27 +4605,18 @@ function renderTagSwatches(selectedId){
   selectedTagId = selectedId || null;
   const row = document.getElementById('dayTodoTagSwatchRow');
   row.innerHTML = '';
-
-  const noneBtn = document.createElement('button');
-  noneBtn.className = 'tag-swatch-btn none-swatch'+(!selectedTagId?' selected':'');
-  noneBtn.type = 'button';
-  noneBtn.title = 'No colour';
-  noneBtn.textContent = '✕';
-  noneBtn.addEventListener('click', ()=> renderTagSwatches(null));
-  row.appendChild(noneBtn);
-
-  tagDefs.forEach(tag=>{
-    const btn = document.createElement('button');
-    btn.className = 'tag-swatch-btn'+(selectedTagId===tag.id?' selected':'');
-    btn.type = 'button';
-    btn.title = tag.label;
-    btn.style.background = tag.color;
-    btn.addEventListener('click', ()=> renderTagSwatches(tag.id));
-    row.appendChild(btn);
-  });
-
+  const opt = (id, label, color)=>{
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'tag-opt'+((selectedTagId || null) === (id || null) ? ' selected' : ''); b.setAttribute('role', 'option'); b.dataset.tag = id || '';
+    b.innerHTML = '<i class="dot'+(color ? '' : ' none')+'"'+(color ? ' style="background:'+color+'"' : '')+'></i><span>'+escapeHtml(label)+'</span><b class="chk">\u2713</b>';
+    b.addEventListener('click', ()=> renderTagSwatches(id));
+    row.appendChild(b);
+  };
+  opt(null, 'No colour', null);
+  tagDefs.forEach(tag=> opt(tag.id, tag.label, tag.color));
   updateColourToggleBtn();
-  document.getElementById('dayTodoTagSwatchRow').style.display = 'none';
+  row.style.display = 'none';
+  const tb = document.getElementById('colourToggleBtn'); if(tb) tb.setAttribute('aria-expanded', 'false');
 }
 function updateColourToggleBtn(){
   const btn = document.getElementById('colourToggleBtn');
@@ -5052,6 +5074,8 @@ function fitSummary(){
   if(!main) return;
   const figH = main.getBoundingClientRect().height - 24 - 24;                 // the tile minus its label and padding
   main.style.setProperty('--fig-w', Math.max(92, Math.min(Math.round(figH*0.362 + 24), Math.round(d.getBoundingClientRect().width*0.42)))+'px');
+  const dl = d.querySelector('.dash-list');                                      // as to-dos are added the To-dos box grows and the others shrink; when they cannot shrink any more the list stops there
+  if(dl){ const buls = [].slice.call(dl.querySelectorAll('.w-todos .d-bul')); buls.forEach(b=>{ b.style.display = ''; }); for(let i = buls.length - 1; i >= 1 && dl.scrollHeight > dl.clientHeight + 1; i--) buls[i].style.display = 'none'; }
 }
 function renderSummary(){
   const box = document.getElementById('summaryBody');
@@ -5117,7 +5141,7 @@ function renderSummary(){
   const gymStat1 = gymWeekN+(gymWeekN === 1 ? ' session' : ' sessions')+' this week', gymStat2 = gymDayLine(today) || (gymLastD ? 'last '+shortDate(gymLastD) : 'none logged yet');
   const N = (label, val, attrs, extra, sub)=> '<div class="w n'+(extra || '')+(sub ? ' has-s' : '')+'" role="button" tabindex="0" '+attrs+'><span class="n-l">'+label+'</span><b class="n-v">'+val+'</b>'+(sub ? '<span class="n-s">'+sub+'</span>' : '')+'</div>';
   const hide = (v)=> hideMoney ? '\u2022\u2022\u2022\u2022' : v;
-  const bullets = pend.slice(0, 3).map(t=>{
+  const bullets = pend.slice(0, 6).map(t=>{
     const over = t.dueDate && t.dueDate < today;
     return '<div class="d-bul"><i></i><span>'+escapeHtml(t.text)+'</span>'+(t.dueDate ? '<em class="'+(over ? 'late' : '')+'">'+(t.dueDate === today ? 'Today' : shortDate(t.dueDate))+'</em>' : '')+'</div>';
   }).join('');
@@ -5126,7 +5150,7 @@ function renderSummary(){
       '<div class="w-toprow"><div class="w-hero'+(sh && sh.start ? '' : ' quiet')+'">'+shiftTxt+'</div><button type="button" class="btn'+(on ? ' secondary' : '')+'" id="sumClockBtn">'+(on ? 'Clock out' : 'Clock in')+'</button></div>'+
       '<div class="w-meta"><span class="w-clk'+(stale ? ' late' : '')+'"><i class="w-dot'+(on ? ' on' : '')+'"></i>'+clockTxt+'</span>'+meta+'</div>'+
       (events.length ? '<div class="w-line">'+escapeHtml(events.slice(0,2).join('   '))+'</div>' : '')+needHtml+'</div>'+
-    '<div class="w w-week" role="button" tabindex="0" data-sum-go="toil"><div class="w-t"><span>This week</span><i class="w-gl"><s class="d-work"></s>work</i><i class="w-gl"><s class="d-gym"></s>gym</i><b class="w-wkn">'+(Math.round(total*10)/10)+'h</b><span class="w-toil">TOIL '+(toilBal >= 0 ? '+' : '\u2212')+Math.abs(Math.round(toilBal*10)/10)+'h</span></div><div class="d-bars">'+wk+'</div></div>'+
+    '<div class="w w-week" role="button" tabindex="0" data-sum-go="toil"><div class="w-t"><span>This week</span><b class="w-wkn">'+(Math.round(total*10)/10)+'h</b><span class="w-toil">TOIL '+(toilBal >= 0 ? '+' : '\u2212')+Math.abs(Math.round(toilBal*10)/10)+'h</span></div><div class="d-bars">'+wk+'</div></div>'+
     '<div class="dash-main">'+
       '<div class="w w-gym" role="button" tabindex="0" data-sum-go="gym" aria-label="Gym"><div class="w-gs"><b>'+gymStat1+'</b><span>'+escapeHtml(gymStat2)+'</span></div><div class="w-fig">'+fig+'</div></div>'+
       '<div class="dash-list">'+
@@ -5134,7 +5158,7 @@ function renderSummary(){
           ? '<div class="w w-todos" role="button" tabindex="0" data-sum-go="todo"><div class="w-t"><span>To-dos</span><b class="w-count">'+pend.length+'</b></div>'+bullets+'</div>'
           : '<div class="w n add w-todos0" role="button" tabindex="0" data-sum-add><span class="n-l">To-dos</span><b class="n-v">Add</b></div>')+
         N('Finance', acct ? m0(acct.value) : 'Set', 'data-sum-go="budget"', acct ? '' : ' add', ([pf.priced || pf.value > 0 ? 'portfolio '+hide(m0(pf.value)) : '', rentSet ? 'rent owed '+m0(owed.total) : ''].filter(Boolean).join('<br>')) || 'no portfolio yet')+
-        N('To claim', claim.length ? money(claimTot) : '\u00a30', 'data-sum-go="expenses"', claim.length ? '' : ' dim')+
+        N('To claim', claim.length ? money(claimTot) : '\u00a30', 'data-sum-go="expenses"', claim.length ? ' one' : ' dim one')+
         N('Van', odo ? fmtMi(odo.estimate) : 'Set', 'data-sum-go="'+(odo ? 'mileage' : 'settings:workhome')+'"', odo ? '' : ' add', driveMins > 0 ? (driveMins < 60 ? driveMins+'m' : Math.floor(driveMins/60)+'h '+pad(driveMins%60)+'m')+' driving this week' : 'no driving this week')+
         N('Sleep', bedLast ? autoMins(bedLast) : (hasSleep ? '\u2014' : 'Set up'), hasSleep ? 'data-sum-sleep' : 'data-sum-go="settings:automations"', hasSleep ? '' : ' add', sleepAvg ? 'avg '+autoMins(sleepAvg) : (hasSleep ? 'last night' : ''))+
         (travelEnabled ? N('Travel', 'Open', 'data-sum-go="travel"', ' dim', 'places and trips') : '')+
@@ -8726,7 +8750,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v21.1';
+const APP_VERSION = 'v21.3';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
