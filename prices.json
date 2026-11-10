@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-07T14:00:22Z",
+ "updated": "2026-11-10T00:45:49Z",
  "prices": {
   "GB00BVPLDL62": {
    "price": 106.63,
@@ -10,9 +10,9 @@
    "source": "FT"
   },
   "IE00BFMXXD54": {
-   "price": 107.66,
+   "price": 108.54,
    "currency": "GBP",
-   "date": "2026-11-06",
+   "date": "2026-11-09",
    "symbol": "VUAG:LSE:GBP",
    "name": "Vanguard S&P 500 UCITS ETF USD Accumulation",
    "source": "FT"
