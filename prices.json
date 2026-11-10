@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-10T15:35:35Z",
+ "updated": "2026-11-10T22:26:57Z",
  "prices": {
   "GB00BVPLDL62": {
    "price": 108.61,
@@ -10,7 +10,7 @@
    "source": "FT"
   },
   "IE00BFMXXD54": {
-   "price": 108.92,
+   "price": 109.04,
    "currency": "GBP",
    "date": "2026-11-10",
    "symbol": "VUAG:LSE:GBP",
