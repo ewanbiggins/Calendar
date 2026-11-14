@@ -836,6 +836,18 @@ input::placeholder,textarea::placeholder{color:var(--ink-soft);opacity:.7;}
 .tag.pers{background:var(--surface-2);color:var(--ink-soft);}
 .trip-detail{padding:0 0 14px;display:grid;gap:6px;font-size:12px;color:var(--ink-soft);}
 .van-map{width:100%;height:auto;display:block;background:var(--surface-2);border-radius:12px;}
+.van-detail{margin-top:8px;padding:10px 12px;border-radius:12px;background:var(--surface-2);font-size:13px;}
+.vd-r{display:flex;gap:10px;align-items:flex-start;margin:0 0 6px;}
+.vd-r>div{min-width:0;overflow-wrap:anywhere;}
+.vd-a,.vd-b,.van-pin span{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;color:#fff;font:700 12px/1 system-ui;font-style:normal;flex-shrink:0;}
+.vd-a,.van-pin span{background:#1f6f43;}
+.vd-b{background:#c0392b;}
+.van-pin span{border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);}
+.vj-h{font-size:11.5px;color:var(--ink-soft);margin:10px 0 4px;}
+.vj-list{max-height:230px;overflow-y:auto;border-radius:12px;background:var(--surface-2);}
+.vj{display:flex;gap:10px;align-items:center;width:100%;min-height:44px;padding:0 12px;border:0;border-bottom:1px solid var(--surface);background:transparent;color:var(--ink);font-size:12.5px;text-align:left;}
+.vj .vj-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.vj.on{background:var(--surface);font-weight:600;}
 .van-leaf{height:320px;border-radius:12px;overflow:hidden;background:var(--surface-2);z-index:0;}
 .vm-l{stroke:var(--ink-soft);stroke-width:2;stroke-linecap:round;opacity:.8;}
 .vm-l.biz{stroke:var(--home);}
@@ -2311,7 +2323,7 @@ function refreshAllViews(){
     document.getElementById('rateHomeInput').value = RATE_HOME;
     document.getElementById('rateAwayInput').value = RATE_AWAY;
   }
-  if(document.getElementById('view-trends').classList.contains('active')) renderTrends();
+  if(document.getElementById('view-trends').classList.contains('active') && !(trendsTab === 'driving' && vanLeaf)) renderTrends();       // a sync must not rebuild the map while you are moving it
   if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
   if(document.getElementById('view-budget').classList.contains('active') && !(document.activeElement && document.activeElement.closest && document.activeElement.closest('#budgetBody') && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))) renderBudget();
   if(document.getElementById('view-gym').classList.contains('active')){
@@ -3827,22 +3839,27 @@ function vanPt(t, side){
   const c = geoCache[geoKey(side === 'from' ? t.from : t.to)];
   return c && isFinite(c.lat) ? {lat:c.lat, lon:c.lon} : null;
 }
-// journeys in the order they happened, with the ones whose places are known
-function vanOrdered(real){
-  return mileageTrips.filter(t=> t.date && !(real && t.auto) && vanPt(t, 'from') && vanPt(t, 'to')).slice().sort((a, b)=> (a.startT || parseYMD(a.date).getTime()) - (b.startT || parseYMD(b.date).getTime()) || String(a.id).localeCompare(String(b.id)));
+const inUK = p=> p && p.lat > 49.8 && p.lat < 60.9 && p.lon > -8.7 && p.lon < 1.9;
+// journeys in the order they happened, with the ones whose places are known (hidden ones left out)
+function vanOrdered(){
+  return mileageTrips.filter(t=> t.date && !t.noMap && vanPt(t, 'from') && vanPt(t, 'to') && inUK(vanPt(t, 'from')) && inUK(vanPt(t, 'to'))).slice().sort((a, b)=> (a.startT || parseYMD(a.date).getTime()) - (b.startT || parseYMD(b.date).getTime()) || String(a.id).localeCompare(String(b.id)));
 }
-// each place where a journey ended somewhere other than where the next one began
+// only drives with a real GPS start, finish and time can show the van moved: places worked out from an address are never trusted for this
+function vanGpsDrives(){
+  return mileageTrips.filter(t=> t.startT && !t.auto && !t.geo && t.fp && t.tp && isFinite(t.fp.lat) && isFinite(t.tp.lat) && inUK(t.fp) && inUK(t.tp)).slice().sort((a, b)=> a.startT - b.startT);
+}
+// each place where a drive ended somewhere other than where the next one began
 function vanGaps(){
-  const list = vanOrdered(true), out = [];       // journeys you drove: the ones added for a move never count as a start or an end
+  const list = vanGpsDrives(), out = [];
   for(let i = 1; i < list.length; i++){
-    const a = vanPt(list[i-1], 'to'), b = vanPt(list[i], 'from'), d = autoDistM(a.lat, a.lon, b.lat, b.lon);
+    const a = list[i-1].tp, b = list[i].fp, d = autoDistM(a.lat, a.lon, b.lat, b.lon);
     if(d > VAN_GAP_M) out.push({prev:list[i-1], next:list[i], a, b, m:d});
   }
   return out;
 }
-// gaps still waiting for you to say when the van moved and what it was for
+// gaps still waiting for you to say what the move was for
 function vanPending(){
-  return vanGaps().filter(g=> !g.next.noBridge && !g.next.auto && !mileageTrips.some(t=> t.auto && String(t.bridgeFor) === String(g.next.id)));
+  return vanGaps().filter(g=> !g.next.noBridge && !mileageTrips.some(t=> t.auto && String(t.bridgeFor) === String(g.next.id)));
 }
 async function vanRouteGeo(coords){
   const path = coords.map(c=> c.lon+','+c.lat).join(';');
@@ -3855,57 +3872,57 @@ async function vanRouteGeo(coords){
   };
   return await hedged([mk('https://router.project-osrm.org/route/v1/driving/'), mk('https://routing.openstreetmap.de/routed-car/route/v1/driving/')], 2500);
 }
-// give every journey its two end points and the road it took, a few at a time, saving as it goes
+// give every journey its two end points and the road it took, a few at a time, saving as it goes.
+// A place found from an address has to be in the UK and give a distance close to what was logged, or it is left off the map.
 let vanFilling = false;
 async function vanBackfill(onStep){
   if(vanFilling) return; vanFilling = true;
   try{
     let n = 0;
+    mileageTrips.forEach(t=>{ if(!t.startT && !t.noMap && ((t.fp && !inUK(t.fp)) || (t.tp && !inUK(t.tp)))){ delete t.fp; delete t.tp; delete t.route; t.noMap = true; n++; } });
     for(const t of mileageTrips.slice().sort((a, b)=> (b.date || '').localeCompare(a.date || ''))){
-      if(!t.date || t.route === false) continue;
-      let fp = vanPt(t, 'from'), tp = vanPt(t, 'to');
-      if(!fp && t.from){ try{ fp = await geocodePlace(t.from); }catch(e){} }
-      if(!tp && t.to){ try{ tp = await geocodePlace(t.to); }catch(e){} }
+      if(!t.date || t.noMap || t.route) continue;
+      let fp = t.fp || null, tp = t.tp || null, geo = false;
+      if(!fp){ fp = vanPt(t, 'from'); if(!fp && t.from){ try{ fp = await geocodePlace(t.from); }catch(e){} } geo = true; }
+      if(!tp){ tp = vanPt(t, 'to'); if(!tp && t.to){ try{ tp = await geocodePlace(t.to); }catch(e){} } geo = true; }
       if(!(fp && tp)) continue;
-      let changed = false;
-      if(!t.fp){ t.fp = {lat:fp.lat, lon:fp.lon}; changed = true; }
-      if(!t.tp){ t.tp = {lat:tp.lat, lon:tp.lon}; changed = true; }
-      if(!t.route){
-        const via = (t.stops || []).map(x=> geoCache[geoKey(x)]).filter(Boolean);
-        const pts = [fp].concat(via.length === (t.stops || []).length ? via : [], [tp]);
-        try{ const r = await vanRouteGeo(pts); if(r){ t.route = r.pts; changed = true; } }catch(e){}
-      }
-      if(changed){ n++; if(n % 4 === 0){ await saveKey('mileage-trips', mileageTrips); if(onStep) onStep(); } }
+      if(!inUK(fp) || !inUK(tp)){ t.noMap = true; n++; continue; }
+      const via = (t.stops || []).map(x=> geoCache[geoKey(x)]).filter(Boolean);
+      const pts = [fp].concat(via.length === (t.stops || []).length ? via : [], [tp]);
+      let r = null; try{ r = await vanRouteGeo(pts); }catch(e){}
+      if(!r) continue;
+      const logged = Number(t.miles) || 0;
+      if(geo && logged >= 1 && (r.miles > logged*1.5 + 2 || r.miles < logged*0.5 - 2)){ t.noMap = true; n++; continue; }       // not the place that was driven to
+      if(!t.fp){ t.fp = {lat:fp.lat, lon:fp.lon}; t.geo = true; }
+      if(!t.tp){ t.tp = {lat:tp.lat, lon:tp.lon}; t.geo = true; }
+      t.route = r.pts; n++;
+      if(n % 4 === 0){ await saveKey('mileage-trips', mileageTrips); if(onStep) onStep(); }
     }
     if(n){ await saveKey('mileage-trips', mileageTrips); if(onStep) onStep(); }
   }finally{ vanFilling = false; }
 }
-// the sheet that asks when the van moved and whether it was work
+// the sheet that asks what a move was for
 function openVanMovesSheet(){
   const gaps = vanPending();
   openSheet('Van moves');
   const body = document.getElementById('sheetBody');
-  if(!gaps.length){ body.innerHTML = '<div class="stat-sub">Nothing to fill in. Every journey started where the last one ended.</div>'; return; }
-  const place = t=> mileageShortPlace(t);
+  if(!gaps.length){ body.innerHTML = '<div class="stat-sub">Nothing to fill in. Every drive started where the last one ended.</div>'; return; }
   const hmOf = ms=> ms ? autoHM(ms) : '';
-  body.innerHTML = '<div class="stat-sub" style="margin:0 0 8px;">The van was somewhere new when a journey began. Say when it moved and what it was for, or skip it if it was not driven.</div>'+
+  body.innerHTML = '<div class="stat-sub" style="margin:0 0 8px;">The van was somewhere new when a drive began. A journey for the move is added just before that drive. Was it for work?</div>'+
     gaps.map((g, i)=>{
       const miles = Math.round(g.m/1609.344*1.3*10)/10;
-      return '<div class="fin-item" data-vg="'+i+'"><div style="min-width:0;"><b class="trip-title">'+escapeHtml(place(g.prev.to))+' \u2192 '+escapeHtml(place(g.next.from))+'</b><div class="stat-sub" style="margin:2px 0 0;">about '+miles+' mi, before '+escapeHtml(shortDate(g.next.date))+' '+hmOf(g.next.startT)+(g.prev.endT ? ', last journey ended '+escapeHtml(shortDate(g.prev.date))+' '+hmOf(g.prev.endT) : '')+'</div></div>'+
-        '<div class="ff-grid"><label class="ff"><span>Date it moved</span><input type="date" data-vg-d value="'+g.next.date+'"></label><label class="ff"><span>Time</span><input type="time" data-vg-t value=""></label></div>'+
+      return '<div class="fin-item" data-vg="'+i+'"><div style="min-width:0;"><b class="trip-title">'+escapeHtml(mileageShortPlace(g.prev.to))+' → '+escapeHtml(mileageShortPlace(g.next.from))+'</b><div class="stat-sub" style="margin:2px 0 0;">about '+miles+' mi between '+escapeHtml(shortDate(g.prev.date))+' '+hmOf(g.prev.endT)+' and '+escapeHtml(shortDate(g.next.date))+' '+hmOf(g.next.startT)+'</div></div>'+
         '<div class="sp-btnrow"><button type="button" class="btn small" data-vg-cat="business">Business</button><button type="button" class="btn small secondary" data-vg-cat="personal">Personal</button><button type="button" class="btn small secondary" data-vg-skip>Skip</button></div></div>';
     }).join('');
   body.querySelectorAll('[data-vg]').forEach(card=>{
     const g = gaps[Number(card.dataset.vg)];
     card.querySelectorAll('[data-vg-cat]').forEach(btn=> btn.addEventListener('click', async ()=>{
-      const d = card.querySelector('[data-vg-d]').value, tm = card.querySelector('[data-vg-t]').value;
-      if(!d || !tm){ showToast('Add the date and time it moved.'); return; }
-      const [hh, mm] = tm.split(':').map(Number), dt = parseYMD(d); dt.setHours(hh, mm, 0, 0);
-      btn.disabled = true;
+      card.querySelectorAll('button').forEach(x=> x.disabled = true);
       let miles = null, route = null;
       try{ const r = await vanRouteGeo([g.a, g.b]); if(r){ miles = r.miles; route = r.pts; } }catch(e){}
       const est = miles == null; if(est) miles = Math.round(g.m/1609.344*1.3*10)/10;
-      mileageTrips.push({id:uid(), date:d, from:g.prev.to, to:g.next.from, category:btn.dataset.vgCat, miles:Math.max(0.1, miles), stops:[], mins:0, startT:dt.getTime(), endT:dt.getTime(), fp:g.a, tp:g.b, route:route || undefined, auto:true, est, bridgeFor:g.next.id});
+      const when = g.next.startT - 60000;           // the move happened just before the drive that found the van elsewhere
+      mileageTrips.push({id:uid(), date:fmt(new Date(when)), from:g.prev.to, to:g.next.from, category:btn.dataset.vgCat, miles:Math.max(0.1, miles), stops:[], mins:0, startT:when, endT:when, fp:g.a, tp:g.b, route:route || undefined, auto:true, est, bridgeFor:g.next.id});
       await saveKey('mileage-trips', mileageTrips);
       showToast('Added '+miles.toFixed(1)+' mi'+(est ? ' (estimate)' : '')+'.');
       renderMileageTab(); renderTrends(); renderSummary(); openVanMovesSheet();
@@ -3917,7 +3934,7 @@ function openVanMovesSheet(){
   });
 }
 // ---- the map: real streets from OpenStreetMap, drawn with Leaflet when there is a connection ----
-let vanLeaf = null;
+let vanLeaf = null, vanLayer = null, vanLines = {}, vanSel = null, vanSelLayer = null;
 function vanLoadLeaflet(){
   if(window.L) return Promise.resolve(window.L);
   return new Promise((res, rej)=>{
@@ -3927,41 +3944,76 @@ function vanLoadLeaflet(){
     setTimeout(()=> rej(new Error('slow')), 12000);
   });
 }
-function vanMapDraw(){
+function vanRangeFrom(){
+  const today = todayStr();
+  return vanMapRange === 'month' ? today.slice(0,8)+'01' : vanMapRange === '3m' ? addDays(today, -90) : '0000-00-00';
+}
+// refit = true only the first time: later redraws keep wherever you have panned and zoomed to
+function vanMapDraw(refit){
   const el = document.getElementById('vanLeaf'); if(!el || !window.L) return;
-  const L = window.L, today = todayStr();
-  const from = vanMapRange === 'month' ? today.slice(0,8)+'01' : vanMapRange === '3m' ? addDays(today, -90) : '0000-00-00';
-  if(vanLeaf){ try{ vanLeaf.remove(); }catch(e){} vanLeaf = null; }
+  const L = window.L, from = vanRangeFrom();
+  if(!vanLeaf){
+    vanLeaf = L.map(el, {zoomControl:true, attributionControl:true, tap:false}).setView([54.5, -3], 5);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:18, attribution:'© OpenStreetMap'}).addTo(vanLeaf);
+    vanLayer = L.layerGroup().addTo(vanLeaf); refit = true;
+  }
+  vanLayer.clearLayers(); vanLines = {}; vanSelLayer = null;
   const list = vanOrdered().filter(t=> t.date >= from);
-  vanLeaf = L.map(el, {zoomControl:true, attributionControl:true}).setView([54.5, -3], 5);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:18, attribution:'\u00a9 OpenStreetMap'}).addTo(vanLeaf);
   const cs = getComputedStyle(document.documentElement), bz = cs.getPropertyValue('--home').trim() || '#1f6f43';
-  const group = [];
+  const all = [];
   list.forEach(t=>{
     const a = vanPt(t, 'from'), b = vanPt(t, 'to');
     const pts = t.route && t.route.length > 1 ? t.route : [[a.lat, a.lon], [b.lat, b.lon]];
     const col = t.auto ? '#d98a1f' : (t.category === 'business' ? bz : '#2a4a8f');
-    const pl = L.polyline(pts, {color:col, weight:4, opacity:.85, dashArray: t.auto ? '6 6' : null}).addTo(vanLeaf);
-    pl.bindPopup(escapeHtml(mileageShortPlace(t.from))+' \u2192 '+escapeHtml(mileageShortPlace(t.to))+'<br>'+(Number(t.miles) || 0).toFixed(1)+' mi, '+escapeHtml(shortDate(t.date))+(t.auto ? ' (van moved)' : ''));
-    group.push(pl);
+    const pl = L.polyline(pts, {color:col, weight:4, opacity:.85, dashArray: t.auto ? '6 6' : null}).addTo(vanLayer);
+    pl.on('click', ()=> vanSelect(t.id, false));
+    vanLines[t.id] = {pl, col, t}; all.push(pl);
   });
-  vanGaps().filter(g=> g.next.date >= from).forEach(g=> group.push(L.polyline([[g.a.lat, g.a.lon], [g.b.lat, g.b.lon]], {color:'#c0392b', weight:2, dashArray:'2 6'}).addTo(vanLeaf)));
+  vanGaps().filter(g=> g.next.date >= from).forEach(g=> all.push(L.polyline([[g.a.lat, g.a.lon], [g.b.lat, g.b.lon]], {color:'#c0392b', weight:2, dashArray:'2 6'}).addTo(vanLayer)));
   if(list.length){
     const last = vanPt(list[list.length-1], 'to');
-    L.circleMarker([last.lat, last.lon], {radius:7, color:'#fff', weight:2, fillColor:'#c0392b', fillOpacity:1}).addTo(vanLeaf).bindPopup('Van now');
-    vanLeaf.fitBounds(L.featureGroup(group).getBounds().pad(.15), {maxZoom:14});
+    L.circleMarker([last.lat, last.lon], {radius:7, color:'#fff', weight:2, fillColor:'#c0392b', fillOpacity:1}).addTo(vanLayer).bindPopup('Van now');
+    if(refit) vanLeaf.fitBounds(L.featureGroup(all).getBounds().pad(.15), {maxZoom:14});
   }
   setTimeout(()=>{ if(vanLeaf) vanLeaf.invalidateSize(); }, 150);
+  if(vanSel) vanSelect(vanSel, false, true);
+}
+// pick a journey: shows where it started and finished, on the map and underneath it
+function vanSelect(id, fit, quiet){
+  const t = mileageTrips.find(x=> String(x.id) === String(id)); vanSel = t ? t.id : null;
+  const box = document.getElementById('vanDetail');
+  document.querySelectorAll('[data-vj]').forEach(r=> r.classList.toggle('on', String(r.dataset.vj) === String(id)));
+  if(window.L && vanLeaf){
+    Object.keys(vanLines).forEach(k=> vanLines[k].pl.setStyle({weight:String(k) === String(id) ? 8 : 4, opacity:String(k) === String(id) ? 1 : .55}));
+    if(vanSelLayer){ vanLayer.removeLayer(vanSelLayer); vanSelLayer = null; }
+    if(t && vanLines[t.id]){
+      const a = vanPt(t, 'from'), b = vanPt(t, 'to'), L = window.L;
+      const mk = (p, txt, col)=> L.marker([p.lat, p.lon], {icon:L.divIcon({className:'van-pin', html:'<span style="background:'+col+'">'+txt+'</span>', iconSize:[26,26], iconAnchor:[13,13]})});
+      vanSelLayer = L.layerGroup([mk(a, 'A', '#1f6f43'), mk(b, 'B', '#c0392b')]).addTo(vanLayer);
+      vanLines[t.id].pl.bringToFront();
+      if(fit !== false && !quiet) vanLeaf.fitBounds(vanLines[t.id].pl.getBounds().pad(.3), {maxZoom:15});
+    }
+  }
+  if(!box) return;
+  if(!t){ box.hidden = true; return; }
+  const when = t.startT ? shortDate(t.date)+' '+autoHM(t.startT) : shortDate(t.date);
+  box.hidden = false;
+  box.innerHTML = '<div class="vd-r"><i class="vd-a">A</i><div><b>Start</b><div>'+escapeHtml(mileageCleanAddr(t.from))+'</div></div></div>'+
+    ((t.stops || []).length ? '<div class="stat-sub" style="margin:0 0 4px 34px;">via '+escapeHtml(t.stops.map(mileageShortPlace).join(', '))+'</div>' : '')+
+    '<div class="vd-r"><i class="vd-b">B</i><div><b>Finish</b><div>'+escapeHtml(mileageCleanAddr(t.to))+'</div></div></div>'+
+    '<div class="stat-sub" style="margin:6px 0 0;">'+when+' '+(Number(t.miles) || 0).toFixed(1)+' mi '+(t.category === 'business' ? 'Business' : 'Personal')+(t.auto ? ' van moved' : '')+(t.geo ? ' <b>position found from the address, may be off</b>' : '')+'</div>'+
+    '<div class="fin-edit-row" style="margin-top:8px;"><button type="button" class="btn secondary small" data-vd-hide="'+t.id+'">Wrong place — hide from map</button></div>';
+  const hb = box.querySelector('[data-vd-hide]');
+  if(hb) hb.addEventListener('click', async ()=>{ const x = mileageTrips.find(y=> String(y.id) === String(t.id)); if(x){ x.noMap = true; await saveKey('mileage-trips', mileageTrips); } vanSel = null; renderTrends(); });
 }
 function vanMapInit(){
   const fb = document.getElementById('vanFallback'), el = document.getElementById('vanLeaf'); if(!el) return;
-  vanLoadLeaflet().then(()=>{ if(fb) fb.hidden = true; vanMapDraw(); }).catch(()=>{ el.hidden = true; if(fb) fb.hidden = false; });
-  vanBackfill(()=>{ if(document.getElementById('vanLeaf')) vanMapDraw(); }).catch(()=>{});
+  vanLoadLeaflet().then(()=>{ if(fb) fb.hidden = true; vanMapDraw(true); }).catch(()=>{ el.hidden = true; if(fb) fb.hidden = false; });
+  vanBackfill(()=>{ if(document.getElementById('vanLeaf') && vanLeaf) vanMapDraw(false); }).catch(()=>{});
 }
 let vanMapRange = 'month';
 function vanMapHtml(){
-  const today = todayStr();
-  const from = vanMapRange === 'month' ? today.slice(0,8)+'01' : vanMapRange === '3m' ? addDays(today, -90) : '0000-00-00';
+  const today = todayStr(), from = vanRangeFrom();
   const all = vanOrdered(), list = all.filter(t=> t.date >= from);
   const chips = [['month','This month'],['3m','3 months'],['all','All']].map(c=> '<button type="button" class="chip-btn'+(vanMapRange === c[0] ? ' active' : '')+'" data-vm="'+c[0]+'">'+c[1]+'</button>').join('');
   const head = '<section class="tr"><div class="tr-h"><span>Journey map</span></div><div class="sp-chips" style="margin:0 0 8px;">'+chips+'</div>';
@@ -3988,7 +4040,9 @@ function vanMapHtml(){
   const undated = mileageTrips.filter(t=> t.date >= from && !(vanPt(t, 'from') && vanPt(t, 'to'))).length;
   const pend = vanPending().filter(g=> g.next.date >= from).length;
   const pendHtml = pend ? '<button type="button" class="btn small" id="vanFill" style="margin-top:8px;">'+pend+' van move'+(pend === 1 ? '' : 's')+' to fill in</button>' : '';
-  return head+'<div id="vanLeaf" class="van-leaf"></div><div id="vanFallback" hidden>'+svg+'<div class="stat-sub" style="margin:4px 0 0;">Street map needs a connection; showing the outline.</div></div>'+leg+note+pendHtml+(undated ? '<div class="stat-sub" style="margin:2px 0 0;">'+undated+' older journey'+(undated === 1 ? ' has' : 's have')+' no map points.</div>' : '')+'</section>';
+  const rows = list.slice().reverse().slice(0, 40).map(t=> '<button type="button" class="vj" data-vj="'+t.id+'"><span>'+escapeHtml(shortDate(t.date))+'</span><span class="vj-t">'+escapeHtml(mileageShortPlace(t.from))+' \u2192 '+escapeHtml(mileageShortPlace(t.to))+'</span><b>'+(Number(t.miles) || 0).toFixed(1)+'</b></button>').join('');
+  const listHtml = '<div class="vj-h">Journeys \u2014 tap one to see where it started and finished</div><div class="vj-list">'+rows+'</div>';
+  return head+'<div id="vanLeaf" class="van-leaf" data-no-swipe></div><div id="vanDetail" class="van-detail" hidden></div><div id="vanFallback" hidden>'+svg+'<div class="stat-sub" style="margin:4px 0 0;">Street map needs a connection; showing the outline.</div></div>'+leg+listHtml+note+pendHtml+(undated ? '<div class="stat-sub" style="margin:2px 0 0;">'+undated+' older journey'+(undated === 1 ? ' has' : 's have')+' no map points.</div>' : '')+'</section>';
 }
 function tripRowEl(t){
   const biz = t.category === 'business';
@@ -8469,7 +8523,7 @@ function bindTabSwipe(el, step){
   if(!el || el.__swipeBound) return; el.__swipeBound = true;
   let x0 = 0, y0 = 0, t0 = 0, on = false;
   el.addEventListener('touchstart', e=>{
-    if(e.touches.length !== 1 || (e.target.closest && e.target.closest('input,select,textarea,.tabs-s,.chip-row,canvas,svg,[data-no-swipe]'))){ on = false; return; }
+    if(e.touches.length !== 1 || (e.target.closest && e.target.closest('input,select,textarea,.tabs-s,.chip-row,canvas,svg,[data-no-swipe],.van-leaf'))){ on = false; return; }
     x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now(); on = true;
   }, {passive:true});
   el.addEventListener('touchend', e=>{
@@ -8623,6 +8677,7 @@ function renderTrends(){
   box.querySelectorAll('[data-tr-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.trGo)));
   box.querySelectorAll('[data-vm]').forEach(el=> el.addEventListener('click', ()=>{ vanMapRange = el.dataset.vm; renderTrends(); }));
   const vf = document.getElementById('vanFill'); if(vf) vf.addEventListener('click', openVanMovesSheet);
+  box.querySelectorAll('[data-vj]').forEach(r=> r.addEventListener('click', ()=> vanSelect(r.dataset.vj, true)));
   if(trendsTab === 'driving') vanMapInit();
   box.querySelectorAll('.tr-col[data-tip]').forEach(col=>{ const show = ()=>{ const sec = col.closest('section'); sec.querySelectorAll('.tr-col').forEach(c=> c.classList.remove('sel')); col.classList.add('sel'); const tip = sec.querySelector('.tr-tip'); if(tip) tip.textContent = col.dataset.tip; }; col.addEventListener('click', show); col.addEventListener('keydown', ev=>{ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); show(); } }); });
   box.querySelectorAll('[data-sleep-edit]').forEach(b=> b.addEventListener('click', openSleepSheet));
@@ -9057,7 +9112,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v22.1';
+const APP_VERSION = 'v22.2';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
