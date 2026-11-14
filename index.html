@@ -836,6 +836,9 @@ input::placeholder,textarea::placeholder{color:var(--ink-soft);opacity:.7;}
 .tag.pers{background:var(--surface-2);color:var(--ink-soft);}
 .trip-detail{padding:0 0 14px;display:grid;gap:6px;font-size:12px;color:var(--ink-soft);}
 .van-map{width:100%;height:auto;display:block;background:var(--surface-2);border-radius:12px;}
+.vm-grad{height:10px;border-radius:5px;background:linear-gradient(90deg,hsl(125,78%,42%),hsl(90,78%,42%),hsl(55,78%,44%),hsl(25,78%,46%),hsl(0,78%,46%));}
+.vm-gl{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-soft);margin-top:3px;}
+.vm-heat{margin-top:8px;}
 .van-detail{margin-top:8px;padding:10px 12px;border-radius:12px;background:var(--surface-2);font-size:13px;}
 .vd-r{display:flex;gap:10px;align-items:flex-start;margin:0 0 6px;}
 .vd-r>div{min-width:0;overflow-wrap:anywhere;}
@@ -2574,6 +2577,7 @@ async function init(){
   finSnap = await loadKey('fin-snap', []);
   autoMeta = Object.assign({home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, await loadKey('auto-meta', {}));
   mileageDrafts = await loadKey('mileage-drafts', []);
+  vanRoutes = await loadKey('van-routes', {});
   sleepLog = await loadKey('sleep-log', []);
   try{ await spendMigrate(); }catch(e){ console.error('Category tidy-up skipped:', e); }
   try{ await spendMigrate3(); }catch(e){ console.error('Category tidy-up skipped:', e); }
@@ -3861,44 +3865,98 @@ function vanGaps(){
 function vanPending(){
   return vanGaps().filter(g=> !g.next.noBridge && !mileageTrips.some(t=> t.auto && String(t.bridgeFor) === String(g.next.id)));
 }
+// ---- roads: each journey's route is kept on this phone only (not synced), packed small ----
+let vanRoutes = {}, vanRouteCache = {}, vanSaveT = null;
+function plEnc(pts){
+  let out = '', pl = 0, pn = 0;
+  const e = v=>{ v = v < 0 ? ~(v << 1) : v << 1; let r = ''; while(v >= 0x20){ r += String.fromCharCode((0x20 | (v & 0x1f)) + 63); v >>= 5; } return r + String.fromCharCode(v + 63); };
+  pts.forEach(p=>{ const la = Math.round(p[0]*1e5), lo = Math.round(p[1]*1e5); out += e(la - pl) + e(lo - pn); pl = la; pn = lo; });
+  return out;
+}
+function plDec(str){
+  const pts = []; let i = 0, la = 0, lo = 0;
+  const rd = ()=>{ let r = 0, sh = 0, b; do{ b = str.charCodeAt(i++) - 63; r |= (b & 0x1f) << sh; sh += 5; }while(b >= 0x20 && i <= str.length); return (r & 1) ? ~(r >> 1) : (r >> 1); };
+  while(i < str.length){ la += rd(); lo += rd(); pts.push([la/1e5, lo/1e5]); }
+  return pts;
+}
+// drop points that sit within ~7 m of the straight line between their neighbours, so the road keeps its bends
+function vanSimplify(pts, tol){
+  if(pts.length < 3) return pts;
+  const k = Math.cos(pts[0][0]*Math.PI/180), keep = new Uint8Array(pts.length); keep[0] = keep[pts.length-1] = 1;
+  const st = [[0, pts.length-1]];
+  while(st.length){
+    const [i, j] = st.pop(); let md = 0, mi = -1;
+    const ax = pts[i][1]*k, ay = pts[i][0], bx = pts[j][1]*k, by = pts[j][0], dx = bx-ax, dy = by-ay, L = dx*dx + dy*dy;
+    for(let m = i+1; m < j; m++){
+      const px = pts[m][1]*k, py = pts[m][0];
+      let t = L ? ((px-ax)*dx + (py-ay)*dy)/L : 0; t = Math.max(0, Math.min(1, t));
+      const d = Math.hypot(px - (ax + t*dx), py - (ay + t*dy));
+      if(d > md){ md = d; mi = m; }
+    }
+    if(md > tol && mi > -1){ keep[mi] = 1; st.push([i, mi], [mi, j]); }
+  }
+  return pts.filter((_, i)=> keep[i]);
+}
+function vanRoute(id){
+  if(vanRouteCache[id]) return vanRouteCache[id];
+  const e = vanRoutes[id]; if(!e) return null;
+  return (vanRouteCache[id] = plDec(e));
+}
+function vanRouteSet(id, pts){
+  vanRoutes[id] = plEnc(pts); vanRouteCache[id] = pts;
+  clearTimeout(vanSaveT); vanSaveT = setTimeout(()=> saveKey('van-routes', vanRoutes), 800);
+}
 async function vanRouteGeo(coords){
   const path = coords.map(c=> c.lon+','+c.lat).join(';');
   const mk = base=> async signal=>{
     const d = await fetchJson(base + path + '?overview=full&geometries=geojson', signal, 20000);
     const r = d && d.routes && d.routes[0]; if(!r) return null;
-    let pts = r.geometry.coordinates.map(c=> [Math.round(c[1]*1e4)/1e4, Math.round(c[0]*1e4)/1e4]);
-    const step = Math.max(1, Math.ceil(pts.length/150)); const thin = pts.filter((p, i)=> i % step === 0 || i === pts.length-1);
-    return {pts:thin, miles:Math.round(r.distance/1609.344*10)/10};
+    const pts = vanSimplify(r.geometry.coordinates.map(c=> [Math.round(c[1]*1e5)/1e5, Math.round(c[0]*1e5)/1e5]), 0.00006);
+    return {pts, miles:Math.round(r.distance/1609.344*10)/10};
   };
   return await hedged([mk('https://router.project-osrm.org/route/v1/driving/'), mk('https://routing.openstreetmap.de/routed-car/route/v1/driving/')], 2500);
 }
-// give every journey its two end points and the road it took, a few at a time, saving as it goes.
+// give every journey its two end points and the road it took, one at a time (the free route servers are polite-use), saving as it goes.
 // A place found from an address has to be in the UK and give a distance close to what was logged, or it is left off the map.
-let vanFilling = false;
-async function vanBackfill(onStep){
+let vanFilling = false, vanProg = {done:0, total:0};
+function vanRouteStats(){
+  const list = mileageTrips.filter(t=> t.date && !t.noMap);
+  return {have:list.filter(t=> vanRoutes[t.id]).length, total:list.length};
+}
+async function vanBackfill(onStep, retry){
   if(vanFilling) return; vanFilling = true;
   try{
     let n = 0;
-    mileageTrips.forEach(t=>{ if(!t.startT && !t.noMap && ((t.fp && !inUK(t.fp)) || (t.tp && !inUK(t.tp)))){ delete t.fp; delete t.tp; delete t.route; t.noMap = true; n++; } });
-    for(const t of mileageTrips.slice().sort((a, b)=> (b.date || '').localeCompare(a.date || ''))){
-      if(!t.date || t.noMap || t.route) continue;
+    mileageTrips.forEach(t=>{                                       // routes from earlier versions lived inside the trip: move them out
+      if(t.route){ if(Array.isArray(t.route) && t.route.length > 1 && !vanRoutes[t.id]) vanRouteSet(t.id, t.route); delete t.route; n++; }
+      if(!t.startT && !t.noMap && ((t.fp && !inUK(t.fp)) || (t.tp && !inUK(t.tp)))){ delete t.fp; delete t.tp; delete vanRoutes[t.id]; t.noMap = true; n++; }
+      if(retry) delete t.routeTries;
+    });
+    if(n){ await saveKey('mileage-trips', mileageTrips); await saveKey('van-routes', vanRoutes); }
+    const todo = mileageTrips.filter(t=> t.date && !t.noMap && !vanRoutes[t.id] && (t.routeTries || 0) < 3).sort((a, b)=> (b.date || '').localeCompare(a.date || ''));
+    vanProg = {done:0, total:todo.length}; if(onStep) onStep();
+    let fresh = 0;
+    for(const t of todo){
       let fp = t.fp || null, tp = t.tp || null, geo = false;
       if(!fp){ fp = vanPt(t, 'from'); if(!fp && t.from){ try{ fp = await geocodePlace(t.from); }catch(e){} } geo = true; }
       if(!tp){ tp = vanPt(t, 'to'); if(!tp && t.to){ try{ tp = await geocodePlace(t.to); }catch(e){} } geo = true; }
-      if(!(fp && tp)) continue;
-      if(!inUK(fp) || !inUK(tp)){ t.noMap = true; n++; continue; }
+      vanProg.done++;
+      if(!(fp && tp)){ t.routeTries = (t.routeTries || 0) + 1; continue; }
+      if(!inUK(fp) || !inUK(tp)){ t.noMap = true; fresh++; continue; }
       const via = (t.stops || []).map(x=> geoCache[geoKey(x)]).filter(Boolean);
       const pts = [fp].concat(via.length === (t.stops || []).length ? via : [], [tp]);
       let r = null; try{ r = await vanRouteGeo(pts); }catch(e){}
-      if(!r) continue;
+      if(!r){ t.routeTries = (t.routeTries || 0) + 1; await new Promise(res=> setTimeout(res, 600)); continue; }
       const logged = Number(t.miles) || 0;
-      if(geo && logged >= 1 && (r.miles > logged*1.5 + 2 || r.miles < logged*0.5 - 2)){ t.noMap = true; n++; continue; }       // not the place that was driven to
+      if(geo && logged >= 1 && (r.miles > logged*1.5 + 2 || r.miles < logged*0.5 - 2)){ t.noMap = true; fresh++; continue; }       // not the place that was driven to
       if(!t.fp){ t.fp = {lat:fp.lat, lon:fp.lon}; t.geo = true; }
       if(!t.tp){ t.tp = {lat:tp.lat, lon:tp.lon}; t.geo = true; }
-      t.route = r.pts; n++;
-      if(n % 4 === 0){ await saveKey('mileage-trips', mileageTrips); if(onStep) onStep(); }
+      vanRouteSet(t.id, r.pts); fresh++;
+      if(fresh % 5 === 0){ await saveKey('mileage-trips', mileageTrips); if(onStep) onStep(); }
+      await new Promise(res=> setTimeout(res, 250));
     }
-    if(n){ await saveKey('mileage-trips', mileageTrips); if(onStep) onStep(); }
+    await saveKey('mileage-trips', mileageTrips); await saveKey('van-routes', vanRoutes);
+    vanProg = {done:0, total:0}; if(onStep) onStep();
   }finally{ vanFilling = false; }
 }
 // the sheet that asks what a move was for
@@ -3922,7 +3980,8 @@ function openVanMovesSheet(){
       try{ const r = await vanRouteGeo([g.a, g.b]); if(r){ miles = r.miles; route = r.pts; } }catch(e){}
       const est = miles == null; if(est) miles = Math.round(g.m/1609.344*1.3*10)/10;
       const when = g.next.startT - 60000;           // the move happened just before the drive that found the van elsewhere
-      mileageTrips.push({id:uid(), date:fmt(new Date(when)), from:g.prev.to, to:g.next.from, category:btn.dataset.vgCat, miles:Math.max(0.1, miles), stops:[], mins:0, startT:when, endT:when, fp:g.a, tp:g.b, route:route || undefined, auto:true, est, bridgeFor:g.next.id});
+      mileageTrips.push({id:uid(), date:fmt(new Date(when)), from:g.prev.to, to:g.next.from, category:btn.dataset.vgCat, miles:Math.max(0.1, miles), stops:[], mins:0, startT:when, endT:when, fp:g.a, tp:g.b, auto:true, est, bridgeFor:g.next.id});
+      if(route) vanRouteSet(mileageTrips[mileageTrips.length-1].id, route);
       await saveKey('mileage-trips', mileageTrips);
       showToast('Added '+miles.toFixed(1)+' mi'+(est ? ' (estimate)' : '')+'.');
       renderMileageTab(); renderTrends(); renderSummary(); openVanMovesSheet();
@@ -3934,7 +3993,7 @@ function openVanMovesSheet(){
   });
 }
 // ---- the map: real streets from OpenStreetMap, drawn with Leaflet when there is a connection ----
-let vanLeaf = null, vanLayer = null, vanLines = {}, vanSel = null, vanSelLayer = null;
+let vanLeaf = null, vanLayer = null, vanSel = null, vanSelLayer = null, vanMode = 'heat', vanDrawT = 0, vanTrail = null;
 function vanLoadLeaflet(){
   if(window.L) return Promise.resolve(window.L);
   return new Promise((res, rej)=>{
@@ -3948,50 +4007,81 @@ function vanRangeFrom(){
   const today = todayStr();
   return vanMapRange === 'month' ? today.slice(0,8)+'01' : vanMapRange === '3m' ? addDays(today, -90) : '0000-00-00';
 }
+// how many separate journeys drove each ~30 m of road
+function vanHeat(list){
+  const cell = (la, lo)=> Math.round(la/0.0003)+','+Math.round(lo/0.00048), counts = new Map(), routed = [];
+  list.forEach(t=>{
+    const pts = vanRoute(t.id); if(!pts || pts.length < 2) return;
+    const seen = new Set();
+    for(let i = 1; i < pts.length; i++){
+      const a = pts[i-1], b = pts[i], d = autoDistM(a[0], a[1], b[0], b[1]), n = Math.max(1, Math.ceil(d/15));
+      for(let k = 0; k <= n; k++) seen.add(cell(a[0] + (b[0]-a[0])*k/n, a[1] + (b[1]-a[1])*k/n));
+    }
+    seen.forEach(c=> counts.set(c, (counts.get(c) || 0) + 1));
+    routed.push({t, pts});
+  });
+  let max = 1; counts.forEach(v=>{ if(v > max) max = v; });
+  return {counts, routed, max, cell};
+}
+const vanLevelColor = lv=> 'hsl('+Math.round(125*(1 - lv/7))+',78%,'+(lv < 4 ? 42 : 46)+'%)';
 // refit = true only the first time: later redraws keep wherever you have panned and zoomed to
 function vanMapDraw(refit){
   const el = document.getElementById('vanLeaf'); if(!el || !window.L) return;
   const L = window.L, from = vanRangeFrom();
   if(!vanLeaf){
-    vanLeaf = L.map(el, {zoomControl:true, attributionControl:true, tap:false}).setView([54.5, -3], 5);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:18, attribution:'© OpenStreetMap'}).addTo(vanLeaf);
+    vanLeaf = L.map(el, {zoomControl:true, attributionControl:true, tap:false, preferCanvas:true}).setView([54.5, -3], 5);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(vanLeaf);
     vanLayer = L.layerGroup().addTo(vanLeaf); refit = true;
   }
-  vanLayer.clearLayers(); vanLines = {}; vanSelLayer = null;
-  const list = vanOrdered().filter(t=> t.date >= from);
+  vanLayer.clearLayers(); vanSelLayer = null;
+  const list = vanOrdered().filter(t=> t.date >= from), heat = vanHeat(list);
   const cs = getComputedStyle(document.documentElement), bz = cs.getPropertyValue('--home').trim() || '#1f6f43';
-  const all = [];
-  list.forEach(t=>{
-    const a = vanPt(t, 'from'), b = vanPt(t, 'to');
-    const pts = t.route && t.route.length > 1 ? t.route : [[a.lat, a.lon], [b.lat, b.lon]];
-    const col = t.auto ? '#d98a1f' : (t.category === 'business' ? bz : '#2a4a8f');
-    const pl = L.polyline(pts, {color:col, weight:4, opacity:.85, dashArray: t.auto ? '6 6' : null}).addTo(vanLayer);
-    pl.on('click', ()=> vanSelect(t.id, false));
-    vanLines[t.id] = {pl, col, t}; all.push(pl);
+  const chunks = [], all = [];
+  heat.routed.forEach(({t, pts})=>{
+    if(vanMode === 'heat'){
+      let cur = null;
+      for(let i = 1; i < pts.length; i++){
+        const mid = [(pts[i-1][0] + pts[i][0])/2, (pts[i-1][1] + pts[i][1])/2], c = heat.counts.get(heat.cell(mid[0], mid[1])) || 1;
+        const lv = heat.max <= 1 ? 0 : Math.min(7, Math.round(Math.log(c)/Math.log(heat.max)*7));
+        if(!cur || cur.lv !== lv){ cur = {lv, t, pts:[pts[i-1]]}; chunks.push(cur); }
+        cur.pts.push(pts[i]);
+      }
+    }else chunks.push({lv:0, t, pts, col:t.auto ? '#d98a1f' : (t.category === 'business' ? bz : '#2a4a8f')});
+  });
+  chunks.sort((a, b)=> a.lv - b.lv).forEach(ch=>{
+    const pl = L.polyline(ch.pts, {color: ch.col || vanLevelColor(ch.lv), weight: vanMode === 'heat' ? 4 : 4, opacity:.92, lineCap:'round', lineJoin:'round'}).addTo(vanLayer);
+    pl.on('click', ()=> vanSelect(ch.t.id, false));
+    all.push(pl);
   });
   vanGaps().filter(g=> g.next.date >= from).forEach(g=> all.push(L.polyline([[g.a.lat, g.a.lon], [g.b.lat, g.b.lon]], {color:'#c0392b', weight:2, dashArray:'2 6'}).addTo(vanLayer)));
   if(list.length){
     const last = vanPt(list[list.length-1], 'to');
     L.circleMarker([last.lat, last.lon], {radius:7, color:'#fff', weight:2, fillColor:'#c0392b', fillOpacity:1}).addTo(vanLayer).bindPopup('Van now');
-    if(refit) vanLeaf.fitBounds(L.featureGroup(all).getBounds().pad(.15), {maxZoom:14});
+    if(refit && all.length) vanLeaf.fitBounds(L.featureGroup(all).getBounds().pad(.15), {maxZoom:14});
   }
   setTimeout(()=>{ if(vanLeaf) vanLeaf.invalidateSize(); }, 150);
+  vanStatus();
   if(vanSel) vanSelect(vanSel, false, true);
+}
+function vanStatus(){
+  const el = document.getElementById('vanStatus'); if(!el) return;
+  const from = vanRangeFrom(), list = vanOrdered().filter(t=> t.date >= from), have = list.filter(t=> vanRoutes[t.id]).length;
+  el.innerHTML = (vanFilling && vanProg.total ? 'Finding roads… '+vanProg.done+' of '+vanProg.total+'. ' : '')+'Roads found for <b>'+have+'</b> of <b>'+list.length+'</b> journeys'+(have < list.length ? ' — the rest are left off until a road route is found. <a class="fin-link" id="vanFind">Find roads</a>' : '.');
+  const f = document.getElementById('vanFind'); if(f) f.addEventListener('click', ()=>{ showToast('Looking for roads…'); vanBackfill(()=>{ if(vanLeaf) vanMapDraw(false); else vanStatus(); }, true).catch(()=>{}); });
 }
 // pick a journey: shows where it started and finished, on the map and underneath it
 function vanSelect(id, fit, quiet){
   const t = mileageTrips.find(x=> String(x.id) === String(id)); vanSel = t ? t.id : null;
   const box = document.getElementById('vanDetail');
   document.querySelectorAll('[data-vj]').forEach(r=> r.classList.toggle('on', String(r.dataset.vj) === String(id)));
-  if(window.L && vanLeaf){
-    Object.keys(vanLines).forEach(k=> vanLines[k].pl.setStyle({weight:String(k) === String(id) ? 8 : 4, opacity:String(k) === String(id) ? 1 : .55}));
+  if(window.L && vanLeaf && vanLayer){
     if(vanSelLayer){ vanLayer.removeLayer(vanSelLayer); vanSelLayer = null; }
-    if(t && vanLines[t.id]){
-      const a = vanPt(t, 'from'), b = vanPt(t, 'to'), L = window.L;
+    if(t && vanPt(t, 'from')){
+      const a = vanPt(t, 'from'), b = vanPt(t, 'to'), L = window.L, rt = vanRoute(t.id);
       const mk = (p, txt, col)=> L.marker([p.lat, p.lon], {icon:L.divIcon({className:'van-pin', html:'<span style="background:'+col+'">'+txt+'</span>', iconSize:[26,26], iconAnchor:[13,13]})});
-      vanSelLayer = L.layerGroup([mk(a, 'A', '#1f6f43'), mk(b, 'B', '#c0392b')]).addTo(vanLayer);
-      vanLines[t.id].pl.bringToFront();
-      if(fit !== false && !quiet) vanLeaf.fitBounds(vanLines[t.id].pl.getBounds().pad(.3), {maxZoom:15});
+      const line = L.polyline(rt && rt.length > 1 ? rt : [[a.lat, a.lon], [b.lat, b.lon]], {color:'#111', weight:9, opacity:.35, lineCap:'round'});
+      vanSelLayer = L.layerGroup([line, mk(a, 'A', '#1f6f43'), mk(b, 'B', '#c0392b')]).addTo(vanLayer);
+      if(fit !== false && !quiet) vanLeaf.fitBounds(line.getBounds().pad(.3), {maxZoom:15});
     }
   }
   if(!box) return;
@@ -4001,7 +4091,7 @@ function vanSelect(id, fit, quiet){
   box.innerHTML = '<div class="vd-r"><i class="vd-a">A</i><div><b>Start</b><div>'+escapeHtml(mileageCleanAddr(t.from))+'</div></div></div>'+
     ((t.stops || []).length ? '<div class="stat-sub" style="margin:0 0 4px 34px;">via '+escapeHtml(t.stops.map(mileageShortPlace).join(', '))+'</div>' : '')+
     '<div class="vd-r"><i class="vd-b">B</i><div><b>Finish</b><div>'+escapeHtml(mileageCleanAddr(t.to))+'</div></div></div>'+
-    '<div class="stat-sub" style="margin:6px 0 0;">'+when+' '+(Number(t.miles) || 0).toFixed(1)+' mi '+(t.category === 'business' ? 'Business' : 'Personal')+(t.auto ? ' van moved' : '')+(t.geo ? ' <b>position found from the address, may be off</b>' : '')+'</div>'+
+    '<div class="stat-sub" style="margin:6px 0 0;">'+when+' '+(Number(t.miles) || 0).toFixed(1)+' mi '+(t.category === 'business' ? 'Business' : 'Personal')+(t.auto ? ' van moved' : '')+(vanRoutes[t.id] ? '' : ' no road route yet')+(t.geo ? ' <b>position found from the address, may be off</b>' : '')+'</div>'+
     '<div class="fin-edit-row" style="margin-top:8px;"><button type="button" class="btn secondary small" data-vd-hide="'+t.id+'">Wrong place — hide from map</button></div>';
   const hb = box.querySelector('[data-vd-hide]');
   if(hb) hb.addEventListener('click', async ()=>{ const x = mileageTrips.find(y=> String(y.id) === String(t.id)); if(x){ x.noMap = true; await saveKey('mileage-trips', mileageTrips); } vanSel = null; renderTrends(); });
@@ -4009,14 +4099,15 @@ function vanSelect(id, fit, quiet){
 function vanMapInit(){
   const fb = document.getElementById('vanFallback'), el = document.getElementById('vanLeaf'); if(!el) return;
   vanLoadLeaflet().then(()=>{ if(fb) fb.hidden = true; vanMapDraw(true); }).catch(()=>{ el.hidden = true; if(fb) fb.hidden = false; });
-  vanBackfill(()=>{ if(document.getElementById('vanLeaf') && vanLeaf) vanMapDraw(false); }).catch(()=>{});
+  vanBackfill(()=>{ if(!document.getElementById('vanLeaf')) return; const now = Date.now(); if(vanLeaf && now - vanDrawT > 4000){ vanDrawT = now; vanMapDraw(false); } else{ vanStatus(); clearTimeout(vanTrail); vanTrail = setTimeout(()=>{ if(vanLeaf && document.getElementById('vanLeaf')){ vanDrawT = Date.now(); vanMapDraw(false); } }, 4200); } }).catch(()=>{});
 }
 let vanMapRange = 'month';
 function vanMapHtml(){
   const today = todayStr(), from = vanRangeFrom();
   const all = vanOrdered(), list = all.filter(t=> t.date >= from);
+  const modeChips = [['heat','Heat map'],['type','By type']].map(c=> '<button type="button" class="chip-btn'+(vanMode === c[0] ? ' active' : '')+'" data-vmode="'+c[0]+'">'+c[1]+'</button>').join('');
   const chips = [['month','This month'],['3m','3 months'],['all','All']].map(c=> '<button type="button" class="chip-btn'+(vanMapRange === c[0] ? ' active' : '')+'" data-vm="'+c[0]+'">'+c[1]+'</button>').join('');
-  const head = '<section class="tr"><div class="tr-h"><span>Journey map</span></div><div class="sp-chips" style="margin:0 0 8px;">'+chips+'</div>';
+  const head = '<section class="tr"><div class="tr-h"><span>Journey map</span></div><div class="sp-chips" style="margin:0 0 8px;">'+chips+'</div><div class="sp-chips" style="margin:0 0 8px;">'+modeChips+'</div>';
   if(!list.length) return head+'<div id="vanLeaf" hidden></div><div class="tr-none">'+(all.length ? 'No journeys in this period.' : 'The map fills in as journeys are confirmed with their places.')+'</div></section>';
   const gaps = vanGaps().filter(g=> g.next.date >= from);
   const pts = []; list.forEach(t=>{ pts.push(vanPt(t, 'from'), vanPt(t, 'to')); });
@@ -4035,14 +4126,14 @@ function vanMapHtml(){
   const last = list[list.length-1], lp = vanPt(last, 'to');
   svg += '<circle cx="'+X(lp.lon)+'" cy="'+Y(lp.lat)+'" r="6" class="vm-now"/></svg>';
   const autos = list.filter(t=> t.auto).length;
-  const leg = '<div class="vm-leg"><span><i class="vm-k"></i>Personal</span><span><i class="vm-k biz"></i>Business</span><span><i class="vm-k auto"></i>Van moved</span><span><i class="vm-k now"></i>Van now</span></div>';
+  const leg = vanMode === 'heat' ? '<div class="vm-heat"><div class="vm-grad"></div><div class="vm-gl"><span>driven once</span><span>driven many times</span></div></div>' : '<div class="vm-leg"><span><i class="vm-k"></i>Personal</span><span><i class="vm-k biz"></i>Business</span><span><i class="vm-k auto"></i>Van moved</span><span><i class="vm-k now"></i>Van now</span></div>';
   const note = gaps.length ? '<div class="stat-sub" style="margin:6px 0 0;"><b>'+gaps.length+'</b> time'+(gaps.length === 1 ? '' : 's')+' the van started a journey more than '+VAN_GAP_M+' m from where the last one ended'+(autos ? ', '+autos+' journey'+(autos === 1 ? '' : 's')+' added to cover it' : '')+'.</div>' : '<div class="stat-sub" style="margin:6px 0 0;">Every journey started where the last one ended.</div>';
   const undated = mileageTrips.filter(t=> t.date >= from && !(vanPt(t, 'from') && vanPt(t, 'to'))).length;
   const pend = vanPending().filter(g=> g.next.date >= from).length;
   const pendHtml = pend ? '<button type="button" class="btn small" id="vanFill" style="margin-top:8px;">'+pend+' van move'+(pend === 1 ? '' : 's')+' to fill in</button>' : '';
   const rows = list.slice().reverse().slice(0, 40).map(t=> '<button type="button" class="vj" data-vj="'+t.id+'"><span>'+escapeHtml(shortDate(t.date))+'</span><span class="vj-t">'+escapeHtml(mileageShortPlace(t.from))+' \u2192 '+escapeHtml(mileageShortPlace(t.to))+'</span><b>'+(Number(t.miles) || 0).toFixed(1)+'</b></button>').join('');
   const listHtml = '<div class="vj-h">Journeys \u2014 tap one to see where it started and finished</div><div class="vj-list">'+rows+'</div>';
-  return head+'<div id="vanLeaf" class="van-leaf" data-no-swipe></div><div id="vanDetail" class="van-detail" hidden></div><div id="vanFallback" hidden>'+svg+'<div class="stat-sub" style="margin:4px 0 0;">Street map needs a connection; showing the outline.</div></div>'+leg+listHtml+note+pendHtml+(undated ? '<div class="stat-sub" style="margin:2px 0 0;">'+undated+' older journey'+(undated === 1 ? ' has' : 's have')+' no map points.</div>' : '')+'</section>';
+  return head+'<div id="vanLeaf" class="van-leaf" data-no-swipe></div><div id="vanStatus" class="stat-sub" style="margin:6px 0 0;"></div><div id="vanDetail" class="van-detail" hidden></div><div id="vanFallback" hidden>'+svg+'<div class="stat-sub" style="margin:4px 0 0;">Street map needs a connection; showing the outline.</div></div>'+leg+listHtml+note+pendHtml+(undated ? '<div class="stat-sub" style="margin:2px 0 0;">'+undated+' older journey'+(undated === 1 ? ' has' : 's have')+' no map points.</div>' : '')+'</section>';
 }
 function tripRowEl(t){
   const biz = t.category === 'business';
@@ -7729,6 +7820,7 @@ async function autoApplyDraft(dr, category){
   mileageTrips.push({id:uid(), date:dr.date, from:dr.from.text, to:dr.to.text, category, miles:dr.miles, stops:dr.stops || [], mins:dr.mins, startT:dr.startT || null, endT:dr.endT || null, fp:ok(dr.from), tp:ok(dr.to)});
   mileageDrafts = mileageDrafts.filter(x=> x.id !== dr.id);
   await saveKey('mileage-trips', mileageTrips); await saveKey('mileage-drafts', mileageDrafts);
+  vanBackfill().catch(()=>{});
   { const pend = vanPending().length; if(pend) showToast('The van moved without a journey \u2014 tell me when (Trends \u2192 Driving, or Home).'); }
   renderMileageTab();
   for(const addr of [dr.from.text].concat(dr.stops || [], [dr.to.text])) await ensureAddressLabelled(addr);
@@ -8676,6 +8768,7 @@ function renderTrends(){
   box.querySelectorAll('[data-tr-slice]').forEach(b=> b.addEventListener('click', ()=>{ spendFilter = b.dataset.trSlice === '_' ? null : b.dataset.trSlice; spendMonth = (window.__trSplitMonths || [ym])[0]; finTab = 'spend'; goToView('budget:spend'); }));
   box.querySelectorAll('[data-tr-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.trGo)));
   box.querySelectorAll('[data-vm]').forEach(el=> el.addEventListener('click', ()=>{ vanMapRange = el.dataset.vm; renderTrends(); }));
+  box.querySelectorAll('[data-vmode]').forEach(el=> el.addEventListener('click', ()=>{ vanMode = el.dataset.vmode; renderTrends(); }));
   const vf = document.getElementById('vanFill'); if(vf) vf.addEventListener('click', openVanMovesSheet);
   box.querySelectorAll('[data-vj]').forEach(r=> r.addEventListener('click', ()=> vanSelect(r.dataset.vj, true)));
   if(trendsTab === 'driving') vanMapInit();
@@ -9112,7 +9205,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v22.2';
+const APP_VERSION = 'v22.3';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
