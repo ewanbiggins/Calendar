@@ -836,6 +836,7 @@ input::placeholder,textarea::placeholder{color:var(--ink-soft);opacity:.7;}
 .tag.pers{background:var(--surface-2);color:var(--ink-soft);}
 .trip-detail{padding:0 0 14px;display:grid;gap:6px;font-size:12px;color:var(--ink-soft);}
 .van-map{width:100%;height:auto;display:block;background:var(--surface-2);border-radius:12px;}
+.van-leaf{height:320px;border-radius:12px;overflow:hidden;background:var(--surface-2);z-index:0;}
 .vm-l{stroke:var(--ink-soft);stroke-width:2;stroke-linecap:round;opacity:.8;}
 .vm-l.biz{stroke:var(--home);}
 .vm-l.auto{stroke:#d98a1f;stroke-dasharray:5 4;}
@@ -848,7 +849,10 @@ input::placeholder,textarea::placeholder{color:var(--ink-soft);opacity:.7;}
 .vm-k.biz{border-color:var(--home);}
 .vm-k.auto{border-top:2px dashed #d98a1f;}
 .vm-k.now{width:9px;height:9px;border:0;border-radius:50%;background:var(--danger);}
-.w-alive{opacity:.85;}
+.sp-suggest{display:flex;flex-direction:column;border:1px solid var(--line, var(--surface-2));border-radius:10px;margin-top:4px;overflow:hidden;background:var(--surface);}
+.sp-sug{min-height:44px;text-align:left;padding:0 12px;border:0;border-bottom:1px solid var(--surface-2);background:transparent;color:var(--ink);font-size:14px;}
+.sp-sug:last-child{border-bottom:0;}
+.cal-alive{font-size:12px;font-weight:600;color:var(--ink-soft);margin-left:10px;white-space:nowrap;}
 .trip-pt{padding-left:16px;position:relative;}
 .trip-pt::before{content:'';position:absolute;left:3px;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--ink-soft);opacity:.5;}
 .trip-del{justify-self:start;margin-top:6px;color:var(--danger);border-color:var(--danger);background:transparent;font-size:12.5px;width:auto;}
@@ -1476,6 +1480,7 @@ input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webki
         <svg id="yearToggleIcon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         <span id="yearToggleLabel">2026</span>
       </button>
+      <span class="cal-alive" id="calAlive"></span>
       </div>
       <div class="cal-header-side cal-header-right">
         <button class="round-btn" id="searchBtn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg></button>
@@ -3823,43 +3828,144 @@ function vanPt(t, side){
   return c && isFinite(c.lat) ? {lat:c.lat, lon:c.lon} : null;
 }
 // journeys in the order they happened, with the ones whose places are known
-function vanOrdered(){
-  return mileageTrips.filter(t=> t.date && vanPt(t, 'from') && vanPt(t, 'to')).slice().sort((a, b)=> (a.startT || parseYMD(a.date).getTime()) - (b.startT || parseYMD(b.date).getTime()) || String(a.id).localeCompare(String(b.id)));
+function vanOrdered(real){
+  return mileageTrips.filter(t=> t.date && !(real && t.auto) && vanPt(t, 'from') && vanPt(t, 'to')).slice().sort((a, b)=> (a.startT || parseYMD(a.date).getTime()) - (b.startT || parseYMD(b.date).getTime()) || String(a.id).localeCompare(String(b.id)));
 }
 // each place where a journey ended somewhere other than where the next one began
 function vanGaps(){
-  const list = vanOrdered(), out = [];
+  const list = vanOrdered(true), out = [];       // journeys you drove: the ones added for a move never count as a start or an end
   for(let i = 1; i < list.length; i++){
     const a = vanPt(list[i-1], 'to'), b = vanPt(list[i], 'from'), d = autoDistM(a.lat, a.lon, b.lat, b.lon);
     if(d > VAN_GAP_M) out.push({prev:list[i-1], next:list[i], a, b, m:d});
   }
   return out;
 }
-// add the missing journey for every gap that has none: from where the last one ended to where the next began
-async function vanReconcile(){
-  let added = 0;
-  for(const g of vanGaps()){
-    if(g.next.noBridge || g.next.auto || !g.next.startT) continue;      // only journeys recorded with a time: older history is shown, never rewritten
-    if(mileageTrips.some(t=> t.auto && String(t.bridgeFor) === String(g.next.id))) continue;
-    let miles = null;
-    try{ miles = await routeMiles([g.a, g.b]); }catch(e){}
-    const est = miles == null;
-    if(est) miles = Math.round(g.m/1609.344*1.3*10)/10;
-    const day = g.next.date, st = (g.next.startT || parseYMD(day).getTime()) - 1;
-    mileageTrips.push({id:uid(), date:day, from:g.prev.to, to:g.next.from, category:'personal', miles:Math.max(0.1, miles), stops:[], mins:0, startT:st, endT:st, fp:g.a, tp:g.b, auto:true, est, bridgeFor:g.next.id});
-    added++;
-  }
-  if(added) await saveKey('mileage-trips', mileageTrips);
-  return added;
+// gaps still waiting for you to say when the van moved and what it was for
+function vanPending(){
+  return vanGaps().filter(g=> !g.next.noBridge && !g.next.auto && !mileageTrips.some(t=> t.auto && String(t.bridgeFor) === String(g.next.id)));
 }
-let vanMapRange = 'month', vanBackfilled = false;
+async function vanRouteGeo(coords){
+  const path = coords.map(c=> c.lon+','+c.lat).join(';');
+  const mk = base=> async signal=>{
+    const d = await fetchJson(base + path + '?overview=full&geometries=geojson', signal, 20000);
+    const r = d && d.routes && d.routes[0]; if(!r) return null;
+    let pts = r.geometry.coordinates.map(c=> [Math.round(c[1]*1e4)/1e4, Math.round(c[0]*1e4)/1e4]);
+    const step = Math.max(1, Math.ceil(pts.length/150)); const thin = pts.filter((p, i)=> i % step === 0 || i === pts.length-1);
+    return {pts:thin, miles:Math.round(r.distance/1609.344*10)/10};
+  };
+  return await hedged([mk('https://router.project-osrm.org/route/v1/driving/'), mk('https://routing.openstreetmap.de/routed-car/route/v1/driving/')], 2500);
+}
+// give every journey its two end points and the road it took, a few at a time, saving as it goes
+let vanFilling = false;
+async function vanBackfill(onStep){
+  if(vanFilling) return; vanFilling = true;
+  try{
+    let n = 0;
+    for(const t of mileageTrips.slice().sort((a, b)=> (b.date || '').localeCompare(a.date || ''))){
+      if(!t.date || t.route === false) continue;
+      let fp = vanPt(t, 'from'), tp = vanPt(t, 'to');
+      if(!fp && t.from){ try{ fp = await geocodePlace(t.from); }catch(e){} }
+      if(!tp && t.to){ try{ tp = await geocodePlace(t.to); }catch(e){} }
+      if(!(fp && tp)) continue;
+      let changed = false;
+      if(!t.fp){ t.fp = {lat:fp.lat, lon:fp.lon}; changed = true; }
+      if(!t.tp){ t.tp = {lat:tp.lat, lon:tp.lon}; changed = true; }
+      if(!t.route){
+        const via = (t.stops || []).map(x=> geoCache[geoKey(x)]).filter(Boolean);
+        const pts = [fp].concat(via.length === (t.stops || []).length ? via : [], [tp]);
+        try{ const r = await vanRouteGeo(pts); if(r){ t.route = r.pts; changed = true; } }catch(e){}
+      }
+      if(changed){ n++; if(n % 4 === 0){ await saveKey('mileage-trips', mileageTrips); if(onStep) onStep(); } }
+    }
+    if(n){ await saveKey('mileage-trips', mileageTrips); if(onStep) onStep(); }
+  }finally{ vanFilling = false; }
+}
+// the sheet that asks when the van moved and whether it was work
+function openVanMovesSheet(){
+  const gaps = vanPending();
+  openSheet('Van moves');
+  const body = document.getElementById('sheetBody');
+  if(!gaps.length){ body.innerHTML = '<div class="stat-sub">Nothing to fill in. Every journey started where the last one ended.</div>'; return; }
+  const place = t=> mileageShortPlace(t);
+  const hmOf = ms=> ms ? autoHM(ms) : '';
+  body.innerHTML = '<div class="stat-sub" style="margin:0 0 8px;">The van was somewhere new when a journey began. Say when it moved and what it was for, or skip it if it was not driven.</div>'+
+    gaps.map((g, i)=>{
+      const miles = Math.round(g.m/1609.344*1.3*10)/10;
+      return '<div class="fin-item" data-vg="'+i+'"><div style="min-width:0;"><b class="trip-title">'+escapeHtml(place(g.prev.to))+' \u2192 '+escapeHtml(place(g.next.from))+'</b><div class="stat-sub" style="margin:2px 0 0;">about '+miles+' mi, before '+escapeHtml(shortDate(g.next.date))+' '+hmOf(g.next.startT)+(g.prev.endT ? ', last journey ended '+escapeHtml(shortDate(g.prev.date))+' '+hmOf(g.prev.endT) : '')+'</div></div>'+
+        '<div class="ff-grid"><label class="ff"><span>Date it moved</span><input type="date" data-vg-d value="'+g.next.date+'"></label><label class="ff"><span>Time</span><input type="time" data-vg-t value=""></label></div>'+
+        '<div class="sp-btnrow"><button type="button" class="btn small" data-vg-cat="business">Business</button><button type="button" class="btn small secondary" data-vg-cat="personal">Personal</button><button type="button" class="btn small secondary" data-vg-skip>Skip</button></div></div>';
+    }).join('');
+  body.querySelectorAll('[data-vg]').forEach(card=>{
+    const g = gaps[Number(card.dataset.vg)];
+    card.querySelectorAll('[data-vg-cat]').forEach(btn=> btn.addEventListener('click', async ()=>{
+      const d = card.querySelector('[data-vg-d]').value, tm = card.querySelector('[data-vg-t]').value;
+      if(!d || !tm){ showToast('Add the date and time it moved.'); return; }
+      const [hh, mm] = tm.split(':').map(Number), dt = parseYMD(d); dt.setHours(hh, mm, 0, 0);
+      btn.disabled = true;
+      let miles = null, route = null;
+      try{ const r = await vanRouteGeo([g.a, g.b]); if(r){ miles = r.miles; route = r.pts; } }catch(e){}
+      const est = miles == null; if(est) miles = Math.round(g.m/1609.344*1.3*10)/10;
+      mileageTrips.push({id:uid(), date:d, from:g.prev.to, to:g.next.from, category:btn.dataset.vgCat, miles:Math.max(0.1, miles), stops:[], mins:0, startT:dt.getTime(), endT:dt.getTime(), fp:g.a, tp:g.b, route:route || undefined, auto:true, est, bridgeFor:g.next.id});
+      await saveKey('mileage-trips', mileageTrips);
+      showToast('Added '+miles.toFixed(1)+' mi'+(est ? ' (estimate)' : '')+'.');
+      renderMileageTab(); renderTrends(); renderSummary(); openVanMovesSheet();
+    }));
+    card.querySelector('[data-vg-skip]').addEventListener('click', async ()=>{
+      const nx = mileageTrips.find(x=> x.id === g.next.id); if(nx) nx.noBridge = true;
+      await saveKey('mileage-trips', mileageTrips); renderTrends(); renderSummary(); openVanMovesSheet();
+    });
+  });
+}
+// ---- the map: real streets from OpenStreetMap, drawn with Leaflet when there is a connection ----
+let vanLeaf = null;
+function vanLoadLeaflet(){
+  if(window.L) return Promise.resolve(window.L);
+  return new Promise((res, rej)=>{
+    if(!document.getElementById('leafCss')){ const l = document.createElement('link'); l.id = 'leafCss'; l.rel = 'stylesheet'; l.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css'; document.head.appendChild(l); }
+    const sc = document.createElement('script'); sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    sc.onload = ()=> window.L ? res(window.L) : rej(new Error('leaflet')); sc.onerror = ()=> rej(new Error('leaflet')); document.head.appendChild(sc);
+    setTimeout(()=> rej(new Error('slow')), 12000);
+  });
+}
+function vanMapDraw(){
+  const el = document.getElementById('vanLeaf'); if(!el || !window.L) return;
+  const L = window.L, today = todayStr();
+  const from = vanMapRange === 'month' ? today.slice(0,8)+'01' : vanMapRange === '3m' ? addDays(today, -90) : '0000-00-00';
+  if(vanLeaf){ try{ vanLeaf.remove(); }catch(e){} vanLeaf = null; }
+  const list = vanOrdered().filter(t=> t.date >= from);
+  vanLeaf = L.map(el, {zoomControl:true, attributionControl:true}).setView([54.5, -3], 5);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:18, attribution:'\u00a9 OpenStreetMap'}).addTo(vanLeaf);
+  const cs = getComputedStyle(document.documentElement), bz = cs.getPropertyValue('--home').trim() || '#1f6f43';
+  const group = [];
+  list.forEach(t=>{
+    const a = vanPt(t, 'from'), b = vanPt(t, 'to');
+    const pts = t.route && t.route.length > 1 ? t.route : [[a.lat, a.lon], [b.lat, b.lon]];
+    const col = t.auto ? '#d98a1f' : (t.category === 'business' ? bz : '#2a4a8f');
+    const pl = L.polyline(pts, {color:col, weight:4, opacity:.85, dashArray: t.auto ? '6 6' : null}).addTo(vanLeaf);
+    pl.bindPopup(escapeHtml(mileageShortPlace(t.from))+' \u2192 '+escapeHtml(mileageShortPlace(t.to))+'<br>'+(Number(t.miles) || 0).toFixed(1)+' mi, '+escapeHtml(shortDate(t.date))+(t.auto ? ' (van moved)' : ''));
+    group.push(pl);
+  });
+  vanGaps().filter(g=> g.next.date >= from).forEach(g=> group.push(L.polyline([[g.a.lat, g.a.lon], [g.b.lat, g.b.lon]], {color:'#c0392b', weight:2, dashArray:'2 6'}).addTo(vanLeaf)));
+  if(list.length){
+    const last = vanPt(list[list.length-1], 'to');
+    L.circleMarker([last.lat, last.lon], {radius:7, color:'#fff', weight:2, fillColor:'#c0392b', fillOpacity:1}).addTo(vanLeaf).bindPopup('Van now');
+    vanLeaf.fitBounds(L.featureGroup(group).getBounds().pad(.15), {maxZoom:14});
+  }
+  setTimeout(()=>{ if(vanLeaf) vanLeaf.invalidateSize(); }, 150);
+}
+function vanMapInit(){
+  const fb = document.getElementById('vanFallback'), el = document.getElementById('vanLeaf'); if(!el) return;
+  vanLoadLeaflet().then(()=>{ if(fb) fb.hidden = true; vanMapDraw(); }).catch(()=>{ el.hidden = true; if(fb) fb.hidden = false; });
+  vanBackfill(()=>{ if(document.getElementById('vanLeaf')) vanMapDraw(); }).catch(()=>{});
+}
+let vanMapRange = 'month';
 function vanMapHtml(){
   const today = todayStr();
   const from = vanMapRange === 'month' ? today.slice(0,8)+'01' : vanMapRange === '3m' ? addDays(today, -90) : '0000-00-00';
   const all = vanOrdered(), list = all.filter(t=> t.date >= from);
   const chips = [['month','This month'],['3m','3 months'],['all','All']].map(c=> '<button type="button" class="chip-btn'+(vanMapRange === c[0] ? ' active' : '')+'" data-vm="'+c[0]+'">'+c[1]+'</button>').join('');
   const head = '<section class="tr"><div class="tr-h"><span>Journey map</span></div><div class="sp-chips" style="margin:0 0 8px;">'+chips+'</div>';
-  if(!list.length) return head+'<div class="tr-none">'+(all.length ? 'No journeys in this period.' : 'The map fills in as journeys are confirmed with their places.')+'</div></section>';
+  if(!list.length) return head+'<div id="vanLeaf" hidden></div><div class="tr-none">'+(all.length ? 'No journeys in this period.' : 'The map fills in as journeys are confirmed with their places.')+'</div></section>';
   const gaps = vanGaps().filter(g=> g.next.date >= from);
   const pts = []; list.forEach(t=>{ pts.push(vanPt(t, 'from'), vanPt(t, 'to')); });
   let la0 = Math.min.apply(null, pts.map(p=> p.lat)), la1 = Math.max.apply(null, pts.map(p=> p.lat)), lo0 = Math.min.apply(null, pts.map(p=> p.lon)), lo1 = Math.max.apply(null, pts.map(p=> p.lon));
@@ -3880,7 +3986,9 @@ function vanMapHtml(){
   const leg = '<div class="vm-leg"><span><i class="vm-k"></i>Personal</span><span><i class="vm-k biz"></i>Business</span><span><i class="vm-k auto"></i>Van moved</span><span><i class="vm-k now"></i>Van now</span></div>';
   const note = gaps.length ? '<div class="stat-sub" style="margin:6px 0 0;"><b>'+gaps.length+'</b> time'+(gaps.length === 1 ? '' : 's')+' the van started a journey more than '+VAN_GAP_M+' m from where the last one ended'+(autos ? ', '+autos+' journey'+(autos === 1 ? '' : 's')+' added to cover it' : '')+'.</div>' : '<div class="stat-sub" style="margin:6px 0 0;">Every journey started where the last one ended.</div>';
   const undated = mileageTrips.filter(t=> t.date >= from && !(vanPt(t, 'from') && vanPt(t, 'to'))).length;
-  return head+svg+leg+note+(undated ? '<div class="stat-sub" style="margin:2px 0 0;">'+undated+' older journey'+(undated === 1 ? ' has' : 's have')+' no map points.</div>' : '')+'</section>';
+  const pend = vanPending().filter(g=> g.next.date >= from).length;
+  const pendHtml = pend ? '<button type="button" class="btn small" id="vanFill" style="margin-top:8px;">'+pend+' van move'+(pend === 1 ? '' : 's')+' to fill in</button>' : '';
+  return head+'<div id="vanLeaf" class="van-leaf"></div><div id="vanFallback" hidden>'+svg+'<div class="stat-sub" style="margin:4px 0 0;">Street map needs a connection; showing the outline.</div></div>'+leg+note+pendHtml+(undated ? '<div class="stat-sub" style="margin:2px 0 0;">'+undated+' older journey'+(undated === 1 ? ' has' : 's have')+' no map points.</div>' : '')+'</section>';
 }
 function tripRowEl(t){
   const biz = t.category === 'business';
@@ -5216,12 +5324,12 @@ function renderSummary(){
   let fig = '';
   try{ fig = bmBuildSvg('front', gymMuscleStats(7).pct, null, 'sm').replace('viewBox="0 0 300 660"', 'viewBox="32 4 236 652"').replace('<svg class="bm-svg', '<svg class="bm-svg d-svg').replace(/ tabindex="[^"]*"/g,'').replace(/ role="[^"]*"/g,'').replace(/ aria-label="[^"]*"/g,''); }catch(err){ fig = ''; }
   const shiftTxt = sh && sh.start ? escapeHtml(sh.start)+'\u2013'+escapeHtml(sh.finish || '\u2026') : (e && e.isAL ? 'Annual leave' : 'No shift today');
-  const alive = daysAliveText();
   const meta = [hrs ? hrs+'h' : '', (e && e.status === 'away') ? 'Away' : 'Home', bedLast ? autoMins(bedLast)+' in bed' : ''].filter(Boolean).map(x=> '<span>'+x+'</span>').join('');
   const unsorted = spendTxns.filter(t=> !t.cat && t.date && t.date >= addDays(today, -60)).length;
   const needs = [];
   finPendingBills().forEach(pb=> needs.push({t:pb.it.name+' '+money(pb.it.amount)+' due '+shortDate(pb.d), a:'data-nd-bill="'+escapeHtml(String(pb.it.id))+'|'+pb.d+'"', tick:1}));
   if(autoMeta.workPending && clockInState) needs.push({t:'Left Connecteam at '+autoHM(autoMeta.workPending.t)+', clock out?', a:'data-nd-pend="1"', warn:1});
+  { const vp = vanPending().length; if(vp) needs.push({t:vp+' van move'+(vp === 1 ? '' : 's')+' to fill in', a:'data-nd-van'}); }
   if(mileageDrafts.length) needs.push({t:mileageDrafts.length+(mileageDrafts.length === 1 ? ' drive' : ' drives')+' to check', a:'data-nd-go="mileage"'});
   if(claim.length) needs.push({t:claim.length+(claim.length === 1 ? ' expense' : ' expenses')+' to claim, '+money(claimTot), a:'data-nd-go="expenses"'});
   if(unsorted) needs.push({t:unsorted+(unsorted === 1 ? ' payment' : ' payments')+' to sort', a:'data-nd-go="budget:spend"'});
@@ -5239,7 +5347,7 @@ function renderSummary(){
     '<div class="w w-today" role="button" tabindex="0" data-sum-day><div class="w-t"><span>Today</span></div>'+
       '<div class="w-toprow"><div class="w-hero'+(sh && sh.start ? '' : ' quiet')+'">'+shiftTxt+'</div><button type="button" class="btn'+(on ? ' secondary' : '')+'" id="sumClockBtn">'+(on ? 'Clock out' : 'Clock in')+'</button></div>'+
       '<div class="w-meta"><span class="w-clk'+(stale ? ' late' : '')+'"><i class="w-dot'+(on ? ' on' : '')+'"></i>'+clockTxt+'</span>'+meta+'</div>'+
-      (events.length ? '<div class="w-line">'+escapeHtml(events.slice(0,2).join('   '))+'</div>' : '')+(alive ? '<div class="w-line w-alive">'+escapeHtml(alive)+'</div>' : '')+needHtml+'</div>'+
+      (events.length ? '<div class="w-line">'+escapeHtml(events.slice(0,2).join('   '))+'</div>' : '')+needHtml+'</div>'+
     '<div class="w w-week" role="button" tabindex="0" data-sum-go="toil"><div class="w-t"><span>This week</span><b class="w-wkn">'+(Math.round(total*10)/10)+'h</b><span class="w-toil">TOIL '+(toilBal >= 0 ? '+' : '\u2212')+Math.abs(Math.round(toilBal*10)/10)+'h</span></div><div class="d-bars">'+wk+'</div></div>'+
     '<div class="dash-main">'+
       '<div class="w w-gym" role="button" tabindex="0" data-sum-go="gym" aria-label="Gym"><div class="w-gs"><b>'+gymStat1+'</b><span>'+escapeHtml(gymStat2)+'</span></div><div class="w-fig">'+fig+'</div></div>'+
@@ -5259,6 +5367,7 @@ function renderSummary(){
   box.querySelectorAll('[data-sum-sleep]').forEach(el=> el.addEventListener('click', ()=>{ trendsTab = 'sleep'; goToView('trends'); }));
   box.querySelectorAll('.w[role="button"]').forEach(el=> el.addEventListener('keydown', (ev)=>{ if((ev.key === 'Enter' || ev.key === ' ') && ev.target === el){ ev.preventDefault(); el.click(); } }));
   box.querySelectorAll('[data-nd-pend]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); openWorkClockOutSheet(); }));
+  box.querySelectorAll('[data-nd-van]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); openVanMovesSheet(); }));
   box.querySelectorAll('[data-nd-go]').forEach(el=> el.addEventListener('click', (ev)=>{ ev.stopPropagation(); goToView(el.dataset.ndGo); }));
   box.querySelectorAll('[data-nd-bill]').forEach(el=> el.addEventListener('click', async (ev)=>{ ev.stopPropagation(); const pp = el.dataset.ndBill.split('|'); await finConfirmBill(pp[0], pp[1]); const it = finDD.find(x=> String(x.id) === pp[0]); showToast((it ? it.name : 'Bill')+' marked as paid.'); renderSummary(); }));
   box.querySelectorAll('[data-sum-todo]').forEach(el=> el.addEventListener('click', (ev)=>{
@@ -6965,15 +7074,20 @@ function daysAliveText(){
   const bd = b.slice(5) === todayStr().slice(5);
   return (bd ? 'Happy birthday \u00b7 ' : '')+n.toLocaleString('en-GB')+' days alive';
 }
+function updateCalAlive(){
+  const el = document.getElementById('calAlive'); if(!el) return;
+  const b = finSettings.birthday, n = b ? daysBetween(b, todayStr()) : -1;
+  el.textContent = n >= 0 ? 'Day '+n.toLocaleString('en-GB') : '';
+}
 function setupBirthday(){
   const inp = document.getElementById('bdayInput'), note = document.getElementById('bdayNote');
   if(!inp) return;
   const show = ()=>{ inp.value = finSettings.birthday || ''; note.textContent = daysAliveText() || 'Add it and Home shows how many days you have been alive.'; };
-  show();
+  show(); updateCalAlive();
   inp.addEventListener('change', async ()=>{
     const v = /^\d{4}-\d\d-\d\d$/.test(inp.value) && inp.value <= todayStr() ? inp.value : '';
     finSettings = Object.assign({}, finSettings, {birthday: v});
-    await saveKey('fin-settings', finSettings); show(); renderSummary();
+    await saveKey('fin-settings', finSettings); show(); updateCalAlive();
   });
 }
 // ---- the Spend tab: tap any transaction for its details and to split it ----
@@ -7077,6 +7191,30 @@ function spendTxnRowHtml(t, oth){
   return '<div class="sp-txn tap" data-sp-txn="'+t.id+'"><div style="min-width:0;flex:1;"><div style="font-size:12px;overflow:hidden;text-overflow:ellipsis;">'+escapeHtml(t.merchant)+'</div><div class="stat-sub" style="margin:2px 0 0;">'+shortDate(t.date)+(t.time ? ' '+t.time : '')+'\u2003'+pillOf(spendCatById(t.cat))+(o ? '\u2003split' : '')+'</div></div>'+
       '<div style="text-align:right;flex-shrink:0;">'+(o ? '<b>'+amt(t.amount - o)+'</b><div class="stat-sub" style="margin:0;">of '+amt(t.amount)+'</div>' : '<b>'+amt(t.amount)+'</b>')+'</div></div>';
 }
+// every supplier ever used, most-used first, matched as you type
+function spAllNames(dir){
+  const cnt = {}, show = {};
+  const add = n=>{ n = String(n || '').trim(); if(!n) return; const k = n.toLowerCase(); cnt[k] = (cnt[k] || 0) + 1; if(!show[k]) show[k] = n; };
+  if(dir === 'in'){ finIn.forEach(i=> add(i.desc)); finIncome.forEach(i=> add(i.name)); }
+  else spendTxns.forEach(t=>{ if(t.src !== 'invest') add(t.merchant); });
+  return Object.keys(cnt).sort((a, b)=> cnt[b] - cnt[a] || a.localeCompare(b)).map(k=> show[k]);
+}
+function spSuggestInit(dir){
+  const mer = document.getElementById('spMer'); if(!mer) return;
+  let box = document.getElementById('spSuggest');
+  if(!box){ box = document.createElement('div'); box.id = 'spSuggest'; box.className = 'sp-suggest'; mer.insertAdjacentElement('afterend', box); }
+  box.innerHTML = ''; box.hidden = true;
+  const all = spAllNames(dir);
+  const draw = ()=>{
+    const q = mer.value.trim().toLowerCase();
+    const hits = (q ? all.filter(n=> n.toLowerCase().indexOf(q) > -1 && n.toLowerCase() !== q) : all).sort((a, b)=> q ? ((b.toLowerCase().indexOf(q) === 0) - (a.toLowerCase().indexOf(q) === 0)) : 0).slice(0, 6);
+    box.hidden = mer.hidden || !hits.length;
+    box.innerHTML = hits.map(n=> '<button type="button" class="sp-sug" data-sug="'+escapeHtml(n)+'">'+escapeHtml(n)+'</button>').join('');
+  };
+  mer.oninput = draw; mer.onfocus = draw;
+  box.onclick = (e)=>{ const b = e.target.closest('[data-sug]'); if(!b) return; mer.value = b.dataset.sug; box.hidden = true; const a = document.getElementById('spAmt'); if(a && !a.value) a.focus(); };
+  if(!mer.hidden) draw();
+}
 function renderFinSpend(box){
   const keepAmt = document.getElementById('spAmt') ? document.getElementById('spAmt').value : '', keepMer = document.getElementById('spMer') ? document.getElementById('spMer').value : '';
   if(!spendMonth) spendMonth = finCurKey();
@@ -7131,10 +7269,11 @@ function renderFinSpend(box){
     box.querySelectorAll('[data-sp-dir]').forEach(b=>{ const on = b.dataset.spDir === spendDir; b.classList.toggle('sel-home', on); b.classList.toggle('sel-none', !on); });
     const mer = document.getElementById('spMer'), sel = document.getElementById('spPlace'); if(!sel || !mer) return;
     const list = spendDir === 'in' ? topIn : top;
-    sel.innerHTML = list.map(x=> '<option value="'+escapeHtml(x)+'">'+escapeHtml(x)+'</option>').join('')+'<option value="__else">'+(list.length ? 'Somewhere else\u2026' : (spendDir === 'in' ? 'Type who it\u2019s from' : 'Type where'))+'</option>';
+    sel.innerHTML = list.map(x=> '<option value="'+escapeHtml(x)+'">'+escapeHtml(x)+'</option>').join('')+'<option value="__else">'+(spendDir === 'in' ? 'Search or type who it\u2019s from\u2026' : 'Search all places\u2026')+'</option>';
     mer.placeholder = spendDir === 'in' ? 'From?' : 'Where?';
-    const showText = ()=>{ mer.hidden = sel.value !== '__else'; if(!mer.hidden) mer.focus(); };
+    const showText = ()=>{ mer.hidden = sel.value !== '__else'; if(!mer.hidden){ mer.focus(); } spSuggestInit(spendDir); };
     sel.onchange = showText; mer.hidden = sel.value !== '__else';
+    spSuggestInit(spendDir);
   };
   box.querySelectorAll('[data-sp-dir]').forEach(b=> b.addEventListener('click', ()=>{ spendDir = b.dataset.spDir; applyDir(); }));
   applyDir();
@@ -7475,7 +7614,7 @@ function autoPrevDraft(dr){
 }
 function vanStartFar(dr){
   if(!dr.from || !isFinite(dr.from.lat)) return '';
-  const prior = vanOrdered().filter(t=> (t.endT || t.startT || 0) <= dr.startT).pop();
+  const prior = vanOrdered(true).filter(t=> (t.endT || t.startT || 0) <= dr.startT).pop();
   if(!prior) return '';
   const e = vanPt(prior, 'to'), d = autoDistM(e.lat, e.lon, Number(dr.from.lat), Number(dr.from.lon));
   return d > VAN_GAP_M ? (d >= 1000 ? (d/1609.344).toFixed(1)+' mi' : Math.round(d)+' m') : '';
@@ -7491,7 +7630,7 @@ function renderMileageDrafts(){
     const prev = autoPrevDraft(dr);
     const nm = (t, id)=> t ? mileageShortPlace(t) : (autoResolving[id] ? 'Finding the place\u2026' : 'Place not found'), fromL = nm(dr.from.text, dr.id), toL = nm(dr.to.text, dr.id);
     return '<div class="fin-item" data-draft="'+dr.id+'"><div style="min-width:0;"><b class="trip-title">'+escapeHtml(fromL)+' \u2192 '+escapeHtml(toL)+'</b>'+((dr.stops || []).length ? '<div class="stat-sub" style="margin:2px 0 0;">via '+escapeHtml(dr.stops.map(mileageDisplayName).join(', '))+'</div>' : '')+
-      (vanStartFar(dr) ? '<div class="stat-sub" style="margin:3px 0 0;color:var(--danger);">Started '+vanStartFar(dr)+' from where the last journey ended \u2014 a journey for the move will be added.</div>' : '')+'<div class="trip-meta" style="margin-top:3px;"><span>'+shortDate(dr.date)+'</span><span>'+hm(dr.startT)+'\u2013'+hm(dr.endT)+'</span><span>'+dr.mins+' min</span><span><b>'+(dr.miles != null ? Number(dr.miles).toFixed(1)+' mi' : 'distance pending')+'</b></span></div></div>'+
+      (vanStartFar(dr) ? '<div class="stat-sub" style="margin:3px 0 0;color:var(--danger);">Started '+vanStartFar(dr)+' from where the last journey ended \u2014 you will be asked about the move.</div>' : '')+'<div class="trip-meta" style="margin-top:3px;"><span>'+shortDate(dr.date)+'</span><span>'+hm(dr.startT)+'\u2013'+hm(dr.endT)+'</span><span>'+dr.mins+' min</span><span><b>'+(dr.miles != null ? Number(dr.miles).toFixed(1)+' mi' : 'distance pending')+'</b></span></div></div>'+
       '<div class="sp-btnrow"><button type="button" class="btn small" data-dr-apply="business" data-id="'+dr.id+'">Business</button><button type="button" class="btn small secondary" data-dr-apply="personal" data-id="'+dr.id+'">Personal</button></div>'+
       '<div class="sp-btnrow" style="margin-top:6px;gap:14px;"><a class="fin-link" data-dr-edit="'+dr.id+'">Edit</a>'+(prev ? '<a class="fin-link" data-dr-merge="'+dr.id+'">Merge with previous</a>' : '')+'<a class="fin-link" data-dr-del="'+dr.id+'">Delete</a></div>'+
       '<div class="fin-edit" data-dr-panel="'+dr.id+'" hidden><input type="text" data-dr-from value="'+escapeHtml(dr.from.text || '')+'" placeholder="From"><input type="text" data-dr-to value="'+escapeHtml(dr.to.text || '')+'" placeholder="To"><input type="number" inputmode="decimal" step="0.1" min="0" data-dr-miles value="'+(dr.miles != null ? dr.miles : '')+'" placeholder="Miles">'+
@@ -7536,9 +7675,7 @@ async function autoApplyDraft(dr, category){
   mileageTrips.push({id:uid(), date:dr.date, from:dr.from.text, to:dr.to.text, category, miles:dr.miles, stops:dr.stops || [], mins:dr.mins, startT:dr.startT || null, endT:dr.endT || null, fp:ok(dr.from), tp:ok(dr.to)});
   mileageDrafts = mileageDrafts.filter(x=> x.id !== dr.id);
   await saveKey('mileage-trips', mileageTrips); await saveKey('mileage-drafts', mileageDrafts);
-  vanReconcile().then(added=>{                       // in the background, so tapping Business or Personal never waits on the route lookup
-    if(added){ showToast('The van moved '+added+' time'+(added === 1 ? '' : 's')+' without a journey \u2014 added '+(added === 1 ? 'it' : 'them')+' to Mileage.'); renderMileageTab(); }
-  }).catch(()=>{});
+  { const pend = vanPending().length; if(pend) showToast('The van moved without a journey \u2014 tell me when (Trends \u2192 Driving, or Home).'); }
   renderMileageTab();
   for(const addr of [dr.from.text].concat(dr.stops || [], [dr.to.text])) await ensureAddressLabelled(addr);
   renderMileageTab();
@@ -8475,6 +8612,7 @@ function renderTrends(){
   const tabs = [['work','Work'],['sleep','Sleep'],['driving','Driving'],['away','Away'],['gym','Gym'],['spend','Spending'],['split','Where it goes'],['totals','Totals']];
   if(!out[trendsTab]) trendsTab = 'work';
   const trDir = window.__trDir || 0; window.__trDir = 0;
+  if(vanLeaf){ try{ vanLeaf.remove(); }catch(e){} vanLeaf = null; }
   box.innerHTML = '<div class="tabs-s scroll" id="trTabs">'+tabs.map(x=> '<button type="button" class="tab-s'+(x[0] === trendsTab ? ' active' : '')+'" data-tr-tab="'+x[0]+'"><span>'+x[1]+'</span></button>').join('')+'</div>'+out[trendsTab];
   { const tr = document.getElementById('trTabs'), act = tr && tr.querySelector('.active'); if(act) tr.scrollLeft = act.offsetLeft - (tr.clientWidth - act.offsetWidth)/2; }
   if(trDir){ const sec = box.querySelector('.tr'); if(sec){ sec.classList.add(trDir > 0 ? 'tab-in-l' : 'tab-in-r'); } }
@@ -8484,7 +8622,8 @@ function renderTrends(){
   box.querySelectorAll('[data-tr-slice]').forEach(b=> b.addEventListener('click', ()=>{ spendFilter = b.dataset.trSlice === '_' ? null : b.dataset.trSlice; spendMonth = (window.__trSplitMonths || [ym])[0]; finTab = 'spend'; goToView('budget:spend'); }));
   box.querySelectorAll('[data-tr-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.trGo)));
   box.querySelectorAll('[data-vm]').forEach(el=> el.addEventListener('click', ()=>{ vanMapRange = el.dataset.vm; renderTrends(); }));
-  if(trendsTab === 'driving' && !vanBackfilled){ vanBackfilled = true; vanReconcile().then(n=>{ if(n){ renderTrends(); renderMileageTab(); } }).catch(()=>{}); }
+  const vf = document.getElementById('vanFill'); if(vf) vf.addEventListener('click', openVanMovesSheet);
+  if(trendsTab === 'driving') vanMapInit();
   box.querySelectorAll('.tr-col[data-tip]').forEach(col=>{ const show = ()=>{ const sec = col.closest('section'); sec.querySelectorAll('.tr-col').forEach(c=> c.classList.remove('sel')); col.classList.add('sel'); const tip = sec.querySelector('.tr-tip'); if(tip) tip.textContent = col.dataset.tip; }; col.addEventListener('click', show); col.addEventListener('keydown', ev=>{ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); show(); } }); });
   box.querySelectorAll('[data-sleep-edit]').forEach(b=> b.addEventListener('click', openSleepSheet));
 }
@@ -8918,7 +9057,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v22.0';
+const APP_VERSION = 'v22.1';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
