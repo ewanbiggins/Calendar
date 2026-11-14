@@ -852,21 +852,27 @@ input::placeholder,textarea::placeholder{color:var(--ink-soft);opacity:.7;}
 .vj .vj-t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .vj.on{background:var(--surface);font-weight:600;}
 .van-leaf{height:320px;border-radius:12px;overflow:hidden;background:var(--surface-2);z-index:0;}
-.vm-l{stroke:var(--ink-soft);stroke-width:2;stroke-linecap:round;opacity:.8;}
-.vm-l.biz{stroke:var(--home);}
+.vm-l{stroke:#2e9e4f;stroke-width:2;stroke-linecap:round;opacity:.85;}
+.vm-l.biz{stroke:#d63031;}
 .vm-l.auto{stroke:#d98a1f;stroke-dasharray:5 4;}
 .vm-gap{stroke:var(--danger);stroke-width:1.5;stroke-dasharray:2 4;}
 .vm-d{fill:var(--ink-soft);}
 .vm-now{fill:var(--danger);stroke:var(--surface);stroke-width:2;}
 .vm-leg{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--ink-soft);margin-top:6px;}
 .vm-leg span{display:inline-flex;align-items:center;gap:5px;}
-.vm-k{width:14px;height:0;border-top:2px solid var(--ink-soft);display:inline-block;}
-.vm-k.biz{border-color:var(--home);}
+.vm-k{width:14px;height:0;border-top:3px solid #2e9e4f;display:inline-block;border-radius:2px;}
+.vm-k.g{border-color:#2e9e4f;}
+.vm-k.o{border-color:#f08c1a;}
+.vm-k.biz{border-color:#d63031;}
 .vm-k.auto{border-top:2px dashed #d98a1f;}
 .vm-k.now{width:9px;height:9px;border:0;border-radius:50%;background:var(--danger);}
 .sp-suggest{display:flex;flex-direction:column;border:1px solid var(--line, var(--surface-2));border-radius:10px;margin-top:4px;overflow:hidden;background:var(--surface);}
 .sp-sug{min-height:44px;text-align:left;padding:0 12px;border:0;border-bottom:1px solid var(--surface-2);background:transparent;color:var(--ink);font-size:14px;}
 .sp-sug:last-child{border-bottom:0;}
+.booting #app,.booting #returnCalBar{pointer-events:none;opacity:.5;}
+body.booting::after{content:'Loading\2026';position:fixed;top:calc(12px + env(safe-area-inset-top, 0px));left:50%;transform:translateX(-50%);background:#1B2620;color:#fff;padding:6px 14px;border-radius:14px;font-size:12px;z-index:9999;}
+.upd-bar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom, 0px));z-index:300;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#1B2620;color:#fff;padding:10px 14px;border-radius:12px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.3);}
+.upd-bar button{min-height:36px;padding:0 14px;border:0;border-radius:9px;background:#fff;color:#1B2620;font-weight:700;font-size:13px;}
 .cal-alive{font-size:12px;font-weight:600;color:var(--ink-soft);margin-left:10px;white-space:nowrap;}
 .trip-pt{padding-left:16px;position:relative;}
 .trip-pt::before{content:'';position:absolute;left:3px;top:.55em;width:6px;height:6px;border-radius:50%;background:var(--ink-soft);opacity:.5;}
@@ -1473,7 +1479,7 @@ input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webki
 .dm-range-dash{flex:none;}
 </style>
 </head>
-<body data-view="calendar">
+<body data-view="calendar" class="booting">
 
 <div id="scroller">
 <div id="app">
@@ -1607,6 +1613,7 @@ input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webki
       <div class="stat-sub" style="margin:0 0 6px;">Picked up from CarPlay — choose Business or Personal.</div>
       <div id="mileageDraftsBody"></div>
     </div>
+    <div class="card" id="vanMapCard" style="display:none;"></div>
     <div class="card" id="mileageLogFormCard">
       <button type="button" class="tgl-h" id="mileageLogToggle" aria-expanded="false"><span>Log a trip</span><i></i></button>
       <div id="mileageLogBody" style="display:none;margin-top:8px;">
@@ -2326,7 +2333,7 @@ function refreshAllViews(){
     document.getElementById('rateHomeInput').value = RATE_HOME;
     document.getElementById('rateAwayInput').value = RATE_AWAY;
   }
-  if(document.getElementById('view-trends').classList.contains('active') && !(trendsTab === 'driving' && vanLeaf)) renderTrends();       // a sync must not rebuild the map while you are moving it
+  if(document.getElementById('view-trends').classList.contains('active')) renderTrends();
   if(document.getElementById('view-summary').classList.contains('active')) renderSummary();
   if(document.getElementById('view-budget').classList.contains('active') && !(document.activeElement && document.activeElement.closest && document.activeElement.closest('#budgetBody') && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))) renderBudget();
   if(document.getElementById('view-gym').classList.contains('active')){
@@ -2676,6 +2683,7 @@ function goToView(viewName, dir, opts){
     requestAnimationFrame(()=> SC.scrollTo(0, 0));
   }
   if(viewName==='trends') renderTrends();
+  if(viewName==='mileage') setTimeout(()=>{ vanMapMount(); if(vanLeaf) vanLeaf.invalidateSize(); }, 60);
   if(viewName==='gym'){ gymAutoPick = false; gymSelectedId = null; if(!gymSess) gymDateTouched = false; renderGym(); }
   { const vEl = document.getElementById('view-'+viewName); vEl.classList.add('fresh'); clearTimeout(vEl._fresh); vEl._fresh = setTimeout(()=>{ vEl.classList.remove('fresh'); document.body.dataset.nav = ''; }, 950); }
   if(viewName==='summary') renderSummary();
@@ -3834,6 +3842,7 @@ function renderMileageTab(){
   document.getElementById('mileageTripMore').innerHTML = sortedTrips.length ? (sortedTrips.length > 4 ? vaBtn('trips', 'View all '+sortedTrips.length+' trips') : '') : '';
   document.querySelectorAll('#mileageTripMore [data-va]').forEach(b=> b.addEventListener('click', openTripsSheet));
   refreshListSheet('trips');
+  if(document.getElementById('view-mileage').classList.contains('active')) vanMapMount();
 }
 // ---- where the van has been: points on each journey, a flag when it moved without one, and a map ----
 const VAN_GAP_M = 400;
@@ -3984,16 +3993,16 @@ function openVanMovesSheet(){
       if(route) vanRouteSet(mileageTrips[mileageTrips.length-1].id, route);
       await saveKey('mileage-trips', mileageTrips);
       showToast('Added '+miles.toFixed(1)+' mi'+(est ? ' (estimate)' : '')+'.');
-      renderMileageTab(); renderTrends(); renderSummary(); openVanMovesSheet();
+      renderMileageTab(); vanMapMount(true); renderSummary(); openVanMovesSheet();
     }));
     card.querySelector('[data-vg-skip]').addEventListener('click', async ()=>{
       const nx = mileageTrips.find(x=> x.id === g.next.id); if(nx) nx.noBridge = true;
-      await saveKey('mileage-trips', mileageTrips); renderTrends(); renderSummary(); openVanMovesSheet();
+      await saveKey('mileage-trips', mileageTrips); vanMapMount(true); renderSummary(); openVanMovesSheet();
     });
   });
 }
 // ---- the map: real streets from OpenStreetMap, drawn with Leaflet when there is a connection ----
-let vanLeaf = null, vanLayer = null, vanSel = null, vanSelLayer = null, vanMode = 'heat', vanDrawT = 0, vanTrail = null;
+let vanLeaf = null, vanLayer = null, vanSel = null, vanSelLayer = null, vanMode = 'heat', vanDrawT = 0, vanTrail = null, vanPrevView = null;
 function vanLoadLeaflet(){
   if(window.L) return Promise.resolve(window.L);
   return new Promise((res, rej)=>{
@@ -4023,33 +4032,34 @@ function vanHeat(list){
   let max = 1; counts.forEach(v=>{ if(v > max) max = v; });
   return {counts, routed, max, cell};
 }
-const vanLevelColor = lv=> 'hsl('+Math.round(125*(1 - lv/7))+',78%,'+(lv < 4 ? 42 : 46)+'%)';
+const VAN_GREEN = '#2e9e4f', VAN_ORANGE = '#f08c1a', VAN_RED = '#d63031', vanLevelColor = lv=> [VAN_GREEN, VAN_ORANGE, VAN_RED][lv] || VAN_RED;
 // refit = true only the first time: later redraws keep wherever you have panned and zoomed to
 function vanMapDraw(refit){
   const el = document.getElementById('vanLeaf'); if(!el || !window.L) return;
   const L = window.L, from = vanRangeFrom();
+  if(vanLeaf && vanLeaf.getContainer() !== el){ try{ vanLeaf.remove(); }catch(e){} vanLeaf = null; vanLayer = null; }      // the screen was rebuilt: start on the new one
   if(!vanLeaf){
-    vanLeaf = L.map(el, {zoomControl:true, attributionControl:true, tap:false, preferCanvas:true}).setView([54.5, -3], 5);
+    vanLeaf = L.map(el, {zoomControl:true, attributionControl:true, tap:false, renderer:L.canvas({tolerance:12})}).setView([54.5, -3], 5);
+    vanLeaf.on('click', ()=> vanSelect(null));
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(vanLeaf);
     vanLayer = L.layerGroup().addTo(vanLeaf); refit = true;
   }
   vanLayer.clearLayers(); vanSelLayer = null;
   const list = vanOrdered().filter(t=> t.date >= from), heat = vanHeat(list);
-  const cs = getComputedStyle(document.documentElement), bz = cs.getPropertyValue('--home').trim() || '#1f6f43';
   const chunks = [], all = [];
   heat.routed.forEach(({t, pts})=>{
     if(vanMode === 'heat'){
       let cur = null;
       for(let i = 1; i < pts.length; i++){
         const mid = [(pts[i-1][0] + pts[i][0])/2, (pts[i-1][1] + pts[i][1])/2], c = heat.counts.get(heat.cell(mid[0], mid[1])) || 1;
-        const lv = heat.max <= 1 ? 0 : Math.min(7, Math.round(Math.log(c)/Math.log(heat.max)*7));
+        const lv = c >= 3 ? 2 : (c === 2 ? 1 : 0);
         if(!cur || cur.lv !== lv){ cur = {lv, t, pts:[pts[i-1]]}; chunks.push(cur); }
         cur.pts.push(pts[i]);
       }
-    }else chunks.push({lv:0, t, pts, col:t.auto ? '#d98a1f' : (t.category === 'business' ? bz : '#2a4a8f')});
+    }else chunks.push({lv:0, t, pts, col:t.category === 'business' ? VAN_RED : VAN_GREEN});
   });
   chunks.sort((a, b)=> a.lv - b.lv).forEach(ch=>{
-    const pl = L.polyline(ch.pts, {color: ch.col || vanLevelColor(ch.lv), weight: vanMode === 'heat' ? 4 : 4, opacity:.92, lineCap:'round', lineJoin:'round'}).addTo(vanLayer);
+    const pl = L.polyline(ch.pts, {color: ch.col || vanLevelColor(ch.lv), weight:4, opacity:.92, lineCap:'round', lineJoin:'round', bubblingMouseEvents:false, dashArray: vanMode === 'type' && ch.t.auto ? '6 6' : null}).addTo(vanLayer);
     pl.on('click', ()=> vanSelect(ch.t.id, false));
     all.push(pl);
   });
@@ -4071,8 +4081,11 @@ function vanStatus(){
 }
 // pick a journey: shows where it started and finished, on the map and underneath it
 function vanSelect(id, fit, quiet){
-  const t = mileageTrips.find(x=> String(x.id) === String(id)); vanSel = t ? t.id : null;
+  if(id != null && vanSel != null && String(vanSel) === String(id) && !quiet && fit === true){ id = null; }        // tapping the open journey again closes it
+  const t = id == null ? null : mileageTrips.find(x=> String(x.id) === String(id)); vanSel = t ? t.id : null;
   const box = document.getElementById('vanDetail');
+  if(!t && vanPrevView && vanLeaf && !quiet){ vanLeaf.setView(vanPrevView.c, vanPrevView.z, {animate:true}); }       // pressing off a journey takes you back to where you were
+  if(!t) vanPrevView = null;
   document.querySelectorAll('[data-vj]').forEach(r=> r.classList.toggle('on', String(r.dataset.vj) === String(id)));
   if(window.L && vanLeaf && vanLayer){
     if(vanSelLayer){ vanLayer.removeLayer(vanSelLayer); vanSelLayer = null; }
@@ -4081,7 +4094,7 @@ function vanSelect(id, fit, quiet){
       const mk = (p, txt, col)=> L.marker([p.lat, p.lon], {icon:L.divIcon({className:'van-pin', html:'<span style="background:'+col+'">'+txt+'</span>', iconSize:[26,26], iconAnchor:[13,13]})});
       const line = L.polyline(rt && rt.length > 1 ? rt : [[a.lat, a.lon], [b.lat, b.lon]], {color:'#111', weight:9, opacity:.35, lineCap:'round'});
       vanSelLayer = L.layerGroup([line, mk(a, 'A', '#1f6f43'), mk(b, 'B', '#c0392b')]).addTo(vanLayer);
-      if(fit !== false && !quiet) vanLeaf.fitBounds(line.getBounds().pad(.3), {maxZoom:15});
+      if(fit !== false && !quiet){ if(!vanPrevView) vanPrevView = {c:vanLeaf.getCenter(), z:vanLeaf.getZoom()}; vanLeaf.fitBounds(line.getBounds().pad(.3), {maxZoom:15}); }
     }
   }
   if(!box) return;
@@ -4092,9 +4105,10 @@ function vanSelect(id, fit, quiet){
     ((t.stops || []).length ? '<div class="stat-sub" style="margin:0 0 4px 34px;">via '+escapeHtml(t.stops.map(mileageShortPlace).join(', '))+'</div>' : '')+
     '<div class="vd-r"><i class="vd-b">B</i><div><b>Finish</b><div>'+escapeHtml(mileageCleanAddr(t.to))+'</div></div></div>'+
     '<div class="stat-sub" style="margin:6px 0 0;">'+when+' '+(Number(t.miles) || 0).toFixed(1)+' mi '+(t.category === 'business' ? 'Business' : 'Personal')+(t.auto ? ' van moved' : '')+(vanRoutes[t.id] ? '' : ' no road route yet')+(t.geo ? ' <b>position found from the address, may be off</b>' : '')+'</div>'+
-    '<div class="fin-edit-row" style="margin-top:8px;"><button type="button" class="btn secondary small" data-vd-hide="'+t.id+'">Wrong place — hide from map</button></div>';
+    '<div class="fin-edit-row" style="margin-top:8px;"><button type="button" class="btn small" data-vd-close>Close</button><button type="button" class="btn secondary small" data-vd-hide="'+t.id+'">Wrong place — hide from map</button></div>';
+  const cb = box.querySelector('[data-vd-close]'); if(cb) cb.addEventListener('click', ()=> vanSelect(null));
   const hb = box.querySelector('[data-vd-hide]');
-  if(hb) hb.addEventListener('click', async ()=>{ const x = mileageTrips.find(y=> String(y.id) === String(t.id)); if(x){ x.noMap = true; await saveKey('mileage-trips', mileageTrips); } vanSel = null; renderTrends(); });
+  if(hb) hb.addEventListener('click', async ()=>{ const x = mileageTrips.find(y=> String(y.id) === String(t.id)); if(x){ x.noMap = true; await saveKey('mileage-trips', mileageTrips); } vanSel = null; vanMapMount(true); });
 }
 function vanMapInit(){
   const fb = document.getElementById('vanFallback'), el = document.getElementById('vanLeaf'); if(!el) return;
@@ -4102,6 +4116,25 @@ function vanMapInit(){
   vanBackfill(()=>{ if(!document.getElementById('vanLeaf')) return; const now = Date.now(); if(vanLeaf && now - vanDrawT > 4000){ vanDrawT = now; vanMapDraw(false); } else{ vanStatus(); clearTimeout(vanTrail); vanTrail = setTimeout(()=>{ if(vanLeaf && document.getElementById('vanLeaf')){ vanDrawT = Date.now(); vanMapDraw(false); } }, 4200); } }).catch(()=>{});
 }
 let vanMapRange = 'month';
+// the map card in Van: rebuilt only when the period or mode changes, so saving something elsewhere never resets the map under your finger
+function vanMapMount(force){
+  const card = document.getElementById('vanMapCard'); if(!card) return;
+  if(!mileageTrips.length){ card.style.display = 'none'; return; }
+  card.style.display = '';
+  const sig = vanMapRange+'|'+vanMode;
+  if(!force && card.dataset.sig === sig && document.getElementById('vanLeaf') && card.contains(document.getElementById('vanLeaf'))){
+    const now = Date.now(); if(vanLeaf && now - vanDrawT > 4000){ vanDrawT = now; vanMapDraw(false); } return;
+  }
+  card.dataset.sig = sig;
+  if(vanLeaf){ try{ vanLeaf.remove(); }catch(e){} vanLeaf = null; vanLayer = null; }
+  vanSelLayer = null;
+  card.innerHTML = vanMapHtml();
+  card.querySelectorAll('[data-vm]').forEach(el=> el.addEventListener('click', ()=>{ vanMapRange = el.dataset.vm; vanSel = null; vanPrevView = null; vanMapMount(true); }));
+  card.querySelectorAll('[data-vmode]').forEach(el=> el.addEventListener('click', ()=>{ vanMode = el.dataset.vmode; vanMapMount(true); }));
+  const vf = card.querySelector('#vanFill'); if(vf) vf.addEventListener('click', openVanMovesSheet);
+  card.querySelectorAll('[data-vj]').forEach(r=> r.addEventListener('click', ()=> vanSelect(r.dataset.vj, true)));
+  vanMapInit();
+}
 function vanMapHtml(){
   const today = todayStr(), from = vanRangeFrom();
   const all = vanOrdered(), list = all.filter(t=> t.date >= from);
@@ -4126,7 +4159,7 @@ function vanMapHtml(){
   const last = list[list.length-1], lp = vanPt(last, 'to');
   svg += '<circle cx="'+X(lp.lon)+'" cy="'+Y(lp.lat)+'" r="6" class="vm-now"/></svg>';
   const autos = list.filter(t=> t.auto).length;
-  const leg = vanMode === 'heat' ? '<div class="vm-heat"><div class="vm-grad"></div><div class="vm-gl"><span>driven once</span><span>driven many times</span></div></div>' : '<div class="vm-leg"><span><i class="vm-k"></i>Personal</span><span><i class="vm-k biz"></i>Business</span><span><i class="vm-k auto"></i>Van moved</span><span><i class="vm-k now"></i>Van now</span></div>';
+  const leg = vanMode === 'heat' ? '<div class="vm-leg"><span><i class="vm-k g"></i>Driven once</span><span><i class="vm-k o"></i>Twice</span><span><i class="vm-k biz"></i>3 times or more</span><span><i class="vm-k now"></i>Van now</span></div>' : '<div class="vm-leg"><span><i class="vm-k"></i>Personal</span><span><i class="vm-k biz"></i>Work</span><span><i class="vm-k now"></i>Van now</span></div>';
   const note = gaps.length ? '<div class="stat-sub" style="margin:6px 0 0;"><b>'+gaps.length+'</b> time'+(gaps.length === 1 ? '' : 's')+' the van started a journey more than '+VAN_GAP_M+' m from where the last one ended'+(autos ? ', '+autos+' journey'+(autos === 1 ? '' : 's')+' added to cover it' : '')+'.</div>' : '<div class="stat-sub" style="margin:6px 0 0;">Every journey started where the last one ended.</div>';
   const undated = mileageTrips.filter(t=> t.date >= from && !(vanPt(t, 'from') && vanPt(t, 'to'))).length;
   const pend = vanPending().filter(g=> g.next.date >= from).length;
@@ -5690,6 +5723,14 @@ async function importInbox(){
     for(const doc of snap.docs){
       const d = doc.data();
       if(d && d.k != null && !spendAccepts(d.k)){ strays.push({id:doc.id, ref:doc.ref, k:d.k, a:d.a, m:d.m, c:d.c, d:d.d}); continue; }     // not ours yet: keep it, do not delete it
+      { // the same message sent twice (a queued Shortcut resending) is only counted once: needs a time in it so two real identical taps never clash
+        const dk = d && d.d && /\d\d:\d\d/.test(String(d.d)) ? [d.a, d.m, d.c, d.d, d.k].map(x=> String(x == null ? '' : x)).join('|') : '';
+        if(dk){
+          spendMeta.seenKeys = spendMeta.seenKeys || [];
+          if(spendMeta.seenKeys.indexOf(dk) > -1){ try{ await doc.ref.delete(); }catch(e){} continue; }
+          spendMeta.seenKeys.push(dk); if(spendMeta.seenKeys.length > 300) spendMeta.seenKeys = spendMeta.seenKeys.slice(-300);
+        }
+      }
       if(!spendMeta.seen.includes(doc.id)){
         spendMeta.seen.push(doc.id);
         if(d && spendAccepts(d.k)){
@@ -7952,6 +7993,13 @@ function renderAutoSetup(){
         '<div class="stat-sub" style="margin:0 0 6px;">Tap <b>Test the link</b>. If it works, check the Shortcut\u2019s <b>Get Contents of URL</b>:</div>'+
         '<ol class="sp-steps"><li>The URL box holds only the link (Copy URL, paste again).</li><li><b>Method</b> POST.</li><li>Header <b>Content-Type</b> = <b>application/json</b>, retyped by hand.</li><li><b>Request Body</b> = <b>File</b> \u2192 the Text.</li><li>In the Text, only the capital words are pills; quotes are straight.</li></ol></div></details>'+
     '</div>'+
+    '<div class="acc-list" style="margin-bottom:10px;">'+accOpen('No signal? Queue and resend', '', false, false, 'So a shortcut is not lost when the phone is offline')+
+      '<div class="stat-sub" style="margin:0 0 6px;">A shortcut that cannot get online fails before Home Base ever hears about it, so the fix is inside the shortcut: save the message first, send, and only clear the saved copy once the send worked. Anything left behind goes out with the next one. Home Base files each message by the time in it and ignores a repeat, so a resend is safe. I cannot run Shortcuts from here, so test it once with Airplane Mode on.</div>'+
+      '<ol class="sp-steps"><li>After the <b>Text</b> action add <b>Append to Text File</b>: the Text, file <b>homebase-queue.txt</b> in Shortcuts, <b>Make New Line</b> on.</li>'+
+      '<li>Add <b>Get File</b> (the same file), then <b>Split Text</b> by <b>New Lines</b>.</li>'+
+      '<li>Add <b>Repeat with Each</b> over the split lines. Inside, put <b>Get Contents of URL</b> as before but with <b>Request Body</b> = <b>File</b> \u2192 <b>Repeat Item</b>.</li>'+
+      '<li>After <b>End Repeat</b> add <b>Save File</b> (same file, <b>Overwrite</b> on) with an empty Text. This is only reached when every send worked.</li>'+
+      '<li>Skip empty lines inside the repeat with an <b>If</b> \u2192 Repeat Item <b>has any value</b>.</li></ol></div></details></div>'+
     '<div class="set-label">The 7 automations<span class="auto-count">'+heard+' of 7 heard</span></div>'+
     '<div class="stat-sub" style="margin:0 2px 8px;">A tick means Home Base has heard it.</div>'+
     '<div class="sp-btnrow" style="margin-bottom:8px;"><button type="button" class="btn secondary small" id="autoCopyUrlBtn">Copy URL</button><button type="button" class="btn secondary small" id="autoTestBtn">Test the link</button><button type="button" class="btn secondary small" id="autoCheckBtn">Check for new signals</button></div><div class="stat-sub" id="autoTestMsg" style="margin:0 2px 8px;"></div>'+
@@ -8703,7 +8751,7 @@ function renderTrends(){
   const biz = tm.filter(t=> t.category === 'business').reduce((a,t)=> a + t.miles, 0);
   out['driving'] = (section('Driving', 'mileage', mileageTrips.length ? fmtMi(tmMiles, 1)+' mi' : '', 'this month, '+tm.length+' trip'+(tm.length === 1 ? '' : 's')+(tmMins ? ', '+autoMins(tmMins)+' driving' : ''),
     mileageTrips.length ? trBars(months.map(m=> ({v:mTrips(m.ym).reduce((a,t)=> a + t.miles, 0), hl:m.hl, l:m.l, tip:m.l+': '+fmtMi(mTrips(m.ym).reduce((a,t)=> a + t.miles, 0), 1)+' mi, '+mTrips(m.ym).length+' trip'+(mTrips(m.ym).length === 1 ? '' : 's')})), {vals:'all', fmt:v=> Math.round(v)}) : none('No trips yet. CarPlay drives land here as drafts.', 'settings:automations', 'Set up'),
-    mileageTrips.length ? [['Business', fmtMi(biz, 1)+' mi'], ['Personal', fmtMi(tmMiles - biz, 1)+' mi'], ['Average trip', tm.length ? fmtMi(tmMiles/tm.length, 1)+' mi' : '\u2014']] : null)) + vanMapHtml();
+    mileageTrips.length ? [['Business', fmtMi(biz, 1)+' mi'], ['Personal', fmtMi(tmMiles - biz, 1)+' mi'], ['Average trip', tm.length ? fmtMi(tmMiles/tm.length, 1)+' mi' : '\u2014']] : null)) + (mileageTrips.length ? '<section class="tr"><button type="button" class="tr-h" data-tr-go="mileage"><span>Journey map</span><i class="tr-chev"></i></button><div class="stat-sub" style="margin:0;">Heat map of the roads you drive, in Van.</div></section>' : '');
 
   // ---- Nights away: the 4:30am check ----
   const awayIn = ym2=> Object.keys(calendarData).filter(d=> d.slice(0,7) === ym2 && d <= today && calendarData[d].status === 'away').length;
@@ -8758,7 +8806,6 @@ function renderTrends(){
   const tabs = [['work','Work'],['sleep','Sleep'],['driving','Driving'],['away','Away'],['gym','Gym'],['spend','Spending'],['split','Where it goes'],['totals','Totals']];
   if(!out[trendsTab]) trendsTab = 'work';
   const trDir = window.__trDir || 0; window.__trDir = 0;
-  if(vanLeaf){ try{ vanLeaf.remove(); }catch(e){} vanLeaf = null; }
   box.innerHTML = '<div class="tabs-s scroll" id="trTabs">'+tabs.map(x=> '<button type="button" class="tab-s'+(x[0] === trendsTab ? ' active' : '')+'" data-tr-tab="'+x[0]+'"><span>'+x[1]+'</span></button>').join('')+'</div>'+out[trendsTab];
   { const tr = document.getElementById('trTabs'), act = tr && tr.querySelector('.active'); if(act) tr.scrollLeft = act.offsetLeft - (tr.clientWidth - act.offsetWidth)/2; }
   if(trDir){ const sec = box.querySelector('.tr'); if(sec){ sec.classList.add(trDir > 0 ? 'tab-in-l' : 'tab-in-r'); } }
@@ -8767,11 +8814,8 @@ function renderTrends(){
   box.querySelectorAll('[data-tr-split]').forEach(b=> b.addEventListener('click', ()=>{ trendsSplit = b.dataset.trSplit; renderTrends(); }));
   box.querySelectorAll('[data-tr-slice]').forEach(b=> b.addEventListener('click', ()=>{ spendFilter = b.dataset.trSlice === '_' ? null : b.dataset.trSlice; spendMonth = (window.__trSplitMonths || [ym])[0]; finTab = 'spend'; goToView('budget:spend'); }));
   box.querySelectorAll('[data-tr-go]').forEach(el=> el.addEventListener('click', ()=> goToView(el.dataset.trGo)));
-  box.querySelectorAll('[data-vm]').forEach(el=> el.addEventListener('click', ()=>{ vanMapRange = el.dataset.vm; renderTrends(); }));
-  box.querySelectorAll('[data-vmode]').forEach(el=> el.addEventListener('click', ()=>{ vanMode = el.dataset.vmode; renderTrends(); }));
-  const vf = document.getElementById('vanFill'); if(vf) vf.addEventListener('click', openVanMovesSheet);
-  box.querySelectorAll('[data-vj]').forEach(r=> r.addEventListener('click', ()=> vanSelect(r.dataset.vj, true)));
-  if(trendsTab === 'driving') vanMapInit();
+
+
   box.querySelectorAll('.tr-col[data-tip]').forEach(col=>{ const show = ()=>{ const sec = col.closest('section'); sec.querySelectorAll('.tr-col').forEach(c=> c.classList.remove('sel')); col.classList.add('sel'); const tip = sec.querySelector('.tr-tip'); if(tip) tip.textContent = col.dataset.tip; }; col.addEventListener('click', show); col.addEventListener('keydown', ev=>{ if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); show(); } }); });
   box.querySelectorAll('[data-sleep-edit]').forEach(b=> b.addEventListener('click', openSleepSheet));
 }
@@ -9205,7 +9249,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v22.3';
+const APP_VERSION = 'v22.4';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
@@ -10164,7 +10208,24 @@ document.addEventListener('visibilitychange', ()=>{
   }
 });
 window.addEventListener('online', ()=> syncNow(true));
-init();
+// the page paints before its script has run (big file, slow connection): until it has, taps are blocked and the screen is dimmed so it never looks ready when it is not
+setTimeout(()=> document.body.classList.remove('booting'), 12000);
+init().catch(e=> console.error('Start-up failed:', e)).finally(()=>{ document.body.classList.remove('booting'); setTimeout(checkForUpdate, 3000); });
+// is a newer file waiting on the server? the Home Screen app can hold an old copy for a while
+let updChecked = 0;
+async function checkForUpdate(){
+  if(Date.now() - updChecked < 600000 || navigator.onLine === false) return; updChecked = Date.now();
+  try{
+    const r = await fetch(location.pathname+'?chk='+Date.now(), {cache:'no-store'}); if(!r.ok) return;
+    const m = /const APP_VERSION = '([^']+)'/.exec(await r.text());
+    if(!m || m[1] === APP_VERSION || document.getElementById('updBar')) return;
+    const bar = document.createElement('div'); bar.className = 'upd-bar'; bar.id = 'updBar';
+    bar.innerHTML = '<span>New version '+escapeHtml(m[1])+' is ready</span><button type="button">Update</button>';
+    bar.querySelector('button').addEventListener('click', ()=>{ location.replace(location.pathname+'?u='+Date.now()); });
+    document.body.appendChild(bar);
+  }catch(e){}
+}
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkForUpdate(); });
 })();
 </script>
 </body>
