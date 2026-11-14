@@ -1,10 +1,10 @@
 {
- "updated": "2026-11-13T22:43:56Z",
+ "updated": "2026-11-14T14:08:22Z",
  "prices": {
   "GB00BVPLDL62": {
-   "price": 110.72,
+   "price": 110.46,
    "currency": "GBP",
-   "date": "2026-11-12",
+   "date": "2026-11-13",
    "symbol": "GB00BVPLDL62:GBP",
    "name": "Vanguard LifeStrategy Global 100% Equity Fund A GBP Accumulation",
    "source": "FT"
