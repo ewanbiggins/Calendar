@@ -1,18 +1,18 @@
 {
- "updated": "2026-11-17T00:54:39Z",
+ "updated": "2026-11-17T16:52:32Z",
  "prices": {
   "GB00BVPLDL62": {
-   "price": 110.46,
+   "price": 108.83,
    "currency": "GBP",
-   "date": "2026-11-13",
+   "date": "2026-11-16",
    "symbol": "GB00BVPLDL62:GBP",
    "name": "Vanguard LifeStrategy Global 100% Equity Fund A GBP Accumulation",
    "source": "FT"
   },
   "IE00BFMXXD54": {
-   "price": 109.92,
+   "price": 107.34,
    "currency": "GBP",
-   "date": "2026-11-16",
+   "date": "2026-11-17",
    "symbol": "VUAG:LSE:GBP",
    "name": "Vanguard S&P 500 UCITS ETF USD Accumulation",
    "source": "FT"
