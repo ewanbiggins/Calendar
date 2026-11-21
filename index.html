@@ -869,8 +869,23 @@ input::placeholder,textarea::placeholder{color:var(--ink-soft);opacity:.7;}
 .sp-suggest{display:flex;flex-direction:column;border:1px solid var(--line, var(--surface-2));border-radius:10px;margin-top:4px;overflow:hidden;background:var(--surface);}
 .sp-sug{min-height:44px;text-align:left;padding:0 12px;border:0;border-bottom:1px solid var(--surface-2);background:transparent;color:var(--ink);font-size:14px;}
 .sp-sug:last-child{border-bottom:0;}
-.booting #app,.booting #returnCalBar{pointer-events:none;opacity:.5;}
-body.booting::after{content:'Loading\2026';position:fixed;top:calc(12px + env(safe-area-inset-top, 0px));left:50%;transform:translateX(-50%);background:#1B2620;color:#fff;padding:6px 14px;border-radius:14px;font-size:12px;z-index:9999;}
+.booting #app,.booting #returnCalBar{pointer-events:none;}
+html{background:#1B355E;}
+@media (prefers-color-scheme: dark){html{background:#0E1523;}}
+#splash{position:fixed;inset:0;z-index:99999;background:#1B355E;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;transition:opacity .28s ease;}
+@media (prefers-color-scheme: dark){#splash{background:#0E1523;}}
+#splash.out{opacity:0;pointer-events:none;}
+#splash svg{width:64px;height:64px;}
+#splash .sp-name{font-size:19px;font-weight:700;letter-spacing:.02em;}
+#splash .sp-bar{width:120px;height:3px;border-radius:2px;background:rgba(255,255,255,.2);overflow:hidden;}
+#splash .sp-bar i{display:block;height:100%;width:40%;border-radius:2px;background:#fff;animation:spbar 1.1s ease-in-out infinite;}
+@keyframes spbar{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
+@media (prefers-reduced-motion: reduce){#splash .sp-bar i{animation:none;width:100%;opacity:.6}}
+.sheet-close{min-width:44px;min-height:44px;margin:-10px -10px 0 0;}
+.pill::after{content:"";position:absolute;inset:-9px -4px;}
+input[type="time"]::-webkit-datetime-edit-fields-wrapper,input[type="date"]::-webkit-datetime-edit-fields-wrapper{padding:0;text-align:left;}
+input[type="time"],input[type="date"],input[type="datetime-local"]{text-align-last:left;line-height:1.3;}
+.bud-line input[type=number]{width:120px !important;}
 .upd-bar{position:fixed;left:12px;right:12px;bottom:calc(76px + env(safe-area-inset-bottom, 0px));z-index:300;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#1B2620;color:#fff;padding:10px 14px;border-radius:12px;font-size:13px;box-shadow:0 4px 14px rgba(0,0,0,.3);}
 .upd-bar button{min-height:36px;padding:0 14px;border:0;border-radius:9px;background:#fff;color:#1B2620;font-weight:700;font-size:13px;}
 .cal-alive{font-size:12px;font-weight:600;color:var(--ink-soft);margin-left:10px;white-space:nowrap;}
@@ -1480,6 +1495,7 @@ input[type="time"]::-webkit-calendar-picker-indicator,input[type="date"]::-webki
 </style>
 </head>
 <body data-view="calendar" class="booting">
+<div id="splash" role="status" aria-label="Loading"><svg viewBox="0 0 64 64" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 31 32 12l22 19"/><path d="M16 27v25h32V27"/><path d="M27 52V38h10v14"/></svg><div class="sp-name">Home Base</div><div class="sp-bar"><i></i></div></div>
 
 <div id="scroller">
 <div id="app">
@@ -2246,6 +2262,26 @@ function pushToCloud(key){
   return syncPushing[key];
 }
 // pull the latest from the cloud (on opening the app, coming back online, and every so often) and send anything unsent
+// journey routes are big, so they live in their own Firestore docs (8 docs beside the main one, by id) and are only ever added, never edited
+const ROUTE_SHARDS = 8; let routeSyncT = 0, routeDirty = false, routeBusy = false;
+function routeShard(id){ let h = 0; String(id).split('').forEach(c=>{ h = (h*31 + c.charCodeAt(0)) >>> 0; }); return 'routes_s'+(h % ROUTE_SHARDS); }
+async function routesSync(force){
+  if(!syncEnabled || !firestoreDb || routeBusy) return;
+  if(!force && !routeDirty && Date.now() - routeSyncT < 180000) return;
+  routeBusy = true; routeSyncT = Date.now();
+  try{
+    const col = firestoreDb.collection('homebase'), remote = {};
+    const snaps = await Promise.all(Array.from({length:ROUTE_SHARDS}, (_, i)=> col.doc('routes_s'+i).get()));
+    snaps.forEach(sn=>{ if(sn.exists) Object.assign(remote, sn.data()); });
+    const live = new Set(mileageTrips.map(t=> String(t.id))); let got = 0; const up = {};
+    Object.keys(remote).forEach(id=>{ if(live.has(id) && !vanRoutes[id] && typeof remote[id] === 'string'){ vanRoutes[id] = remote[id]; delete vanRouteCache[id]; got++; } });
+    Object.keys(vanRoutes).forEach(id=>{ if(live.has(id) && !remote[id]){ const sh = routeShard(id); (up[sh] = up[sh] || {})[id] = vanRoutes[id]; } });
+    for(const sh of Object.keys(up)) await col.doc(sh).set(up[sh], {merge:true});
+    routeDirty = false;
+    if(got){ await saveKey('van-routes', vanRoutes); if(document.getElementById('vanLeaf') && typeof vanMapDraw === 'function') vanMapDraw(false); }
+  }catch(e){ console.warn('route sync', e && e.code || e); }
+  finally{ routeBusy = false; }
+}
 async function syncNow(force){
   if(!syncEnabled || !firestoreDoc || syncBusy) return;
   if(!force && Date.now() - syncLastPull < 4000) return;
@@ -2264,6 +2300,7 @@ async function syncNow(force){
     }
   }catch(e){ console.error('sync pull failed', e); }
   finally{ syncBusy = false; }
+  routesSync();
 }
 
 function setSyncStatus(text){
@@ -3861,14 +3898,33 @@ function vanOrdered(){
 function vanGpsDrives(){
   return mileageTrips.filter(t=> t.startT && !t.auto && !t.geo && t.fp && t.tp && isFinite(t.fp.lat) && isFinite(t.tp.lat) && inUK(t.fp) && inUK(t.tp)).slice().sort((a, b)=> a.startT - b.startT);
 }
-// each place where a drive ended somewhere other than where the next one began
+// confirmed drives and drives still waiting in "Drives to check", in the order they happened
+function vanChain(){
+  const items = vanGpsDrives().map(t=> ({draft:false, t, id:t.id, startT:t.startT, endT:t.endT || t.startT, fp:t.fp, tp:t.tp}));
+  mileageDrafts.forEach(d=>{
+    const f = d.from, to = d.to;
+    if(d.startT && f && to && isFinite(Number(f.lat)) && isFinite(Number(to.lat)))
+      items.push({draft:true, t:d, id:d.id, startT:d.startT, endT:d.endT || d.startT, fp:{lat:Number(f.lat), lon:Number(f.lon)}, tp:{lat:Number(to.lat), lon:Number(to.lon)}});
+  });
+  return items.sort((a, b)=> a.startT - b.startT);
+}
+// each place where a drive ended somewhere other than where the next one began. A drive still waiting to be confirmed
+// sits in the chain, so it explains the gap by itself and nothing is asked until you have dealt with it.
 function vanGaps(){
-  const list = vanGpsDrives(), out = [];
-  for(let i = 1; i < list.length; i++){
-    const a = list[i-1].tp, b = list[i].fp, d = autoDistM(a.lat, a.lon, b.lat, b.lon);
-    if(d > VAN_GAP_M) out.push({prev:list[i-1], next:list[i], a, b, m:d});
+  const chain = vanChain(), out = [];
+  for(let i = 1; i < chain.length; i++){
+    const p = chain[i-1], n = chain[i];
+    if(p.draft || n.draft) continue;
+    const d = autoDistM(p.tp.lat, p.tp.lon, n.fp.lat, n.fp.lon);
+    if(d > VAN_GAP_M) out.push({prev:p.t, next:n.t, a:p.tp, b:n.fp, m:d});
   }
   return out;
+}
+// how far from where the last drive ended a waiting draft started, for the note on the draft
+function vanDraftOffset(dr){
+  if(!dr.startT || !dr.from || !isFinite(Number(dr.from.lat))) return 0;
+  const before = vanChain().filter(x=> x.id !== dr.id && x.endT <= dr.startT).pop();
+  return before ? autoDistM(before.tp.lat, before.tp.lon, Number(dr.from.lat), Number(dr.from.lon)) : 0;
 }
 // gaps still waiting for you to say what the move was for
 function vanPending(){
@@ -3913,7 +3969,7 @@ function vanRoute(id){
 }
 function vanRouteSet(id, pts){
   vanRoutes[id] = plEnc(pts); vanRouteCache[id] = pts;
-  clearTimeout(vanSaveT); vanSaveT = setTimeout(()=> saveKey('van-routes', vanRoutes), 800);
+  routeDirty = true; clearTimeout(vanSaveT); vanSaveT = setTimeout(()=>{ saveKey('van-routes', vanRoutes); routesSync(); }, 800);
 }
 async function vanRouteGeo(coords){
   const path = coords.map(c=> c.lon+','+c.lat).join(';');
@@ -3978,15 +4034,16 @@ function openVanMovesSheet(){
   body.innerHTML = '<div class="stat-sub" style="margin:0 0 8px;">The van was somewhere new when a drive began. A journey for the move is added just before that drive. Was it for work?</div>'+
     gaps.map((g, i)=>{
       const miles = Math.round(g.m/1609.344*1.3*10)/10;
-      return '<div class="fin-item" data-vg="'+i+'"><div style="min-width:0;"><b class="trip-title">'+escapeHtml(mileageShortPlace(g.prev.to))+' → '+escapeHtml(mileageShortPlace(g.next.from))+'</b><div class="stat-sub" style="margin:2px 0 0;">about '+miles+' mi between '+escapeHtml(shortDate(g.prev.date))+' '+hmOf(g.prev.endT)+' and '+escapeHtml(shortDate(g.next.date))+' '+hmOf(g.next.startT)+'</div></div>'+
-        '<div class="sp-btnrow"><button type="button" class="btn small" data-vg-cat="business">Business</button><button type="button" class="btn small secondary" data-vg-cat="personal">Personal</button><button type="button" class="btn small secondary" data-vg-skip>Skip</button></div></div>';
+      return '<div class="fin-item" data-vg="'+i+'"><div style="min-width:0;"><b class="trip-title">'+escapeHtml(mileageShortPlace(g.prev.to))+' → '+escapeHtml(mileageShortPlace(g.next.from))+'</b><div class="stat-sub" style="margin:2px 0 0;"><span data-vg-mi>about '+miles+' mi</span> between '+escapeHtml(shortDate(g.prev.date))+' '+hmOf(g.prev.endT)+' and '+escapeHtml(shortDate(g.next.date))+' '+hmOf(g.next.startT)+'</div></div>'+
+        (()=>{ const sg = (g.next.t && g.next.t.category === 'personal') ? 'personal' : 'business'; return '<div class="stat-sub" style="margin:4px 0 0;">Highlighted: the same as the drive that followed ('+sg+').</div><div class="sp-btnrow"><button type="button" class="btn small'+(sg === 'business' ? '' : ' secondary')+'" data-vg-cat="business">Business</button><button type="button" class="btn small'+(sg === 'personal' ? '' : ' secondary')+'" data-vg-cat="personal">Personal</button><button type="button" class="btn small secondary" data-vg-skip>Skip</button></div></div>'; })();
     }).join('');
   body.querySelectorAll('[data-vg]').forEach(card=>{
     const g = gaps[Number(card.dataset.vg)];
+    g.routeP = vanRouteGeo([g.a, g.b]).then(r=>{ const el = card.querySelector('[data-vg-mi]'); if(r && el) el.textContent = r.miles.toFixed(1)+' mi by road'; return r; }).catch(()=> null);
     card.querySelectorAll('[data-vg-cat]').forEach(btn=> btn.addEventListener('click', async ()=>{
       card.querySelectorAll('button').forEach(x=> x.disabled = true);
       let miles = null, route = null;
-      try{ const r = await vanRouteGeo([g.a, g.b]); if(r){ miles = r.miles; route = r.pts; } }catch(e){}
+      try{ const r = await g.routeP; if(r){ miles = r.miles; route = r.pts; } }catch(e){}
       const est = miles == null; if(est) miles = Math.round(g.m/1609.344*1.3*10)/10;
       const when = g.next.startT - 60000;           // the move happened just before the drive that found the van elsewhere
       mileageTrips.push({id:uid(), date:fmt(new Date(when)), from:g.prev.to, to:g.next.from, category:btn.dataset.vgCat, miles:Math.max(0.1, miles), stops:[], mins:0, startT:when, endT:when, fp:g.a, tp:g.b, auto:true, est, bridgeFor:g.next.id});
@@ -4230,6 +4287,21 @@ function setupRentActions(){
 
 // ---------- TOIL ----------
 const TOIL_START_DATE = '2026-07-06';
+const BANK_HOL_TOIL = 8;    // working a bank holiday earns this many extra hours of TOIL
+const _bhCache = {};
+function ukBankHolidays(year){
+  if(_bhCache[year]) return _bhCache[year];
+  const set = new Set(), dow = (m,d)=> new Date(year,m,d).getDay();
+  const nextWeekday = d=>{ const x = new Date(year,d.m,d.d); while(x.getDay()===0 || x.getDay()===6 || set.has(fmt(x))) x.setDate(x.getDate()+1); return fmt(x); };
+  const easter = computeEaster(year), gf = new Date(easter), em = new Date(easter); gf.setDate(easter.getDate()-2); em.setDate(easter.getDate()+1);
+  set.add(fmt(gf)); set.add(fmt(em)); set.add(fmt(firstMondayOfMonth(year,4))); set.add(fmt(lastMondayOfMonth(year,4))); set.add(fmt(lastMondayOfMonth(year,7)));
+  // fixed-date ones move to the next weekday that is free when they land on a weekend
+  const ny = new Date(year,0,1); set.add((ny.getDay()===0||ny.getDay()===6) ? nextWeekday({m:0,d:1}) : fmt(ny));
+  const xm = new Date(year,11,25); set.add((xm.getDay()===0||xm.getDay()===6) ? nextWeekday({m:11,d:25}) : fmt(xm));
+  const bx = new Date(year,11,26); set.add((bx.getDay()===0||bx.getDay()===6||set.has(fmt(bx))) ? nextWeekday({m:11,d:26}) : fmt(bx));
+  return (_bhCache[year] = set);
+}
+function isBankHoliday(dateStr){ return ukBankHolidays(parseYMD(dateStr).getFullYear()).has(dateStr); }
 function computeToilWeeks(){
   const today = todayStr();
   const thisWeekStart = mondayOf(today);
@@ -4244,10 +4316,12 @@ function computeToilWeeks(){
     const wk = mondayOf(dateStr);
     totals[wk] = (totals[wk]||0) + shiftsByDate[dateStr];
   });
+  const bonus = {};    // extra TOIL for bank holidays that were worked
+  Object.keys(shiftsByDate).forEach(dateStr=>{ if(isBankHoliday(dateStr)){ const wk = mondayOf(dateStr); bonus[wk] = (bonus[wk]||0) + BANK_HOL_TOIL; } });
   const weekStarts = Object.keys(totals).sort();
 
   let rawBalance = 0;
-  weekStarts.forEach(wk=>{ rawBalance += totals[wk] - 40; });
+  weekStarts.forEach(wk=>{ rawBalance += totals[wk] - 40 + (bonus[wk]||0); });
   const totalPayouts = toilPayouts.reduce((s,p)=>s+p.amount, 0);
 
   const timeline = [];
@@ -4260,9 +4334,9 @@ function computeToilWeeks(){
   timeline.forEach(item=>{
     if(item.kind==='week'){
       const total = totals[item.wk];
-      const delta = total - 40;
+      const delta = total - 40 + (bonus[item.wk]||0);
       running += delta;
-      weeks.push({weekStart:item.wk, weekEnd:addDays(item.wk,6), total, delta, balance:running, isCurrent: item.wk===thisWeekStart});
+      weeks.push({weekStart:item.wk, weekEnd:addDays(item.wk,6), total, bonus:bonus[item.wk]||0, delta, balance:running, isCurrent: item.wk===thisWeekStart});
     }else{
       running -= item.amount;
     }
@@ -4338,7 +4412,7 @@ function toilWeekRowEl(w){
   const cls = w.delta >= 0 ? 'delta-pos' : 'delta-neg';
   let dayRows = '', cursor = w.weekStart;
   for(let i = 0; i < 7; i++){
-    if(shiftsByDate[cursor]){ const shift = calendarData[cursor].shift; dayRows += '<div>'+niceDate(cursor)+(shift.title ? ' \u2014 '+escapeHtml(shift.title) : '')+': '+shift.start+'\u2013'+shift.finish+(shift.breakMins ? ' (\u2212'+shift.breakMins+'m break)' : '')+' = '+shiftsByDate[cursor].toFixed(2)+'h</div>'; }
+    if(shiftsByDate[cursor]){ const shift = calendarData[cursor].shift; dayRows += '<div>'+niceDate(cursor)+(shift.title ? ' \u2014 '+escapeHtml(shift.title) : '')+': '+shift.start+'\u2013'+shift.finish+(shift.breakMins ? ' (\u2212'+shift.breakMins+'m break)' : '')+' = '+shiftsByDate[cursor].toFixed(2)+'h'+(isBankHoliday(cursor) ? ' <b>+'+BANK_HOL_TOIL+'h bank holiday</b>' : '')+'</div>'; }
     cursor = addDays(cursor, 1);
   }
   row.innerHTML = '<button type="button" class="tw-h"><span>'+(w.isCurrent ? 'This week' : shortDate(w.weekStart)+'\u2013'+shortDate(w.weekEnd))+'</span><span>'+w.total.toFixed(1)+'h</span><span class="'+cls+'">'+(w.delta >= 0 ? '+' : '')+w.delta.toFixed(1)+'h</span><span>'+w.balance.toFixed(1)+'h</span></button><div class="tw-d" hidden>'+(dayRows || 'No shifts logged.')+'</div>';
@@ -7650,8 +7724,20 @@ async function autoHandleEvent(d){
   if(ev === 'work-open') return await autoWorkOpen(t || Date.now());
   if(ev === 'work-close') return await autoWorkClose(t || Date.now());
   if(ev === 'trip-start'){
-    if(hasLoc){ autoMeta.tripStart = {lat, lon, t: t || Date.now()}; await autoSaveMeta(); }
-    return null;
+    let note = null;
+    const old = autoMeta.tripStart, now = t || Date.now();
+    // a new drive began while the last one never ended (the end signal was lost): the car was parked where this one starts, so close the old drive there
+    if(hasLoc && old && now > old.t + 120000 && now - old.t < 14*3600000){
+      const dist = autoDistM(old.lat, old.lon, lat, lon);
+      if(dist >= 400){
+        const est = Math.min(Math.round((now - old.t)/60000) - 1, Math.max(5, Math.round(dist*1.3/1000/40*60)));
+        const dr = {id:uid(), date:fmt(new Date(old.t)), startT:old.t, endT:old.t + est*60000, mins:est, guess:true, from:{lat:old.lat, lon:old.lon, text:''}, to:{lat, lon, text:''}, miles:null, stops:[]};
+        mileageDrafts.push(dr); await saveKey('mileage-drafts', mileageDrafts); autoResolveDraft(dr);
+        note = 'A drive with no end signal was saved as a draft \u2014 check its time.';
+      }
+    }
+    if(hasLoc){ autoMeta.tripStart = {lat, lon, t: now}; await autoSaveMeta(); }
+    return note;
   }
   if(ev === 'trip-end') return await autoTripEnd(lat, lon, t, hasLoc);
   if(ev === 'sleep-on'){ autoMeta.sleepStart = t || Date.now(); await autoSaveMeta(); return null; }
@@ -7799,10 +7885,7 @@ function autoPrevDraft(dr){
   return mileageDrafts.filter(x=> x.id !== dr.id && x.endT <= dr.startT && dr.startT - x.endT < 45*60000).sort((a,b)=> b.endT - a.endT)[0] || null;
 }
 function vanStartFar(dr){
-  if(!dr.from || !isFinite(dr.from.lat)) return '';
-  const prior = vanOrdered(true).filter(t=> (t.endT || t.startT || 0) <= dr.startT).pop();
-  if(!prior) return '';
-  const e = vanPt(prior, 'to'), d = autoDistM(e.lat, e.lon, Number(dr.from.lat), Number(dr.from.lon));
+  const d = vanDraftOffset(dr);
   return d > VAN_GAP_M ? (d >= 1000 ? (d/1609.344).toFixed(1)+' mi' : Math.round(d)+' m') : '';
 }
 function renderMileageDrafts(){
@@ -7816,7 +7899,7 @@ function renderMileageDrafts(){
     const prev = autoPrevDraft(dr);
     const nm = (t, id)=> t ? mileageShortPlace(t) : (autoResolving[id] ? 'Finding the place\u2026' : 'Place not found'), fromL = nm(dr.from.text, dr.id), toL = nm(dr.to.text, dr.id);
     return '<div class="fin-item" data-draft="'+dr.id+'"><div style="min-width:0;"><b class="trip-title">'+escapeHtml(fromL)+' \u2192 '+escapeHtml(toL)+'</b>'+((dr.stops || []).length ? '<div class="stat-sub" style="margin:2px 0 0;">via '+escapeHtml(dr.stops.map(mileageDisplayName).join(', '))+'</div>' : '')+
-      (vanStartFar(dr) ? '<div class="stat-sub" style="margin:3px 0 0;color:var(--danger);">Started '+vanStartFar(dr)+' from where the last journey ended \u2014 you will be asked about the move.</div>' : '')+'<div class="trip-meta" style="margin-top:3px;"><span>'+shortDate(dr.date)+'</span><span>'+hm(dr.startT)+'\u2013'+hm(dr.endT)+'</span><span>'+dr.mins+' min</span><span><b>'+(dr.miles != null ? Number(dr.miles).toFixed(1)+' mi' : 'distance pending')+'</b></span></div></div>'+
+      (vanStartFar(dr) ? '<div class="stat-sub" style="margin:3px 0 0;color:var(--danger);">Started '+vanStartFar(dr)+' from where the last journey ended \u2014 confirm it and you will be asked what the move was for.</div>' : '')+(dr.guess ? '<div class="stat-sub" style="margin:3px 0 0;color:var(--danger);">The end of this drive was never recorded \u2014 it finishes where your next drive began, and the time is a guess.</div>' : '')+'<div class="trip-meta" style="margin-top:3px;"><span>'+shortDate(dr.date)+'</span><span>'+hm(dr.startT)+(dr.guess ? '\u2013?' : '\u2013'+hm(dr.endT))+'</span><span>'+(dr.guess ? '~' : '')+dr.mins+' min</span><span><b>'+(dr.miles != null ? Number(dr.miles).toFixed(1)+' mi' : 'distance pending')+'</b></span></div></div>'+
       '<div class="sp-btnrow"><button type="button" class="btn small" data-dr-apply="business" data-id="'+dr.id+'">Business</button><button type="button" class="btn small secondary" data-dr-apply="personal" data-id="'+dr.id+'">Personal</button></div>'+
       '<div class="sp-btnrow" style="margin-top:6px;gap:14px;"><a class="fin-link" data-dr-edit="'+dr.id+'">Edit</a>'+(prev ? '<a class="fin-link" data-dr-merge="'+dr.id+'">Merge with previous</a>' : '')+'<a class="fin-link" data-dr-del="'+dr.id+'">Delete</a></div>'+
       '<div class="fin-edit" data-dr-panel="'+dr.id+'" hidden><input type="text" data-dr-from value="'+escapeHtml(dr.from.text || '')+'" placeholder="From"><input type="text" data-dr-to value="'+escapeHtml(dr.to.text || '')+'" placeholder="To"><input type="number" inputmode="decimal" step="0.1" min="0" data-dr-miles value="'+(dr.miles != null ? dr.miles : '')+'" placeholder="Miles">'+
@@ -7862,7 +7945,7 @@ async function autoApplyDraft(dr, category){
   mileageDrafts = mileageDrafts.filter(x=> x.id !== dr.id);
   await saveKey('mileage-trips', mileageTrips); await saveKey('mileage-drafts', mileageDrafts);
   vanBackfill().catch(()=>{});
-  { const pend = vanPending().length; if(pend) showToast('The van moved without a journey \u2014 tell me when (Trends \u2192 Driving, or Home).'); }
+  { const pend = vanPending().length; if(pend) showToast('The van moved without a journey \u2014 tap to say what it was for.', openVanMovesSheet); }
   renderMileageTab();
   for(const addr of [dr.from.text].concat(dr.stops || [], [dr.to.text])) await ensureAddressLabelled(addr);
   renderMileageTab();
@@ -9249,7 +9332,7 @@ let spendMonth = null, spendEditing = false, spendFilter = null, spendOpen = nul
 let finHoldings = [], finDD = [], finIncome = [], finOwed = [], finPeople = [], finSettings = {avKey:''};
 let finPrices = {}, finSnap = [];        // prices and the value history stay on this device
 let finTab = 'overview', finShowPaid = false, finOpenItem = null, finPriceBusy = false, finPriceMsg = '';
-const APP_VERSION = 'v22.4';
+const APP_VERSION = 'v22.7';
 let settingsPage = null;
 let autoMeta = {home:null, radius:400, tripStart:null, sleepStart:null, lastAway:null, lastTrip:null, lastSleep:null}, mileageDrafts = [], sleepLog = [];
 let syncAuth = null, syncNeedsSignIn = false, syncAuthPassword = '', syncConfig = null;
@@ -10209,8 +10292,9 @@ document.addEventListener('visibilitychange', ()=>{
 });
 window.addEventListener('online', ()=> syncNow(true));
 // the page paints before its script has run (big file, slow connection): until it has, taps are blocked and the screen is dimmed so it never looks ready when it is not
-setTimeout(()=> document.body.classList.remove('booting'), 12000);
-init().catch(e=> console.error('Start-up failed:', e)).finally(()=>{ document.body.classList.remove('booting'); setTimeout(checkForUpdate, 3000); });
+function hideSplash(){ document.body.classList.remove('booting'); const sp = document.getElementById('splash'); if(sp && !sp.classList.contains('out')){ sp.classList.add('out'); setTimeout(()=> sp.remove(), 400); } }
+setTimeout(()=> hideSplash(), 12000);
+init().catch(e=> console.error('Start-up failed:', e)).finally(()=>{ hideSplash(); setTimeout(checkForUpdate, 3000); });
 // is a newer file waiting on the server? the Home Screen app can hold an old copy for a while
 let updChecked = 0;
 async function checkForUpdate(){
